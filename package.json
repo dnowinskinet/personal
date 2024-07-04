@@ -36,6 +36,7 @@
     "@fortawesome/sharp-solid-svg-icons": "^6.5.2",
     "@fortawesome/sharp-thin-svg-icons": "^6.5.2",
     "@ng-bootstrap/ng-bootstrap": "^17.0.0",
+    "bootstrap": "^5.3.3",
     "express": "^4.18.2",
     "ngx-bootstrap": "^18.0.0",
     "react-icons": "^5.2.1",
