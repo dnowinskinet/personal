@@ -2,8 +2,11 @@
 /* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
+  "files": ["./server.ts"],
   "compilerOptions": {
+    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -17,6 +20,9 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": [
