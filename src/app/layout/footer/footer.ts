@@ -22,12 +22,11 @@ import { Subscription, interval } from 'rxjs';
       class="flex flex-col sm:flex-row gap-4 justify-between py-2 text-gray-900 dark:text-white"
     >
       <div class="flex flex-row gap-3">
-        <logo/>
+        <logo/> 
         <span>{{ profile().name }}</span>
       </div>
         <div class="flex items-center gap-1">
            <span>{{ currentTime() }} (Eastern Time, GMT -5)</span></div>
-
       <social-link/>
     </div>
   </div> `,
