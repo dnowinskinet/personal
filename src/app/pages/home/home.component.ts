@@ -7,15 +7,13 @@ import { Loader } from '../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-home',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 @Component({
   selector: 'home-page',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
   imports: [ExpertiseArea, Intro, Loader],
   template: `
