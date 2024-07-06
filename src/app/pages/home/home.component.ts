@@ -13,7 +13,7 @@ import { Loader } from '../../shared/components/loader/loader';
 @Component({
   selector: 'home-page',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [ExpertiseArea, Intro, Loader],
   template: `

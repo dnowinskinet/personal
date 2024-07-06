@@ -7,12 +7,11 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { devIcon } from '@shared/components/devicon/devicon.data';
-import { PlatformCheckService } from '@core/services/platform-check.service';
-import { DarkModeService } from '@core/services/dark-mode.service';
-import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
-import { ThemeColor } from '@shared/components/devicon/devicon.schema'
-import { TechToolName } from "@data/schema/tech-tool-name.schema";
+import { devIcon } from './devicon.data';
+import { PlatformCheckService } from '../../../core/services/platform-check.service';
+import { DarkModeService } from '../../../core/services/dark-mode.service';
+import { TooltipDirective } from '../tooltip/tooltip.directive';
+import { ThemeColor } from '../devicon/devicon.schema'
 @Component({
   selector: 'devicon',
   imports: [TooltipDirective],
@@ -78,11 +77,9 @@ import { TechToolName } from "@data/schema/tech-tool-name.schema";
   </div> `
 })
 export class Devicon {
-  name = input<TechToolName>('HTML');
   key = input<number>();
   cssClass = input<string>('w-8');
   colored = input<boolean>(false);
-  icon = computed(() => devIcon[this.name()]);
   isHovered = signal<boolean>(false);
   platformCheck = inject(PlatformCheckService);
   darkModeService = inject(DarkModeService);

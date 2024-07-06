@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { SafePipe } from '@core/pipe/safe.pipe';
-import { MarkdownPipe } from 'core/pipe/markdown.pipe';
+import { SafePipe } from './pipe/safe.pipe';
+import { MarkdownPipe } from './pipe/markdown.pipe';
 
 @NgModule({
   declarations: [SafePipe, MarkdownPipe],
