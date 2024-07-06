@@ -11,5 +11,25 @@ import { Loader } from '../../shared/components/loader/loader';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-
+  metaService = inject(MetaService);
+  constructor() {
+    this.metaService.setMetaTags(
+      `Home - ${profileData.name}`,
+      'Welcome to my person website. Its a mess, for now.',
+      [
+        'daniel thomas nowinski',
+        'daniel thomas',
+        'danielthomasnowinski',
+        'data scientist',
+        'dc',
+        'bio',
+        'developer',
+        'portfolio',
+        'development',
+        'android',
+        'web',
+        'ios',
+      ]
+    );
+  }
 }
