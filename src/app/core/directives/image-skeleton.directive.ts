@@ -4,7 +4,7 @@ import {
   ElementRef,
   Renderer2,
   inject,
-  input,
+  input, OnChanges,
 } from '@angular/core';
 import { PlatformCheckService } from '../services/platform-check.service';
 type ImageSrc = string | null | undefined;
@@ -14,7 +14,7 @@ type ImageSrc = string | null | undefined;
   standalone: true
 })
 
-export class ImageSkeletonDirective {
+export class ImageSkeletonDirective implements OnChanges {
   src = input.required<ImageSrc>();
   platformCheck = inject(PlatformCheckService);
   imageRef = inject(ElementRef);
