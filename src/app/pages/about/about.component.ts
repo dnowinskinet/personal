@@ -5,6 +5,6 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss'
 })
-export class AboutComponent  { 
-  bioImg = '../../../assets/image/biography/ecmc.png'  
+export class AboutComponent { 
+  bioImg ="../../../../assets/image/biography/ecmc.png" 
 }
