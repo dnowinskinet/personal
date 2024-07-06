@@ -28,16 +28,4 @@ import { HomeComponent } from './pages/home/home.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule implements OnInit {
-  constructor(){
-    effect(() => {
-      this.elementRef.nativeElement.style.setProperty(`--primary-color`, this.theme.getColor())
-    })
-  }
-  private elementRef = inject(ElementRef)
-  public theme = inject(ThemeService)
-  ngOnInit(): void {
-    this.elementRef.nativeElement.removeAttribute("ng-version");
-    this.elementRef.nativeElement.removeAttribute("ng-server-context");
-  }
-}
+export class AppModule {}

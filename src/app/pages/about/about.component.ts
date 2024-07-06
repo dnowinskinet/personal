@@ -6,5 +6,5 @@ import { Component, OnInit } from '@angular/core';
   styleUrl: './about.component.scss'
 })
 export class AboutComponent { 
-  bioImg ="../../../../assets/image/biography/ecmc.png" 
+  bioImg ="../../../image/biography/ecmc.png" 
 }

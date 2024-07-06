@@ -5,7 +5,17 @@
     <div class="container">
       <div class="grid grid-cols-10 align-items-start">
         <div class="col-span-4 px-3 my-auto px-auto">
-        <img class="img-responsive product-image-large" [src]="bioImg" alt="biography">
+          <img class="img img-responsive product-image-large" [src]="bioImg" alt="biography" />
+          <img class="img-responsive" [src]="bioImg" alt="biography">
+          <img [src]="bioImg" />
+          <img class="img-responsive" src="bioImg" alt="biography">
+          <img class="img-responsive" src="../../../assets/image/biography/ecmc.png" alt="biography">
+          <img class="img-responsive" src="../../../src/assets/image/biography/ecmc.png" alt="biography">
+          <img class="img-responsive" src="/src/assets/image/biography/ecmc.png" alt="biography">
+          <img class="img-responsive" src="./src/assets/image/biography/ecmc.png" alt="biography">
+          <img class="img-responsive" src="../../../image/biography/ecmc.png" alt="biography">
+          <img class="img-responsive" src="biography/ecmc.png" alt="biography">
+          <img class="img-responsive" bind-src="bioImg" alt="biography">
         </div>
         <div class="col-span-6">
             <h2><span class="text-primary text-xl font-semibold">Daniel T Nowinski</span> <span> (He/Him)</span></h2>
