@@ -5,7 +5,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
   providedIn: 'root'
 })
 export class PlatformCheckService {
-  private platformId: Object = inject(PLATFORM_ID)
+  private platformId: object = inject(PLATFORM_ID)
 
   get onBrowser(): boolean {
     return isPlatformBrowser(this.platformId);

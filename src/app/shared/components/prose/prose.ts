@@ -1,6 +1,6 @@
 import { Component, ElementRef, effect, inject, input } from '@angular/core';
-import { CoreModule } from '@core/core.module'
-import { PlatformCheckService } from '@core/services/platform-check.service';
+import { CoreModule } from '../../../core/core.module'
+import { PlatformCheckService } from '../../../core/services/platform-check.service';
 import mediumZoom from 'medium-zoom';
 @Component({
   selector: 'prose',

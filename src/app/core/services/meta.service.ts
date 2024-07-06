@@ -11,7 +11,7 @@ type MetaImageStyle = 'summary_large_image' | 'summary';
 })
 
 export class MetaService {
-  public defaultImage: string = './assets/image/meta-image.jpg'
+  public defaultImage = './assets/image/meta-image.jpg'
   public urlKeywords: string[] = ['blog/', 'project/'];
   private meta = inject(Meta);
   private router = inject(Router);
@@ -24,7 +24,7 @@ export class MetaService {
     return `${environment.url}${this.router.url}`
   }
 
-  setMetaTags(title: string, description: string, keywords?: string | Array<string> | null, image?: string | null , metaImageStyle?: MetaImageStyle): void{
+  setMetaTags(title: string, description: string, keywords?: string | string[] | null, image?: string | null , metaImageStyle?: MetaImageStyle): void{
     this.title.setTitle(title);
     this.meta.addTags([
       {name: 'title', content: title},

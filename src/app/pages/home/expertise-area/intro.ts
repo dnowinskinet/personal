@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewEnca
 import { Subscription, interval } from 'rxjs';
 import { PlatformCheckService } from '@core/services/platform-check.service';
 import { Button } from '@shared/components/button/button';
-import { ManSorrow } from '@pages/home/components/intro/man-sorrow/man-sorrow';
 import { SocialLink } from '@shared/components/social-link/social-link';
 import  ProfileData from '@data/profile.data'
 import { ProfileSchema } from '@data/schema/profile.schema';
@@ -15,7 +14,6 @@ import { Loader } from '@shared/components/loader/loader';
     <section class="mt-8 relative">
       <div class="grid grid-cols-1">
         <div>
-          <man-sorrow class="flex justify-end"/>
         </div>
         <div
           class="w-full sm:w-auto flex flex-col gap-3 justify-between sm:absolute top-0 left-0 sm:top-5 bg-gray-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-400 p-5">
@@ -37,7 +35,7 @@ import { Loader } from '@shared/components/loader/loader';
       </div>
     </section>
   `,
-  imports: [SocialLink, Button, ManSorrow, Icon, Loader],
+  imports: [SocialLink, Button, Icon, Loader],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true

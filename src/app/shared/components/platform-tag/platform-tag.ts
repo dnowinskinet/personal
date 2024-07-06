@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
 import { Icon } from '../icon/icon';
-import { appstore, github, playstore } from '@icon/brand.icon';
-import { site2 } from '@icon/regular.icon';
+import { appstore, github, playstore } from '../../../icon/brand.icon';
+import { site2 } from '../../../icon/regular.icon';
 @Component({
   selector: 'platform-tag',
   changeDetection: ChangeDetectionStrategy.OnPush,

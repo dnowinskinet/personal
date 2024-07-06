@@ -1,5 +1,4 @@
 import { ExpertiseAreaSchema } from "./expertise-area.schema";
-import { faHand } from "@fortawesome/free-solid-svg-icons";
 import { site, api, mobile, writing, analytics, speak, research, operations, speed, search } from '@icon/regular.icon'
 
 

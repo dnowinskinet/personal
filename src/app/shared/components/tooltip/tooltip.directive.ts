@@ -8,7 +8,7 @@ import {
   HostListener,
   Injector,
   inject,
-  input
+  input, OnDestroy
 } from '@angular/core';
 import {Tooltip as TooltipComponent} from "./tooltip";
 import { DOCUMENT } from '@angular/common';
@@ -17,7 +17,7 @@ import { DOCUMENT } from '@angular/common';
   selector: '[tooltip]',
   standalone: true
 })
-export class TooltipDirective {
+export class TooltipDirective implements OnDestroy {
 
   tooltip = input<string>('');
   showDelay = input<number>(0);

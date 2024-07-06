@@ -8,7 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   template: `
-  <svg [ngClass]="{'fill-gray-900 dark:fill-gray-200 flex' : color() == ''}" class="{{iconClass()}}" [attr.viewBox]="viewBox()"
+  <svg [ngClass]="{'fill-gray-900 dark:fill-gray-200 flex' : color() === ''}" class="{{iconClass()}}" [attr.viewBox]="viewBox()"
   [attr.fill]="color()" [attr.width]="size()" [attr.height]="size()">
     <path [attr.d]="path()" />
   </svg>
