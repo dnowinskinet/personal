@@ -7,9 +7,27 @@ import { Loader } from '../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-home',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
+@Component({
+  selector: 'home-page',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [ExpertiseArea, Intro, Loader],
+  template: `
+    @defer(on immediate){
+      <intro/>
+      <expertise-area/>
+    }@placeholder {
+      <loader/>
+    }
+  `
+})
+
 export class HomeComponent {
   metaService = inject(MetaService);
   constructor() {
