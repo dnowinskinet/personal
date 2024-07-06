@@ -1,4 +1,4 @@
-import { NavLinkSchema } from '@data/schema/nav-link.schema'
+import { NavLinkSchema } from './schema/nav-link.schema'
 const navlinkData: NavLinkSchema[] = [
   {
     name: 'Home',

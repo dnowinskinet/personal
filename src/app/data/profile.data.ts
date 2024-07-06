@@ -1,4 +1,4 @@
-import { ProfileSchema } from "@data/schema/profile.schema";
+import { ProfileSchema } from "../data/schema/profile.schema";
 
 const profileData: ProfileSchema = {
   name: 'Daniel T Nowinski',

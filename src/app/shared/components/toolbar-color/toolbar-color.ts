@@ -1,7 +1,7 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, ViewEncapsulation, inject } from '@angular/core';
-import { ThemeService } from '@core/services/theme.service';
-import themeColorData from '@data/theme-color.data'
+import { ThemeService } from '../../../core/services/theme.service';
+import themeColorData from '../../../data/theme-color.data'
 @Component({
   selector: 'toolbar-color',
   standalone: true,

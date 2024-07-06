@@ -6,13 +6,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { PlatformCheckService } from '@core/services/platform-check.service';
-import profileData from '@data/profile.data';
-import { ProfileSchema } from '@data/schema/profile.schema';
-import { clock } from '@icon/regular.icon';
-import { Icon } from '@shared/components/icon/icon';
-import { Logo } from '@shared/components/logo/logo';
-import { SocialLink } from '@shared/components/social-link/social-link';
+import { PlatformCheckService } from '../../core/services/platform-check.service';
+import profileData from '../../data/profile.data';
+import { ProfileSchema } from '../../data/schema/profile.schema';
+import { Icon } from '../../shared/components/icon/icon';
+import { Logo } from '../../shared/components/logo/logo';
+import { SocialLink } from '../../shared/components/social-link/social-link';
 import { Subscription, interval } from 'rxjs';
 @Component({
   selector: 'foot-note',
@@ -27,10 +26,7 @@ import { Subscription, interval } from 'rxjs';
         <span>{{ profile().name }}</span>
       </div>
         <div class="flex items-center gap-1">
-          <icon
-          [path]="clockIcon"
-          [size]="20"
-        /> <span>{{ currentTime() }} (Eastern Time, GMT -5)</span></div>
+           <span>{{ currentTime() }} (Eastern Time, GMT -5)</span></div>
 
       <social-link/>
     </div>
@@ -44,7 +40,6 @@ export class Footer {
   platformCheck = inject(PlatformCheckService)
   currentTime = signal<string>(this.getCurrentTime());
   profile = signal<ProfileSchema>(profileData);
-  clockIcon = clock;
   timer!: Subscription;
   constructor() {
     effect((onCleanup) => {
