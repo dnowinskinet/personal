@@ -76,8 +76,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-              "buildTarget": "dnowinski:build"
-            },
+            "buildTarget": "dnowinski:build"
+          },
           "configurations": {
             "production": {
               "buildTarget": "dnowinski:build:production"
@@ -111,11 +111,23 @@
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": "c76bb572-aea3-4b4a-a3d1-e0a1e25b2faf"
+    "analytics": "c76bb572-aea3-4b4a-a3d1-e0a1e25b2faf",
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
