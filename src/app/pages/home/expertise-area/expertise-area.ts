@@ -31,9 +31,6 @@ import { ExpertiseAreaSchema } from './expertise-area.schema';
   imports: [ Icon, SpotlightDirective ],
   standalone: true,
 })
-export class ExpertiseArea implements OnInit {
+export class ExpertiseArea{
   public services: Signal<ExpertiseAreaSchema[]> = signal(expertiseAreaData)
-  ngOnInit(): void {
-    
-  }
 }

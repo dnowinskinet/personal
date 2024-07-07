@@ -8,6 +8,7 @@ import { Loader } from '../../shared/components/loader/loader';
 
 @Component({
   selector: 'app-home',
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
