@@ -13,7 +13,8 @@ const generateTintedColors = (color: string, variants: Record<number, number>, m
 };
 
 export default {
-  content: ["./src/**/*.{html,ts}"],
+  content: ["./src/**/*.{html,ts}",
+    "./node_modules/flowbite/**/*.js"],
   darkMode: "class",
   theme: {
     extend: {
@@ -76,7 +77,8 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/typography')
+    require('@tailwindcss/typography'),
+    require('flowbite/plugin'),
   ],
   safelist: [
     {
