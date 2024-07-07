@@ -26,7 +26,7 @@ import { Loader } from '@shared/components/loader/loader';
             <btn [link]="profile().resumeLink" ariaLabel="resume" class="flex gap-1">
               <icon [size]="20" iconClass="fill-white"
               [path]="fileIcon"
-              />
+              />          
             <span>Resume</span>
             </btn>
             <social-link/>
@@ -40,7 +40,7 @@ import { Loader } from '@shared/components/loader/loader';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })
-export class Intro implements OnInit {
+export class Intro {
   profile = signal<ProfileSchema>(ProfileData);
   fileIcon = file;
   public changingText = signal<string>(this.profile().greetings[0]);
@@ -50,22 +50,5 @@ export class Intro implements OnInit {
   greetingSub!: Subscription;
 
   constructor(){
-    effect((onCleanup) => {
-        this.greetingSub = interval(2000).subscribe(() => {
-          this.updateText();
-        });
-      onCleanup(() => {
-        if (this.greetingSub) {
-          this.greetingSub.unsubscribe();
-        }
-      });
-    });
-  }
-  updateText(): void {
-    this.currentGreetingIndex.set((this.currentGreetingIndex() + 1) % this.profile().greetings.length);
-    this.changingText.set(this.profile().greetings[this.currentGreetingIndex()]);
-  }
-  ngOnInit(): void {
-    
   }
 }
