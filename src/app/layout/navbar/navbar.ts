@@ -66,7 +66,7 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
 </nav>`
 })
 export class Navbar {
-  open: boolean = false;
+  open = false;
   paintBucket = paintBucket;
   links = computed(() => navlinkData)
   icon = computed(() => this.darkModeService.isDark() ? sun : moon)
