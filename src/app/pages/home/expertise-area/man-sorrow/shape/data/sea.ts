@@ -1,6 +1,6 @@
 import { ShapeData } from "../shape.interface";
 
-export const sea: Array<ShapeData> = [
+export const sea: ShapeData[] = [
   {
     d: 'M37.71,391.35c0-.14,91.08-.26,203.41-.26s203.42.12,203.42.26-91.06.26-203.42.26S37.71,391.5,37.71,391.35Z',
     color: 'animate fill-blue-700 dark:fill-blue-300',

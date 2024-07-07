@@ -1,6 +1,6 @@
 import { ShapeData } from "../shape.interface";
 
-export const sun: Array<ShapeData> = [
+export const sun: ShapeData[] = [
   {
     d: "M344.38,293.51l13.84,97.05,13.72-97.07.22,0,13.67-97.42a212,212,0,0,0-56.09-1.55l14.23,99Z",
     color: "animable fill-yellow-500 dark:fill-gray-900",

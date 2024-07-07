@@ -1,6 +1,6 @@
 import { ShapeData } from "../shape.interface";
 
-export const man: Array<ShapeData> = [
+export const man: ShapeData[] = [
   {
     d:
       "M551.89,322.06l-.95,25s-25.7,7.42-26.32,12L573,362.62,576,323.78Z",

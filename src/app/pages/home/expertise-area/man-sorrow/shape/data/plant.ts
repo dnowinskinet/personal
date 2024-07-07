@@ -1,6 +1,6 @@
 import { ShapeData } from "../shape.interface";
 
-export const plant: Array<ShapeData> = [
+export const plant: ShapeData[] = [
   {
     d: 'M696 298.87C696.892 299.294 697.689 299.895 698.342 300.635C698.995 301.376 699.491 302.242 699.8 303.18C700.414 305.059 700.589 307.053 700.31 309.01C699.88 312.8 697.73 316.62 695.41 319.64C692.22 316.86 691.49 312.01 691.27 309.52C690.93 305.59 692.69 298.29 696 298.87Z',
     color: 'animate fill-green-500 dark:fill-green-800',

@@ -1,6 +1,6 @@
 import { ShapeData } from "../shape.interface"
 
-export const stars: Array<ShapeData> = [
+export const stars: ShapeData[] = [
   {
     d:"M694.84 189.34L696.66 192.66C697.349 193.929 698.391 194.971 699.66 195.66L702.98 197.47L699.66 199.29C698.389 199.976 697.346 201.019 696.66 202.29L694.84 205.61L693 202.22C692.311 200.952 691.269 199.91 690 199.22L686.68 197.4L690 195.59C691.266 194.896 692.306 193.856 693 192.59L694.84 189.34Z",
     color: "fill-white dark:fill-primary-300 animate-pulse"

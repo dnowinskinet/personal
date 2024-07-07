@@ -34,7 +34,7 @@ export class ManSorrow {
   get cloudAbovePath() { return this.generatePath(cloud) }
   get sunPath()        { return this.generatePath(sun)   }
 
-  generatePath(data: Array<ShapeData>): SafeHtml {
+  generatePath(data: ShapeData[]): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(
       data
         .map((s: ShapeData) => {
