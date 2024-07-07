@@ -38,7 +38,7 @@ import { Loader } from '@shared/components/loader/loader';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })
-export class Intro {
+export class Intro implements OnInit {
   profile = signal<ProfileSchema>(ProfileData);
   fileIcon = file;
   public changingText = signal<string>(this.profile().greetings[0]);
@@ -63,4 +63,5 @@ export class Intro {
     this.currentGreetingIndex.set((this.currentGreetingIndex() + 1) % this.profile().greetings.length);
     this.changingText.set(this.profile().greetings[this.currentGreetingIndex()]);
   }
+  ngOnInit(): void {}
 }

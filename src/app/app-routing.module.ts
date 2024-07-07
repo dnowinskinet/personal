@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AboutComponent } from './pages/about/about.component';
 import { HomeComponent } from './pages/home/home.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },  
   { path: 'about', component: AboutComponent, pathMatch: 'full' },];
 

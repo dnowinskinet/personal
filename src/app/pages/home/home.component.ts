@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation, OnInit, inject }
 import { MetaService } from '../../core/services/meta.service';
 import profileData from '../../data/profile.data';
 import { ImageSkeletonDirective } from '../../core/directives/image-skeleton.directive';
-import { ExpertiseArea } from './expertise-area/expertise-area';
-import { Intro } from './expertise-area/intro';
 import { Loader } from '../../shared/components/loader/loader';
 
 @Component({
