@@ -13,8 +13,6 @@ import { Loader } from '@shared/components/loader/loader';
   template: `
     <section class="mt-8 relative">
       <div class="grid grid-cols-1">
-        <div>
-        </div>
         <div
           class="w-full sm:w-auto flex flex-col gap-3 justify-between sm:absolute top-0 left-0 sm:top-5 bg-gray-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-400 p-5">
           <p class="flex justify-start text-xl dark:text-gray-200 font-semibold"><span
@@ -26,7 +24,7 @@ import { Loader } from '@shared/components/loader/loader';
             <btn [link]="profile().resumeLink" ariaLabel="resume" class="flex gap-1">
               <icon [size]="20" iconClass="fill-white"
               [path]="fileIcon"
-              />          
+              />
             <span>Resume</span>
             </btn>
             <social-link/>
@@ -50,5 +48,19 @@ export class Intro {
   greetingSub!: Subscription;
 
   constructor(){
+    effect((onCleanup) => {
+        this.greetingSub = interval(2000).subscribe(() => {
+          this.updateText();
+        });
+      onCleanup(() => {
+        if (this.greetingSub) {
+          this.greetingSub.unsubscribe();
+        }
+      });
+    });
+  }
+  updateText(): void {
+    this.currentGreetingIndex.set((this.currentGreetingIndex() + 1) % this.profile().greetings.length);
+    this.changingText.set(this.profile().greetings[this.currentGreetingIndex()]);
   }
 }
