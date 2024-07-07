@@ -24,7 +24,6 @@ import { ExpertiseArea } from './pages/home/expertise-area/expertise-area';
     FontAwesomeModule,
     Navbar,
     Footer,
-    AppTheme,
     Intro,
     ExpertiseArea,
   ],
