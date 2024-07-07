@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Signal, ViewEncapsulation, signal, OnInit } from '@angular/core';
+import { Component, Signal, ViewEncapsulation, signal } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 import { SpotlightDirective } from './directive/spotlight.directive'
 import expertiseAreaData from './expertise-area.data'
 import { ExpertiseAreaSchema } from './expertise-area.schema';
 @Component({
   selector: 'expertise-area',
+  encapsulation: ViewEncapsulation.None,
+  imports: [ Icon, SpotlightDirective ],
+  standalone: true,
   template: `
     <section class="mt-16">
       <p class="mb-8 text-2xl text-gray-900 dark:text-white inline-block">Expertise Area</p>
@@ -26,11 +29,9 @@ import { ExpertiseAreaSchema } from './expertise-area.schema';
         </div>
       }
     </div>
-`,
-  encapsulation: ViewEncapsulation.None,
-  imports: [ Icon, SpotlightDirective ],
-  standalone: true,
+`
 })
 export class ExpertiseArea{
   public services: Signal<ExpertiseAreaSchema[]> = signal(expertiseAreaData)
 }
+

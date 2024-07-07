@@ -1,11 +1,11 @@
-import { Directive, ElementRef, HostListener, Renderer2, inject, AfterViewInit } from '@angular/core';
+import { Directive, ElementRef, HostListener, Renderer2, inject } from '@angular/core';
 import { SpotlightService } from '../service/spotlight.service';
 
 @Directive({
   selector: '[spot-light]',
   standalone: true
 })
-export class SpotlightDirective implements AfterViewInit {
+export class SpotlightDirective {
   el = inject(ElementRef)
   renderer = inject(Renderer2)
   spotlightService = inject(SpotlightService)
