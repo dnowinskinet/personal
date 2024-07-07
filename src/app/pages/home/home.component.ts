@@ -11,7 +11,7 @@ import { Loader } from '../../shared/components/loader/loader';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   metaService = inject(MetaService);
   constructor() {
     this.metaService.setMetaTags(
@@ -33,5 +33,4 @@ export class HomeComponent implements OnInit {
       ]
     );
   };
-  ngOnInit(): void {}
 }
