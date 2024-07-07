@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewEncapsulation, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, OnInit, Component, Inject, ViewEncapsulation, effect, inject, signal } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { PlatformCheckService } from '@core/services/platform-check.service';
 import { Button } from '@shared/components/button/button';
@@ -40,7 +40,7 @@ import { Loader } from '@shared/components/loader/loader';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true
 })
-export class Intro {
+export class Intro implements OnInit {
   profile = signal<ProfileSchema>(ProfileData);
   fileIcon = file;
   public changingText = signal<string>(this.profile().greetings[0]);
@@ -64,5 +64,8 @@ export class Intro {
   updateText(): void {
     this.currentGreetingIndex.set((this.currentGreetingIndex() + 1) % this.profile().greetings.length);
     this.changingText.set(this.profile().greetings[this.currentGreetingIndex()]);
+  }
+  ngOnInit(): void {
+    
   }
 }

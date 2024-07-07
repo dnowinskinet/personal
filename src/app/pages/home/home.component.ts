@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, OnInit, inject } from '@angular/core';
 import { MetaService } from '../../core/services/meta.service';
 import profileData from '../../data/profile.data';
 import { ImageSkeletonDirective } from '../../core/directives/image-skeleton.directive';
@@ -11,7 +11,7 @@ import { Loader } from '../../shared/components/loader/loader';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   metaService = inject(MetaService);
   constructor() {
     this.metaService.setMetaTags(
@@ -32,5 +32,6 @@ export class HomeComponent {
         'ios',
       ]
     );
-  }
+  };
+  ngOnInit(): void {}
 }
