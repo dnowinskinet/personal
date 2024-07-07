@@ -6,7 +6,7 @@ import { Footer } from './layout/footer/footer';
 import { ThemeService } from './core/services/theme.service';
 import { NgClass } from '@angular/common';
 @Component({
-  selector: 'app',
+  selector: 'app-root',
   template: `
   <navbar/>
     <main class="max-w-screen-lg mx-auto px-4 md:px-10 my-28 overflow-x-hidden min-h-screen">
@@ -19,7 +19,7 @@ import { NgClass } from '@angular/common';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
 })
-export class App implements OnInit {
+export class AppTheme implements OnInit {
   constructor(){
     effect(() => {
       this.elementRef.nativeElement.style.setProperty(`--primary-color`, this.theme.getColor())

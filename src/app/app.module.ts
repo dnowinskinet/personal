@@ -3,7 +3,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 
 import { AppRoutingModule } from './app-routing.module';
 import { Footer } from './layout/footer/footer';
-import { ThemeService } from './core/services/theme.service';
+import { AppTheme } from './app.theme.component';
 import { Navbar } from './layout/navbar/navbar';
 import { AppComponent } from './app.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -22,6 +22,7 @@ import { HomeComponent } from './pages/home/home.component';
     FontAwesomeModule,
     Navbar,
     Footer,
+    AppTheme,
   ],
   providers: [
     provideClientHydration()
