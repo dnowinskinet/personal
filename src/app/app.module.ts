@@ -16,6 +16,7 @@ import { Intro } from './pages/home/expertise-area/intro';
 import { ExpertiseArea } from './pages/home/expertise-area/expertise-area';
 import { ScrollToTop } from '@shared/components/scroll-to-top/scroll-to-top';
 import { NgClass } from '@angular/common';
+import { ErrorComponent } from './pages/error/error.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { NgClass } from '@angular/common';
     ExpertiseArea,
     ScrollToTop,
     NgClass,
+    ErrorComponent,
   ],
   providers: [
     provideAnimations(),

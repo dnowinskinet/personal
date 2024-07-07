@@ -3,6 +3,7 @@ import { MetaService } from '../../core/services/meta.service';
 import profileData from '../../data/profile.data';
 import { ImageSkeletonDirective } from '../../core/directives/image-skeleton.directive';
 import { Loader } from '../../shared/components/loader/loader';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-home',
@@ -12,6 +13,7 @@ import { Loader } from '../../shared/components/loader/loader';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
+  faCoffee = faCoffee;
   metaService = inject(MetaService);
   constructor() {
     this.metaService.setMetaTags(

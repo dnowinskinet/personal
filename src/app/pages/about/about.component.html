@@ -350,9 +350,16 @@
         </div>
       </div>
     
-    
-                      <br> <br> <br>
-    <div class="flex flex-col gap-5">
-    <h1 class="text-2xl font-semibold dark:text-white">Contact Information:</h1>
-        </div>
+ 
+      <br> <br> <br>
+      <div class="flex flex-col gap-5">
+      <h1 class="text-2xl font-semibold dark:text-white">Contact Information:</h1>
+      
+        @for(c of contactInfo; track $index){
+          <p>
+            <b class="dark:text-white text-black ">{{c.title}}:</b><br />
+            <a [href]="c.link" class="hover:underline" target="_blank">{{c.desc}}</a>
+          </p>
+        }
+      </div>
     </section>

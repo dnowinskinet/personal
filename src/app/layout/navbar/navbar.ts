@@ -12,11 +12,15 @@ import { DarkModeService } from '../../core/services/dark-mode.service';
 import { DOCUMENT, NgClass } from '@angular/common';
 import navlinkData from '../../data/nav-link.data'
 import { ThemeService } from '../../core/services/theme.service';
+import { Logo } from '@shared/components/logo/logo';
+import { Icon } from '@shared/components/icon/icon';
+import { moon, sun } from '@icon/regular.icon';
+import { paintBucket } from '@icon/solid.icon';
 import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-color'
 
 @Component({
   selector: 'navbar',
-  imports: [RouterModule, NgClass, ToolbarColor],
+  imports: [RouterModule, Logo, NgClass, Icon, ToolbarColor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   standalone: true,
@@ -25,12 +29,12 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
   <div class="max-w-screen-lg flex flex-wrap items-center justify-between mx-auto p-4 border-y border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700">
     <img src="/assets/image/logo.png" alt="dnowinski logo" class="img-responsive" style="height:40px;"/>
     <div class="flex lg:order-2 lg:space-x-0">
-      <button (click)="darkModeService.toggleDarkMode()" type="button" aria-label="DarkMode"
+    <button (click)="darkModeService.toggleDarkMode()" type="button" aria-label="DarkMode"
         class="mx-1 inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-       
+        <icon [path]="icon()" [size]="20" iconClass="dark:fill-white fill-black"></icon>
       </button>
       <button (click)="themeColor.toggle()" aria-label="Github" class="mx-1 inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-         
+          <icon [path]="paintBucket" [size]="20" iconClass="dark:fill-white fill-black"></icon>
       </button>
       <button (click)="open = !open" type="button" aria-label="MenuToggle"
         class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-900 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -62,8 +66,10 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
 </nav>`
 })
 export class Navbar {
-  open = false;
+  open: boolean = false;
+  paintBucket = paintBucket;
   links = computed(() => navlinkData)
+  icon = computed(() => this.darkModeService.isDark() ? sun : moon)
   darkModeService = inject(DarkModeService);
   renderer = inject(Renderer2);
   document: Document = inject(DOCUMENT);
