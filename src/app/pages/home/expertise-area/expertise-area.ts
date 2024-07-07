@@ -9,7 +9,7 @@ import { ExpertiseAreaSchema } from './expertise-area.schema';
   imports: [ Icon, SpotlightDirective ],
   standalone: true,
   template: `
-    <section class="mt-16">
+    <section class="mt-16 relative" >
       <p class="mb-8 text-2xl text-gray-900 dark:text-white inline-block">Expertise Area</p>
       <div class="max-w-screen-xl grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start group" spot-light>
         @for (s of services(); track $index) {
@@ -29,6 +29,7 @@ import { ExpertiseAreaSchema } from './expertise-area.schema';
         </div>
       }
     </div>
+    </section>
 `
 })
 export class ExpertiseArea{
