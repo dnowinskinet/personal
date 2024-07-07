@@ -11,22 +11,6 @@ import { Loader } from '../../shared/components/loader/loader';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-@Component({
-  selector: 'home-page',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [ExpertiseArea, Intro, ImageSkeletonDirective, Loader],
-  template: `
-    @defer(on immediate){
-      <intro/>
-      <expertise-area/>
-    }@placeholder {
-      <loader/>
-    }
-  `
-})
-
 export class HomeComponent {
   metaService = inject(MetaService);
   constructor() {
