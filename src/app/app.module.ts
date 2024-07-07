@@ -17,12 +17,14 @@ import { ExpertiseArea } from './pages/home/expertise-area/expertise-area';
 import { ScrollToTop } from '@shared/components/scroll-to-top/scroll-to-top';
 import { NgClass } from '@angular/common';
 import { ErrorComponent } from './pages/error/error.component';
+import { ExperimentalComponent } from './pages/experimental/experimental.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AboutComponent,
     HomeComponent,
+    ExperimentalComponent,
   ],
   imports: [
     BrowserModule,

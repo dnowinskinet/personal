@@ -9,8 +9,8 @@ const navlinkData: NavLinkSchema[] = [
     path: '/about',
   },
   {
-    name: 'Projects',
-    path: '/project',
+    name: 'Experimental',
+    path: '/experimental',
   },
 ];
 

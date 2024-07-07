@@ -44,5 +44,27 @@ import { Loader } from '@shared/components/loader/loader';
 })
 export class Intro {
   profile = signal<ProfileSchema>(ProfileData);
-  fileIcon = file
+  fileIcon = file;
+  public changingText = signal<string>(this.profile().greetings[0]);
+  platformCheck = Inject(PlatformCheckService)
+  cd = inject(ChangeDetectorRef)
+  currentGreetingIndex = signal<number>(0);
+  greetingSub!: Subscription;
+
+  constructor(){
+    effect((onCleanup) => {
+        this.greetingSub = interval(2000).subscribe(() => {
+          this.updateText();
+        });
+      onCleanup(() => {
+        if (this.greetingSub) {
+          this.greetingSub.unsubscribe();
+        }
+      });
+    });
+  }
+  updateText(): void {
+    this.currentGreetingIndex.set((this.currentGreetingIndex() + 1) % this.profile().greetings.length);
+    this.changingText.set(this.profile().greetings[this.currentGreetingIndex()]);
+  }
 }
