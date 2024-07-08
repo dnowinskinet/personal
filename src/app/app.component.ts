@@ -7,6 +7,7 @@ import { ThemeService } from '@core/services/theme.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  title = "angular-dashboard-page";
   constructor(){
     effect(() => {
       this.elementRef.nativeElement.style.setProperty(`--primary-color`, this.theme.getColor())

@@ -1,11 +1,14 @@
 import { Component, ViewEncapsulation, signal } from '@angular/core';
-import { Icon} from '../../../shared/components/icon/icon';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import socialLinkData from '../../../data/social-link.data';
 import { SocialLinkSchema } from '../../../data/schema/social-links.schema'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { Icon2} from '@shared/components/icon/icon2';
+import { NgClass } from '@angular/common'
 @Component({
   selector: 'social-link',
   standalone: true,
-  imports: [Icon],
+  imports: [FontAwesomeModule, NgClass, Icon2], 
   encapsulation: ViewEncapsulation.None,
   template: `
     @for (s of socialLink(); track $index) {
@@ -15,10 +18,10 @@ import { SocialLinkSchema } from '../../../data/schema/social-links.schema'
       [attr.aria-label]="s.name"
       [attr.title]="s.name"
     >
-      <icon
-        [path]="s.path"
-        [size]="25"
-        iconClass="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]"
+      <fa-icon
+      [icon]="s.icon"
+      size="2x"
+      iconClass="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]"
       />
     </a>
     }
