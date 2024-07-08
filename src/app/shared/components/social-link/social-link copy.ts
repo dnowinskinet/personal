@@ -1,13 +1,14 @@
 import { Component, ViewEncapsulation, signal, input } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import socialLinkData from '../../../data/social-link.data';
 import { SocialLinkSchema } from '../../../data/schema/social-links.schema'
 import { NgClass } from '@angular/common'
-import { iSpan } from '../icon/icon2';
+import { Icon2 } from '../icon/icon2';
 
 @Component({
   selector: 'social-link',
   standalone: true,
-  imports: [NgClass, iSpan], 
+  imports: [FontAwesomeModule, NgClass, Icon2], 
   encapsulation: ViewEncapsulation.None,
   template: `
     @for (s of socialLink(); track $index) {
@@ -18,9 +19,13 @@ import { iSpan } from '../icon/icon2';
       [attr.title]="s.name"
       class="text-primary hover:text-primary dark:hover:text-primary-400 dark:text-gray-100 lg:p-0 dark:border-gray-700"
     >
-      <iSpan 
-        [title]="s.title"
-        class="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]"
+      <fa-icon
+      [icon]="s.icon"
+      size="2x"
+     style=""
+      class="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]"
+      
+      
       />
     </a>
     }
@@ -34,6 +39,7 @@ import { iSpan } from '../icon/icon2';
   ]
 })
 export class SocialLink {
+  iconClass = input<string>('');
   public socialLink = signal<SocialLinkSchema[]>(socialLinkData);
   constructor() {}
 }

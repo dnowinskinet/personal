@@ -2,7 +2,7 @@ import { IconDefinition } from "@fortawesome/angular-fontawesome";
 
 export interface SocialLinkSchema {
   name: string;
-  icon: IconDefinition;
+  title: string;
   link: string;
   color?: string;
 };

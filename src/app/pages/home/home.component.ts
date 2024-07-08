@@ -4,6 +4,8 @@ import profileData from '../../data/profile.data';
 import { ImageSkeletonDirective } from '../../core/directives/image-skeleton.directive';
 import { Loader } from '../../shared/components/loader/loader';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
+import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
 
 @Component({
   selector: 'app-home',
@@ -13,6 +15,10 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
+  faSteam =faSteam;
+  faEnvelope =faEnvelope;
+  faLinkedin =faLinkedin;
+  faInstagram=faInstagram;
   faCoffee = faCoffee;
   metaService = inject(MetaService);
   constructor() {
