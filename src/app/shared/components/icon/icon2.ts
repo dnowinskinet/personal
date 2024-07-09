@@ -11,7 +11,8 @@ import { IconDefinition } from "@fortawesome/angular-fontawesome";
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   template: `
-  <fa-icon [icon]="passthrough()">
+  <fa-icon [icon]="passthrough()" [ngClass]="{'fill-gray-900 dark:fill-gray-200 flex' : color() == ''}" class="{{iconClass()}}"  [attr.viewBox]="viewBox()"
+  [attr.fill]="color()">
 </fa-icon>
   `,
 })
@@ -24,7 +25,7 @@ export class iSpan {
   passthrough = input<any>();
   title2 = input<string | Signal<string>>();
   size = input<number>(30);
-  color = input<string>('');
+  color = input<string>();
   viewBox = input<string>('0 0 24 24');
   iconClass = input<string>('');
   name = input<string>('');

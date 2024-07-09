@@ -19,11 +19,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
       target="_blank"
       [attr.aria-label]="s.name"
       [attr.title]="s.name"
-      class="text-primary hover:text-primary dark:hover:text-primary-400 dark:text-gray-100 lg:p-0 dark:border-gray-700"
+     class="dark:md:hover:text-{{s.light}} dark:md:text-slate-200 md:text-black"
     >
       <iSpan 
         [passthrough]="s.icon"
-        class="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]" />
+        iconClass="dark:md:hover:text-{{s.light}} dark:md:text-slate-200 md:text-black" />
     
     </a>
     }
@@ -32,9 +32,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     `
       social-link {
         @apply flex flex-row gap-3;
-      }
-      .fa-Envelope:hover{
-        color: "{{ s.color }}";
       }
     `,
   ]

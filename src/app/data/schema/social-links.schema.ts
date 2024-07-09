@@ -6,4 +6,6 @@ export interface SocialLinkSchema {
   icon?: any;
   link: string;
   color?: string;
+  hover:any;
+  light:any;
 };
