@@ -3,11 +3,14 @@ import socialLinkData from '../../../data/social-link.data';
 import { SocialLinkSchema } from '../../../data/schema/social-links.schema'
 import { NgClass } from '@angular/common'
 import { iSpan } from '../icon/icon2';
+import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
+import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'social-link',
   standalone: true,
-  imports: [NgClass, iSpan], 
+  imports: [NgClass, iSpan, FontAwesomeModule], 
   encapsulation: ViewEncapsulation.None,
   template: `
     @for (s of socialLink(); track $index) {
@@ -19,9 +22,9 @@ import { iSpan } from '../icon/icon2';
       class="text-primary hover:text-primary dark:hover:text-primary-400 dark:text-gray-100 lg:p-0 dark:border-gray-700"
     >
       <iSpan 
-        [title]="s.title"
-        class="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]"
-      />
+        [passthrough]="s.icon"
+        class="hover:fill-[{{ s.color }}] dark:hover:fill-[{{ s.color }}]" />
+    
     </a>
     }
   `,
@@ -30,10 +33,17 @@ import { iSpan } from '../icon/icon2';
       social-link {
         @apply flex flex-row gap-3;
       }
+      .fa-Envelope:hover{
+        color: "{{ s.color }}";
+      }
     `,
   ]
 })
 export class SocialLink {
+    faSteam =faSteam;
+  faEnvelope =faEnvelope;
+  faLinkedin =faLinkedin;
+  faInstagram=faInstagram;
   public socialLink = signal<SocialLinkSchema[]>(socialLinkData);
   constructor() {}
 }

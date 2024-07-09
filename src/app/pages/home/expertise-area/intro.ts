@@ -37,9 +37,6 @@ import { Loader } from '@shared/components/loader/loader';
             <span>Resume</span>
             </btn>
             <social-link/>
-            <span class="hover:fill-[#c3c3c3] dark:hover:fill-[#c3c3c3] fill-gray-900 dark:fill-gray-200 flex">
-            <fa-icon [icon]="faEnvelope"></fa-icon>
-  </span>
           </div>
         </div>
       </div>

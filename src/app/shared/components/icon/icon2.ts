@@ -2,20 +2,26 @@ import { Component, Signal, ViewEncapsulation, input } from '@angular/core';
 import { NgClass } from '@angular/common'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
-import { faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
+import { faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons';
+import { IconDefinition } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: 'iSpan',
-  imports: [NgClass, FontAwesomeModule],
+  imports: [NgClass, FontAwesomeModule,],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   template: `
-  <fa-icon [icon]="title()" >
+  <fa-icon [icon]="passthrough()">
 </fa-icon>
   `,
 })
 export class iSpan {
-  title = input<string>('');
+  faSteam =faSteam;
+  faEnvelope =faEnvelope;
+  faLinkedin =faLinkedin;
+  faInstagram=faInstagram;
+  title = input<string>();
+  passthrough = input<any>();
   title2 = input<string | Signal<string>>();
   size = input<number>(30);
   color = input<string>('');

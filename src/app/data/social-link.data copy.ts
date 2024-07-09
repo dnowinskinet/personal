@@ -1,4 +1,3 @@
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { SocialLinkSchema } from "../data/schema/social-links.schema";
 import { faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
 
@@ -6,29 +5,25 @@ import { faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-ic
 const socialLinkData: SocialLinkSchema[] = [
   {
     name: 'Steam',
-    title: 'Steam',
-    icon: faSteam,
+    title: 'wpexplorer',
     link: 'https://steamcommunity.com/id/caltox/',
     color: '#c3c3c3',
   },
   {
     name: 'LinkedIn',
-    title: 'LinkedIn',
-    icon: faLinkedin,
+    title: 'faLinkedin',
     link: 'https://linkedin.com/in/dnowinski',
     color: '#1469C7',
   },
   {
     name: 'Message',
-    title: 'Message',
-    icon: faEnvelope,
+    title: 'faEnvelope',
     link: 'mailto:hello@dnowinski.com?subject=Hello From Your Website!',
     color: '#e74c3c',
   },
   {
     name: 'Instagram',
-    title: 'Instagram',
-    icon: faInstagram,
+    title: 'faInstagram',
     link: 'https://instagram.com/caltox88',
     color: '#E52765',
   },
