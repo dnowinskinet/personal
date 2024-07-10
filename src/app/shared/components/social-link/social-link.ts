@@ -19,13 +19,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
       target="_blank"
       [attr.aria-label]="s.name"
       [attr.title]="s.name"
-     class="dark:md:hover:text-{{s.light}} dark:md:text-slate-200 md:text-black"
+     class="dark:hover:text-{{ s.color }} md:hover:text-{{ s.color }} dark:md:text-gray-100"
     >
       <iSpan 
         [passthrough]="s.icon"
-        iconClass="dark:md:hover:text-{{s.light}} dark:md:text-slate-200 md:text-black" />
-    
-    </a>
+        iconClass="dark:md:hover:text-{{ s.color }} md:hover:text-{{ s.color }} md:text-{{ s.color }} dark:md:text-{{ s.color }}"/>
+        </a>
     }
   `,
   styles: [

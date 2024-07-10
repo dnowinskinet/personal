@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 const mainColor = "var(--primary-color)";
+const colors = require('tailwindcss/colors');
 
 const getTintedColor = (color: string, intensity: number, mixColor: string = 'white') => {
   return `color-mix(in srgb, ${color}, ${mixColor} ${intensity * 100}%)`
@@ -13,8 +14,7 @@ const generateTintedColors = (color: string, variants: Record<number, number>, m
 };
 
 export default {
-  content: ["./src/**/*.{html,ts}",
-    "./node_modules/flowbite/**/*.js"],
+  content: ["./src/**/*.{html,ts}",],
   darkMode: "class",
   theme: {
     extend: {
@@ -22,6 +22,8 @@ export default {
         'sans': ['"Inter"', ...defaultTheme.fontFamily.sans],
       },
       colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
         primary: {
           DEFAULT: mainColor,
           ...generateTintedColors(mainColor, {

@@ -17,5 +17,8 @@ export class ExperimentalComponent {
       ['bio', 'biography', 'information', 'about', 'contact', 'detail']
       )
   }
+  const  = new bootstrap.Collapse('#myCollapse', {
+    toggle: false
+  })
 
 }
