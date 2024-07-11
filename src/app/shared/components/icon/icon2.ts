@@ -11,7 +11,8 @@ import { IconDefinition } from "@fortawesome/angular-fontawesome";
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   template: `
-  <fa-icon [icon]="passthrough()" class="{{iconClass()}}" size="xl">
+  <fa-icon [icon]="passthrough()" [ngClass]="{'fill-gray-900 dark:fill-gray-200 flex' : color() == ''}" class="{{iconClass()}}"  [attr.viewBox]="viewBox()"
+  [attr.fill]="color()" size="xl">
 </fa-icon>
   `,
 })
