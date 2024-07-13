@@ -4,7 +4,6 @@ import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
 
 @Component({
-  selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss'
 })

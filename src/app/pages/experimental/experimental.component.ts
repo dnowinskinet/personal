@@ -1,13 +1,13 @@
 import { NgFor } from '@angular/common';
-import { Component, ViewEncapsulation, effect, inject, OnInit, Input, afterNextRender } from '@angular/core';
+import { Component, ViewEncapsulation, effect, inject,Injectable, OnInit, Input, afterNextRender } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
-import {FlowbiteService} from '../../core/services/flowbite.service';
 import profileData from '@data/profile.data';
+import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
-  selector: 'app-experimental',
   standalone: true,
-  imports: [],
+  imports: [NgbAccordionModule],
   templateUrl: './experimental.component.html',
   styleUrl: './experimental.component.scss',
 })
@@ -33,5 +33,6 @@ export class ExperimentalComponent {
       ]
     );
   };
+  
 }
 

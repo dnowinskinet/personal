@@ -3,6 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+	animation: true,
+	transitionTimerDelayMs: 5,
   production: false,
   mainColor: '#3867d6',
   url: 'https://dnowinski.com'

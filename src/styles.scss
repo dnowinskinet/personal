@@ -22,7 +22,6 @@ a{
 .medium-zoom-overlay{
   @apply dark:bg-gray-900/85 bg-white/85 z-[2] #{!important}
 }
-
 .medium-zoom-image{
   @apply z-10
 }
@@ -34,4 +33,6 @@ a{
   visibility: visible;
 }
 
-/*-- @import "bootstrap"; --*/
+/*-- 
+@import 'bootstrap/scss/bootstrap'; --*/
+/* Importing Bootstrap SCSS file. */

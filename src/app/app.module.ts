@@ -18,7 +18,8 @@ import { ScrollToTop } from '@shared/components/scroll-to-top/scroll-to-top';
 import { NgClass } from '@angular/common';
 import { ErrorComponent } from './pages/error/error.component';
 import { ExperimentalComponent } from './pages/experimental/experimental.component';
-import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
+import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons';
+import { NgbAccordionModule, NgbModule } from '@ng-bootstrap/ng-bootstrap'
 
 @NgModule({
   declarations: [
@@ -38,6 +39,8 @@ import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-ico
     ScrollToTop,
     NgClass,
     ErrorComponent,
+    NgbModule,
+    NgbAccordionModule,
   ],
   exports: [FontAwesomeModule],
   providers: [
