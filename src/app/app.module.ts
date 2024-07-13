@@ -10,7 +10,6 @@ import { Navbar } from './layout/navbar/navbar';
 import { AppComponent } from './app.component';
 import { routes } from './app-routing.module';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import {fas} from '@fortawesome/free-solid-svg-icons';
 import { AboutComponent } from './pages/about/about.component';
 import { HomeComponent } from './pages/home/home.component';
 import { Intro } from './pages/home/expertise-area/intro';
@@ -26,10 +25,10 @@ import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-ico
     AppComponent,
     AboutComponent,
     HomeComponent,
-    ExperimentalComponent,
   ],
   imports: [
     BrowserModule,
+    ExperimentalComponent,
     AppRoutingModule,
     FontAwesomeModule,
     Navbar,

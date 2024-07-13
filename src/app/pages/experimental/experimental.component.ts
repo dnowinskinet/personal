@@ -1,21 +1,37 @@
 import { NgFor } from '@angular/common';
-import { Component, ViewEncapsulation, effect, inject } from '@angular/core';
+import { Component, ViewEncapsulation, effect, inject, OnInit, Input, afterNextRender } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
+import {FlowbiteService} from '../../core/services/flowbite.service';
 import profileData from '@data/profile.data';
 
 @Component({
   selector: 'app-experimental',
+  standalone: true,
+  imports: [],
   templateUrl: './experimental.component.html',
-  styleUrl: './experimental.component.scss'
+  styleUrl: './experimental.component.scss',
 })
 export class ExperimentalComponent {
-  metaService = inject(MetaService)
-  constructor(){
+  metaService = inject(MetaService);
+  constructor() {
     this.metaService.setMetaTags(
-      `About - ${profileData.name}`,
-      'Dive into a curated space to learn more about the person behind the name',
-      ['bio', 'biography', 'information', 'about', 'contact', 'detail']
-      )
-  }
-
+      `Home - ${profileData.name}`,
+      'Welcome to my person website. Its a mess, for now.',
+      [
+        'daniel thomas nowinski',
+        'daniel thomas',
+        'danielthomasnowinski',
+        'data scientist',
+        'dc',
+        'bio',
+        'developer',
+        'portfolio',
+        'development',
+        'android',
+        'web',
+        'ios',
+      ]
+    );
+  };
 }
+

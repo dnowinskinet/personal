@@ -1,5 +1,6 @@
 import {  Component, ElementRef, OnInit, ViewEncapsulation, effect, inject } from '@angular/core';
 import { ThemeService } from '@core/services/theme.service';
+import { initFlowbite } from 'flowbite';
 
 @Component({
   selector: 'app-root',
