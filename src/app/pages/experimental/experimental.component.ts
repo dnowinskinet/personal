@@ -1,17 +1,17 @@
-import { NgFor } from '@angular/common';
-import { Component, ViewEncapsulation, effect, inject,Injectable, OnInit, Input, afterNextRender } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, inject,Injectable, OnInit, Input, afterNextRender } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
-import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgbAccordionModule, NgbAccordionDirective } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   standalone: true,
-  imports: [NgbAccordionModule],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [NgbAccordionModule, NgbAccordionDirective],
   templateUrl: './experimental.component.html',
   styleUrl: './experimental.component.scss',
 })
 export class ExperimentalComponent {
+	items = ['First', 'Second', 'Third'];
   metaService = inject(MetaService);
   constructor() {
     this.metaService.setMetaTags(
