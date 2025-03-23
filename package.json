@@ -56,6 +56,7 @@
     "lodash": "^4.17.21",
     "marked": "^13.0.2",
     "medium-zoom": "^1.1.0",
+    "openai": "^4.89.0",
     "postcss-scss": "^4.0.9",
     "react-icons": "^5.2.1",
     "rxjs": "~7.8.0",
