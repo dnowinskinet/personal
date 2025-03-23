@@ -4,11 +4,10 @@ import profileData from '@data/profile.data';
 import { NgbAccordionModule, NgbAccordionDirective } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  standalone: true,
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [NgbAccordionModule, NgbAccordionDirective],
-  templateUrl: './experimental.component.html',
-  styleUrl: './experimental.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgbAccordionModule, NgbAccordionDirective],
+    templateUrl: './experimental.component.html',
+    styleUrl: './experimental.component.scss'
 })
 export class ExperimentalComponent {
 	items = ['First', 'Second', 'Third'];

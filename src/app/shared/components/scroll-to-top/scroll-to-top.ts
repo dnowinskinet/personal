@@ -4,8 +4,8 @@ import { NgClass } from '@angular/common';
 import { Icon } from '../../components/icon/icon';
 import { chevronUp } from '../../../icon/regular.icon';
 @Component({
-  selector: 'scroll-to-top',
-  template: `
+    selector: 'scroll-to-top',
+    template: `
   <div class="scroll-to-top fixed bottom-4 right-4 opacity-0 transition-all delay-200 ease-in-out z-50"
   [ngClass]="{'show-scrollTop opacity-100 transition-all delay-200 ease-in-out': windowScrolled}">
     <button aria-label="Scroll To Top Button" type="button" class="bg-primary p-3 rounded-full" (click)="scrollToTop()">
@@ -18,10 +18,9 @@ import { chevronUp } from '../../../icon/regular.icon';
     </button>
   </div>
   `,
-  imports: [NgClass, Icon],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true
+    imports: [NgClass, Icon],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScrollToTop {
   windowScrolled = false;

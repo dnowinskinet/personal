@@ -4,11 +4,10 @@ import { SpotlightDirective } from './directive/spotlight.directive'
 import expertiseAreaData from './expertise-area.data'
 import { ExpertiseAreaSchema } from './expertise-area.schema';
 @Component({
-  selector: 'expertise-area',
-  encapsulation: ViewEncapsulation.None,
-  imports: [ Icon, SpotlightDirective ],
-  standalone: true,
-  template: `
+    selector: 'expertise-area',
+    encapsulation: ViewEncapsulation.None,
+    imports: [Icon, SpotlightDirective],
+    template: `
     <section class="mt-8 relative" >
       <p class="mb-8 text-2xl text-gray-900 dark:text-white inline-block">Expertise Area</p>
       <div class="max-w-screen-xl grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start group" spot-light>

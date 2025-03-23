@@ -14,8 +14,8 @@ import { iSpan } from '@shared/components/icon/icon2';
 import { file } from '@icon/solid.icon';
 import { Loader } from '@shared/components/loader/loader';
 @Component({
-  selector: 'intro',
-  template: `
+    selector: 'intro',
+    template: `
   @defer(on immediate){
     <section class="mt-8 relative">
       <div class="grid grid-cols-1">
@@ -45,10 +45,9 @@ import { Loader } from '@shared/components/loader/loader';
       <loader/>
     }
   `,
-  imports: [SocialLink, Button,ManSorrow, Icon, iSpan, Loader, FontAwesomeModule],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true
+    imports: [SocialLink, Button, ManSorrow, Icon, iSpan, Loader, FontAwesomeModule],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Intro {
   faEnvelope=faEnvelope;

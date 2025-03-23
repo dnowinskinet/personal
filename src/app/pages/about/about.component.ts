@@ -4,8 +4,9 @@ import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
 
 @Component({
-  templateUrl: './about.component.html',
-  styleUrl: './about.component.scss'
+    templateUrl: './about.component.html',
+    styleUrl: './about.component.scss',
+    standalone: false
 })
 export class AboutComponent { 
   metaService = inject(MetaService)

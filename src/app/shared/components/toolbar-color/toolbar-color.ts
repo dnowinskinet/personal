@@ -3,11 +3,10 @@ import { Component, ViewEncapsulation, inject } from '@angular/core';
 import { ThemeService } from '../../../core/services/theme.service';
 import themeColorData from '../../../data/theme-color.data'
 @Component({
-  selector: 'toolbar-color',
-  standalone: true,
-  imports: [NgClass, NgStyle],
-  encapsulation: ViewEncapsulation.None,
-  template: `
+    selector: 'toolbar-color',
+    imports: [NgClass, NgStyle],
+    encapsulation: ViewEncapsulation.None,
+    template: `
        <div [ngClass]="{'max-h-full visible': themeColor.openColor(), 'max-h-0 invisible': !themeColor.openColor()}">
         <ul class="flex flex-wrap items-center gap-5 p-4 mx-auto justify-center">
           @for(color of colors; track $index){

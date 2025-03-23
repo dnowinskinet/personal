@@ -8,11 +8,10 @@ import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-ico
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'social-link',
-  standalone: true,
-  imports: [NgClass, iSpan, FontAwesomeModule], 
-  encapsulation: ViewEncapsulation.None,
-  template: `
+    selector: 'social-link',
+    imports: [NgClass, iSpan, FontAwesomeModule],
+    encapsulation: ViewEncapsulation.None,
+    template: `
     @for (s of socialLink(); track $index) {
     <a
       [href]="s.link"
@@ -27,13 +26,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         </a>
     }
   `,
-  styles: [
-    `
+    styles: [
+        `
       social-link {
         @apply flex flex-row gap-3;
       }
     `,
-  ]
+    ]
 })
 export class SocialLink {
     faSteam =faSteam;

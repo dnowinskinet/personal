@@ -6,15 +6,14 @@ import { faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-ic
 import { IconDefinition } from "@fortawesome/angular-fontawesome";
 
 @Component({
-  selector: 'iSpan',
-  imports: [NgClass, FontAwesomeModule,],
-  encapsulation: ViewEncapsulation.None,
-  standalone: true,
-  template: `
+    selector: 'iSpan',
+    imports: [NgClass, FontAwesomeModule,],
+    encapsulation: ViewEncapsulation.None,
+    template: `
   <fa-icon [icon]="passthrough()" [ngClass]="{'fill-gray-900 dark:fill-gray-200 flex' : color() === ''}" class="{{iconClass()}}"  [attr.viewBox]="viewBox()"
   [attr.fill]="color()" size="xl">
 </fa-icon>
-  `,
+  `
 })
 export class iSpan {
   faSteam =faSteam;

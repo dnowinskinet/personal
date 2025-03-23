@@ -14,8 +14,8 @@ import { Logo } from '../../shared/components/logo/logo';
 import { SocialLink } from '../../shared/components/social-link/social-link';
 import { Subscription, interval } from 'rxjs';
 @Component({
-  selector: 'foot-note',
-  template: `<div
+    selector: 'foot-note',
+    template: `<div
     class="border-t border-neutral-200 dark:border-neutral-700 max-w-screen-lg mx-auto p-2"
   >
     <div
@@ -30,10 +30,9 @@ import { Subscription, interval } from 'rxjs';
       <social-link/>
     </div>
   </div> `,
-  imports: [SocialLink, Logo, Icon],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
+    imports: [SocialLink, Logo, Icon],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Footer {
   platformCheck = inject(PlatformCheckService)

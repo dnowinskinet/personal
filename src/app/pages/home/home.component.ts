@@ -8,11 +8,12 @@ import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
 import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
 
 @Component({
-  selector: 'app-home',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+    selector: 'app-home',
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss',
+    standalone: false
 })
 export class HomeComponent {
   faSteam =faSteam;
