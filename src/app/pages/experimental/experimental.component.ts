@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
-import { SenatorMatchingGameComponent } from './senator-matching-game/senator-matching-game.component';
+import { SenatorMatchingGameComponent } from '@pages/experimental/senator-matching-game/senator-matching-game';
 
 @Component({
   standalone: true,

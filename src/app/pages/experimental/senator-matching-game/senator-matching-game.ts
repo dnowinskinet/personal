@@ -19,7 +19,7 @@ interface Senator {
   template: `
     <div class="container mx-auto p-4">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold mb-2 dark:text-gray-200">Senator Matching Game</h2>
+        <h2 class="text-2xl font-bold mb-2 dark:text-gray-200">Senator Matching Game (made in 10 minutes with Claude 3.7)</h2>
         <p class="mb-4 dark:text-gray-300">Match the Senator's name to their face!</p>
         
         <div class="mb-4 flex flex-wrap gap-2">
@@ -67,8 +67,8 @@ interface Senator {
                 [ngClass]="{ 'pointer-events-none': senator.matched }"
                 (click)="selectPhoto(senator)">
                 <img 
-                  [src]="'/api/placeholder/200/200'" 
-                  [alt]="'Senator placeholder'"
+                  [src]="senator.imageUrl" 
+                  [alt]="'Senator ' + senator.name"
                   class="w-full h-full object-cover">
               </div>
             }
@@ -115,17 +115,17 @@ export class SenatorMatchingGameComponent implements OnInit {
   toastMessage: string = '';
   isCorrectMatch: boolean = false;
   
-  // Sample senator data - in a real app you'd fetch this from an API
+  // Sample senator data with local image paths
   senators: Senator[] = [
-    { id: 1, name: 'Chuck Schumer', imageUrl: 'schumer.jpg', state: 'NY', party: 'D', matched: false },
-    { id: 2, name: 'Mitch McConnell', imageUrl: 'mcconnell.jpg', state: 'KY', party: 'R', matched: false },
-    { id: 3, name: 'Bernie Sanders', imageUrl: 'sanders.jpg', state: 'VT', party: 'I', matched: false },
-    { id: 4, name: 'Elizabeth Warren', imageUrl: 'warren.jpg', state: 'MA', party: 'D', matched: false },
-    { id: 5, name: 'Ted Cruz', imageUrl: 'cruz.jpg', state: 'TX', party: 'R', matched: false },
-    { id: 6, name: 'Amy Klobuchar', imageUrl: 'klobuchar.jpg', state: 'MN', party: 'D', matched: false },
-    { id: 7, name: 'Marco Rubio', imageUrl: 'rubio.jpg', state: 'FL', party: 'R', matched: false },
-    { id: 8, name: 'Tammy Duckworth', imageUrl: 'duckworth.jpg', state: 'IL', party: 'D', matched: false },
-    { id: 9, name: 'Rand Paul', imageUrl: 'paul.jpg', state: 'KY', party: 'R', matched: false },
+    { id: 1, name: 'Chuck Schumer', imageUrl: 'assets/senators/schumer.jpg', state: 'NY', party: 'D', matched: false },
+    { id: 2, name: 'Mitch McConnell', imageUrl: 'assets/senators/mcconnell.jpg', state: 'KY', party: 'R', matched: false },
+    { id: 3, name: 'Bernie Sanders', imageUrl: 'assets/senators/sanders.jpg', state: 'VT', party: 'I', matched: false },
+    { id: 4, name: 'Elizabeth Warren', imageUrl: 'assets/senators/warren.jpg', state: 'MA', party: 'D', matched: false },
+    { id: 5, name: 'Ted Cruz', imageUrl: 'assets/senators/cruz.jpg', state: 'TX', party: 'R', matched: false },
+    { id: 6, name: 'Amy Klobuchar', imageUrl: 'assets/senators/klobuchar.jpg', state: 'MN', party: 'D', matched: false },
+    { id: 7, name: 'Marco Rubio', imageUrl: 'assets/senators/rubio.jpg', state: 'FL', party: 'R', matched: false },
+    { id: 8, name: 'Tammy Duckworth', imageUrl: 'assets/senators/duckworth.jpg', state: 'IL', party: 'D', matched: false },
+    { id: 9, name: 'Rand Paul', imageUrl: 'assets/senators/paul.jpg', state: 'KY', party: 'R', matched: false },
   ];
 
   ngOnInit() {
