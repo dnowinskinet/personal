@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,7 +19,7 @@ interface Senator {
   template: `
     <div class="container mx-auto p-4">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold mb-2 dark:text-gray-200">Senator Matching Game (made in 10 minutes with Claude 3.7)</h2>
+        <h2 class="text-2xl font-bold mb-2 dark:text-gray-200">Senator Matching Game</h2>
         <p class="mb-4 dark:text-gray-300">Match the Senator's name to their face!</p>
         
         <div class="mb-4 flex flex-wrap gap-2">
@@ -77,16 +77,17 @@ interface Senator {
       </div>
 
       <!-- Toast for feedback -->
-      <ngb-toast
-        *ngIf="showToast"
-        [autohide]="true"
-        [delay]="2000"
-        (hidden)="showToast = false"
-        [class]="'position-fixed top-0 end-0 m-3 ' + (isCorrectMatch ? 'bg-green-100 border-green-500' : 'bg-red-100 border-red-500')">
-        <div class="d-flex align-items-center">
-          <span class="me-auto">{{ toastMessage }}</span>
-        </div>
-      </ngb-toast>
+      @if (isBrowser && showToast) {
+        <ngb-toast
+          [autohide]="true"
+          [delay]="2000"
+          (hidden)="showToast = false"
+          [class]="'position-fixed top-0 end-0 m-3 ' + (isCorrectMatch ? 'bg-green-100 border-green-500' : 'bg-red-100 border-red-500')">
+          <div class="d-flex align-items-center">
+            <span class="me-auto">{{ toastMessage }}</span>
+          </div>
+        </ngb-toast>
+      }
     </div>
   `,
   styles: [`
@@ -114,6 +115,7 @@ export class SenatorMatchingGameComponent implements OnInit {
   showToast: boolean = false;
   toastMessage: string = '';
   isCorrectMatch: boolean = false;
+  isBrowser: boolean = false;
   
   // Sample senator data with local image paths
   senators: Senator[] = [
@@ -128,8 +130,30 @@ export class SenatorMatchingGameComponent implements OnInit {
     { id: 9, name: 'Rand Paul', imageUrl: 'assets/senators/paul.jpg', state: 'KY', party: 'R', matched: false },
   ];
 
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
   ngOnInit() {
-    this.startGame();
+    // Initial setup of game arrays without starting timer
+    this.shuffledNames = this.shuffle([...this.senators]);
+    this.shuffledPhotos = this.shuffle([...this.senators]);
+    
+    // Only start the timer if we're in the browser
+    if (this.isBrowser) {
+      this.startClientSideFeatures();
+    }
+  }
+
+  startClientSideFeatures() {
+    // Start the timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    
+    this.timerInterval = setInterval(() => {
+      this.timer++;
+    }, 1000);
   }
 
   startGame() {
@@ -146,30 +170,32 @@ export class SenatorMatchingGameComponent implements OnInit {
     this.shuffledNames = this.shuffle([...this.senators]);
     this.shuffledPhotos = this.shuffle([...this.senators]);
     
-    // Start timer
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
+    // Only start the timer if we're in browser context
+    if (this.isBrowser) {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+      }
+      
+      this.timerInterval = setInterval(() => {
+        this.timer++;
+      }, 1000);
     }
-    
-    this.timerInterval = setInterval(() => {
-      this.timer++;
-    }, 1000);
   }
 
   selectName(senator: Senator) {
-    if (senator.matched) return;
+    if (!this.isBrowser || senator.matched) return;
     this.selectedName = senator;
     this.checkMatch();
   }
 
   selectPhoto(senator: Senator) {
-    if (senator.matched) return;
+    if (!this.isBrowser || senator.matched) return;
     this.selectedPhoto = senator;
     this.checkMatch();
   }
 
   checkMatch() {
-    if (!this.selectedName || !this.selectedPhoto) return;
+    if (!this.isBrowser || !this.selectedName || !this.selectedPhoto) return;
     
     if (this.selectedName.id === this.selectedPhoto.id) {
       // Match found
@@ -220,5 +246,12 @@ export class SenatorMatchingGameComponent implements OnInit {
     }
 
     return array;
+  }
+
+  ngOnDestroy() {
+    // Clean up the timer when the component is destroyed
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 }
