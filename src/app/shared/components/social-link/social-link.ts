@@ -1,7 +1,6 @@
 import { Component, ViewEncapsulation, signal, input } from '@angular/core';
 import socialLinkData from '../../../data/social-link.data';
 import { SocialLinkSchema } from '../../../data/schema/social-links.schema'
-import { NgClass } from '@angular/common'
 import { iSpan } from '../icon/icon2';
 import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
 import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
@@ -9,7 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
     selector: 'social-link',
-    imports: [NgClass, iSpan, FontAwesomeModule],
+    imports: [iSpan, FontAwesomeModule],
     encapsulation: ViewEncapsulation.None,
     template: `
     @for (s of socialLink(); track $index) {
