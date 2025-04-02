@@ -1,37 +1,33 @@
-import { Component, ChangeDetectionStrategy, effect, inject,Injectable, OnInit, Input, afterNextRender } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
-import { NgbAccordionModule, NgbAccordionDirective } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import { SenatorMatchingGameComponent } from './senator-matching-game/senator-matching-game.component';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgbAccordionModule, NgbAccordionDirective],
-    templateUrl: './experimental.component.html',
-    styleUrl: './experimental.component.scss'
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgbAccordionModule, SenatorMatchingGameComponent],
+  templateUrl: './experimental.component.html',
+  styleUrl: './experimental.component.scss',
 })
 export class ExperimentalComponent {
-	items = ['First', 'Second', 'Third'];
   metaService = inject(MetaService);
+  
   constructor() {
     this.metaService.setMetaTags(
-      `Home - ${profileData.name}`,
-      'Welcome to my person website. Its a mess, for now.',
+      `Experimental - ${profileData.name}`,
+      'Test new features and games like the Senator Match Challenge.',
       [
         'daniel thomas nowinski',
-        'daniel thomas',
-        'danielthomasnowinski',
-        'data scientist',
-        'dc',
-        'bio',
-        'developer',
-        'portfolio',
-        'development',
-        'android',
-        'web',
-        'ios',
+        'experimental',
+        'games',
+        'senator matching',
+        'us senate',
+        'political games',
+        'educational games',
+        'angular games',
       ]
     );
-  };
-  
+  }
 }
-
