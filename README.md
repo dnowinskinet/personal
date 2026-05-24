@@ -1,6 +1,8 @@
 # Dnowinski
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.5.
+Personal site built with Angular.
+
+For project structure, dependency posture, deployment notes, and AI collaboration guidance, see [docs/architecture.md](docs/architecture.md). AI/code agents should start with [AGENTS.md](AGENTS.md).
 
 ## Development server
 
@@ -13,6 +15,10 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Verify
+
+Run `npm run verify` to lint and build the project.
 
 ## Running unit tests
 

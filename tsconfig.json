@@ -4,6 +4,7 @@
   "compileOnSave": false,
   "files": ["./server.ts"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

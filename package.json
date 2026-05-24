@@ -9,7 +9,12 @@
     "test": "ng test",
     "push": "ng build --base-href '/'",
     "serve:ssr:dnowinski": "node dist/dnowinski/server/server.mjs",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "verify": "npm run lint && npm run build",
+    "audit:prod": "npm audit --omit=dev",
+    "deps:outdated": "npm outdated --long",
+    "clean": "ng cache clean",
+    "icons:sync": "node scripts/sync-fontawesome-icons.mjs"
   },
   "private": true,
   "dependencies": {

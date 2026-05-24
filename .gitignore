@@ -37,6 +37,10 @@ yarn-error.log
 testem.log
 /typings
 
+# Local Font Awesome source download
+/vendor/fontawesome-source/*
+!/vendor/fontawesome-source/README.md
+
 # System files
 .DS_Store
 Thumbs.db
