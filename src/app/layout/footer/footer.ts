@@ -9,7 +9,6 @@ import {
 import { PlatformCheckService } from '../../core/services/platform-check.service';
 import profileData from '../../data/profile.data';
 import { ProfileSchema } from '../../data/schema/profile.schema';
-import { Icon } from '../../shared/components/icon/icon';
 import { Logo } from '../../shared/components/logo/logo';
 import { SocialLink } from '../../shared/components/social-link/social-link';
 import { Subscription, interval } from 'rxjs';
@@ -30,7 +29,7 @@ import { Subscription, interval } from 'rxjs';
       <social-link/>
     </div>
   </div> `,
-    imports: [SocialLink, Logo, Icon],
+    imports: [SocialLink, Logo],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,4 +1,4 @@
-import { NgFor } from '@angular/common';
+
 import { Component, ViewEncapsulation, effect, inject } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';

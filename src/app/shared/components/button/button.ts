@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   template: `<button
     class="flex gap-1 bg-primary rounded-lg px-5 py-2 text-white hover:bg-primary-800 dark:hover:bg-primary-400 items-center"
     (click)="redirect()"
-    [attr.aria-label]="ariaLabel"
+    [attr.aria-label]="ariaLabel()"
   >
     <ng-content/>
   </button> `

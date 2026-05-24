@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewEncapsulation, inject } from '@angular/core';
+
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewEncapsulation, inject, DOCUMENT } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Icon } from '../../components/icon/icon';
 import { chevronUp } from '../../../icon/regular.icon';

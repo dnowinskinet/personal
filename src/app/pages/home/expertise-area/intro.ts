@@ -1,16 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, OnInit, Component, Inject, ViewEncapsulation, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, ViewEncapsulation, inject, signal } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { PlatformCheckService } from '@core/services/platform-check.service';
 import { Button } from '@shared/components/button/button';
 import { ManSorrow } from './man-sorrow/man-sorrow';
 import { SocialLink } from '@shared/components/social-link/social-link';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEnvelope,  } from '@fortawesome/free-solid-svg-icons';
-import {faSteam, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons'
 import  ProfileData from '@data/profile.data'
 import { ProfileSchema } from '@data/schema/profile.schema';
 import { Icon } from '@shared/components/icon/icon';
-import { iSpan } from '@shared/components/icon/icon2';
 import { file } from '@icon/solid.icon';
 import { Loader } from '@shared/components/loader/loader';
 @Component({
@@ -45,16 +41,11 @@ import { Loader } from '@shared/components/loader/loader';
       <loader/>
     }
   `,
-    imports: [SocialLink, Button, ManSorrow, Icon, iSpan, Loader, FontAwesomeModule],
+    imports: [SocialLink, Button, ManSorrow, Icon, Loader],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Intro {
-  faEnvelope=faEnvelope;
-  faSteam=faSteam;
-  faLinkedin=faLinkedin;
-  faInstagram=faInstagram;
-
   profile = signal<ProfileSchema>(ProfileData);
   fileIcon = file;
   public changingText = signal<string>(this.profile().greetings[0]);

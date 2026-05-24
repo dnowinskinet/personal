@@ -5,14 +5,14 @@ import {
   ViewEncapsulation,
   effect,
   computed,
-  inject
+  inject,
+  DOCUMENT
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DarkModeService } from '../../core/services/dark-mode.service';
-import { DOCUMENT, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import navlinkData from '../../data/nav-link.data';
 import { ThemeService } from '../../core/services/theme.service';
-import { Logo } from '@shared/components/logo/logo';
 import { Icon } from '@shared/components/icon/icon';
 import { moon, sun } from '@icon/regular.icon';
 import { paintBucket } from '@icon/solid.icon';
@@ -20,7 +20,7 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
 
 @Component({
     selector: 'navbar',
-    imports: [RouterModule, Logo, NgClass, Icon, ToolbarColor],
+    imports: [RouterModule, NgClass, Icon, ToolbarColor],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     template: `<nav class="bg-gray-50/75 dark:bg-gray-900/75 fixed w-full z-[2] top-0 start-0 backdrop-blur-lg rounded">
