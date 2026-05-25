@@ -1,0 +1,37 @@
+[
+  {
+    "importName": "faInstagram",
+    "packageName": "@fortawesome/free-brands-svg-icons",
+    "style": "brands",
+    "icon": "instagram",
+    "path": "/assets/fontawesome/icons/brands/instagram.svg"
+  },
+  {
+    "importName": "faLinkedin",
+    "packageName": "@fortawesome/free-brands-svg-icons",
+    "style": "brands",
+    "icon": "linkedin",
+    "path": "/assets/fontawesome/icons/brands/linkedin.svg"
+  },
+  {
+    "importName": "faSteam",
+    "packageName": "@fortawesome/free-brands-svg-icons",
+    "style": "brands",
+    "icon": "steam",
+    "path": "/assets/fontawesome/icons/brands/steam.svg"
+  },
+  {
+    "importName": "faCoffee",
+    "packageName": "@fortawesome/free-solid-svg-icons",
+    "style": "solid",
+    "icon": "coffee",
+    "path": "/assets/fontawesome/icons/solid/coffee.svg"
+  },
+  {
+    "importName": "faEnvelope",
+    "packageName": "@fortawesome/free-solid-svg-icons",
+    "style": "solid",
+    "icon": "envelope",
+    "path": "/assets/fontawesome/icons/solid/envelope.svg"
+  }
+]
