@@ -1,0 +1,456 @@
+<section class="ai-settlement-game mx-auto max-w-6xl rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-zinc-950 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 sm:p-4">
+  <header class="mb-4 flex flex-col gap-3">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700 dark:text-cyan-300">Working title TBD</p>
+        <h2 class="text-2xl font-bold">Untitled AI Settlement Game</h2>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 text-sm">
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Time {{ formatTime(state.time) }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Pop {{ state.population }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Hall Lv {{ state.cityLevel }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Cycle {{ economyCycleSeconds }}s</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">{{ difficultyMeta[state.difficulty].shortLabel }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">{{ mapModeMeta[state.mapMode].shortLabel }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">DCs {{ visibleDataCenterCount }}/{{ dataCenterCount }}</span>
+      </div>
+    </div>
+
+    <div class="grid gap-2 sm:grid-cols-2">
+      <div>
+        <div class="mb-1 flex items-center justify-between text-sm font-semibold">
+          <span>Votes</span>
+          <span>{{ state.votes | number:'1.0-0' }} / {{ maxVotes }}</span>
+        </div>
+        <div class="h-3 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div class="h-full rounded-full bg-cyan-600 transition-all" [style.width.%]="state.votes / maxVotes * 100"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="mb-1 flex items-center justify-between text-sm font-semibold">
+          <span>Happiness</span>
+          <span>{{ state.happiness | number:'1.0-0' }} / 100</span>
+        </div>
+        <div class="h-3 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div class="h-full rounded-full bg-lime-600 transition-all" [style.width.%]="state.happiness"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
+      @for (resource of resources; track resource) {
+        <div class="rounded border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
+          <div class="mb-1 flex items-center justify-between text-xs font-semibold">
+            <span>{{ resourceLabels[resource] }}</span>
+            <span>{{ resourceValue(resource) }}</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+            <div
+              [class]="'h-full rounded-full transition-all ' + resourceToneClass(resource)"
+              [style.width.%]="resourceValue(resource) / resourceCapacityValue(resource) * 100">
+            </div>
+          </div>
+          <div class="mt-1 flex justify-between text-[0.65rem] text-zinc-500 dark:text-zinc-400">
+            <span>+{{ productionValue(resource) | number:'1.0-0' }}/cycle</span>
+            <span>-{{ demandValue(resource) | number:'1.0-0' }}/cycle</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="grid gap-2 sm:grid-cols-2">
+      <div class="flex flex-wrap items-center gap-2 rounded border border-zinc-200 bg-white p-2 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <span class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Difficulty</span>
+        @for (difficulty of difficulties; track difficulty) {
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="state.difficulty === difficulty ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setDifficulty(difficulty)">
+            {{ difficultyMeta[difficulty].label }}
+          </button>
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 rounded border border-zinc-200 bg-white p-2 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <span class="text-xs font-semibold uppercase tracking-wide text-zinc-500">Map</span>
+        @for (mapMode of mapModes; track mapMode) {
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="state.mapMode === mapMode ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setMapMode(mapMode)">
+            {{ mapModeMeta[mapMode].label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+        [ngClass]="!state.paused && state.speed === 1 ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+        (click)="setSpeed(1)">
+        Play
+      </button>
+      <button
+        type="button"
+        class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+        [ngClass]="state.paused ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+        (click)="setPaused(true)">
+        Pause
+      </button>
+      <button
+        type="button"
+        class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+        [ngClass]="!state.paused && state.speed === 2 ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+        (click)="setSpeed(2)">
+        2x
+      </button>
+      <button
+        type="button"
+        class="ml-auto rounded border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-700 dark:border-red-800 dark:bg-zinc-900 dark:text-red-300"
+        (click)="resetGame()">
+        Reset
+      </button>
+    </div>
+  </header>
+
+  @if (state.status !== 'playing') {
+    <div
+      class="mb-4 rounded border p-3 text-sm"
+      [ngClass]="state.status === 'won' ? 'border-lime-400 bg-lime-50 text-lime-900 dark:bg-lime-950 dark:text-lime-100' : 'border-red-400 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100'">
+      <div class="font-semibold">{{ state.statusReason }}</div>
+      @if (state.score; as score) {
+        <div class="mt-3 grid gap-2 sm:grid-cols-[10rem_minmax(0,1fr)]">
+          <div class="rounded border border-current/20 p-2">
+            <span class="block text-xs uppercase tracking-wide opacity-70">Score</span>
+            <span class="block text-2xl font-black">{{ score.total }}</span>
+            <span class="block text-xs font-semibold">Rating {{ score.rating }}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            @for (line of score.breakdown; track line.label) {
+              <div class="rounded border border-current/20 p-2">
+                <span class="block text-xs uppercase tracking-wide opacity-70">{{ line.label }}</span>
+                <span class="font-bold">{{ scoreValueLabel(line.value) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+    <main class="flex flex-col gap-4">
+      <div class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <h3 class="text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">City Grid</h3>
+          <span class="text-xs text-zinc-500 dark:text-zinc-400">Bots {{ state.bots.length }} | Lawyers {{ state.lawyers.length }}</span>
+        </div>
+
+        <div class="mx-auto grid max-w-[32rem] grid-cols-5 gap-1">
+          @for (cell of state.cells; track cell.id) {
+            <button
+              type="button"
+              [class]="cellButtonClass(cell)"
+              [attr.aria-label]="terrainLabel(cell) + ' tile at ' + (cell.x + 1) + ',' + (cell.y + 1)"
+              (click)="selectCell(cell.id)">
+              <span class="block text-[0.7rem] font-black leading-none sm:text-xs">{{ cellPrimaryLabel(cell) }}</span>
+              <span class="block text-[0.55rem] font-bold leading-none opacity-75 sm:text-[0.65rem]">{{ cellSecondaryLabel(cell) }}</span>
+
+              @if (visibleBotsForCell(cell) > 0) {
+                <span
+                  class="absolute right-1 top-1 rounded px-1 text-[0.6rem] font-black text-white"
+                  [ngClass]="attackingBotsForCell(cell) > 0 ? 'bg-red-600' : 'bg-amber-600'">
+                  B{{ visibleBotsForCell(cell) }}
+                </span>
+              }
+
+              @if (lawyersForCell(cell) > 0) {
+                <span class="absolute bottom-1 left-1 rounded bg-cyan-700 px-1 text-[0.6rem] font-black text-white">L{{ lawyersForCell(cell) }}</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div class="mb-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="activePlanningTab === 'expansion' ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setPlanningTab('expansion')">
+            Expansion
+          </button>
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="activePlanningTab === 'resources' ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setPlanningTab('resources')">
+            Resources
+          </button>
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="activePlanningTab === 'services' ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setPlanningTab('services')">
+            City Services
+          </button>
+          <button
+            type="button"
+            class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
+            [ngClass]="activePlanningTab === 'lawyers' ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+            (click)="setPlanningTab('lawyers')">
+            Lawyers
+          </button>
+        </div>
+
+        @if (activePlanningTab === 'expansion') {
+          <div class="grid gap-2 sm:grid-cols-3">
+            <div class="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800">
+              <span class="block text-xs uppercase tracking-wide text-zinc-500">Scouted</span>
+              <span class="font-bold">{{ scoutedCount }} / {{ state.cells.length }}</span>
+            </div>
+            <div class="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800">
+              <span class="block text-xs uppercase tracking-wide text-zinc-500">Controlled</span>
+              <span class="font-bold">{{ controlledCount }}</span>
+            </div>
+            <div class="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800">
+              <span class="block text-xs uppercase tracking-wide text-zinc-500">Ruins</span>
+              <span class="font-bold">{{ ruinsCount }}</span>
+            </div>
+          </div>
+        }
+
+        @if (activePlanningTab === 'resources') {
+          <div class="grid gap-3">
+            <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              @for (terrain of terrainTypes; track terrain) {
+                <button
+                  type="button"
+                  class="rounded border border-zinc-300 p-2 text-left text-sm dark:border-zinc-700"
+                  [ngClass]="selectedTerrain === terrain ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+                  (click)="setSelectedTerrain(terrain)">
+                  <span class="block font-bold">{{ terrainMeta[terrain].label }}</span>
+                  <span class="block text-xs opacity-75">{{ resourceLabels[terrainResourceMap[terrain]] }}</span>
+                </button>
+              }
+            </div>
+
+            <div class="rounded border border-zinc-200 p-3 text-sm dark:border-zinc-800">
+              <div class="mb-3 flex items-center justify-between gap-2">
+                <h3 class="font-bold">{{ terrainMeta[selectedTerrain].label }}</h3>
+                <span class="text-xs uppercase tracking-wide text-zinc-500">{{ resourceLabels[selectedTerrainResource()] }}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Owned</span>
+                  <span class="font-bold">{{ selectedTerrainOwnedCount() }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Build Lv</span>
+                  <span class="font-bold">{{ state.upgrades[selectedTerrainResource()] }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Use</span>
+                  <span class="font-bold">{{ selectedTerrainDemand() | number:'1.0-0' }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Stored</span>
+                  <span class="font-bold">{{ resourceValue(selectedTerrainResource()) }} / {{ selectedTerrainCapacity() }}</span>
+                </div>
+              </div>
+
+              <div class="mt-3 grid gap-2 sm:grid-cols-3">
+                <button type="button" class="rounded border border-zinc-300 p-2 text-left font-semibold dark:border-zinc-700" (click)="upgrade(selectedTerrainResource())">
+                  Build more
+                  <span class="block text-xs font-normal opacity-75">+{{ selectedTerrainProduction() | number:'1.0-0' }}/cycle now</span>
+                </button>
+                <button type="button" class="rounded border border-zinc-300 p-2 text-left font-semibold dark:border-zinc-700" (click)="store(selectedTerrainResource())">
+                  Store more
+                  <span class="block text-xs font-normal opacity-75">Storage Lv {{ state.storage[selectedTerrainResource()] }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="rounded border border-zinc-300 p-2 text-left font-semibold dark:border-zinc-700"
+                  [disabled]="!canShipSelectedTerrain()"
+                  [ngClass]="canShipSelectedTerrain() ? '' : 'cursor-not-allowed opacity-40'"
+                  (click)="ship(selectedTerrainResource())">
+                  Ship more
+                  <span class="block text-xs font-normal opacity-75">Route Lv {{ state.shipping[selectedTerrainResource()] }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activePlanningTab === 'services') {
+          <div class="grid gap-3">
+            <div class="rounded border border-zinc-300 p-3 text-sm dark:border-zinc-700">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <span class="font-bold">City Hall</span>
+                <span>Lv {{ state.cityLevel }}</span>
+              </div>
+
+              @if (nextCityHallLevel(); as nextLevel) {
+                <div class="mb-3 grid gap-2 sm:grid-cols-2">
+                  <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                    <span class="block text-xs uppercase tracking-wide text-zinc-500">Next</span>
+                    <span class="font-semibold">Lv {{ nextLevel }} | Pop {{ state.population }}/{{ cityHallPopulationRequirement() }}</span>
+                  </div>
+                  <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                    <span class="block text-xs uppercase tracking-wide text-zinc-500">Cost</span>
+                    <span class="font-semibold">{{ cityHallUpgradeCostLabel() }}</span>
+                  </div>
+                </div>
+                <button type="button" class="rounded border border-cyan-300 p-2 text-left font-semibold text-cyan-800 dark:border-cyan-800 dark:text-cyan-200" (click)="upgradeHall()">
+                  Upgrade City Hall
+                </button>
+              } @else {
+                <span class="text-sm font-semibold">Maximum level</span>
+              }
+            </div>
+
+            <div class="grid gap-2 sm:grid-cols-2">
+              @for (service of services; track service) {
+                <button type="button" class="rounded border border-zinc-300 p-3 text-left text-sm dark:border-zinc-700" (click)="build(service)">
+                  <span class="block font-bold">{{ serviceMeta[service].label }}</span>
+                  <span class="block text-xs opacity-75">Lv {{ state.services[service] }} | Need {{ serviceRequired(service) }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (activePlanningTab === 'lawyers') {
+          <div class="grid gap-3">
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                <span class="block text-xs uppercase tracking-wide text-zinc-500">Squads</span>
+                <span class="font-bold">{{ state.lawyers.length }} / {{ maxLawyerSquads() }}</span>
+              </div>
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                <span class="block text-xs uppercase tracking-wide text-zinc-500">Available Strength</span>
+                <span class="font-bold">{{ availableLegalStrength() }}</span>
+              </div>
+            </div>
+
+            <div class="grid gap-2">
+              @for (lawyer of state.lawyers; track lawyer.id) {
+                <div class="rounded border border-zinc-200 p-2 text-sm dark:border-zinc-800">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-bold">{{ lawyer.name }}</span>
+                    <span>{{ lawyerRanks[lawyer.rank].label }}</span>
+                  </div>
+                  <div class="mt-1 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                    <div class="h-full rounded-full bg-amber-500" [style.width.%]="lawyer.burnout"></div>
+                  </div>
+                  <div class="mt-1 flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                    <span>{{ assignmentLabel(lawyer.assignment) }}</span>
+                    <span>Burnout {{ lawyer.burnout | number:'1.0-0' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="hire()">Hire</button>
+              <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="promote()">Promote</button>
+              <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="dispatch('interceptNearestBot')">Intercept</button>
+              <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="dispatch('defendTownHall')">Defend Hall</button>
+              <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="dispatch('defendVulnerableTile')">Defend Tile</button>
+              <button type="button" class="rounded border border-red-300 p-2 text-left text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300" (click)="dispatch('raidNearestDataCenter')">
+                Raid DC
+              </button>
+              <span class="rounded border border-zinc-200 p-2 text-sm dark:border-zinc-800">Eligible {{ raidEligibleCount }}</span>
+            </div>
+          </div>
+        }
+      </section>
+    </main>
+
+    <aside class="flex flex-col gap-4">
+      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Tile</h3>
+        @if (selectedCell; as cell) {
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold">{{ cell.x + 1 }},{{ cell.y + 1 }}</span>
+              <span>{{ ownerLabel(cell) }}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                <span class="block text-xs uppercase tracking-wide text-zinc-500">Terrain</span>
+                <span class="font-semibold">{{ terrainLabel(cell) }}</span>
+              </div>
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                <span class="block text-xs uppercase tracking-wide text-zinc-500">Built</span>
+                <span class="font-semibold">{{ buildingLabel(cell) }}</span>
+              </div>
+            </div>
+            <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+              <span class="block text-xs uppercase tracking-wide text-zinc-500">Production</span>
+              @if (cellProduction(cell).length > 0) {
+                <div class="mt-1 flex flex-wrap gap-2">
+                  @for (entry of cellProduction(cell); track entry.key) {
+                    <span class="rounded bg-zinc-100 px-2 py-1 text-xs dark:bg-zinc-800">
+                      {{ resourceLabels[entry.key] }} +{{ entry.value | number:'1.0-0' }}
+                    </span>
+                  }
+                </div>
+              } @else {
+                <span class="font-semibold">None</span>
+              }
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">Bots {{ visibleBotsForCell(cell) }}</div>
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">Lawyers {{ lawyersForCell(cell) }}</div>
+            </div>
+            @if (raidStatusForCell(cell); as raidStatus) {
+              <div class="rounded border border-red-200 p-2 text-sm font-semibold text-red-800 dark:border-red-900 dark:text-red-200">
+                {{ raidStatus }}
+              </div>
+            }
+            <div class="grid gap-2">
+              @if (canScout(cell)) {
+                <button type="button" class="rounded border border-cyan-300 p-2 text-left font-semibold text-cyan-800 dark:border-cyan-800 dark:text-cyan-200" (click)="scoutSelectedCell(cell)">
+                  Scout
+                </button>
+              }
+
+              @if (canClaim(cell)) {
+                <button type="button" class="rounded border border-lime-300 p-2 text-left font-semibold text-lime-800 dark:border-lime-800 dark:text-lime-200" (click)="claimSelectedCell(cell)">
+                  Claim
+                </button>
+              }
+
+              @if (canRepair(cell)) {
+                <button type="button" class="rounded border border-amber-300 p-2 text-left font-semibold text-amber-800 dark:border-amber-800 dark:text-amber-200" (click)="repairSelectedCell(cell)">
+                  Repair
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Log</h3>
+        <ol class="space-y-2 text-sm">
+          @for (entry of state.log; track entry.id) {
+            <li class="border-l-4 pl-2" [ngClass]="logToneClass(entry.tone)">
+              <span class="font-mono text-xs opacity-70">{{ formatTime(entry.time) }}</span>
+              {{ entry.message }}
+            </li>
+          }
+        </ol>
+      </section>
+    </aside>
+  </div>
+</section>

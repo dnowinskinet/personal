@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.ai-settlement-game {
+  container-type: inline-size;
+}
+
+.ai-settlement-cell {
+  min-height: 4rem;
+  touch-action: manipulation;
+}
+
+@container (min-width: 36rem) {
+  .ai-settlement-cell {
+    min-height: 5rem;
+  }
+}
