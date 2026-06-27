@@ -43,8 +43,8 @@ export const DIFFICULTY_META: Record<GameDifficulty, DifficultyMeta> = {
     startingVotes: 75,
     startingHappiness: 76,
     botGraceTicks: 90,
-    botSpawnTicks: 55,
-    botActivationTicks: 55,
+    botSpawnTicks: 70,
+    botBuildTicks: 24,
     botStrengthBonus: 0,
     maxBotStrength: 5,
   },
@@ -55,8 +55,8 @@ export const DIFFICULTY_META: Record<GameDifficulty, DifficultyMeta> = {
     startingVotes: 70,
     startingHappiness: 72,
     botGraceTicks: 55,
-    botSpawnTicks: 38,
-    botActivationTicks: 34,
+    botSpawnTicks: 52,
+    botBuildTicks: 18,
     botStrengthBonus: 1,
     maxBotStrength: 8,
   },
@@ -77,28 +77,28 @@ export const MAP_MODE_META: Record<MapMode, MapModeMeta> = {
 
 export const TERRAIN_META: Record<TerrainType, TerrainMeta> = {
   homes: {
-    label: 'Homes',
-    shortLabel: 'HM',
+    label: 'Lots',
+    shortLabel: 'Lots',
     className: 'bg-sky-100 text-sky-950 border-sky-300 dark:bg-sky-950 dark:text-sky-100',
   },
   farms: {
-    label: 'Farms',
-    shortLabel: 'FM',
+    label: 'Fields',
+    shortLabel: 'Field',
     className: 'bg-lime-100 text-lime-950 border-lime-300 dark:bg-lime-950 dark:text-lime-100',
   },
   water: {
-    label: 'Water',
-    shortLabel: 'WT',
+    label: 'Water Source',
+    shortLabel: 'Water',
     className: 'bg-cyan-100 text-cyan-950 border-cyan-300 dark:bg-cyan-950 dark:text-cyan-100',
   },
   power: {
-    label: 'Power',
-    shortLabel: 'PW',
+    label: 'Grid Access',
+    shortLabel: 'Grid',
     className: 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950 dark:text-amber-100',
   },
   industry: {
-    label: 'Industry',
-    shortLabel: 'IN',
+    label: 'Works Yard',
+    shortLabel: 'Yard',
     className: 'bg-stone-200 text-stone-950 border-stone-400 dark:bg-stone-800 dark:text-stone-100',
   },
 };
@@ -106,35 +106,35 @@ export const TERRAIN_META: Record<TerrainType, TerrainMeta> = {
 export const BUILDING_META: Record<BuildingType, BuildingMeta> = {
   townHall: {
     label: 'Town Hall',
-    shortLabel: 'TH',
+    shortLabel: 'Hall',
   },
   housing: {
-    label: 'Housing Block',
-    shortLabel: 'HB',
+    label: 'Housing',
+    shortLabel: 'Homes',
   },
   farm: {
-    label: 'Food Lease',
-    shortLabel: 'FL',
+    label: 'Food Plot',
+    shortLabel: 'Food',
   },
   waterWorks: {
     label: 'Water Works',
-    shortLabel: 'WW',
+    shortLabel: 'Water',
   },
   substation: {
-    label: 'Substation',
-    shortLabel: 'SS',
+    label: 'Power Plant',
+    shortLabel: 'Power',
   },
   workshop: {
     label: 'Workshop',
-    shortLabel: 'WS',
+    shortLabel: 'Shop',
   },
   dataCenter: {
     label: 'Data Center',
-    shortLabel: 'DC',
+    shortLabel: 'Data',
   },
   ruins: {
     label: 'Ruined Site',
-    shortLabel: 'XX',
+    shortLabel: 'Ruins',
   },
 };
 
@@ -229,7 +229,7 @@ export const DEFAULT_RESOURCES: ResourceStock = {
   water: 34,
   power: 28,
   materials: 22,
-  budget: 72,
+  budget: 52,
 };
 
 export const DEFAULT_SERVICES: CityServices = {
@@ -273,7 +273,7 @@ export const RESOURCE_TERRAIN_REQUIREMENT: Record<ResourceKey, TerrainType> = {
 };
 
 export const BASE_PRODUCTION_BY_TERRAIN: Record<TerrainType, Partial<ResourceStock>> = {
-  homes: { budget: 4 },
+  homes: { budget: 2 },
   farms: { food: 5 },
   water: { water: 5 },
   power: { power: 4 },
@@ -289,14 +289,26 @@ export const TUNING: Tuning = {
   DATA_CENTER_COUNT: 2,
   VOTE_DRAIN_THRESHOLD: 45,
   VOTE_DRAIN_PER_TICK: 1,
+  VOTE_GRACE_ECONOMY_CYCLES: 2,
   BOT_DAMAGE_VOTE_LOSS: 2,
   SEVERE_SHORTAGE_VOTE_LOSS: 1,
+  SHORTAGE_STRESS_GAIN: 8,
+  SHORTAGE_STRESS_RECOVERY: 7,
+  SERVICE_STRESS_GAIN: 6,
+  SERVICE_STRESS_RECOVERY: 4,
+  HAPPINESS_RESPONSE: 0.12,
   BOT_GRACE_TICKS: 90,
-  BOT_SPAWN_TICKS: 55,
-  BOT_ACTIVATION_TICKS: 55,
-  BOT_MOVE_TICKS: 6,
+  BOT_SPAWN_TICKS: 70,
+  BOT_BUILD_TICKS: 24,
+  BOT_MOVE_TICKS: 4,
+  BOT_DEMOLITION_TICKS: 8,
   LAWYER_MOVE_TICKS: 2,
+  SCOUT_TICKS: 10,
   POPULATION_GROWTH_TICKS: 45,
+  POPULATION_DEMAND_INTERVAL: 8,
+  POPULATION_BUDGET_INTERVAL: 6,
+  INVITE_RESIDENTS_AMOUNT: 2,
+  INVITE_RESIDENTS_COST: { food: 2, water: 2, budget: 8 },
   BURNOUT_MAX: 100,
   BURNOUT_RECOVERY_PER_TICK: 2,
   BURNOUT_RECOVERY_THRESHOLD: 72,
@@ -311,6 +323,13 @@ export const TUNING: Tuning = {
   REPAIR_COST: { materials: 5, budget: 4 },
   HIRE_LAWYER_COST: { materials: 4, budget: 14 },
   PROMOTE_LAWYER_COST: { materials: 6, budget: 18 },
+  BUILD_IMPROVEMENT_COSTS: {
+    food: { materials: 3, budget: 6 },
+    water: { materials: 3, budget: 6 },
+    power: { materials: 4, budget: 7 },
+    materials: { budget: 8 },
+    budget: { materials: 2, budget: 5 },
+  },
   CITY_HALL_UPGRADE_COSTS: {
     2: { materials: 10, budget: 28 },
     3: { materials: 18, power: 8, budget: 45 },
@@ -324,25 +343,33 @@ export const TUNING: Tuning = {
   SHIP_AMOUNT_PER_LEVEL: 10,
 };
 
+export const POPULATION_DEMAND_BY_LEVEL: Record<number, Partial<ResourceStock>> = {
+  1: { food: 1, water: 1 },
+  2: { food: 1, water: 1, power: 1 },
+  3: { food: 2, water: 1, power: 1 },
+  4: { food: 2, water: 2, power: 1, materials: 1 },
+  5: { food: 3, water: 2, power: 2, materials: 1 },
+};
+
 export const DEMAND_BY_LEVEL: Record<number, DemandProfile> = {
   1: {
-    resources: { food: 2, water: 1 },
+    resources: { food: 1 },
     services: { housing: 1 },
   },
   2: {
-    resources: { food: 3, water: 2, power: 1, budget: 1 },
+    resources: { food: 1, water: 1 },
     services: { housing: 1, clinics: 1 },
   },
   3: {
-    resources: { food: 4, water: 3, power: 2, budget: 2 },
+    resources: { food: 1, water: 1, power: 1 },
     services: { housing: 2, clinics: 1, schools: 1 },
   },
   4: {
-    resources: { food: 5, water: 4, power: 3, materials: 1, budget: 3 },
+    resources: { food: 2, water: 1, power: 1 },
     services: { housing: 2, clinics: 2, schools: 1, transit: 1 },
   },
   5: {
-    resources: { food: 6, water: 5, power: 4, materials: 2, budget: 4 },
+    resources: { food: 2, water: 2, power: 2, materials: 1 },
     services: { housing: 3, clinics: 2, schools: 2, transit: 1, recreation: 1 },
   },
 };

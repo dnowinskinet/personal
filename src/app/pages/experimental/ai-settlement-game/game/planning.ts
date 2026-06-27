@@ -5,11 +5,13 @@ import {
   RESOURCE_LABELS,
   RESOURCE_TERRAIN_REQUIREMENT,
   SERVICE_META,
+  TERRAIN_META,
   TUNING,
 } from './constants';
-import { cellId, defaultBuildingForTerrain } from './initial-map';
+import { defaultBuildingForTerrain } from './initial-map';
 import {
   addLog,
+  builtTerrainCount,
   canAfford,
   cloneGameState,
   controlledTerrainCount,
@@ -19,6 +21,7 @@ import {
   getCellAt,
   getRaidEligibleDataCenters,
   getRaidReadiness,
+  getRequiredServiceLevel,
   getTownHallCell,
   getUpgradeCap,
   isLawyerAvailable,
@@ -35,6 +38,7 @@ import {
   ResourceStock,
   ScoutPriority,
   ServiceKey,
+  TerrainType,
 } from './types';
 
 function scaleCost(cost: Partial<ResourceStock>, multiplier: number): Partial<ResourceStock> {
@@ -68,7 +72,7 @@ function townHallDistance(state: GameState, cell: MapCell): number {
 
 function frontierHiddenCells(state: GameState): MapCell[] {
   return state.cells
-    .filter((cell) => cell.visibility === 'hidden')
+    .filter((cell) => cell.visibility === 'hidden' && cell.scoutingTicksRemaining === 0)
     .filter((cell) => getAdjacentCells(state, cell).some((adjacent) => adjacent.visibility === 'scouted'));
 }
 
@@ -84,8 +88,18 @@ function visibleRepairCells(state: GameState): MapCell[] {
     .filter((cell) => getAdjacentCells(state, cell).some((adjacent) => adjacent.owner === 'city'));
 }
 
+const RESOURCE_TERRAIN: Record<ResourceKey, TerrainType> = {
+  food: 'farms',
+  water: 'water',
+  power: 'power',
+  materials: 'industry',
+  budget: 'homes',
+};
+
 export function canScoutTile(state: GameState, cell: MapCell): boolean {
-  return cell.visibility === 'hidden' && getAdjacentCells(state, cell).some((adjacent) => adjacent.visibility === 'scouted');
+  return cell.visibility === 'hidden'
+    && cell.scoutingTicksRemaining === 0
+    && getAdjacentCells(state, cell).some((adjacent) => adjacent.visibility === 'scouted');
 }
 
 export function canClaimTile(state: GameState, cell: MapCell): boolean {
@@ -100,6 +114,10 @@ export function canRepairTile(state: GameState, cell: MapCell): boolean {
     && cell.owner === 'neutral'
     && cell.building === 'ruins'
     && getAdjacentCells(state, cell).some((adjacent) => adjacent.owner === 'city');
+}
+
+export function canBuildImprovementTile(cell: MapCell): boolean {
+  return cell.visibility === 'scouted' && cell.owner === 'city' && cell.building === null;
 }
 
 function prioritizeCells(state: GameState, cells: MapCell[], priority: ScoutPriority): MapCell[] {
@@ -144,13 +162,8 @@ export function scoutNextTile(state: GameState): GameState {
   }
 
   spendResources(next, TUNING.SCOUT_COST);
-  candidate.visibility = 'scouted';
-
-  if (candidate.owner === 'dataCenter') {
-    addLog(next, `Scouts found a data center at ${candidate.x + 1},${candidate.y + 1}.`, 'danger');
-  } else {
-    addLog(next, `Scouted ${candidate.x + 1},${candidate.y + 1}.`, 'info');
-  }
+  candidate.scoutingTicksRemaining = TUNING.SCOUT_TICKS;
+  addLog(next, `Scouts started clearing smog at ${candidate.x + 1},${candidate.y + 1}.`, 'info');
 
   return next;
 }
@@ -168,14 +181,9 @@ export function scoutTile(state: GameState, cellIdToScout: string): GameState {
   }
 
   spendResources(next, TUNING.SCOUT_COST);
-  candidate.visibility = 'scouted';
+  candidate.scoutingTicksRemaining = TUNING.SCOUT_TICKS;
   next.selectedCellId = candidate.id;
-
-  if (candidate.owner === 'dataCenter') {
-    addLog(next, `Scouts found a data center at ${candidate.x + 1},${candidate.y + 1}.`, 'danger');
-  } else {
-    addLog(next, `Scouted ${candidate.x + 1},${candidate.y + 1}.`, 'info');
-  }
+  addLog(next, `Scouts started clearing smog at ${candidate.x + 1},${candidate.y + 1}.`, 'info');
 
   return next;
 }
@@ -195,9 +203,9 @@ export function claimNextTile(state: GameState): GameState {
 
   spendResources(next, TUNING.CLAIM_COST);
   candidate.owner = 'city';
-  candidate.building = defaultBuildingForTerrain(candidate.terrain);
+  candidate.building = null;
   candidate.defense = 1;
-  addLog(next, `Claimed ${candidate.x + 1},${candidate.y + 1}.`, 'success');
+  addLog(next, `Claimed ${candidate.x + 1},${candidate.y + 1}. It is ready for an improvement.`, 'success');
 
   return next;
 }
@@ -216,10 +224,10 @@ export function claimTile(state: GameState, cellIdToClaim: string): GameState {
 
   spendResources(next, TUNING.CLAIM_COST);
   candidate.owner = 'city';
-  candidate.building = defaultBuildingForTerrain(candidate.terrain);
+  candidate.building = null;
   candidate.defense = 1;
   next.selectedCellId = candidate.id;
-  addLog(next, `Claimed ${candidate.x + 1},${candidate.y + 1}.`, 'success');
+  addLog(next, `Claimed ${candidate.x + 1},${candidate.y + 1}. It is ready for an improvement.`, 'success');
 
   return next;
 }
@@ -239,9 +247,9 @@ export function repairNextTile(state: GameState): GameState {
 
   spendResources(next, TUNING.REPAIR_COST);
   candidate.owner = 'city';
-  candidate.building = defaultBuildingForTerrain(candidate.terrain);
+  candidate.building = null;
   candidate.defense = 1;
-  addLog(next, `Rebuilt ${candidate.x + 1},${candidate.y + 1}.`, 'success');
+  addLog(next, `Cleared ${candidate.x + 1},${candidate.y + 1}. It is ready for an improvement.`, 'success');
 
   return next;
 }
@@ -260,28 +268,74 @@ export function repairTile(state: GameState, cellIdToRepair: string): GameState 
 
   spendResources(next, TUNING.REPAIR_COST);
   candidate.owner = 'city';
-  candidate.building = defaultBuildingForTerrain(candidate.terrain);
+  candidate.building = null;
   candidate.defense = 1;
   next.selectedCellId = candidate.id;
-  addLog(next, `Rebuilt ${candidate.x + 1},${candidate.y + 1}.`, 'success');
+  addLog(next, `Cleared ${candidate.x + 1},${candidate.y + 1}. It is ready for an improvement.`, 'success');
 
   return next;
 }
 
+function buildImprovementOnCell(next: GameState, candidate: MapCell): GameState {
+  const resource = RESOURCE_KEYS.find((key) => RESOURCE_TERRAIN[key] === candidate.terrain);
+
+  if (!resource) {
+    return fail(next, 'That tile has no matching improvement.');
+  }
+
+  const cost = TUNING.BUILD_IMPROVEMENT_COSTS[resource];
+
+  if (!canAfford(next.resources, cost)) {
+    return fail(next, `${RESOURCE_LABELS[resource]} improvement needs ${describeCost(cost)}.`);
+  }
+
+  spendResources(next, cost);
+  candidate.building = defaultBuildingForTerrain(candidate.terrain);
+  candidate.defense = 1;
+  addLog(next, `Built ${RESOURCE_LABELS[resource]} improvement at ${candidate.x + 1},${candidate.y + 1}.`, 'success');
+
+  return next;
+}
+
+export function buildTileImprovement(state: GameState, cellIdToBuild: string): GameState {
+  const next = cloneGameState(state);
+  const candidate = getCell(next, cellIdToBuild);
+
+  if (!candidate || !canBuildImprovementTile(candidate)) {
+    return fail(next, 'That tile is not an empty city site.');
+  }
+
+  next.selectedCellId = candidate.id;
+  return buildImprovementOnCell(next, candidate);
+}
+
 export function upgradeProduction(state: GameState, resource: ResourceKey): GameState {
   const next = cloneGameState(state);
+  const terrain = RESOURCE_TERRAIN[resource];
+  const emptySite = next.cells
+    .filter((cell) => canBuildImprovementTile(cell) && cell.terrain === terrain)
+    .sort((a, b) => townHallDistance(next, a) - townHallDistance(next, b))[0];
+
+  if (emptySite) {
+    return buildImprovementOnCell(next, emptySite);
+  }
+
   const current = next.upgrades[resource];
   const cap = getUpgradeCap(next, resource);
 
   if (current >= cap) {
-    return fail(next, `${RESOURCE_LABELS[resource]} production needs more controlled ${RESOURCE_TERRAIN_REQUIREMENT[resource]} tiles.`);
+    if (current >= next.cityLevel) {
+      return fail(next, `${RESOURCE_LABELS[resource]} production needs City Hall level ${current + 1}.`);
+    }
+
+    return fail(next, `${RESOURCE_LABELS[resource]} production needs more controlled ${TERRAIN_META[RESOURCE_TERRAIN_REQUIREMENT[resource]].label} tiles.`);
   }
 
   const cost: Partial<ResourceStock> = resource === 'materials'
-    ? { budget: 8 + current * 5 }
+    ? { budget: 8 + current }
     : {
-        budget: 6 + current * 4,
-        materials: 4 + current * 3,
+        budget: 6 + current,
+        materials: 4,
       };
 
   if (!canAfford(next.resources, cost)) {
@@ -349,7 +403,7 @@ export function buildService(state: GameState, service: ServiceKey): GameState {
   }
 
   if (meta.requiredTerrain && controlledTerrainCount(next, meta.requiredTerrain) === 0) {
-    return fail(next, `${meta.label} needs a controlled ${meta.requiredTerrain} tile.`);
+    return fail(next, `${meta.label} needs a controlled ${TERRAIN_META[meta.requiredTerrain].label} tile.`);
   }
 
   if (!canAfford(next.resources, cost)) {
@@ -403,13 +457,43 @@ export function upgradeCityHall(state: GameState): GameState {
   return next;
 }
 
+export function getInviteResidentsCost(state: GameState): Partial<ResourceStock> {
+  const demandStep = Math.max(1, Math.ceil(state.population / TUNING.POPULATION_DEMAND_INTERVAL));
+  return scaleCost(TUNING.INVITE_RESIDENTS_COST, demandStep);
+}
+
+export function inviteResidents(state: GameState): GameState {
+  const next = cloneGameState(state);
+  const housingRequired = getRequiredServiceLevel(next, 'housing');
+
+  if (next.services.housing < housingRequired) {
+    return fail(next, `New residents need Housing level ${housingRequired}.`);
+  }
+
+  if (next.happiness < 55) {
+    return fail(next, 'New residents are waiting for happiness to recover.');
+  }
+
+  const cost = getInviteResidentsCost(next);
+
+  if (!canAfford(next.resources, cost)) {
+    return fail(next, `Inviting residents needs ${describeCost(cost)}.`);
+  }
+
+  spendResources(next, cost);
+  next.population += TUNING.INVITE_RESIDENTS_AMOUNT;
+  addLog(next, `${TUNING.INVITE_RESIDENTS_AMOUNT} residents moved in. Demand rose with them.`, 'success');
+
+  return next;
+}
+
 function nextRank(rank: LawyerRank): LawyerRank {
   const index = LAWYER_RANK_ORDER.indexOf(rank);
   return LAWYER_RANK_ORDER[Math.min(LAWYER_RANK_ORDER.length - 1, index + 1)];
 }
 
 export function maxLawyerSquads(state: GameState): number {
-  return 1 + Math.floor(controlledTerrainCount(state, 'homes') / 2);
+  return 1 + Math.floor(builtTerrainCount(state, 'homes') / 2);
 }
 
 function createLawyer(state: GameState, townHall: MapCell): LawyerSquad {
@@ -436,7 +520,7 @@ export function hireLawyer(state: GameState): GameState {
   }
 
   if (next.lawyers.length >= maxLawyerSquads(next)) {
-    return fail(next, 'Hiring needs more controlled Homes tiles.');
+    return fail(next, 'Hiring needs more built Lots sites.');
   }
 
   if (!canAfford(next.resources, TUNING.HIRE_LAWYER_COST)) {

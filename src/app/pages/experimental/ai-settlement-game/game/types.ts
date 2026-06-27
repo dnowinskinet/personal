@@ -47,7 +47,7 @@ export type ScoutPriority = TerrainType | 'nearestThreat';
 
 export type DispatchIntent = 'interceptNearestBot' | 'defendTownHall' | 'defendVulnerableTile' | 'raidNearestDataCenter';
 
-export type BotMode = 'dormant' | 'attacking';
+export type BotMode = 'building' | 'marching' | 'demolishing';
 
 export interface MapCell {
   id: string;
@@ -59,6 +59,7 @@ export interface MapCell {
   building: BuildingType | null;
   defense: number;
   dataCenterId: string | null;
+  scoutingTicksRemaining: number;
 }
 
 export interface LawyerSquad {
@@ -81,7 +82,8 @@ export interface BotUnit {
   y: number;
   strength: number;
   mode: BotMode;
-  activationTicks: number;
+  buildTicksRemaining: number;
+  demolitionTicksRemaining: number;
   targetTileId: string | null;
 }
 
@@ -136,7 +138,7 @@ export interface DifficultyMeta {
   startingHappiness: number;
   botGraceTicks: number;
   botSpawnTicks: number;
-  botActivationTicks: number;
+  botBuildTicks: number;
   botStrengthBonus: number;
   maxBotStrength: number;
 }
@@ -167,14 +169,26 @@ export interface Tuning {
   DATA_CENTER_COUNT: number;
   VOTE_DRAIN_THRESHOLD: number;
   VOTE_DRAIN_PER_TICK: number;
+  VOTE_GRACE_ECONOMY_CYCLES: number;
   BOT_DAMAGE_VOTE_LOSS: number;
   SEVERE_SHORTAGE_VOTE_LOSS: number;
+  SHORTAGE_STRESS_GAIN: number;
+  SHORTAGE_STRESS_RECOVERY: number;
+  SERVICE_STRESS_GAIN: number;
+  SERVICE_STRESS_RECOVERY: number;
+  HAPPINESS_RESPONSE: number;
   BOT_GRACE_TICKS: number;
   BOT_SPAWN_TICKS: number;
-  BOT_ACTIVATION_TICKS: number;
+  BOT_BUILD_TICKS: number;
   BOT_MOVE_TICKS: number;
+  BOT_DEMOLITION_TICKS: number;
   LAWYER_MOVE_TICKS: number;
+  SCOUT_TICKS: number;
   POPULATION_GROWTH_TICKS: number;
+  POPULATION_DEMAND_INTERVAL: number;
+  POPULATION_BUDGET_INTERVAL: number;
+  INVITE_RESIDENTS_AMOUNT: number;
+  INVITE_RESIDENTS_COST: Partial<ResourceStock>;
   BURNOUT_MAX: number;
   BURNOUT_RECOVERY_PER_TICK: number;
   BURNOUT_RECOVERY_THRESHOLD: number;
@@ -189,6 +203,7 @@ export interface Tuning {
   REPAIR_COST: Partial<ResourceStock>;
   HIRE_LAWYER_COST: Partial<ResourceStock>;
   PROMOTE_LAWYER_COST: Partial<ResourceStock>;
+  BUILD_IMPROVEMENT_COSTS: Record<ResourceKey, Partial<ResourceStock>>;
   CITY_HALL_UPGRADE_COSTS: Record<number, Partial<ResourceStock>>;
   STORAGE_COST: Partial<ResourceStock>;
   SHIP_BASE_COST: number;
@@ -220,6 +235,9 @@ export interface GameState {
   mapSeed: number;
   votes: number;
   happiness: number;
+  shortageStress: number;
+  serviceStress: number;
+  lowHappinessCycles: number;
   population: number;
   cityLevel: number;
   time: number;

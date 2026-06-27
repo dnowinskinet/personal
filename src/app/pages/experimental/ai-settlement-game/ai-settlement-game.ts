@@ -23,9 +23,11 @@ import {
   TERRAIN_META,
   TERRAIN_TYPES,
 } from './game/constants';
-import { createInitialGameState } from './game/initial-map';
+import { createInitialGameState, defaultBuildingForTerrain } from './game/initial-map';
 import {
   buildService,
+  buildTileImprovement,
+  canBuildImprovementTile,
   canClaimTile,
   canRepairTile,
   canScoutTile,
@@ -35,8 +37,10 @@ import {
   dispatchLawyers,
   getCityHallPopulationRequirement,
   getCityHallUpgradeCost,
+  getInviteResidentsCost,
   getNextCityHallLevel,
   hireLawyer,
+  inviteResidents,
   maxLawyerSquads as getMaxLawyerSquads,
   promoteLawyer,
   repairTile,
@@ -51,14 +55,18 @@ import {
 } from './game/planning';
 import {
   availableLawyerStrength,
+  builtTerrainCount,
   controlledTerrainCount,
   getCellProduction,
+  getCyclesUntilEmpty,
   getDemandProfile,
+  getNetResourcePerCycle,
   getRaidEligibleDataCenters,
   getRaidReadiness,
   getRequiredServiceLevel,
   getServiceUpkeep,
   getTotalProduction,
+  getUpgradeCap,
   resourceCapacity,
   tickGame,
 } from './game/simulation';
@@ -101,6 +109,7 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
   readonly mapModeMeta = MAP_MODE_META;
   readonly maxVotes = TUNING.MAX_VOTES;
   readonly economyCycleSeconds = TUNING.ECONOMY_TICK_SECONDS;
+  readonly voteGraceCycles = TUNING.VOTE_GRACE_ECONOMY_CYCLES;
   readonly terrainResourceMap: Record<TerrainType, ResourceKey> = {
     homes: 'budget',
     farms: 'food',
@@ -116,10 +125,14 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
   state: GameState = createInitialGameState();
   activePlanningTab: PlanningTab = 'expansion';
   selectedTerrain: TerrainType = 'farms';
+  planningPanelOpen = false;
+  tilePanelOpen = false;
+  logPanelOpen = false;
 
   private startIndex = 0;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private readonly isBrowser: boolean;
+  private resumeAfterMobilePanel = false;
 
   constructor(
     @Inject(PLATFORM_ID) platformId: object,
@@ -196,6 +209,7 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     this.startIndex += 1;
     this.state = createInitialGameState(this.startIndex, this.state.difficulty, this.state.mapMode);
     this.activePlanningTab = 'expansion';
+    this.closePanelsWithoutResuming();
     this.changeDetectorRef.markForCheck();
   }
 
@@ -203,6 +217,7 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     this.startIndex += 1;
     this.state = createInitialGameState(this.startIndex, difficulty, this.state.mapMode);
     this.activePlanningTab = 'expansion';
+    this.closePanelsWithoutResuming();
     this.changeDetectorRef.markForCheck();
   }
 
@@ -210,10 +225,15 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     this.startIndex += 1;
     this.state = createInitialGameState(this.startIndex, this.state.difficulty, mapMode);
     this.activePlanningTab = 'expansion';
+    this.closePanelsWithoutResuming();
     this.changeDetectorRef.markForCheck();
   }
 
   setPaused(paused: boolean): void {
+    if (paused) {
+      this.resumeAfterMobilePanel = false;
+    }
+
     this.state = {
       ...this.state,
       paused,
@@ -222,6 +242,7 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
   }
 
   setSpeed(speed: GameSpeed): void {
+    this.resumeAfterMobilePanel = false;
     this.state = {
       ...this.state,
       paused: false,
@@ -232,6 +253,10 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
 
   setPlanningTab(tab: PlanningTab): void {
     this.activePlanningTab = tab;
+    this.planningPanelOpen = true;
+    this.tilePanelOpen = false;
+    this.logPanelOpen = false;
+    this.pauseForMobilePanel();
     this.changeDetectorRef.markForCheck();
   }
 
@@ -240,6 +265,44 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
       ...this.state,
       selectedCellId: cellId,
     };
+    this.tilePanelOpen = true;
+    this.planningPanelOpen = false;
+    this.logPanelOpen = false;
+    this.pauseForMobilePanel();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  openLogPanel(): void {
+    this.logPanelOpen = true;
+    this.planningPanelOpen = false;
+    this.tilePanelOpen = false;
+    this.pauseForMobilePanel();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  closePlanningPanel(): void {
+    this.planningPanelOpen = false;
+    this.resumeMobileIfPanelsClosed();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  closeTilePanel(): void {
+    this.tilePanelOpen = false;
+    this.resumeMobileIfPanelsClosed();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  closeLogPanel(): void {
+    this.logPanelOpen = false;
+    this.resumeMobileIfPanelsClosed();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  closeMobilePanels(): void {
+    this.planningPanelOpen = false;
+    this.tilePanelOpen = false;
+    this.logPanelOpen = false;
+    this.resumeMobileIfPanelsClosed();
     this.changeDetectorRef.markForCheck();
   }
 
@@ -278,6 +341,11 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     this.changeDetectorRef.markForCheck();
   }
 
+  buildImprovementSelectedCell(cell: MapCell): void {
+    this.state = buildTileImprovement(this.state, cell.id);
+    this.changeDetectorRef.markForCheck();
+  }
+
   upgrade(resource: ResourceKey): void {
     this.state = upgradeProduction(this.state, resource);
     this.changeDetectorRef.markForCheck();
@@ -300,6 +368,11 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
 
   upgradeHall(): void {
     this.state = upgradeCityHall(this.state);
+    this.changeDetectorRef.markForCheck();
+  }
+
+  invite(): void {
+    this.state = inviteResidents(this.state);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -331,8 +404,20 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     return controlledTerrainCount(this.state, this.selectedTerrain);
   }
 
+  selectedTerrainBuiltCount(): number {
+    return builtTerrainCount(this.state, this.selectedTerrain);
+  }
+
+  selectedTerrainEmptyCount(): number {
+    return Math.max(0, this.selectedTerrainOwnedCount() - this.selectedTerrainBuiltCount());
+  }
+
   selectedTerrainProduction(): number {
     return this.productionValue(this.selectedTerrainResource());
+  }
+
+  selectedTerrainUpgradeCap(): number {
+    return getUpgradeCap(this.state, this.selectedTerrainResource());
   }
 
   selectedTerrainDemand(): number {
@@ -356,6 +441,14 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     return getCityHallPopulationRequirement(this.state);
   }
 
+  inviteResidentsCostLabel(): string {
+    return describeCost(getInviteResidentsCost(this.state));
+  }
+
+  populationAfterInvite(): number {
+    return this.state.population + TUNING.INVITE_RESIDENTS_AMOUNT;
+  }
+
   maxLawyerSquads(): number {
     return getMaxLawyerSquads(this.state);
   }
@@ -376,12 +469,37 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     return canRepairTile(this.state, cell);
   }
 
+  canBuildImprovement(cell: MapCell): boolean {
+    return canBuildImprovementTile(cell);
+  }
+
   canShipSelectedTerrain(): boolean {
     return this.selectedTerrainResource() !== 'budget';
   }
 
+  selectedTerrainBuildActionLabel(): string {
+    return this.selectedTerrainEmptyCount() > 0 ? 'Build site' : 'Upgrade rate';
+  }
+
+  selectedTerrainBuildActionDetail(): string {
+    return this.selectedTerrainEmptyCount() > 0
+      ? `Empty sites ${this.selectedTerrainEmptyCount()}`
+      : `+${this.selectedTerrainProduction()} / cycle now`;
+  }
+
   resourceValue(resource: ResourceKey): number {
     return Math.round(this.state.resources[resource]);
+  }
+
+  mobileResourceLabel(resource: ResourceKey): string {
+    switch (resource) {
+      case 'materials':
+        return 'Mat';
+      case 'budget':
+        return 'Budget';
+      default:
+        return RESOURCE_LABELS[resource];
+    }
   }
 
   resourceCapacityValue(resource: ResourceKey): number {
@@ -410,6 +528,75 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     return (getDemandProfile(this.state).resources[resource] ?? 0) + (getServiceUpkeep(this.state)[resource] ?? 0);
   }
 
+  resourceNetValue(resource: ResourceKey): number {
+    return getNetResourcePerCycle(this.state, resource);
+  }
+
+  resourceNetLabel(resource: ResourceKey): string {
+    const net = this.resourceNetValue(resource);
+    return net > 0 ? `+${net}` : `${net}`;
+  }
+
+  resourceForecastLabel(resource: ResourceKey): string {
+    const cycles = getCyclesUntilEmpty(this.state, resource);
+
+    if (cycles === null) {
+      return this.resourceNetValue(resource) > 0 ? 'gaining' : 'flat';
+    }
+
+    return cycles === 0 ? 'empty' : `${cycles} cycles left`;
+  }
+
+  resourceForecastClass(resource: ResourceKey): string {
+    const cycles = getCyclesUntilEmpty(this.state, resource);
+
+    if (cycles === null) {
+      return this.resourceNetValue(resource) > 0 ? 'text-lime-700 dark:text-lime-300' : 'text-zinc-500 dark:text-zinc-400';
+    }
+
+    return cycles <= 2 ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300';
+  }
+
+  resourceCardClass(resource: ResourceKey): string {
+    const cycles = getCyclesUntilEmpty(this.state, resource);
+
+    if (cycles !== null && cycles <= 2) {
+      return 'ai-resource-critical border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/40';
+    }
+
+    if (cycles !== null && cycles <= 5) {
+      return 'ai-resource-warning border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30';
+    }
+
+    if (this.resourceNetValue(resource) > 0) {
+      return 'ai-resource-healthy';
+    }
+
+    return '';
+  }
+
+  pressureCardClass(value: number): string {
+    if (value >= 85) {
+      return 'ai-pressure-critical border-red-300 bg-red-50 text-red-950 dark:border-red-900 dark:bg-red-950/40 dark:text-red-100';
+    }
+
+    if (value >= 60) {
+      return 'ai-pressure-warning border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100';
+    }
+
+    if (value > 0) {
+      return 'border-cyan-200 bg-cyan-50/60 dark:border-cyan-900 dark:bg-cyan-950/20';
+    }
+
+    return '';
+  }
+
+  votePressurePercent(): number {
+    return this.voteGraceCycles > 0
+      ? Math.min(100, (this.state.lowHappinessCycles / this.voteGraceCycles) * 100)
+      : 0;
+  }
+
   serviceRequired(service: ServiceKey): number {
     return getRequiredServiceLevel(this.state, service);
   }
@@ -422,11 +609,14 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     const selectedClass = this.state.selectedCellId === cell.id
       ? 'outline outline-2 outline-offset-2 outline-zinc-950 dark:outline-zinc-50'
       : '';
+    const actionClass = this.cellActionClass(cell);
 
     if (cell.visibility === 'hidden') {
       return [
-        'ai-settlement-cell relative aspect-square rounded border border-zinc-700 bg-zinc-900 text-zinc-300 shadow-sm transition',
+        'ai-settlement-cell ai-smog-cell relative aspect-square rounded border border-zinc-700 bg-zinc-900 text-zinc-300 shadow-sm transition',
+        cell.scoutingTicksRemaining > 0 ? 'ring-2 ring-cyan-500' : '',
         'focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500',
+        actionClass,
         selectedClass,
       ].join(' ');
     }
@@ -442,13 +632,30 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
       'focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500',
       TERRAIN_META[cell.terrain].className,
       ownerClass,
+      actionClass,
       selectedClass,
     ].join(' ');
   }
 
+  private cellActionClass(cell: MapCell): string {
+    if (this.canScout(cell)) {
+      return 'ai-scoutable-cell';
+    }
+
+    if (this.canClaim(cell) || this.canRepair(cell) || this.canBuildImprovement(cell)) {
+      return 'ai-actionable-cell';
+    }
+
+    return '';
+  }
+
   cellPrimaryLabel(cell: MapCell): string {
+    if (cell.visibility === 'hidden' && cell.scoutingTicksRemaining > 0) {
+      return 'Scout';
+    }
+
     if (cell.visibility === 'hidden') {
-      return '??';
+      return 'Smog';
     }
 
     if (cell.building) {
@@ -459,12 +666,16 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
   }
 
   cellSecondaryLabel(cell: MapCell): string {
+    if (cell.visibility === 'hidden' && cell.scoutingTicksRemaining > 0) {
+      return `${cell.scoutingTicksRemaining}s`;
+    }
+
     if (cell.visibility === 'hidden') {
-      return 'Fog';
+      return 'Unknown';
     }
 
     if (cell.owner === 'city') {
-      return 'City';
+      return cell.building ? 'City' : 'Empty';
     }
 
     if (cell.owner === 'dataCenter') {
@@ -475,7 +686,7 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
   }
 
   terrainLabel(cell: MapCell): string {
-    return cell.visibility === 'hidden' ? 'Unknown' : TERRAIN_META[cell.terrain].label;
+    return cell.visibility === 'hidden' ? 'Smog' : TERRAIN_META[cell.terrain].label;
   }
 
   ownerLabel(cell: MapCell): string {
@@ -498,7 +709,21 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
       return 'Unknown';
     }
 
+    if (cell.owner === 'city' && cell.building === null) {
+      return 'Empty site';
+    }
+
     return cell.building ? BUILDING_META[cell.building].label : 'None';
+  }
+
+  improvementLabel(cell: MapCell): string {
+    if (cell.visibility === 'hidden') {
+      return 'Improvement';
+    }
+
+    const building = defaultBuildingForTerrain(cell.terrain);
+
+    return building ? BUILDING_META[building].label : 'Improvement';
   }
 
   cellProduction(cell: MapCell): { key: ResourceKey; value: number }[] {
@@ -517,10 +742,18 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     const readiness = getRaidReadiness(this.state, cell);
 
     if (readiness.eligible) {
-      return `Raid ready: ${readiness.adjacentControlled}/${readiness.adjacentNeeded} adjacent city tiles, strength ${readiness.availableStrength}/${readiness.requiredStrength}`;
+      return `Raid ready: legal strength ${readiness.availableStrength}/${readiness.requiredStrength}`;
     }
 
     return `Raid blocked: ${readiness.blockers.join('; ')}`;
+  }
+
+  scoutingStatusForCell(cell: MapCell): string | null {
+    if (cell.visibility !== 'hidden' || cell.scoutingTicksRemaining <= 0) {
+      return null;
+    }
+
+    return `Scouting completes in ${cell.scoutingTicksRemaining}s`;
   }
 
   visibleBotsForCell(cell: MapCell): number {
@@ -531,12 +764,35 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     return this.state.bots.filter((bot) => bot.x === cell.x && bot.y === cell.y).length;
   }
 
-  attackingBotsForCell(cell: MapCell): number {
+  demolishingBotsForCell(cell: MapCell): number {
     if (cell.visibility === 'hidden') {
       return 0;
     }
 
-    return this.state.bots.filter((bot) => bot.mode === 'attacking' && bot.x === cell.x && bot.y === cell.y).length;
+    return this.state.bots.filter((bot) => bot.mode === 'demolishing' && bot.x === cell.x && bot.y === cell.y).length;
+  }
+
+  botStatusForCell(cell: MapCell): string {
+    if (cell.visibility === 'hidden') {
+      return 'Hidden by smog';
+    }
+
+    const bots = this.state.bots.filter((bot) => bot.x === cell.x && bot.y === cell.y);
+
+    if (bots.length === 0) {
+      return 'None';
+    }
+
+    const building = bots.filter((bot) => bot.mode === 'building').length;
+    const marching = bots.filter((bot) => bot.mode === 'marching').length;
+    const demolishing = bots.filter((bot) => bot.mode === 'demolishing').length;
+    const parts = [
+      building > 0 ? `${building} building` : '',
+      marching > 0 ? `${marching} marching` : '',
+      demolishing > 0 ? `${demolishing} demolishing` : '',
+    ].filter(Boolean);
+
+    return parts.join(', ');
   }
 
   lawyersForCell(cell: MapCell): number {
@@ -560,6 +816,10 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     }
   }
 
+  latestLogMessage(): string {
+    return this.state.log[0]?.message ?? 'No city updates yet.';
+  }
+
   assignmentLabel(assignment: string): string {
     switch (assignment) {
       case 'intercept':
@@ -580,5 +840,46 @@ export class AiSettlementGameComponent implements OnInit, OnDestroy {
     const remainder = seconds % 60;
 
     return `${minutes}:${remainder.toString().padStart(2, '0')}`;
+  }
+
+  private isMobileViewport(): boolean {
+    return this.isBrowser && window.matchMedia('(max-width: 767px)').matches;
+  }
+
+  private pauseForMobilePanel(): void {
+    if (!this.isMobileViewport() || this.state.status !== 'playing') {
+      return;
+    }
+
+    if (!this.state.paused) {
+      this.resumeAfterMobilePanel = true;
+    }
+
+    this.state = {
+      ...this.state,
+      paused: true,
+    };
+  }
+
+  private resumeMobileIfPanelsClosed(): void {
+    if (!this.isMobileViewport() || !this.resumeAfterMobilePanel || this.planningPanelOpen || this.tilePanelOpen || this.logPanelOpen) {
+      return;
+    }
+
+    this.resumeAfterMobilePanel = false;
+
+    if (this.state.status === 'playing') {
+      this.state = {
+        ...this.state,
+        paused: false,
+      };
+    }
+  }
+
+  private closePanelsWithoutResuming(): void {
+    this.planningPanelOpen = false;
+    this.tilePanelOpen = false;
+    this.logPanelOpen = false;
+    this.resumeAfterMobilePanel = false;
   }
 }

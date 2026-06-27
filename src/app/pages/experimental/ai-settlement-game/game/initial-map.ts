@@ -102,6 +102,7 @@ function createCell(terrain: TerrainType, x: number, y: number, start: { x: numb
       building: 'dataCenter',
       defense: 0,
       dataCenterId: dataCenter.id,
+      scoutingTicksRemaining: 0,
     };
   }
 
@@ -115,6 +116,7 @@ function createCell(terrain: TerrainType, x: number, y: number, start: { x: numb
     building: isTownHall ? 'townHall' : null,
     defense: isTownHall ? 2 : 0,
     dataCenterId: null,
+    scoutingTicksRemaining: 0,
   };
 }
 
@@ -164,6 +166,9 @@ export function createInitialGameState(
     mapSeed: startIndex + 101,
     votes: difficultyMeta.startingVotes,
     happiness: difficultyMeta.startingHappiness,
+    shortageStress: 0,
+    serviceStress: 0,
+    lowHappinessCycles: 0,
     population: 8,
     cityLevel: 1,
     time: 0,

@@ -4,12 +4,12 @@ import {
   DIFFICULTY_META,
   LAWYER_RANK_ORDER,
   LAWYER_RANKS,
+  POPULATION_DEMAND_BY_LEVEL,
   RESOURCE_KEYS,
   SERVICE_KEYS,
   SERVICE_META,
   TUNING,
 } from './constants';
-import { cellId } from './initial-map';
 import {
   BotUnit,
   DemandProfile,
@@ -39,7 +39,7 @@ export function distance(a: Pick<MapCell, 'x' | 'y'>, b: Pick<MapCell, 'x' | 'y'
 export function cloneGameState(state: GameState): GameState {
   return {
     ...state,
-  resources: { ...state.resources },
+    resources: { ...state.resources },
     services: { ...state.services },
     upgrades: { ...state.upgrades },
     storage: { ...state.storage },
@@ -118,11 +118,31 @@ export function deriveCityLevel(population: number): number {
 }
 
 export function getDemandProfile(state: GameState): DemandProfile {
-  return DEMAND_BY_LEVEL[state.cityLevel] ?? DEMAND_BY_LEVEL[5];
+  const baseDemand = DEMAND_BY_LEVEL[state.cityLevel] ?? DEMAND_BY_LEVEL[5];
+  const populationDemand = POPULATION_DEMAND_BY_LEVEL[state.cityLevel] ?? POPULATION_DEMAND_BY_LEVEL[5];
+  const populationMultiplier = Math.max(1, Math.floor(state.population / TUNING.POPULATION_DEMAND_INTERVAL));
+  const resources: Partial<ResourceStock> = { ...baseDemand.resources };
+
+  RESOURCE_KEYS.forEach((key) => {
+    resources[key] = (resources[key] ?? 0) + (populationDemand[key] ?? 0) * populationMultiplier;
+  });
+
+  return {
+    resources,
+    services: { ...baseDemand.services },
+  };
 }
 
 export function controlledTerrainCount(state: GameState, terrain: TerrainType): number {
-  return state.cells.filter((cell) => cell.owner === 'city' && cell.terrain === terrain && cell.building !== 'ruins').length;
+  return state.cells.filter(
+    (cell) => cell.owner === 'city' && cell.terrain === terrain && cell.building !== 'townHall' && cell.building !== 'ruins'
+  ).length;
+}
+
+export function builtTerrainCount(state: GameState, terrain: TerrainType): number {
+  return state.cells.filter(
+    (cell) => cell.owner === 'city' && cell.terrain === terrain && cell.building !== null && cell.building !== 'townHall' && cell.building !== 'ruins'
+  ).length;
 }
 
 export function getUpgradeCap(state: GameState, resource: ResourceKey): number {
@@ -134,12 +154,18 @@ export function getUpgradeCap(state: GameState, resource: ResourceKey): number {
     budget: 'homes',
   };
 
-  return Math.min(5, 1 + controlledTerrainCount(state, terrain[resource]));
+  return Math.min(state.cityLevel, 1 + controlledTerrainCount(state, terrain[resource]));
 }
 
 export function getCellProduction(state: GameState, cell: MapCell): Partial<ResourceStock> {
   if (cell.owner !== 'city' || cell.building === 'ruins' || cell.building === null) {
     return {};
+  }
+
+  if (cell.building === 'townHall') {
+    return {
+      budget: roundResource(1 + Math.floor(state.population / TUNING.POPULATION_BUDGET_INTERVAL)),
+    };
   }
 
   const base = BASE_PRODUCTION_BY_TERRAIN[cell.terrain];
@@ -152,10 +178,6 @@ export function getCellProduction(state: GameState, cell: MapCell): Partial<Reso
       production[key] = roundResource(amount + (state.upgrades[key] - 1) * 2);
     }
   });
-
-  if (cell.building === 'townHall') {
-    production.budget = roundResource((production.budget ?? 0) + 4);
-  }
 
   return production;
 }
@@ -197,6 +219,38 @@ export function getServiceUpkeep(state: GameState): Partial<ResourceStock> {
   return upkeep;
 }
 
+export function getTotalDemand(state: GameState): ResourceStock {
+  const demand = getDemandProfile(state);
+  const upkeep = getServiceUpkeep(state);
+  const total: ResourceStock = {
+    food: 0,
+    water: 0,
+    power: 0,
+    materials: 0,
+    budget: 0,
+  };
+
+  RESOURCE_KEYS.forEach((key) => {
+    total[key] = roundResource((demand.resources[key] ?? 0) + (upkeep[key] ?? 0));
+  });
+
+  return total;
+}
+
+export function getNetResourcePerCycle(state: GameState, resource: ResourceKey): number {
+  return roundResource(getTotalProduction(state)[resource] - getTotalDemand(state)[resource]);
+}
+
+export function getCyclesUntilEmpty(state: GameState, resource: ResourceKey): number | null {
+  const net = getNetResourcePerCycle(state, resource);
+
+  if (net >= 0) {
+    return null;
+  }
+
+  return Math.max(0, Math.ceil(state.resources[resource] / Math.abs(net)));
+}
+
 export function getLawyerStrength(lawyer: LawyerSquad): number {
   return LAWYER_RANKS[lawyer.rank].strength;
 }
@@ -213,21 +267,22 @@ export function availableLawyerStrength(state: GameState): number {
 
 export function getRaidReadiness(state: GameState, cell: MapCell): RaidReadiness {
   const adjacent = getAdjacentCells(state, cell);
-  const adjacentNeeded = Math.min(TUNING.RAID_ADJACENCY_NEEDED, adjacent.length);
+  const adjacentNeeded = 0;
   const adjacentControlled = adjacent.filter((candidate) => candidate.owner === 'city').length;
   const strength = availableLawyerStrength(state);
+  const totalStrength = state.lawyers.reduce((total, lawyer) => total + getLawyerStrength(lawyer), 0);
   const blockers: string[] = [];
 
   if (cell.owner !== 'dataCenter' || cell.building !== 'dataCenter' || cell.visibility !== 'scouted') {
     blockers.push('data center must be discovered');
   }
 
-  if (adjacentControlled < adjacentNeeded) {
-    blockers.push(`needs ${adjacentNeeded} adjacent city tiles; has ${adjacentControlled}`);
-  }
-
   if (strength < TUNING.RAID_REQUIRED_STRENGTH) {
-    blockers.push(`needs legal strength ${TUNING.RAID_REQUIRED_STRENGTH}; has ${strength}`);
+    if (totalStrength >= TUNING.RAID_REQUIRED_STRENGTH) {
+      blockers.push(`needs available legal strength ${TUNING.RAID_REQUIRED_STRENGTH}; has ${strength} ready while other squads recover`);
+    } else {
+      blockers.push(`needs legal strength ${TUNING.RAID_REQUIRED_STRENGTH}; has ${strength} ready`);
+    }
   }
 
   return {
@@ -309,31 +364,47 @@ function applyEconomy(state: GameState): void {
 
   adjustResources(state, getTotalProduction(state));
 
-  const demand = getDemandProfile(state);
-  const upkeep = getServiceUpkeep(state);
-  let resourcePenalty = 0;
+  const totalDemand = getTotalDemand(state);
+  let shortagePressure = 0;
+  let severeShortages = 0;
 
   RESOURCE_KEYS.forEach((key) => {
-    const required = (demand.resources[key] ?? 0) + (upkeep[key] ?? 0);
+    const required = totalDemand[key];
     const shortfall = consumeResource(state, key, required);
 
     if (required > 0 && shortfall > 0) {
-      resourcePenalty += (shortfall / required) * 13;
+      shortagePressure += (shortfall / required) * TUNING.SHORTAGE_STRESS_GAIN;
+      severeShortages += state.resources[key] < 1 ? 1 : 0;
     }
   });
 
-  let servicePenalty = 0;
+  state.shortageStress = shortagePressure > 0
+    ? roundResource(clamp(state.shortageStress + shortagePressure, 0, 100))
+    : roundResource(clamp(state.shortageStress - TUNING.SHORTAGE_STRESS_RECOVERY, 0, 100));
+
+  let servicePressure = 0;
+  const demand = getDemandProfile(state);
+
   SERVICE_KEYS.forEach((service) => {
     const required = demand.services[service] ?? 0;
     const missing = Math.max(0, required - state.services[service]);
-    servicePenalty += missing * 8;
+    servicePressure += missing * TUNING.SERVICE_STRESS_GAIN;
   });
 
-  const severeShortages = RESOURCE_KEYS.filter((key) => state.resources[key] < 1).length;
-  const targetHappiness = clamp(78 - resourcePenalty - servicePenalty - severeShortages * 5, 0, 100);
-  state.happiness = roundResource(clamp(state.happiness + (targetHappiness - state.happiness) * 0.18, 0, 100));
+  state.serviceStress = servicePressure > 0
+    ? roundResource(clamp(state.serviceStress + servicePressure, 0, 100))
+    : roundResource(clamp(state.serviceStress - TUNING.SERVICE_STRESS_RECOVERY, 0, 100));
+
+  const targetHappiness = clamp(82 - state.shortageStress * 0.45 - state.serviceStress * 0.5 - severeShortages * 2, 0, 100);
+  state.happiness = roundResource(clamp(state.happiness + (targetHappiness - state.happiness) * TUNING.HAPPINESS_RESPONSE, 0, 100));
 
   if (state.happiness < TUNING.VOTE_DRAIN_THRESHOLD) {
+    state.lowHappinessCycles += 1;
+  } else {
+    state.lowHappinessCycles = Math.max(0, state.lowHappinessCycles - 1);
+  }
+
+  if (state.lowHappinessCycles >= TUNING.VOTE_GRACE_ECONOMY_CYCLES) {
     const drain = Math.max(
       1,
       Math.ceil(((TUNING.VOTE_DRAIN_THRESHOLD - state.happiness) / TUNING.VOTE_DRAIN_THRESHOLD) * TUNING.VOTE_DRAIN_PER_TICK)
@@ -341,52 +412,76 @@ function applyEconomy(state: GameState): void {
     state.votes = roundResource(clamp(state.votes - drain, 0, TUNING.MAX_VOTES));
   }
 
-  if (severeShortages > 0 && state.tickCount % (TUNING.ECONOMY_TICK_SECONDS * 3) === 0) {
+  if (
+    severeShortages > 0
+    && state.lowHappinessCycles >= TUNING.VOTE_GRACE_ECONOMY_CYCLES
+    && state.tickCount % (TUNING.ECONOMY_TICK_SECONDS * 3) === 0
+  ) {
     state.votes = roundResource(clamp(state.votes - severeShortages * TUNING.SEVERE_SHORTAGE_VOTE_LOSS, 0, TUNING.MAX_VOTES));
     addLog(state, 'Shortages are turning voters into cable news guests.', 'danger');
   }
 }
 
-function updatePopulation(state: GameState): void {
-  if (state.tickCount % TUNING.POPULATION_GROWTH_TICKS !== 0) {
-    return;
+function updateScouting(state: GameState): void {
+  state.cells
+    .filter((cell) => cell.visibility === 'hidden' && cell.scoutingTicksRemaining > 0)
+    .forEach((cell) => {
+      cell.scoutingTicksRemaining = Math.max(0, cell.scoutingTicksRemaining - 1);
+
+      if (cell.scoutingTicksRemaining > 0) {
+        return;
+      }
+
+      cell.visibility = 'scouted';
+
+      if (cell.owner === 'dataCenter') {
+        addLog(state, `Scouts found a data center at ${cell.x + 1},${cell.y + 1}.`, 'danger');
+      } else {
+        addLog(state, `Scouted ${cell.x + 1},${cell.y + 1}.`, 'info');
+      }
+    });
+}
+
+function botTargetValue(state: GameState, cell: MapCell): number {
+  if (cell.building === null) {
+    return 1;
   }
 
-  const housingRequired = getRequiredServiceLevel(state, 'housing');
-  const housingReady = state.services.housing >= housingRequired;
+  const production = getCellProduction(state, cell);
+  const productionValue = RESOURCE_KEYS.reduce((total, key) => total + (production[key] ?? 0), 0);
+  const terrainValue: Record<TerrainType, number> = {
+    homes: 8,
+    farms: 7,
+    water: 7,
+    power: 8,
+    industry: 7,
+  };
 
-  if (state.happiness >= 62 && housingReady) {
-    state.population += 1;
-    addLog(state, 'Population grew. New residents immediately requested services.', 'info');
-  }
+  return 8 + terrainValue[cell.terrain] + productionValue;
 }
 
 function chooseBotTarget(state: GameState, origin: MapCell): MapCell | undefined {
-  const lawyersByCell = new Set(state.lawyers.map((lawyer) => cellId(lawyer.x, lawyer.y)));
+  const townHall = getTownHallCell(state);
   const candidates = state.cells
-    .filter((cell) => cell.owner === 'city')
-    .map((cell) => {
-      let score = 1;
+    .filter((cell) => cell.owner === 'city' && cell.building !== 'townHall' && cell.building !== 'ruins')
+    .sort((a, b) => {
+      const value = botTargetValue(state, b) - botTargetValue(state, a);
 
-      if (cell.building === 'townHall') {
-        score += 12;
-      } else if (cell.terrain === 'homes') {
-        score += 8;
-      } else {
-        score += 10;
+      if (value !== 0) {
+        return value;
       }
 
-      if (!lawyersByCell.has(cell.id)) {
-        score += 4;
+      const distanceToOrigin = distance(origin, a) - distance(origin, b);
+
+      if (distanceToOrigin !== 0) {
+        return distanceToOrigin;
       }
 
-      score -= distance(origin, cell) * 0.2;
+      const distanceToCore = townHall ? distance(townHall, a) - distance(townHall, b) : 0;
+      return distanceToCore || a.id.localeCompare(b.id);
+    });
 
-      return { cell, score };
-    })
-    .sort((a, b) => b.score - a.score || a.cell.id.localeCompare(b.cell.id));
-
-  return candidates[0]?.cell;
+  return candidates[0] ?? townHall;
 }
 
 function spawnBots(state: GameState): void {
@@ -407,6 +502,10 @@ function spawnBots(state: GameState): void {
         return;
       }
 
+      if (state.bots.some((bot) => bot.spawnedBy === dataCenter.dataCenterId)) {
+        return;
+      }
+
       const bot: BotUnit = {
         id: `bot-${state.nextBotId}`,
         spawnedBy: dataCenter.dataCenterId,
@@ -416,8 +515,9 @@ function spawnBots(state: GameState): void {
           difficulty.maxBotStrength,
           1 + difficulty.botStrengthBonus + Math.floor(state.cityLevel / 3) + Math.floor(state.time / 150)
         ),
-        mode: 'dormant',
-        activationTicks: difficulty.botActivationTicks + (state.nextBotId % 3) * 8,
+        mode: 'building',
+        buildTicksRemaining: difficulty.botBuildTicks + (state.nextBotId % 3) * 4,
+        demolitionTicksRemaining: 0,
         targetTileId: null,
       };
 
@@ -425,18 +525,18 @@ function spawnBots(state: GameState): void {
       state.bots = [...state.bots, bot];
 
       if (dataCenter.visibility === 'scouted') {
-        addLog(state, `A bot booted up at ${dataCenter.x + 1},${dataCenter.y + 1}. It is still loitering on site.`, 'warning');
+        addLog(state, `A bot frame started assembling at ${dataCenter.x + 1},${dataCenter.y + 1}.`, 'warning');
       }
     });
 }
 
-function activateDormantBots(state: GameState): void {
+function buildBots(state: GameState): void {
   state.bots
-    .filter((bot) => bot.mode === 'dormant')
+    .filter((bot) => bot.mode === 'building')
     .forEach((bot) => {
-      bot.activationTicks = Math.max(0, bot.activationTicks - 1);
+      bot.buildTicksRemaining = Math.max(0, bot.buildTicksRemaining - 1);
 
-      if (bot.activationTicks > 0) {
+      if (bot.buildTicksRemaining > 0) {
         return;
       }
 
@@ -447,11 +547,11 @@ function activateDormantBots(state: GameState): void {
         return;
       }
 
-      bot.mode = 'attacking';
+      bot.mode = 'marching';
       bot.targetTileId = target.id;
 
       if (origin?.visibility === 'scouted' || target.visibility === 'scouted') {
-        addLog(state, `Bot ${bot.id} finally picked a target: ${target.x + 1},${target.y + 1}.`, 'danger');
+        addLog(state, `Bot ${bot.id} finished assembly and started marching toward ${target.x + 1},${target.y + 1}.`, 'danger');
       }
     });
 }
@@ -477,7 +577,7 @@ function moveBots(state: GameState): void {
   }
 
   state.bots.forEach((bot) => {
-    if (bot.mode === 'dormant') {
+    if (bot.mode !== 'marching') {
       return;
     }
 
@@ -490,6 +590,11 @@ function moveBots(state: GameState): void {
     }
 
     if (!target) {
+      return;
+    }
+
+    const occupiedCell = getCellAt(state, bot.x, bot.y);
+    if (occupiedCell?.owner === 'city') {
       return;
     }
 
@@ -621,13 +726,39 @@ function resolveCombat(state: GameState): void {
   state.bots = survivingBots;
 }
 
-function resolveBotAttacks(state: GameState): void {
+function resolveBotDemolitions(state: GameState): void {
   const survivingBots: BotUnit[] = [];
 
   state.bots.forEach((bot) => {
+    const currentCell = getCellAt(state, bot.x, bot.y);
+
+    if (bot.mode === 'marching' && currentCell?.owner === 'city') {
+      bot.mode = 'demolishing';
+      bot.targetTileId = currentCell.id;
+      bot.demolitionTicksRemaining = TUNING.BOT_DEMOLITION_TICKS;
+      addLog(state, `Bot ${bot.id} started cutting power at ${currentCell.x + 1},${currentCell.y + 1}.`, 'danger');
+      survivingBots.push(bot);
+      return;
+    }
+
+    if (bot.mode !== 'demolishing') {
+      survivingBots.push(bot);
+      return;
+    }
+
     const target = getCell(state, bot.targetTileId);
 
-    if (bot.mode === 'dormant' || !target || bot.x !== target.x || bot.y !== target.y || target.owner !== 'city') {
+    if (!target || bot.x !== target.x || bot.y !== target.y || target.owner !== 'city') {
+      bot.mode = 'marching';
+      bot.demolitionTicksRemaining = 0;
+      bot.targetTileId = getTownHallCell(state)?.id ?? null;
+      survivingBots.push(bot);
+      return;
+    }
+
+    bot.demolitionTicksRemaining = Math.max(0, bot.demolitionTicksRemaining - 1);
+
+    if (bot.demolitionTicksRemaining > 0) {
       survivingBots.push(bot);
       return;
     }
@@ -644,17 +775,14 @@ function resolveBotAttacks(state: GameState): void {
     target.building = 'ruins';
     target.defense = 0;
     state.votes = roundResource(clamp(state.votes - TUNING.BOT_DAMAGE_VOTE_LOSS, 0, TUNING.MAX_VOTES));
-    addLog(state, `Bot ${bot.id} wrecked ${target.x + 1},${target.y + 1}. Reclaim it or enjoy the hearings.`, 'danger');
+    bot.mode = 'marching';
+    bot.targetTileId = getTownHallCell(state)?.id ?? null;
+    bot.demolitionTicksRemaining = 0;
+    survivingBots.push(bot);
+    addLog(state, `Bot ${bot.id} wrecked ${target.x + 1},${target.y + 1} and kept marching toward Town Hall.`, 'danger');
   });
 
   state.bots = survivingBots;
-}
-
-function hasRaidSurrounding(state: GameState, dataCenter: MapCell): boolean {
-  const adjacent = getAdjacentCells(state, dataCenter);
-  const needed = Math.min(TUNING.RAID_ADJACENCY_NEEDED, adjacent.length);
-
-  return adjacent.filter((cell) => cell.owner === 'city').length >= needed;
 }
 
 function resolveRaids(state: GameState): void {
@@ -671,7 +799,7 @@ function resolveRaids(state: GameState): void {
 
       const strength = raiders.reduce((total, lawyer) => total + getLawyerStrength(lawyer), 0);
 
-      if (hasRaidSurrounding(state, dataCenter) && strength >= TUNING.RAID_REQUIRED_STRENGTH) {
+      if (strength >= TUNING.RAID_REQUIRED_STRENGTH) {
         const destroyedDataCenterId = dataCenter.dataCenterId;
         dataCenter.owner = 'neutral';
         dataCenter.building = 'ruins';
@@ -737,16 +865,16 @@ export function tickGame(state: GameState): GameState {
   next.tickCount += 1;
   next.time += 1;
 
+  updateScouting(next);
   applyEconomy(next);
-  updatePopulation(next);
   recoverLawyers(next);
   spawnBots(next);
-  activateDormantBots(next);
+  buildBots(next);
   moveBots(next);
   moveLawyers(next);
   resolveCombat(next);
   resolveRaids(next);
-  resolveBotAttacks(next);
+  resolveBotDemolitions(next);
   updateStatus(next);
 
   return next;

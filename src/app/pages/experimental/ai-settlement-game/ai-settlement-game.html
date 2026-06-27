@@ -1,23 +1,39 @@
-<section class="ai-settlement-game mx-auto max-w-6xl rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-zinc-950 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 sm:p-4">
-  <header class="mb-4 flex flex-col gap-3">
+<section class="ai-settlement-game mx-auto max-w-6xl rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-zinc-950 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 sm:p-4">
+  <header class="mb-3 flex flex-col gap-3 md:mb-4">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700 dark:text-cyan-300">Working title TBD</p>
         <h2 class="text-2xl font-bold">Untitled AI Settlement Game</h2>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2 text-sm">
+      <div class="hidden flex-wrap items-center gap-2 text-sm md:flex">
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Time {{ formatTime(state.time) }}</span>
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Pop {{ state.population }}</span>
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Hall Lv {{ state.cityLevel }}</span>
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Cycle {{ economyCycleSeconds }}s</span>
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">{{ difficultyMeta[state.difficulty].shortLabel }}</span>
         <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">{{ mapModeMeta[state.mapMode].shortLabel }}</span>
-        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">DCs {{ visibleDataCenterCount }}/{{ dataCenterCount }}</span>
+        <span class="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-700">Data {{ visibleDataCenterCount }}/{{ dataCenterCount }}</span>
       </div>
     </div>
 
-    <div class="grid gap-2 sm:grid-cols-2">
+    <div class="ai-mobile-status md:hidden">
+      <div class="grid grid-cols-4 gap-1 text-[0.65rem] font-semibold">
+        <span class="rounded border border-zinc-300 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">Votes {{ state.votes | number:'1.0-0' }}</span>
+        <span class="rounded border border-zinc-300 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">Happy {{ state.happiness | number:'1.0-0' }}</span>
+        <span class="rounded border border-zinc-300 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">Pop {{ state.population }}</span>
+        <span class="rounded border border-zinc-300 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">Time {{ formatTime(state.time) }}</span>
+      </div>
+      <div class="mt-1 grid grid-cols-5 gap-1 text-[0.65rem] font-semibold">
+        @for (resource of resources; track resource) {
+          <span class="rounded border border-zinc-300 bg-white px-1.5 py-1 dark:border-zinc-700 dark:bg-zinc-900">
+            {{ mobileResourceLabel(resource) }} {{ resourceValue(resource) }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="hidden gap-2 md:grid md:grid-cols-2">
       <div>
         <div class="mb-1 flex items-center justify-between text-sm font-semibold">
           <span>Votes</span>
@@ -39,9 +55,11 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
+    <div class="hidden grid-cols-2 gap-2 sm:grid-cols-5 md:grid">
       @for (resource of resources; track resource) {
-        <div class="rounded border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
+        <div
+          class="ai-resource-card rounded border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900"
+          [ngClass]="resourceCardClass(resource)">
           <div class="mb-1 flex items-center justify-between text-xs font-semibold">
             <span>{{ resourceLabels[resource] }}</span>
             <span>{{ resourceValue(resource) }}</span>
@@ -53,11 +71,36 @@
             </div>
           </div>
           <div class="mt-1 flex justify-between text-[0.65rem] text-zinc-500 dark:text-zinc-400">
-            <span>+{{ productionValue(resource) | number:'1.0-0' }}/cycle</span>
-            <span>-{{ demandValue(resource) | number:'1.0-0' }}/cycle</span>
+            <span>In {{ productionValue(resource) | number:'1.0-0' }}</span>
+            <span>Use {{ demandValue(resource) | number:'1.0-0' }}</span>
+          </div>
+          <div class="mt-1 flex justify-between text-[0.65rem] font-semibold">
+            <span>Net {{ resourceNetLabel(resource) }}</span>
+            <span [ngClass]="resourceForecastClass(resource)">{{ resourceForecastLabel(resource) }}</span>
           </div>
         </div>
       }
+    </div>
+
+    <div class="hidden gap-2 md:grid md:grid-cols-3">
+      <div
+        class="ai-pressure-card rounded border border-zinc-200 bg-white p-2 text-sm dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="pressureCardClass(state.shortageStress)">
+        <span class="block text-xs uppercase tracking-wide text-zinc-500">Shortage Pressure</span>
+        <span class="font-bold">{{ state.shortageStress | number:'1.0-0' }} / 100</span>
+      </div>
+      <div
+        class="ai-pressure-card rounded border border-zinc-200 bg-white p-2 text-sm dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="pressureCardClass(state.serviceStress)">
+        <span class="block text-xs uppercase tracking-wide text-zinc-500">Service Pressure</span>
+        <span class="font-bold">{{ state.serviceStress | number:'1.0-0' }} / 100</span>
+      </div>
+      <div
+        class="ai-pressure-card rounded border border-zinc-200 bg-white p-2 text-sm dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="pressureCardClass(votePressurePercent())">
+        <span class="block text-xs uppercase tracking-wide text-zinc-500">Vote Pressure</span>
+        <span class="font-bold">{{ state.lowHappinessCycles }} / {{ voteGraceCycles }}</span>
+      </div>
     </div>
 
     <div class="grid gap-2 sm:grid-cols-2">
@@ -119,6 +162,15 @@
     </div>
   </header>
 
+  @if (planningPanelOpen || tilePanelOpen || logPanelOpen) {
+    <button
+      type="button"
+      class="ai-mobile-scrim md:hidden"
+      aria-label="Close open game panel"
+      (click)="closeMobilePanels()">
+    </button>
+  }
+
   @if (state.status !== 'playing') {
     <div
       class="mb-4 rounded border p-3 text-sm"
@@ -146,6 +198,37 @@
 
   <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
     <main class="flex flex-col gap-4">
+      <nav class="grid grid-cols-4 gap-1 md:hidden" aria-label="Mobile planning">
+        <button
+          type="button"
+          class="rounded border border-zinc-300 px-2 py-2 text-[0.7rem] font-semibold dark:border-zinc-700"
+          [ngClass]="activePlanningTab === 'expansion' && planningPanelOpen ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+          (click)="setPlanningTab('expansion')">
+          Expand
+        </button>
+        <button
+          type="button"
+          class="rounded border border-zinc-300 px-2 py-2 text-[0.7rem] font-semibold dark:border-zinc-700"
+          [ngClass]="activePlanningTab === 'resources' && planningPanelOpen ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+          (click)="setPlanningTab('resources')">
+          Resources
+        </button>
+        <button
+          type="button"
+          class="rounded border border-zinc-300 px-2 py-2 text-[0.7rem] font-semibold dark:border-zinc-700"
+          [ngClass]="activePlanningTab === 'services' && planningPanelOpen ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+          (click)="setPlanningTab('services')">
+          Services
+        </button>
+        <button
+          type="button"
+          class="rounded border border-zinc-300 px-2 py-2 text-[0.7rem] font-semibold dark:border-zinc-700"
+          [ngClass]="activePlanningTab === 'lawyers' && planningPanelOpen ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950' : 'bg-white dark:bg-zinc-900'"
+          (click)="setPlanningTab('lawyers')">
+          Lawyers
+        </button>
+      </nav>
+
       <div class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div class="mb-3 flex items-center justify-between gap-2">
           <h3 class="text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">City Grid</h3>
@@ -165,7 +248,7 @@
               @if (visibleBotsForCell(cell) > 0) {
                 <span
                   class="absolute right-1 top-1 rounded px-1 text-[0.6rem] font-black text-white"
-                  [ngClass]="attackingBotsForCell(cell) > 0 ? 'bg-red-600' : 'bg-amber-600'">
+                  [ngClass]="demolishingBotsForCell(cell) > 0 ? 'bg-red-600' : 'bg-amber-600'">
                   B{{ visibleBotsForCell(cell) }}
                 </span>
               }
@@ -176,10 +259,25 @@
             </button>
           }
         </div>
+
+        <button
+          type="button"
+          class="mt-3 flex w-full items-center justify-between gap-2 rounded border border-zinc-300 bg-zinc-50 p-2 text-left text-xs dark:border-zinc-700 dark:bg-zinc-950 md:hidden"
+          (click)="openLogPanel()">
+          <span class="font-bold">Latest</span>
+          <span class="min-w-0 flex-1 truncate text-zinc-600 dark:text-zinc-300">{{ latestLogMessage() }}</span>
+        </button>
       </div>
 
-      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <div class="mb-3 flex flex-wrap gap-2">
+      <section
+        class="ai-planning-panel rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="planningPanelOpen ? 'ai-panel-open' : ''">
+        <div class="mb-3 flex items-center justify-between md:hidden">
+          <span class="text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Planning</span>
+          <button type="button" class="rounded border border-zinc-300 px-3 py-1.5 text-sm font-semibold dark:border-zinc-700" (click)="closePlanningPanel()">Close</button>
+        </div>
+
+        <div class="mb-3 hidden flex-wrap gap-2 md:flex">
           <button
             type="button"
             class="rounded border border-zinc-300 px-3 py-2 text-sm font-semibold dark:border-zinc-700"
@@ -248,18 +346,26 @@
                 <span class="text-xs uppercase tracking-wide text-zinc-500">{{ resourceLabels[selectedTerrainResource()] }}</span>
               </div>
 
-              <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div class="grid grid-cols-2 gap-2 sm:grid-cols-6">
                 <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
                   <span class="block text-xs uppercase tracking-wide text-zinc-500">Owned</span>
                   <span class="font-bold">{{ selectedTerrainOwnedCount() }}</span>
                 </div>
                 <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Built</span>
+                  <span class="font-bold">{{ selectedTerrainBuiltCount() }} / {{ selectedTerrainOwnedCount() }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
                   <span class="block text-xs uppercase tracking-wide text-zinc-500">Build Lv</span>
-                  <span class="font-bold">{{ state.upgrades[selectedTerrainResource()] }}</span>
+                  <span class="font-bold">{{ state.upgrades[selectedTerrainResource()] }} / {{ selectedTerrainUpgradeCap() }}</span>
                 </div>
                 <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
                   <span class="block text-xs uppercase tracking-wide text-zinc-500">Use</span>
                   <span class="font-bold">{{ selectedTerrainDemand() | number:'1.0-0' }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Net</span>
+                  <span class="font-bold">{{ resourceNetLabel(selectedTerrainResource()) }}</span>
                 </div>
                 <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
                   <span class="block text-xs uppercase tracking-wide text-zinc-500">Stored</span>
@@ -269,8 +375,8 @@
 
               <div class="mt-3 grid gap-2 sm:grid-cols-3">
                 <button type="button" class="rounded border border-zinc-300 p-2 text-left font-semibold dark:border-zinc-700" (click)="upgrade(selectedTerrainResource())">
-                  Build more
-                  <span class="block text-xs font-normal opacity-75">+{{ selectedTerrainProduction() | number:'1.0-0' }}/cycle now</span>
+                  {{ selectedTerrainBuildActionLabel() }}
+                  <span class="block text-xs font-normal opacity-75">{{ selectedTerrainBuildActionDetail() }}</span>
                 </button>
                 <button type="button" class="rounded border border-zinc-300 p-2 text-left font-semibold dark:border-zinc-700" (click)="store(selectedTerrainResource())">
                   Store more
@@ -292,6 +398,7 @@
 
         @if (activePlanningTab === 'services') {
           <div class="grid gap-3">
+            <div class="grid gap-3 md:grid-cols-2">
             <div class="rounded border border-zinc-300 p-3 text-sm dark:border-zinc-700">
               <div class="mb-2 flex items-center justify-between gap-2">
                 <span class="font-bold">City Hall</span>
@@ -315,6 +422,29 @@
               } @else {
                 <span class="text-sm font-semibold">Maximum level</span>
               }
+            </div>
+
+            <div class="rounded border border-zinc-300 p-3 text-sm dark:border-zinc-700">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <span class="font-bold">Population</span>
+                <span>{{ state.population }}</span>
+              </div>
+
+              <div class="mb-3 grid gap-2 sm:grid-cols-2">
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Next</span>
+                  <span class="font-semibold">{{ populationAfterInvite() }}</span>
+                </div>
+                <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <span class="block text-xs uppercase tracking-wide text-zinc-500">Cost</span>
+                  <span class="font-semibold">{{ inviteResidentsCostLabel() }}</span>
+                </div>
+              </div>
+
+              <button type="button" class="rounded border border-lime-300 p-2 text-left font-semibold text-lime-800 dark:border-lime-800 dark:text-lime-200" (click)="invite()">
+                Invite residents
+              </button>
+            </div>
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2">
@@ -366,7 +496,7 @@
               <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="dispatch('defendTownHall')">Defend Hall</button>
               <button type="button" class="rounded border border-zinc-300 p-2 text-left text-sm font-semibold dark:border-zinc-700" (click)="dispatch('defendVulnerableTile')">Defend Tile</button>
               <button type="button" class="rounded border border-red-300 p-2 text-left text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300" (click)="dispatch('raidNearestDataCenter')">
-                Raid DC
+                Raid data center
               </button>
               <span class="rounded border border-zinc-200 p-2 text-sm dark:border-zinc-800">Eligible {{ raidEligibleCount }}</span>
             </div>
@@ -375,9 +505,14 @@
       </section>
     </main>
 
-    <aside class="flex flex-col gap-4">
-      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Tile</h3>
+    <aside class="ai-side-stack flex flex-col gap-4">
+      <section
+        class="ai-tile-panel rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="tilePanelOpen ? 'ai-panel-open' : ''">
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Tile</h3>
+          <button type="button" class="rounded border border-zinc-300 px-3 py-1.5 text-sm font-semibold dark:border-zinc-700 md:hidden" (click)="closeTilePanel()">Close</button>
+        </div>
         @if (selectedCell; as cell) {
           <div class="space-y-2 text-sm">
             <div class="flex items-center justify-between gap-2">
@@ -394,6 +529,11 @@
                 <span class="font-semibold">{{ buildingLabel(cell) }}</span>
               </div>
             </div>
+            @if (scoutingStatusForCell(cell); as scoutStatus) {
+              <div class="rounded border border-cyan-200 p-2 text-sm font-semibold text-cyan-800 dark:border-cyan-900 dark:text-cyan-200">
+                {{ scoutStatus }}
+              </div>
+            }
             <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">
               <span class="block text-xs uppercase tracking-wide text-zinc-500">Production</span>
               @if (cellProduction(cell).length > 0) {
@@ -409,7 +549,7 @@
               }
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">Bots {{ visibleBotsForCell(cell) }}</div>
+              <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">Bots {{ botStatusForCell(cell) }}</div>
               <div class="rounded border border-zinc-200 p-2 dark:border-zinc-800">Lawyers {{ lawyersForCell(cell) }}</div>
             </div>
             @if (raidStatusForCell(cell); as raidStatus) {
@@ -435,16 +575,27 @@
                   Repair
                 </button>
               }
+
+              @if (canBuildImprovement(cell)) {
+                <button type="button" class="rounded border border-lime-300 p-2 text-left font-semibold text-lime-800 dark:border-lime-800 dark:text-lime-200" (click)="buildImprovementSelectedCell(cell)">
+                  Build {{ improvementLabel(cell) }}
+                </button>
+              }
             </div>
           </div>
         }
       </section>
 
-      <section class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 class="mb-2 text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Log</h3>
+      <section
+        class="ai-log-panel rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900"
+        [ngClass]="logPanelOpen ? 'ai-panel-open' : ''">
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Log</h3>
+          <button type="button" class="rounded border border-zinc-300 px-3 py-1.5 text-sm font-semibold dark:border-zinc-700 md:hidden" (click)="closeLogPanel()">Close</button>
+        </div>
         <ol class="space-y-2 text-sm">
           @for (entry of state.log; track entry.id) {
-            <li class="border-l-4 pl-2" [ngClass]="logToneClass(entry.tone)">
+            <li class="ai-log-entry border-l-4 pl-2" [ngClass]="logToneClass(entry.tone)">
               <span class="font-mono text-xs opacity-70">{{ formatTime(entry.time) }}</span>
               {{ entry.message }}
             </li>
