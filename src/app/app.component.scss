@@ -1,0 +1,12 @@
+.site-main--grift-os {
+  max-width: none;
+  width: min(1500px, calc(100vw - 48px));
+  padding-inline: 0;
+  overflow-x: visible;
+}
+
+@media (max-width: 48rem) {
+  .site-main--grift-os {
+    width: calc(100vw - 24px);
+  }
+}

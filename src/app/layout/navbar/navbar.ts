@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  HostListener,
   Renderer2,
   ViewEncapsulation,
   effect,
@@ -50,14 +52,42 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
     <div class="w-full ml-auto lg:w-auto lg:order-1 flex lg:block min-h-96 lg:min-h-0 items-center"
       [ngClass]="{ 'hidden': !open}">
       <ul
-        class="text-center w-full flex flex-col p-4 mx-2 lg:p-0 mt-4 font-medium rounded-lg lg:space-x-8 lg:flex-row lg:mt-0 dark:border-gray-700">
-        @for (link of links(); track $index) {
-        <li>
-          <a [routerLink]="link.path" routerLinkActive="text-primary dark:text-primary-400"
-            [routerLinkActiveOptions]="{exact: true}" (click)="open = false"
-            class="block py-4 px-3 rounded hover:text-primary dark:hover:text-primary-400 dark:text-gray-100 lg:p-0 dark:border-gray-700">{{link.name}}</a>
-        </li>
+        class="text-center w-full flex flex-col p-4 mx-2 lg:p-0 mt-4 font-medium rounded-lg lg:items-center lg:space-x-8 lg:flex-row lg:mt-0 dark:border-gray-700">
+        @for (link of links(); track link.path) {
+          <li>
+            <a [routerLink]="link.path" routerLinkActive="text-primary dark:text-primary-400"
+              [routerLinkActiveOptions]="{exact: true}" (click)="closeNavigation()"
+              class="block py-4 px-3 rounded hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:hover:text-primary-400 dark:text-gray-100 lg:p-0 dark:border-gray-700">{{link.name}}</a>
+          </li>
         }
+        <li class="relative">
+          <button
+            type="button"
+            class="inline-flex w-full items-center justify-center gap-1 rounded px-3 py-4 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:text-gray-100 dark:hover:text-primary-400 lg:w-auto lg:p-0"
+            aria-haspopup="true"
+            [attr.aria-expanded]="experimentalOpen"
+            (click)="toggleExperimental($event)"
+          >
+            Experimental
+            <span aria-hidden="true" class="text-xs transition" [ngClass]="{'rotate-180': experimentalOpen}">v</span>
+          </button>
+          @if (experimentalOpen) {
+            <ul class="mt-1 grid gap-1 rounded-lg border border-gray-200 bg-white/95 p-2 text-sm shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/95 lg:absolute lg:left-1/2 lg:top-full lg:mt-3 lg:min-w-44 lg:-translate-x-1/2">
+              @for (experiment of experimentalLinks; track experiment.path) {
+                <li>
+                  <a
+                    [routerLink]="experiment.path"
+                    routerLinkActive="text-primary dark:text-primary-400"
+                    (click)="closeNavigation()"
+                    class="block rounded px-3 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:text-gray-100 dark:hover:bg-gray-800 dark:hover:text-primary-400"
+                  >
+                    {{ experiment.name }}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
       </ul>
     </div>
   </div>
@@ -66,18 +96,55 @@ import { ToolbarColor } from '../../shared/components/toolbar-color/toolbar-colo
 })
 export class Navbar {
   open = false;
+  experimentalOpen = false;
   paintBucket = paintBucket;
-  links = computed(() => navlinkData)
+  links = computed(() => navlinkData.filter((link) => link.name !== 'Experimental'))
+  experimentalLinks = [
+    {
+      name: 'AI Settlement',
+      path: '/experimental/settlement',
+    },
+    {
+      name: 'GriftOS',
+      path: '/experimental/grift-os',
+    },
+  ];
   icon = computed(() => this.darkModeService.isDark() ? sun : moon)
   darkModeService = inject(DarkModeService);
   renderer = inject(Renderer2);
   document: Document = inject(DOCUMENT);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
   public themeColor = inject(ThemeService)
   constructor() {
     effect(() => {
       this.applyDarkModeStyles();
     });
   }
+
+  toggleExperimental(event?: Event): void {
+    event?.stopPropagation();
+    this.experimentalOpen = !this.experimentalOpen;
+  }
+
+  closeNavigation(): void {
+    this.open = false;
+    this.experimentalOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+
+    if (target instanceof Node && !this.elementRef.nativeElement.contains(target)) {
+      this.experimentalOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.experimentalOpen = false;
+  }
+
   private applyDarkModeStyles() {
     const darkMode = this.darkModeService.isDark();
     const root = this.document.documentElement;

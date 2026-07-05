@@ -10,7 +10,22 @@ import { ExperimentalComponent } from './pages/experimental/experimental.compone
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },  
   { path: 'about', component: AboutComponent, pathMatch: 'full' },
-  { path: 'experimental', component: ExperimentalComponent, pathMatch: 'full' },
+  {
+    path: 'experimental',
+    component: ExperimentalComponent,
+    children: [
+      {
+        path: 'settlement',
+        loadComponent: () => import('./pages/experimental/ai-settlement-game/ai-settlement-game')
+          .then((m) => m.AiSettlementGameComponent),
+      },
+      {
+        path: 'grift-os',
+        loadComponent: () => import('./pages/experimental/grift-os-game/grift-os-game')
+          .then((m) => m.GriftOsGameComponent),
+      },
+    ],
+  },
   { path: '**', component: ErrorComponent, pathMatch: 'full' },
 
 ];

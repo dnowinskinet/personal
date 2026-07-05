@@ -1,34 +1,60 @@
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MetaService } from '@core/services/meta.service';
 import profileData from '@data/profile.data';
-import { AiSettlementGameComponent } from '@pages/experimental/ai-settlement-game/ai-settlement-game';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AiSettlementGameComponent],
+  imports: [RouterLink, RouterOutlet],
   templateUrl: './experimental.component.html',
   styleUrl: './experimental.component.scss',
 })
 export class ExperimentalComponent {
-  readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  readonly showExperimentIndex = signal(false);
+  readonly experiments = [
+    {
+      label: 'AI Settlement',
+      path: '/experimental/settlement',
+      description: 'A compact systems prototype about civic pressure, resources, and settlement survival.',
+    },
+    {
+      label: 'GriftOS',
+      path: '/experimental/grift-os',
+      description: 'A satirical idle tycoon about paper valuation, Hustles, Leverage, and the exit.',
+    },
+  ];
+
   metaService = inject(MetaService);
+  private readonly router = inject(Router);
   
   constructor() {
+    this.updateIndexVisibility(this.router.url);
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.updateIndexVisibility(event.urlAfterRedirects);
+      }
+    });
+
     this.metaService.setMetaTags(
       `Experimental - ${profileData.name}`,
-      'Test experimental browser games like the untitled AI settlement prototype.',
+      'Play experimental browser game prototypes like AI Settlement and GriftOS.',
       [
         'daniel thomas nowinski',
         'experimental',
         'games',
         'ai settlement',
+        'griftos',
         'browser game',
         'strategy game',
         'simulation game',
         'angular games',
       ]
     );
+  }
+
+  private updateIndexVisibility(url: string): void {
+    const path = url.split('?')[0].replace(/\/$/, '');
+    this.showExperimentIndex.set(path === '/experimental');
   }
 }

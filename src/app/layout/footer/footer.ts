@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  NgZone,
   ViewEncapsulation,
   effect,
   inject,
@@ -35,14 +36,19 @@ import { Subscription, interval } from 'rxjs';
 })
 export class Footer {
   platformCheck = inject(PlatformCheckService)
+  private readonly ngZone = inject(NgZone);
   currentTime = signal<string>(this.getCurrentTime());
   profile = signal<ProfileSchema>(profileData);
   timer!: Subscription;
   constructor() {
     effect((onCleanup) => {
       if (this.platformCheck.onBrowser) {
-        this.timer = interval(1000).subscribe(() => {
-          this.currentTime.set(this.getCurrentTime());
+        this.ngZone.runOutsideAngular(() => {
+          this.timer = interval(1000).subscribe(() => {
+            this.ngZone.run(() => {
+              this.currentTime.set(this.getCurrentTime());
+            });
+          });
         });
       }
       onCleanup(() => {

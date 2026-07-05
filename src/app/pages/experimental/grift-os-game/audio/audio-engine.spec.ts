@@ -1,0 +1,86 @@
+import { GameEvent } from '../game-engine/game-events';
+import { EnterprisePresentation } from '../game-engine/presentation';
+import {
+  createDefaultAudioSettings,
+  createInitialAudioPolicyState,
+  gameEventToAudioIntent,
+  musicLayerGainForIntensity,
+  reduceAudioEvent,
+} from './audio-engine';
+
+describe('GriftOS audio engine policy', () => {
+  const presentation: EnterprisePresentation = {
+    enterpriseIntensity: 0.6,
+    enterpriseStage: 'institutional',
+    activeRatio: 0.5,
+    automationRatio: 0.4,
+    valuationProgress: 0.7,
+    leverageProgress: 0.2,
+    metaProgress: 0.1,
+    valuationPerSecond: 100,
+  };
+
+  it('maps semantic game events to audio intents without presentation-specific events', () => {
+    const settings = createDefaultAudioSettings();
+    const manualEvent: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'troll-network' };
+    const automationEvent: GameEvent = {
+      type: 'hustle.automationActivated',
+      hustleId: 'troll-network',
+      automationName: 'Bots',
+    };
+    const rugEvent: GameEvent = {
+      type: 'rugPull.committed',
+      rugPullState: 'committed',
+      netWorthGain: 100_000,
+    };
+
+    expect(gameEventToAudioIntent(manualEvent, presentation, settings)?.id).toBe('manual-click');
+    expect(gameEventToAudioIntent(automationEvent, presentation, settings)?.id).toBe('automation-online');
+    expect(gameEventToAudioIntent(rugEvent, presentation, settings)?.id).toBe('rug-pull');
+  });
+
+  it('respects mute settings', () => {
+    const settings = {
+      ...createDefaultAudioSettings(),
+      isMuted: true,
+    };
+    const event: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'troll-network' };
+
+    expect(gameEventToAudioIntent(event, presentation, settings)).toBeNull();
+  });
+
+  it('throttles repeated low-level cues by manifest cooldown', () => {
+    const settings = createDefaultAudioSettings();
+    const event: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'troll-network' };
+    const first = reduceAudioEvent(createInitialAudioPolicyState(), event, presentation, settings, 1_000);
+    const second = reduceAudioEvent(first.state, event, presentation, settings, 1_020);
+
+    expect(first.intent?.id).toBe('manual-click');
+    expect(second.intent).toBeNull();
+    expect(second.suppressedReason).toBe('cooldown');
+  });
+
+  it('lets high-priority cues suppress ordinary noise briefly', () => {
+    const settings = createDefaultAudioSettings();
+    const automationEvent: GameEvent = {
+      type: 'hustle.automationActivated',
+      hustleId: 'troll-network',
+      automationName: 'Bots',
+    };
+    const purchaseEvent: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'troll-network' };
+    const automation = reduceAudioEvent(createInitialAudioPolicyState(), automationEvent, presentation, settings, 1_000);
+    const purchase = reduceAudioEvent(automation.state, purchaseEvent, presentation, settings, 1_100);
+
+    expect(automation.intent?.priority).toBe(5);
+    expect(purchase.intent).toBeNull();
+    expect(purchase.suppressedReason).toBe('priority-window');
+  });
+
+  it('calculates stage-ready adaptive music layer gains', () => {
+    const settings = createDefaultAudioSettings();
+
+    expect(musicLayerGainForIntensity('base', 0.6, settings)).toBeCloseTo(0.315, 6);
+    expect(musicLayerGainForIntensity('intensity', 0.6, settings)).toBeCloseTo(0.14175, 6);
+    expect(musicLayerGainForIntensity('intensity', 0.6, { ...settings, adaptiveMusic: false })).toBe(0);
+  });
+});
