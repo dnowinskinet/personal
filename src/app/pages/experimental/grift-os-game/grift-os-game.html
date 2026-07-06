@@ -14,7 +14,20 @@
 
         <div class="grift-valuation-object" aria-label="Current valuation">
             <p>{{ copy.valuationLabel }}</p>
-            <strong>{{ valuationLabel }}</strong>
+            <div class="grift-valuation-amount">
+                <strong>{{ valuationLabel }}</strong>
+                @for (flyout of valuationFlyouts; track trackValuationFlyout($index, flyout)) {
+                    <span
+                        class="grift-valuation-flyout"
+                        [class.grift-valuation-flyout--gain]="flyout.direction === 'gain'"
+                        [class.grift-valuation-flyout--spend]="flyout.direction === 'spend'"
+                        [style.--grift-flyout-lane]="flyout.lane"
+                        aria-hidden="true"
+                    >
+                        {{ flyout.label }}
+                    </span>
+                }
+            </div>
             <span>{{ valuationPerSecondLabel }}</span>
         </div>
 
@@ -28,6 +41,25 @@
             }
 
             <div class="grift-utility-strip">
+                <div class="grift-audio-controls" aria-label="Audio controls">
+                    <button
+                        type="button"
+                        [class.grift-audio-toggle-muted]="isMusicMuted"
+                        [attr.aria-pressed]="!isMusicMuted"
+                        (click)="toggleAudioChannel('music')"
+                    >
+                        {{ musicToggleLabel }}
+                    </button>
+                    <button
+                        type="button"
+                        [class.grift-audio-toggle-muted]="isSfxMuted"
+                        [attr.aria-pressed]="!isSfxMuted"
+                        (click)="toggleAudioChannel('sfx')"
+                    >
+                        {{ sfxToggleLabel }}
+                    </button>
+                </div>
+
                 @if (isPlaytestMode) {
                     <details class="grift-playtest-menu" data-testid="grift-playtest-controls">
                         <summary>
@@ -36,12 +68,15 @@
                         </summary>
 
                         <div class="grift-popover-panel">
+                            <button type="button" class="grift-popover-close" (click)="closeUtilityMenu($event)">
+                                Close menu
+                            </button>
                             <p class="grift-session-id">Session {{ playtestSessionIdLabel }}</p>
                             <div class="grift-popover-grid">
                                 <button type="button" (click)="startFreshPlaytestSession()">Fresh Session</button>
                                 <button type="button" (click)="resetSimulationRun()">Reset Run</button>
                                 @for (shortcut of runShortcuts; track trackRunShortcut($index, shortcut)) {
-                                    <button type="button" (click)="applyRunShortcut(shortcut.id)">
+                                    <button type="button" (click)="applyRunShortcut(shortcut.id); closeUtilityMenu($event)">
                                         Jump: {{ shortcut.label }}
                                     </button>
                                 }
@@ -107,8 +142,8 @@
                                 <button type="button" (click)="testAudioCue()">Test Cue</button>
                                 <p class="grift-audio-state">
                                     Intensity {{ enterpriseIntensityPercent }}% / {{ presentation.enterpriseStage }}
-                                    / base {{ audioDirector.debugState().baseLayerGain.toFixed(2) }}
-                                    / layer {{ audioDirector.debugState().intensityLayerGain.toFixed(2) }}
+                                    / track {{ audioDirector.debugState().activeMusicTrackId }}
+                                    / {{ audioDirector.debugState().musicPlaybackState }}
                                 </p>
                             </section>
 
@@ -122,6 +157,9 @@
                         <summary>Run tools</summary>
 
                         <div class="grift-popover-panel">
+                            <button type="button" class="grift-popover-close" (click)="closeUtilityMenu($event)">
+                                Close menu
+                            </button>
                             <div class="grift-popover-grid">
                                 <button
                                     type="button"
@@ -131,7 +169,7 @@
                                     Reset Run
                                 </button>
                                 @for (shortcut of runShortcuts; track trackRunShortcut($index, shortcut)) {
-                                    <button type="button" (click)="applyRunShortcut(shortcut.id)">
+                                    <button type="button" (click)="applyRunShortcut(shortcut.id); closeUtilityMenu($event)">
                                         Jump: {{ shortcut.label }}
                                     </button>
                                 }
@@ -142,6 +180,32 @@
             </div>
         </div>
     </header>
+
+    @if (offlineReturn; as offline) {
+        <div class="grift-offline-backdrop" role="presentation">
+            <section
+                class="grift-offline-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="grift-offline-title"
+            >
+                <p class="grift-kicker">Since you were gone</p>
+                <h2 id="grift-offline-title">{{ offline.payoutLabel }} queued for Valuation</h2>
+                <p>
+                    Automated Hustles kept compounding for {{ offline.elapsedLabel }}.
+                    Claim the staged value and continue the run.
+                </p>
+                <div class="grift-offline-actions">
+                    <button type="button" class="grift-action-button grift-action-primary grift-action-claim" (click)="claimOfflineReturn()">
+                        Collect {{ offline.payoutLabel }}
+                    </button>
+                    <button type="button" class="grift-quiet-button" (click)="dismissOfflineReturn()">
+                        Skip
+                    </button>
+                </div>
+            </section>
+        </div>
+    }
 
     @if (showModeTabs) {
         <nav class="grift-mode-tabs" aria-label="GriftOS game surfaces">
@@ -161,10 +225,29 @@
     @switch (selectedVisibleTab) {
         @case ('hustles') {
             <div
+                #hustlesSurface
                 class="grift-work-surface grift-work-surface--hustles"
                 [class.grift-work-surface--ledger-only]="!showPinnedSelectedContext"
                 [class.grift-context-open]="selectedContextOpen"
+                tabindex="-1"
             >
+                @if (rugPullResolution) {
+                    <section class="grift-rug-resolution" aria-label="Rug Pull resolved">
+                        <div>
+                            <p>Extraction committed</p>
+                            <h2>{{ rugPullResolution.netWorthGainLabel }} Net Worth realized</h2>
+                            <span>
+                                {{ rugPullResolution.peakValuationLabel }} peak Valuation is gone.
+                                New run begins with {{ rugPullResolution.resultingNetWorthLabel }} Net Worth
+                                and {{ rugPullResolution.wealthAdvantageLabel }}.
+                            </span>
+                        </div>
+                        <button type="button" class="grift-quiet-button" (click)="dismissRugPullResolution()">
+                            Dismiss
+                        </button>
+                    </section>
+                }
+
                 <section class="grift-hustle-plane" aria-label="Hustles">
                     <div class="grift-section-line">
                         <div>
@@ -180,13 +263,26 @@
                                 [class.grift-hustle-selected]="row.id === selectedHustleId"
                                 [class.grift-hustle-active]="row.isActive && !row.isAutomated"
                                 [class.grift-hustle-automated]="row.isAutomated"
+                                [class.grift-hustle-player-dependent]="row.isPlayerDependent"
+                                [class.grift-hustle-attention-opportunity]="row.showAutomationOpportunity"
+                                [class.grift-hustle-settled]="row.isSettledAutomated"
+                                [class.grift-hustle-contextual]="row.hasContextualAttention"
+                                [style.--grift-cycle-duration]="row.progressAnimationDuration"
                             >
                                 <div class="grift-hustle-grid">
                                     <button
                                         type="button"
+                                        class="grift-row-select-hitbox"
+                                        tabindex="-1"
+                                        aria-hidden="true"
+                                        (click)="openSelectedContext(row.id, $event)"
+                                    ></button>
+
+                                    <button
+                                        type="button"
                                         class="grift-icon-button"
                                         [class.grift-icon-owned]="row.units > 0"
-                                        [class.grift-icon-active]="row.isActive && !row.isAutomated"
+                                        [class.grift-icon-active]="row.isActive"
                                         [class.grift-icon-automated]="row.isAutomated"
                                         [disabled]="!row.canManualAction"
                                         [attr.aria-label]="row.definition.manualActionLabel + ' for ' + row.definition.name"
@@ -203,11 +299,25 @@
                                     <button type="button" class="grift-hustle-select" (click)="openSelectedContext(row.id, $event)">
                                         <span class="grift-hustle-name">{{ row.definition.name }}</span>
                                         <span class="grift-hustle-unit">{{ row.unitCountLabel }}</span>
+                                        @if (row.showNextMilestone) {
+                                            <span
+                                                class="grift-milestone-inline"
+                                                [attr.aria-label]="'Next milestone: ' + row.nextMilestoneLabel"
+                                                [style.--grift-milestone-scale]="row.milestoneProgressScale"
+                                            >
+                                                <span>{{ row.nextMilestoneCompactLabel }}</span>
+                                                <span class="grift-milestone-track" aria-hidden="true">
+                                                    <span></span>
+                                                </span>
+                                            </span>
+                                        }
                                     </button>
 
                                     <div class="grift-hustle-metrics">
-                                        <span>{{ row.averageRateLabel }}</span>
-                                        <span>{{ row.cadenceLabel }}</span>
+                                        <span>{{ row.productionLabel }}</span>
+                                        @if (row.showModifierSummary) {
+                                            <span class="grift-modifier-inline">{{ row.modifierSummaryLabel }}</span>
+                                        }
                                         @if (row.showAutomationState) {
                                             <span>{{ row.automationStatusLabel }}</span>
                                         }
@@ -217,7 +327,7 @@
                                         <div class="grift-hustle-actions grift-hustle-actions--automated">
                                             <button
                                                 type="button"
-                                                class="grift-action-button grift-action-primary"
+                                                class="grift-action-button grift-action-primary grift-action-expand"
                                                 [disabled]="!row.canBuyOne"
                                                 (click)="buyOne(row.id)"
                                             >
@@ -226,7 +336,7 @@
                                             @if (row.showBuyMax) {
                                                 <button
                                                     type="button"
-                                                    class="grift-action-button grift-action-secondary"
+                                                    class="grift-action-button grift-action-secondary grift-action-compact grift-action-max"
                                                     [disabled]="!row.canBuyMax"
                                                     (click)="buyMax(row.id)"
                                                 >
@@ -238,7 +348,7 @@
                                         <div class="grift-hustle-actions grift-hustle-actions--manual">
                                             <button
                                                 type="button"
-                                                class="grift-action-button grift-action-primary"
+                                                class="grift-action-button grift-action-primary grift-action-perform"
                                                 [disabled]="!row.canManualAction"
                                                 (click)="activate(row.id)"
                                             >
@@ -250,7 +360,7 @@
                                             </button>
                                             <button
                                                 type="button"
-                                                class="grift-action-button grift-action-secondary"
+                                                class="grift-action-button grift-action-secondary grift-action-expand"
                                                 [disabled]="!row.canBuyOne"
                                                 (click)="buyOne(row.id)"
                                             >
@@ -259,7 +369,7 @@
                                             @if (row.showBuyMax) {
                                                 <button
                                                     type="button"
-                                                    class="grift-action-button grift-action-secondary grift-action-compact"
+                                                    class="grift-action-button grift-action-secondary grift-action-compact grift-action-max"
                                                     [disabled]="!row.canBuyMax"
                                                     (click)="buyMax(row.id)"
                                                 >
@@ -278,7 +388,7 @@
                                         </div>
                                         <button
                                             type="button"
-                                            class="grift-action-button"
+                                            class="grift-action-button grift-action-automate"
                                             [disabled]="!row.canBuyAutomation"
                                             (click)="automate(row.id)"
                                         >
@@ -287,23 +397,18 @@
                                     </section>
                                 }
 
-                                @if (row.showNextMilestone) {
-                                    <div class="grift-milestone-cue">
-                                        <span>Next milestone</span>
-                                        <strong>{{ row.nextMilestoneLabel }}</strong>
-                                    </div>
-                                }
-
                                 <div
                                     class="grift-progress-track"
                                     [class.grift-progress-reset]="row.isProgressResetting"
+                                    [style.--grift-progress-scale]="row.progressScale"
+                                    [style.--grift-cycle-duration]="row.progressAnimationDuration"
                                     role="progressbar"
                                     [attr.aria-label]="row.definition.name + ' production progress'"
                                     [attr.aria-valuenow]="row.progressPercent"
                                     aria-valuemin="0"
                                     aria-valuemax="100"
                                 >
-                                    <div class="grift-progress" [style.width.%]="row.progressPercent"></div>
+                                    <div class="grift-progress"></div>
                                 </div>
                             </article>
                         }
@@ -318,12 +423,15 @@
                                     </div>
                                     <button
                                         type="button"
-                                        class="grift-action-button"
+                                        class="grift-action-button grift-action-establish"
                                         [disabled]="!horizon.canBuy"
                                         (click)="buyOne(horizon.id)"
                                     >
                                         Establish · {{ horizon.costLabel }}
                                     </button>
+                                    @if (!horizon.canBuy) {
+                                        <span class="grift-horizon-shortfall">Need {{ horizon.shortfallLabel }} more</span>
+                                    }
                                 </article>
                             }
                         }
@@ -390,7 +498,7 @@
                             @if (selectedHustle.showAutomationOpportunity) {
                                 <button
                                     type="button"
-                                    class="grift-action-button"
+                                    class="grift-action-button grift-action-automate"
                                     [disabled]="!selectedHustle.canBuyAutomation"
                                     (click)="automate(selectedHustle.id)"
                                 >
@@ -505,55 +613,67 @@
 
         @case ('rugPull') {
             <div class="grift-work-surface grift-work-surface--rug">
-                <section class="grift-rug-stage">
-                    <div class="grift-section-line">
-                        <div>
-                            <p>Rug Pull</p>
-                            <h2>Convert paper into personal gravity</h2>
-                        </div>
-                        <span>{{ rugPullPreview.state }}</span>
+                <section class="grift-rug-stage" aria-labelledby="grift-rug-title">
+                    <div class="grift-rug-intro">
+                        <p>Rug Pull</p>
+                        <h2 id="grift-rug-title">Walk away with</h2>
+                        <strong>{{ rugPullNetWorthGainLabel }}</strong>
+                        <span>Net Worth</span>
                     </div>
 
-                    <div class="grift-rug-decision">
-                        <div class="grift-rug-value">
-                            <p>Current Valuation</p>
-                            <strong>{{ valuationLabel }}</strong>
-                            <span>Peak {{ peakValuationLabel }}</span>
-                        </div>
-
-                        <div class="grift-rug-conduit" aria-hidden="true"></div>
-
-                        <div class="grift-rug-extraction">
-                            <p>Projected Net Worth Gain</p>
-                            <strong>+{{ rugPullPreview.projectedNetWorthGain | currency:'USD':'symbol':'1.0-0' }}</strong>
-                            <span>Resulting Net Worth {{ rugPullPreview.resultingNetWorth | currency:'USD':'symbol':'1.0-0' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="grift-rug-consequences">
-                        <span>{{ resetHustleCount }} Hustles reset</span>
-                        <span>{{ resetAutomationCount }} automations lost</span>
-                        <span>Net Worth persists</span>
-                        <span>Wealth Advantage persists</span>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="grift-rug-button"
-                        [disabled]="!rugPullPreview.isAvailable"
-                        (click)="commitRugPull()"
-                    >
-                        Pull the Rug
-                    </button>
-                </section>
-
-                <aside class="grift-rug-note">
-                    <p class="grift-label">Prestige Hypothesis</p>
-                    <h3>{{ wealthAdvantageLabel }}</h3>
-                    <p>
-                        Rug Pull unlocks at $50M peak Valuation. The prototype grants Net Worth using a square-root formula and applies it as a transparent global Hustle output bonus.
+                    <p class="grift-rug-thesis">
+                        The enterprise has achieved sufficient cultural importance to become someone else's problem.
                     </p>
-                </aside>
+
+                    <div class="grift-rug-ledger" aria-label="Rug Pull preview">
+                        <div class="grift-rug-run-value">
+                            <p>Run value sacrificed</p>
+                            <strong>{{ valuationLabel }}</strong>
+                            <span>Current Valuation resets. Peak was {{ peakValuationLabel }}.</span>
+                        </div>
+
+                        <div class="grift-rug-persistent-value">
+                            <p>Persistent value received</p>
+                            <strong>{{ rugPullResultingNetWorthLabel }}</strong>
+                            <span>{{ rugPullWealthAdvantageLabel }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grift-rug-consequence-grid">
+                        <section>
+                            <p>This run ends</p>
+                            <ul>
+                                <li>Current Valuation resets</li>
+                                <li>{{ resetHustleCount }} active Hustles reset</li>
+                                <li>{{ resetAutomationCount }} automations reset</li>
+                                <li>{{ resetMilestoneCount }} milestones reset</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <p>You keep</p>
+                            <ul>
+                                <li>Net Worth</li>
+                                <li>Wealth Advantage on future Hustles</li>
+                            </ul>
+                        </section>
+                    </div>
+
+                    <div class="grift-rug-action-strip">
+                        <button
+                            type="button"
+                            class="grift-rug-button"
+                            [disabled]="!rugPullPreview.isAvailable"
+                            [attr.aria-label]="'Pull the Rug and gain ' + rugPullNetWorthGainLabel + ' Net Worth'"
+                            (click)="commitRugPull()"
+                        >
+                            Pull the Rug
+                        </button>
+                        <button type="button" class="grift-quiet-button" (click)="setGameTab('hustles')">
+                            Return to Hustles
+                        </button>
+                    </div>
+                </section>
             </div>
         }
     }

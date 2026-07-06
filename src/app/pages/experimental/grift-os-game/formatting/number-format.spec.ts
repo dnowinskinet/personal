@@ -6,10 +6,10 @@ describe('GriftOS number formatting', () => {
   });
 
   it('formats compact valuation units', () => {
-    expect(formatValuation(1_240)).toBe('$1.24K');
-    expect(formatValuation(18_400_000)).toBe('$18.4M');
-    expect(formatValuation(1_040_000_000)).toBe('$1.04B');
-    expect(formatValuation(82_600_000_000_000)).toBe('$82.6T');
+    expect(formatValuation(1_240)).toBe('$1K');
+    expect(formatValuation(18_400_000)).toBe('$18M');
+    expect(formatValuation(1_040_000_000)).toBe('$1B');
+    expect(formatValuation(82_600_000_000_000)).toBe('$82T');
   });
 
   it('falls back to scientific notation for very large values', () => {
@@ -17,7 +17,7 @@ describe('GriftOS number formatting', () => {
   });
 
   it('formats valuation per second', () => {
-    expect(formatValuationRate(48_200)).toBe('$48.2K/sec');
+    expect(formatValuationRate(48_200)).toBe('$48K/sec');
   });
 
   it('guards against invalid values', () => {

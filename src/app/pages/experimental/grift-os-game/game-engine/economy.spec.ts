@@ -62,6 +62,15 @@ describe('GriftOS Hustle economy', () => {
     expect(cultureWarDefinition.automationName).toBe('Outrage Engine');
     expect(sovereignDefinition.unitPlural).toBe('Jurisdictions');
     expect(sovereignDefinition.audio?.ambientSignature).toBe('sovereign-grid');
+    expect(trollDefinition.milestones.map((milestone) => milestone.requiredUnits)).toEqual([
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+    ]);
   });
 
   it('calculates candidate early expansion costs from the new seed', () => {
@@ -209,6 +218,30 @@ describe('GriftOS Hustle economy', () => {
     expect(result.state.valuation).toBe(0);
     expect(result.state.netWorth).toBe(100_000);
     expect(result.state.hustles['troll-network'].units).toBe(1);
+  });
+
+  it('applies committed Net Worth to the first fresh-run payout', () => {
+    const result = commitRugPull(
+      {
+        ...createInitialGameState(HUSTLE_DEFINITIONS),
+        valuation: RUG_PULL_CONFIG.unlockValuation,
+        peakValuation: RUG_PULL_CONFIG.unlockValuation,
+      },
+      HUSTLE_DEFINITIONS
+    );
+    const activeState = activateHustle(result.state, 'troll-network');
+    const advanced = advanceGame(activeState, HUSTLE_DEFINITIONS, 2_000);
+    const expectedPayout = trollDefinition.basePayout *
+      wealthAdvantageMultiplier(result.state.netWorth);
+
+    expect(result.state.netWorth).toBe(100_000);
+    expect(advanced.events.length).toBe(1);
+    expect(advanced.events[0].payout).toBeCloseTo(expectedPayout, 6);
+    expect(advanced.state.valuation).toBeCloseTo(expectedPayout, 6);
+    expect(valuationPerSecond(activeState, HUSTLE_DEFINITIONS)).toBeCloseTo(
+      expectedPayout / trollDefinition.cadenceSeconds,
+      6
+    );
   });
 
   it('derives enterprise intensity and stage from the shared presentation formula', () => {

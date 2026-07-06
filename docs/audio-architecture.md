@@ -2,7 +2,7 @@
 
 ## Goal
 
-Prepare GriftOS for adaptive sound without committing final music or SFX assets.
+Prepare GriftOS for sound without committing the final adaptive music or SFX asset strategy.
 
 The game must remain playable without sound.
 
@@ -46,8 +46,18 @@ Responsibilities:
 - create one `AudioContext` only in the browser;
 - interpret semantic events;
 - apply mute and volume settings;
+- run one optional prototype background loop;
 - expose debug state;
 - degrade if browser audio is unavailable.
+
+Current Web Audio routing:
+
+```text
+music source -> per-track gain -> musicGain -> masterGain -> destination
+SFX source   -> per-cue gain   -> sfxGain   -> masterGain -> destination
+```
+
+`musicGain` is controlled only by the Music slider. `sfxGain` is controlled only by the SFX slider. `masterGain` is controlled by the Master slider and mute.
 
 ## Settings
 
@@ -73,15 +83,26 @@ SFX definitions support:
 - priority;
 - optional future asset paths.
 
-Music layers support:
+Music tracks support:
 
 - id;
 - optional source;
 - loop;
-- base gain;
-- unlock stage.
+- asset-level gain.
 
-Current assets are intentionally absent. The director uses tiny generated debug tones after gesture unlock.
+The temporary prototype background loop, when present, should live at:
+
+```text
+src/assets/audio/grift-os/music/prototype-background.wav
+```
+
+and is referenced at runtime as:
+
+```text
+assets/audio/grift-os/music/prototype-background.wav
+```
+
+The director uses tiny generated debug tones for SFX after gesture unlock. Gameplay remains playable if the prototype music asset is missing or fails to decode.
 
 ## Event Arbitration
 
@@ -90,10 +111,11 @@ Pure audio policy handles:
 - event-to-intent mapping;
 - mute;
 - cooldown;
-- priority suppression;
-- adaptive layer gain.
+- priority suppression.
 
 High-priority automation and Rug Pull cues can briefly suppress ordinary purchase/manual noise.
+
+`adaptiveMusic` remains a persisted setting for compatibility and future design work. It does not currently gate ordinary prototype background playback.
 
 ## Enterprise Intensity
 
@@ -116,4 +138,5 @@ The `?playtest=1` menu exposes:
 - master/music/SFX volumes;
 - test cue;
 - current intensity/stage;
-- placeholder layer gains.
+- active prototype track id;
+- playback state.

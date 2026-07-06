@@ -23,9 +23,8 @@ export function formatValuation(value: number): string {
   }
 
   const scaled = safeValue / unit.value;
-  const digits = scaled >= 100 ? 0 : scaled >= 10 ? 1 : 2;
 
-  return `$${scaled.toFixed(digits).replace(/\.0+$|(\.\d*[1-9])0+$/, '$1')}${unit.suffix}`;
+  return `$${Math.floor(scaled).toLocaleString('en-US')}${unit.suffix}`;
 }
 
 export function formatValuationRate(value: number): string {

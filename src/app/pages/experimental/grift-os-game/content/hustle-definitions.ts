@@ -23,34 +23,64 @@ function milestoneSet(
   hustleId: HustleId,
   unitPlural: string
 ): HustleDefinition['milestones'] {
-  return [
+  const milestones = [
     {
-      id: `${hustleId}-10`,
       requiredUnits: 10,
-      name: `10 ${unitPlural}`,
+      bonus: 0.5,
       description: 'The Hustle stops looking accidental.',
-      reward: outputMilestone(
-        hustleId,
-        10,
-        0.5,
-        `10 ${unitPlural}`,
-        'First visible scale effect.'
-      ),
+      rewardDescription: 'First visible scale effect.',
     },
     {
-      id: `${hustleId}-25`,
       requiredUnits: 25,
-      name: `25 ${unitPlural}`,
+      bonus: 1,
       description: 'The machine becomes easier to mistake for inevitability.',
-      reward: outputMilestone(
-        hustleId,
-        25,
-        1,
-        `25 ${unitPlural}`,
-        'Local output doubles from repeated expansion.'
-      ),
+      rewardDescription: 'Local output doubles from repeated expansion.',
     },
-  ];
+    {
+      requiredUnits: 50,
+      bonus: 0.75,
+      description: 'The operation starts producing its own internal folklore.',
+      rewardDescription: 'The Hustle compounds from accumulated surface area.',
+    },
+    {
+      requiredUnits: 100,
+      bonus: 1,
+      description: 'The audience begins treating repetition as validation.',
+      rewardDescription: 'Local output gains another mature-scale lift.',
+    },
+    {
+      requiredUnits: 250,
+      bonus: 1.25,
+      description: 'The Hustle becomes too large to read as a side quest.',
+      rewardDescription: 'Institutional scale improves local output.',
+    },
+    {
+      requiredUnits: 500,
+      bonus: 1.5,
+      description: 'The machine starts defending itself from boredom.',
+      rewardDescription: 'Portfolio-scale density boosts local output.',
+    },
+    {
+      requiredUnits: 1000,
+      bonus: 2,
+      description: 'The Hustle is now part of the landscape it claims to disrupt.',
+      rewardDescription: 'Dominant scale creates the largest current local-output lift.',
+    },
+  ] as const;
+
+  return milestones.map((milestone) => ({
+    id: `${hustleId}-${milestone.requiredUnits}`,
+    requiredUnits: milestone.requiredUnits,
+    name: `${milestone.requiredUnits} ${unitPlural}`,
+    description: milestone.description,
+    reward: outputMilestone(
+      hustleId,
+      milestone.requiredUnits,
+      milestone.bonus,
+      `${milestone.requiredUnits} ${unitPlural}`,
+      milestone.rewardDescription
+    ),
+  }));
 }
 
 export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] = [

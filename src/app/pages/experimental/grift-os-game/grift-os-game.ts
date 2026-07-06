@@ -1,16 +1,16 @@
-import { CurrencyPipe, DOCUMENT, isPlatformBrowser, PercentPipe } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, PercentPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   HostListener,
-  Inject,
   NgZone,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
   ElementRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AudioDirectorService } from './audio/audio-director.service';
@@ -35,7 +35,7 @@ import {
 import { GameEvent, GameEventRecord, GameTabId, createGameEventRecord } from './game-engine/game-events';
 import { combinedMultiplier, modifierBreakdownForHustle } from './game-engine/modifiers';
 import { deriveEnterprisePresentation, EnterprisePresentation, EnterpriseStage } from './game-engine/presentation';
-import { commitRugPull, createRugPullPreview, RugPullPreview } from './game-engine/rug-pull';
+import { commitRugPull, createRugPullPreview, RugPullPreview, RUG_PULL_CONFIG } from './game-engine/rug-pull';
 import { elapsedForegroundSimulationMs } from './game-engine/simulation-clock';
 import { GriftOsGameState, HustleDefinition, HustleId, ProductionEvent } from './game-engine/types';
 import { formatValuation, formatValuationRate } from './formatting/number-format';
@@ -67,10 +67,13 @@ interface HustleViewModel {
   isAutomated: boolean;
   isProgressResetting: boolean;
   progressPercent: number;
+  progressScale: string;
+  progressAnimationDuration: string;
   progressLabel: string;
   payoutLabel: string;
   averageRateLabel: string;
   cadenceLabel: string;
+  productionLabel: string;
   nextCostLabel: string;
   automationCostLabel: string;
   automationStatusLabel: string;
@@ -84,13 +87,18 @@ interface HustleViewModel {
   canBuyMax: boolean;
   canBuyAutomation: boolean;
   automationEligible: boolean;
+  isPlayerDependent: boolean;
+  isSettledAutomated: boolean;
+  hasContextualAttention: boolean;
   showAutomationState: boolean;
   showAutomationOpportunity: boolean;
   showNextMilestone: boolean;
   showBuyMax: boolean;
   showModifierSummary: boolean;
   nextMilestoneLabel: string;
+  nextMilestoneCompactLabel: string;
   nextMilestoneDescription: string;
+  milestoneProgressScale: string;
   modifierSummaryLabel: string;
 }
 
@@ -98,6 +106,7 @@ interface HustleHorizonView {
   definition: HustleDefinition;
   id: HustleId;
   costLabel: string;
+  shortfallLabel: string;
   canBuy: boolean;
 }
 
@@ -108,6 +117,22 @@ interface PayoutFeedback {
   hustleId: HustleId | null;
   tone: 'payout' | 'automation' | 'milestone' | 'rug-pull';
   expiresAt: number;
+}
+
+type ValuationFlyoutDirection = 'gain' | 'spend';
+
+interface ValuationFlyout {
+  id: number;
+  direction: ValuationFlyoutDirection;
+  label: string;
+  lane: number;
+}
+
+interface RugPullResolution {
+  netWorthGainLabel: string;
+  resultingNetWorthLabel: string;
+  wealthAdvantageLabel: string;
+  peakValuationLabel: string;
 }
 
 interface LeverageDomainDefinition {
@@ -140,15 +165,45 @@ interface GriftMetaSave {
   netWorth: number;
 }
 
+interface GriftRunSave {
+  version: 1;
+  savedAt: number;
+  state: GriftOsGameState;
+  selectedHustleId: HustleId;
+}
+
+interface OfflineReturn {
+  elapsedLabel: string;
+  payoutLabel: string;
+  pendingPayout: number;
+  pendingState: GriftOsGameState;
+}
+
 type RunShortcutId =
   | 'fresh'
   | 'first-expansion'
   | 'automation-ready'
   | 'two-hustles'
   | 'milestone-near'
-  | 'rug-pull-ready';
+  | 'portfolio-mid'
+  | 'portfolio-scale'
+  | 'rug-pull-ready'
+  | 'post-rug';
+type InitialRouteRunState = RunShortcutId;
 
 const META_STORAGE_KEY = 'grift-os-meta-v1';
+const RUN_STORAGE_KEY = 'grift-os-run-v1';
+const SIMULATION_TICK_MS = 50;
+const PROGRESS_RESET_RESTORE_MS = 24;
+const PROGRESS_VISUAL_LEAD_MS = 40;
+const VALUATION_GAIN_FLYOUT_LIMIT = 3;
+const VALUATION_SPEND_FLYOUT_LIMIT = 2;
+const VALUATION_FLYOUT_LIFETIME_MS = 680;
+const RUN_SAVE_THROTTLE_MS = 2000;
+const OFFLINE_RETURN_MIN_MS = 30_000;
+const OFFLINE_RETURN_CAP_MS = 8 * 60 * 60 * 1000;
+const DEFAULT_MUSIC_VOLUME = 0.45;
+const DEFAULT_SFX_VOLUME = 0.7;
 
 const LEVERAGE_DOMAINS: readonly LeverageDomainDefinition[] = [
   {
@@ -210,7 +265,7 @@ const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = 
 @Component({
   selector: 'app-grift-os-game',
   standalone: true,
-  imports: [CurrencyPipe, PercentPipe],
+  imports: [PercentPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './grift-os-game.html',
   styleUrl: './grift-os-game.scss',
@@ -225,7 +280,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     { id: 'automation-ready', label: 'Automation' },
     { id: 'two-hustles', label: 'Two Hustles' },
     { id: 'milestone-near', label: 'Milestone' },
+    { id: 'portfolio-mid', label: 'Buildout' },
+    { id: 'portfolio-scale', label: 'Portfolio' },
     { id: 'rug-pull-ready', label: 'Late Game' },
+    { id: 'post-rug', label: 'Post Rug' },
   ];
   readonly tabs: readonly { id: GameTabId; label: string }[] = [
     { id: 'hustles', label: GRIFT_OS_COPY.tabs.hustles },
@@ -234,42 +292,57 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   ];
 
   @ViewChild('selectedContextPanel') private selectedContextPanel?: ElementRef<HTMLElement>;
+  @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
 
   state: GriftOsGameState = createInitialGameState(this.definitions);
   payoutFeedback: PayoutFeedback[] = [];
+  valuationFlyouts: ValuationFlyout[] = [];
+  rugPullResolution: RugPullResolution | null = null;
   playtestSession: PlaytestSession | null = null;
   playtestStatusMessage = '';
   selectedHustleId: HustleId = this.definitions[0].id;
   selectedContextOpen = false;
   selectedTab: GameTabId = 'hustles';
   gameEvents: GameEventRecord[] = [];
+  offlineReturn: OfflineReturn | null = null;
 
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly documentRef = inject(DOCUMENT);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
+  private readonly route = inject(ActivatedRoute);
+  readonly audioDirector = inject(AudioDirectorService);
   private readonly isBrowser: boolean;
   private simulationTimerId: number | null = null;
   private progressTransitionRestoreTimerId: number | null = null;
   private readonly progressTransitionResetIds = new Set<HustleId>();
   private lastTickTime = 0;
   private feedbackId = 0;
+  private valuationFlyoutId = 0;
+  private readonly valuationFlyoutTimerIds = new Map<number, number>();
   private gameEventId = 0;
+  private lastRunSaveAt = 0;
   private selectedContextReturnTarget: HTMLElement | null = null;
+  private readonly initialRouteRunState: InitialRouteRunState | null;
+  private readonly initialRouteSurface: GameTabId | null;
   private readonly visibilityChangeHandler = (): void => {
     if (!this.isBrowser) {
       return;
     }
 
+    if (this.documentRef.hidden) {
+      this.persistRunState(true);
+    }
+
     this.lastTickTime = performance.now();
   };
 
-  constructor(
-    @Inject(PLATFORM_ID) platformId: object,
-    @Inject(DOCUMENT) private readonly documentRef: Document,
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly ngZone: NgZone,
-    private readonly route: ActivatedRoute,
-    readonly audioDirector: AudioDirectorService
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+  constructor() {
+    this.isBrowser = isPlatformBrowser(this.platformId);
     this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
+    this.initialRouteRunState = this.parseInitialRouteRunState(this.route.snapshot.queryParamMap.get('run'));
+    this.initialRouteSurface = this.parseInitialRouteSurface(this.route.snapshot.queryParamMap.get('surface'));
+    this.applyInitialRouteState(0);
   }
 
   ngOnInit(): void {
@@ -277,7 +350,12 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.state = createInitialGameState(this.definitions, this.loadSavedNetWorth());
+    const savedNetWorth = this.loadSavedNetWorth();
+    const savedRun = this.initialRouteRunState ? null : this.loadSavedRunState(savedNetWorth);
+    this.state = savedRun?.state ?? createInitialGameState(this.definitions, savedNetWorth);
+    this.selectedHustleId = savedRun?.selectedHustleId ?? this.definitions[0].id;
+    this.prepareOfflineReturn(savedRun);
+    this.applyInitialRouteState(this.state.netWorth);
 
     if (this.isPlaytestMode) {
       this.initializePlaytestSession();
@@ -296,7 +374,14 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       window.clearTimeout(this.progressTransitionRestoreTimerId);
     }
 
+    for (const timerId of this.valuationFlyoutTimerIds.values()) {
+      window.clearTimeout(timerId);
+    }
+
+    this.valuationFlyoutTimerIds.clear();
+
     if (this.isBrowser) {
+      this.persistRunState(true);
       this.documentRef.removeEventListener('visibilitychange', this.visibilityChangeHandler);
       this.setContextOverlayBodyState(false);
     }
@@ -322,6 +407,18 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return `+${this.rugPullPreview.wealthAdvantagePercent.toFixed(0)}% all Hustle output`;
   }
 
+  get rugPullNetWorthGainLabel(): string {
+    return `+${formatValuation(this.rugPullPreview.projectedNetWorthGain)}`;
+  }
+
+  get rugPullResultingNetWorthLabel(): string {
+    return formatValuation(this.rugPullPreview.resultingNetWorth);
+  }
+
+  get rugPullWealthAdvantageLabel(): string {
+    return `+${this.rugPullPreview.wealthAdvantagePercent.toFixed(0)}% next-run output`;
+  }
+
   get presentation(): EnterprisePresentation {
     return deriveEnterprisePresentation(this.state, this.definitions);
   }
@@ -344,6 +441,13 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   get resetAutomationCount(): number {
     return this.definitions.filter((definition) => this.state.hustles[definition.id].isAutomated).length;
+  }
+
+  get resetMilestoneCount(): number {
+    return this.definitions.reduce(
+      (count, definition) => count + this.state.hustles[definition.id].reachedMilestones.length,
+      0
+    );
   }
 
   get selectedHustle(): HustleViewModel {
@@ -389,6 +493,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       definition,
       id: definition.id,
       costLabel: formatValuation(cost),
+      shortfallLabel: formatValuation(Math.max(0, cost - this.state.valuation)),
       canBuy: this.state.valuation >= cost,
     };
   }
@@ -473,6 +578,22 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return this.audioDirector.settings();
   }
 
+  get isMusicMuted(): boolean {
+    return this.audioSettings.isMuted || this.audioSettings.musicVolume <= 0;
+  }
+
+  get isSfxMuted(): boolean {
+    return this.audioSettings.isMuted || this.audioSettings.sfxVolume <= 0;
+  }
+
+  get musicToggleLabel(): string {
+    return this.isMusicMuted ? 'Music off' : 'Music on';
+  }
+
+  get sfxToggleLabel(): string {
+    return this.isSfxMuted ? 'SFX off' : 'SFX on';
+  }
+
   get hustleRows(): HustleViewModel[] {
     const hasAnyAutomation = this.hasAnyAutomation;
     const hasAnyMilestone = this.hasAnyMilestone;
@@ -480,8 +601,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return this.definitions.map((definition) => {
       const hustle = this.state.hustles[definition.id];
       const cadenceSeconds = effectiveCadenceSeconds(this.state, this.definitions, definition.id);
+      const cadenceMs = cadenceSeconds * 1000;
       const progressPercent = hustle.isActive
-        ? Math.min(100, (hustle.progressMs / (cadenceSeconds * 1000)) * 100)
+        ? Math.min(100, (hustle.progressMs / cadenceMs) * 100)
         : 0;
       const nextCost = nextHustleCost(definition, hustle.units, this.state, this.definitions);
       const buyMaxCount = maxAffordableQuantity(
@@ -502,6 +624,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       const automationEligible = hustle.units > 0 && !hustle.isAutomated;
       const canBuyAutomationForHustle = canBuyAutomation(this.state, this.definitions, definition.id);
       const modifierSummaryLabel = this.modifierSummaryLabel(definition.id);
+      const isPlayerDependent = hustle.units > 0 && !hustle.isAutomated;
+      const showNextMilestone = hustle.units > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone);
 
       return {
         definition,
@@ -512,6 +636,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         isAutomated: hustle.isAutomated,
         isProgressResetting: this.progressTransitionResetIds.has(definition.id),
         progressPercent,
+        progressScale: (progressPercent / 100).toFixed(4),
+        progressAnimationDuration: `${Math.max(1, cadenceMs - PROGRESS_VISUAL_LEAD_MS)}ms`,
         progressLabel: hustle.isActive
           ? `${Math.floor(progressPercent)}%`
           : hustle.isAutomated
@@ -520,19 +646,22 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         payoutLabel: formatValuation(payout),
         averageRateLabel: formatValuationRate(payout / cadenceSeconds),
         cadenceLabel: `Every ${this.formatSeconds(cadenceSeconds)}`,
+        productionLabel: `${formatValuation(payout)} every ${this.formatSeconds(cadenceSeconds)}`,
         nextCostLabel: formatValuation(nextCost),
         automationCostLabel: formatValuation(automationCost(this.state, this.definitions, definition.id)),
         automationStatusLabel: hustle.isAutomated
-          ? `${definition.automationName} online`
-          : automationEligible
-            ? `${definition.automationName} available`
+          ? `${definition.automationName} compounding`
+          : canBuyAutomationForHustle
+            ? `${definition.automationName} ready`
+            : automationEligible && hasAnyAutomation
+              ? `${definition.automationName} ahead`
             : 'Acquire this Hustle to automate',
         expansionButtonLabel: `${definition.expansionActionLabel} · ${formatValuation(nextCost)}`,
         manualButtonLabel: `${definition.manualActionLabel} · ${formatValuation(payout)}`,
         manualActiveLabel: `${definition.manualActionLabel}...`,
         buyMaxLabel: buyMaxCount > 0
-          ? `Max (${buyMaxCount})`
-          : 'Max',
+          ? `Buy +${buyMaxCount}`
+          : 'Buy Max',
         buyMaxCount,
         canManualAction: hustle.units > 0 && !hustle.isActive && !hustle.isAutomated,
         canBuyOne: this.state.valuation >= hustleCostForQuantity(
@@ -545,17 +674,26 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         canBuyMax: buyMaxCount > 0,
         canBuyAutomation: canBuyAutomationForHustle,
         automationEligible,
+        isPlayerDependent,
+        isSettledAutomated: hustle.isAutomated && !canBuyAutomationForHustle,
+        hasContextualAttention: definition.id === this.selectedHustleId || isNearMilestone,
         showAutomationState: hustle.isAutomated || (automationEligible && (hasAnyAutomation || canBuyAutomationForHustle)),
         showAutomationOpportunity: automationEligible && canBuyAutomationForHustle,
-        showNextMilestone: hustle.units > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone),
+        showNextMilestone,
         showBuyMax: buyMaxCount >= 2,
         showModifierSummary: modifierSummaryLabel.length > 0,
         nextMilestoneLabel: nextMilestone
           ? `${nextMilestone.requiredUnits} ${this.unitLabel(definition, nextMilestone.requiredUnits)}`
           : 'All current milestones reached',
+        nextMilestoneCompactLabel: nextMilestone
+          ? `Next ${nextMilestone.requiredUnits}`
+          : 'Complete',
         nextMilestoneDescription: nextMilestone
           ? `${nextMilestone.reward.label} · ${nextMilestone.description ?? 'Milestone effect'}`
           : 'Future milestone tuning can extend this track.',
+        milestoneProgressScale: nextMilestone
+          ? Math.min(1, Math.max(0, hustle.units / nextMilestone.requiredUnits)).toFixed(4)
+          : '1',
         modifierSummaryLabel,
       };
     });
@@ -618,6 +756,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = nextState;
 
     if (nextState !== previousState) {
+      if (this.isBrowser) {
+        this.lastTickTime = performance.now();
+      }
+
       const definition = this.getDefinition(hustleId);
 
       if (definition) {
@@ -629,6 +771,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.updateAudioPresentation();
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -649,7 +792,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.purchased) {
+      this.lastTickTime = performance.now();
       const definition = this.getDefinition(hustleId);
+      this.addValuationFlyout('spend', result.totalCost);
       this.addFeedback(definition?.automationName ?? 'Automation', 'online', 'automation', hustleId);
       this.emitGameEvent({
         type: 'hustle.automationActivated',
@@ -681,6 +826,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.updateAudioPresentation();
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -722,9 +868,35 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     window.setTimeout(() => returnTarget.focus(), 0);
   }
 
+  closeUtilityMenu(event: Event): void {
+    const trigger = event.currentTarget;
+
+    if (!(trigger instanceof HTMLElement)) {
+      return;
+    }
+
+    const menu = trigger.closest('details');
+
+    if (!menu) {
+      return;
+    }
+
+    menu.removeAttribute('open');
+    const summary = menu.querySelector('summary');
+
+    if (summary instanceof HTMLElement) {
+      summary.focus();
+    }
+  }
+
   @HostListener('document:keydown.escape')
   closeSelectedContextFromEscape(): void {
     this.closeSelectedContext();
+  }
+
+  @HostListener('window:beforeunload')
+  persistRunBeforeUnload(): void {
+    this.persistRunState(true);
   }
 
   commitRugPull(): void {
@@ -732,14 +904,25 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!window.confirm('Rug Pull this run and convert part of peak Valuation into Net Worth?')) {
+    if (!window.confirm('Commit Rug Pull? This run ends. Net Worth persists into the next run.')) {
       return;
     }
 
     const previousState = this.state;
     const result = commitRugPull(this.state, this.definitions);
     this.state = result.state;
+    this.selectedTab = 'hustles';
+    this.selectedHustleId = this.definitions[0].id;
+    this.selectedContextOpen = false;
+    this.setContextOverlayBodyState(false);
+    this.selectedContextReturnTarget = null;
+    this.rugPullResolution = this.createRugPullResolution(
+      result.netWorthGained,
+      result.state.netWorth,
+      previousState.peakValuation
+    );
     this.persistNetWorth();
+    this.persistRunState(true);
     this.emitGameEvent({
       type: 'rugPull.committed',
       rugPullState: 'committed',
@@ -747,7 +930,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     });
     this.emitGameEvent({ type: 'rugPull.completed', rugPullState: 'returning', netWorthGain: result.netWorthGained });
     this.emitGameEvent({ type: 'newRun.started', rugPullState: 'returning' });
-    this.addFeedback(`+${formatValuation(result.netWorthGained)}`, 'Net Worth extracted', 'rug-pull', null);
+    this.payoutFeedback = [];
+    this.clearValuationFlyouts();
     this.updatePlaytestSession((session, nowMs) =>
       recordRugPullCommit(
         session,
@@ -760,6 +944,13 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     );
     this.progressTransitionResetIds.clear();
     this.updateAudioPresentation();
+    this.changeDetectorRef.markForCheck();
+    window.setTimeout(() => this.hustlesSurface?.nativeElement.focus(), 0);
+  }
+
+  dismissRugPullResolution(): void {
+    this.rugPullResolution = null;
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -777,6 +968,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       appendPlaytestEvent(session, 'session_reset', {}, nowMs)
     );
     this.playtestStatusMessage = 'Run reset to initial conditions.';
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -793,6 +985,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.playtestSession = createPlaytestSession(Date.now());
     this.playtestStatusMessage = 'Fresh playtest session started.';
     this.persistPlaytestSession();
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -804,10 +997,28 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.selectedContextReturnTarget = null;
     this.progressTransitionResetIds.clear();
     this.payoutFeedback = [];
+    this.clearValuationFlyouts();
+    this.rugPullResolution = shortcutId === 'post-rug'
+      ? this.createRugPullResolution(
+          RUG_PULL_CONFIG.baseNetWorthGain,
+          this.state.netWorth,
+          RUG_PULL_CONFIG.unlockValuation
+        )
+      : null;
     this.lastTickTime = this.isBrowser ? performance.now() : 0;
-    this.selectedHustleId = shortcutId === 'two-hustles' ? 'podcast-network' : 'troll-network';
+    if (shortcutId === 'two-hustles') {
+      this.selectedHustleId = 'podcast-network';
+    } else if (shortcutId === 'portfolio-mid') {
+      this.selectedHustleId = 'culture-war-media';
+    } else if (shortcutId === 'portfolio-scale') {
+      this.selectedHustleId = 'venture-portfolio';
+    } else {
+      this.selectedHustleId = 'troll-network';
+    }
     this.playtestStatusMessage = `Jumped to ${this.runShortcutLabel(shortcutId)}.`;
     this.updateAudioPresentation();
+    this.persistNetWorth();
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
@@ -911,6 +1122,18 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     });
   }
 
+  toggleAudioChannel(channel: 'music' | 'sfx'): void {
+    const setting = channel === 'music' ? 'musicVolume' : 'sfxVolume';
+    const restoreVolume = channel === 'music' ? DEFAULT_MUSIC_VOLUME : DEFAULT_SFX_VOLUME;
+    const currentVolume = this.audioSettings[setting];
+
+    this.audioDirector.updateSettings({
+      ...this.audioSettings,
+      isMuted: false,
+      [setting]: currentVolume > 0 ? 0 : restoreVolume,
+    });
+  }
+
   updateAudioVolume(
     setting: 'masterVolume' | 'musicVolume' | 'sfxVolume',
     event: Event
@@ -927,6 +1150,27 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.audioDirector.testCue('automation-online');
   }
 
+  claimOfflineReturn(): void {
+    if (!this.offlineReturn) {
+      return;
+    }
+
+    const pendingReturn = this.offlineReturn;
+    this.state = pendingReturn.pendingState;
+    this.offlineReturn = null;
+    this.addValuationFlyout('gain', pendingReturn.pendingPayout);
+    this.addFeedback('Away money', pendingReturn.payoutLabel, 'payout', null);
+    this.persistRunState(true);
+    this.updateAudioPresentation();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  dismissOfflineReturn(): void {
+    this.offlineReturn = null;
+    this.persistRunState(true);
+    this.changeDetectorRef.markForCheck();
+  }
+
   trackHustle(_index: number, row: HustleViewModel): HustleId {
     return row.id;
   }
@@ -941,6 +1185,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   trackFeedback(_index: number, feedback: PayoutFeedback): number {
     return feedback.id;
+  }
+
+  trackValuationFlyout(_index: number, flyout: ValuationFlyout): number {
+    return flyout.id;
   }
 
   trackGameEvent(_index: number, event: GameEventRecord): number {
@@ -960,28 +1208,35 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     this.ngZone.run(() => {
       const previousState = this.state;
-      const previousPresentation = this.presentation;
       const result = advanceGame(this.state, this.definitions, elapsedMs);
       this.state = result.state;
       const nowMs = Date.now();
 
-      for (const event of result.events) {
-        this.progressTransitionResetIds.add(event.hustleId);
-        this.addPayoutFeedback(event, timestamp);
-        this.recordPlaytestCycle(event, previousState, nowMs);
-        this.emitGameEvent({ type: 'hustle.manualActionCompleted', hustleId: event.hustleId });
-      }
-
       if (result.events.length > 0) {
+        const previousPresentation = deriveEnterprisePresentation(previousState, this.definitions);
+
+        for (const event of result.events) {
+          this.progressTransitionResetIds.add(event.hustleId);
+          this.addPayoutFeedback(event, timestamp);
+          this.recordPlaytestCycle(event, previousState, nowMs);
+          this.emitGameEvent({ type: 'hustle.manualActionCompleted', hustleId: event.hustleId });
+        }
+
         this.scheduleProgressTransitionRestore();
+        this.capturePlaytestDiscoveries(nowMs);
+        this.emitStageChangeIfNeeded(previousPresentation, this.presentation);
+        this.updateAudioPresentation();
+        this.persistRunState(true);
       }
 
-      this.capturePlaytestDiscoveries(nowMs);
       this.capturePlaytestSnapshot(nowMs);
-      this.payoutFeedback = this.payoutFeedback.filter((feedback) => feedback.expiresAt > timestamp);
-      this.emitStageChangeIfNeeded(previousPresentation, this.presentation);
-      this.updateAudioPresentation();
-      this.changeDetectorRef.markForCheck();
+      this.persistRunState();
+
+      if (this.payoutFeedback.length > 0) {
+        this.payoutFeedback = this.payoutFeedback.filter((feedback) => feedback.expiresAt > timestamp);
+      }
+
+      this.changeDetectorRef.detectChanges();
     });
   };
 
@@ -994,7 +1249,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.documentRef.addEventListener('visibilitychange', this.visibilityChangeHandler);
 
     this.ngZone.runOutsideAngular(() => {
-      this.simulationTimerId = window.setInterval(this.tick, 100);
+      this.simulationTimerId = window.setInterval(this.tick, SIMULATION_TICK_MS);
     });
   }
 
@@ -1010,6 +1265,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       const definition = this.getDefinition(hustleId);
       const wasAcquisition = previousState.hustles[hustleId].units <= 0;
 
+      this.addValuationFlyout('spend', result.totalCost);
       this.emitGameEvent({
         type: wasAcquisition ? 'hustle.acquired' : 'hustle.expanded',
         hustleId,
@@ -1056,17 +1312,20 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.updateAudioPresentation();
+    this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
   private addPayoutFeedback(event: ProductionEvent, timestamp: number): void {
     const definition = this.definitions.find((candidate) => candidate.id === event.hustleId);
+    const totalPayout = event.payout * event.cyclesCompleted;
 
+    this.addValuationFlyout('gain', totalPayout);
     this.feedbackId += 1;
     this.payoutFeedback = [
       {
         id: this.feedbackId,
-        text: `+${formatValuation(event.payout * event.cyclesCompleted)}`,
+        text: `+${formatValuation(totalPayout)}`,
         hustleName: definition?.name ?? 'Hustle',
         hustleId: event.hustleId,
         tone: 'payout' as const,
@@ -1109,6 +1368,21 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.persistPlaytestSession();
   }
 
+  private createRugPullResolution(
+    netWorthGained: number,
+    resultingNetWorth: number,
+    peakValuation: number
+  ): RugPullResolution {
+    const preview = createRugPullPreview(createInitialGameState(this.definitions, resultingNetWorth));
+
+    return {
+      netWorthGainLabel: `+${formatValuation(netWorthGained)}`,
+      resultingNetWorthLabel: formatValuation(resultingNetWorth),
+      wealthAdvantageLabel: `+${preview.wealthAdvantagePercent.toFixed(0)}% all Hustle output`,
+      peakValuationLabel: formatValuation(peakValuation),
+    };
+  }
+
   private resetRunState(): void {
     this.state = createInitialGameState(this.definitions, this.state.netWorth);
     this.selectedHustleId = this.definitions[0].id;
@@ -1117,6 +1391,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.selectedContextReturnTarget = null;
     this.selectedTab = 'hustles';
     this.payoutFeedback = [];
+    this.clearValuationFlyouts();
+    this.rugPullResolution = null;
     this.progressTransitionResetIds.clear();
     this.feedbackId = 0;
     this.lastTickTime = performance.now();
@@ -1186,6 +1462,94 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
             },
           },
         };
+      case 'portfolio-mid':
+        return {
+          ...state,
+          valuation: 60_000,
+          peakValuation: 60_000,
+          hustles: {
+            ...state.hustles,
+            'troll-network': {
+              ...state.hustles['troll-network'],
+              units: 18,
+              isAutomated: true,
+              isActive: true,
+              reachedMilestones: ['troll-network-10'],
+            },
+            'podcast-network': {
+              ...state.hustles['podcast-network'],
+              units: 8,
+              isAutomated: true,
+              isActive: true,
+            },
+            'culture-war-media': {
+              ...state.hustles['culture-war-media'],
+              units: 4,
+            },
+            'masterclass-business': {
+              ...state.hustles['masterclass-business'],
+              units: 1,
+            },
+          },
+        };
+      case 'portfolio-scale':
+        return {
+          ...state,
+          valuation: 999_900_000,
+          peakValuation: 999_900_000,
+          hustles: {
+            ...state.hustles,
+            'troll-network': {
+              ...state.hustles['troll-network'],
+              units: 30,
+              isAutomated: true,
+              isActive: true,
+              reachedMilestones: ['troll-network-10', 'troll-network-25'],
+            },
+            'podcast-network': {
+              ...state.hustles['podcast-network'],
+              units: 20,
+              isAutomated: true,
+              isActive: true,
+              reachedMilestones: ['podcast-network-10'],
+            },
+            'culture-war-media': {
+              ...state.hustles['culture-war-media'],
+              units: 12,
+              isAutomated: true,
+              isActive: true,
+              reachedMilestones: ['culture-war-media-10'],
+            },
+            'masterclass-business': {
+              ...state.hustles['masterclass-business'],
+              units: 8,
+              isAutomated: true,
+              isActive: true,
+            },
+            'manifesto-imprint': {
+              ...state.hustles['manifesto-imprint'],
+              units: 6,
+              isAutomated: true,
+              isActive: true,
+            },
+            'founder-retreat-circuit': {
+              ...state.hustles['founder-retreat-circuit'],
+              units: 4,
+              isAutomated: true,
+              isActive: true,
+            },
+            'ai-venture': {
+              ...state.hustles['ai-venture'],
+              units: 2,
+              isAutomated: true,
+              isActive: true,
+            },
+            'venture-portfolio': {
+              ...state.hustles['venture-portfolio'],
+              units: 1,
+            },
+          },
+        };
       case 'rug-pull-ready':
         return {
           ...state,
@@ -1212,6 +1576,72 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
             },
           },
         };
+      case 'post-rug':
+        return createInitialGameState(
+          this.definitions,
+          Math.max(state.netWorth, RUG_PULL_CONFIG.baseNetWorthGain)
+        );
+    }
+  }
+
+  private parseInitialRouteRunState(value: string | null): InitialRouteRunState | null {
+    if (
+      value === 'fresh' ||
+      value === 'first-expansion' ||
+      value === 'automation-ready' ||
+      value === 'two-hustles' ||
+      value === 'milestone-near' ||
+      value === 'portfolio-mid' ||
+      value === 'portfolio-scale' ||
+      value === 'rug-pull-ready' ||
+      value === 'post-rug'
+    ) {
+      return value;
+    }
+
+    return null;
+  }
+
+  private parseInitialRouteSurface(value: string | null): GameTabId | null {
+    if (value === 'hustles' || value === 'leverage' || value === 'rugPull') {
+      return value;
+    }
+
+    return null;
+  }
+
+  private applyInitialRouteState(netWorth: number): void {
+    if (!this.isPlaytestMode || this.initialRouteRunState === null) {
+      return;
+    }
+
+    if (this.initialRouteRunState === 'post-rug') {
+      const resultingNetWorth = Math.max(netWorth, RUG_PULL_CONFIG.baseNetWorthGain);
+      this.state = createInitialGameState(this.definitions, resultingNetWorth);
+      this.selectedTab = 'hustles';
+      this.selectedHustleId = this.definitions[0].id;
+      this.rugPullResolution = this.createRugPullResolution(
+        RUG_PULL_CONFIG.baseNetWorthGain,
+        resultingNetWorth,
+        RUG_PULL_CONFIG.unlockValuation
+      );
+      return;
+    }
+
+    this.state = this.createRunShortcutState(this.initialRouteRunState);
+
+    if (this.initialRouteRunState === 'two-hustles') {
+      this.selectedHustleId = 'podcast-network';
+    } else if (this.initialRouteRunState === 'portfolio-mid') {
+      this.selectedHustleId = 'culture-war-media';
+    } else if (this.initialRouteRunState === 'portfolio-scale') {
+      this.selectedHustleId = 'venture-portfolio';
+    } else {
+      this.selectedHustleId = 'troll-network';
+    }
+
+    if (this.initialRouteSurface && this.isTabAvailable(this.initialRouteSurface)) {
+      this.selectedTab = this.initialRouteSurface;
     }
   }
 
@@ -1234,7 +1664,74 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         this.progressTransitionRestoreTimerId = null;
         this.changeDetectorRef.markForCheck();
       });
-    }, 40);
+    }, PROGRESS_RESET_RESTORE_MS);
+  }
+
+  private addValuationFlyout(direction: ValuationFlyoutDirection, amount: number): void {
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return;
+    }
+
+    this.valuationFlyoutId += 1;
+    const limit = direction === 'gain' ? VALUATION_GAIN_FLYOUT_LIMIT : VALUATION_SPEND_FLYOUT_LIMIT;
+    const sameDirectionCount = this.valuationFlyouts.filter((flyout) => flyout.direction === direction).length;
+    const flyout: ValuationFlyout = {
+      id: this.valuationFlyoutId,
+      direction,
+      label: `${direction === 'gain' ? '↑ +' : '↓ -'}${formatValuation(amount)}`,
+      lane: sameDirectionCount % limit,
+    };
+    const nextFlyouts = [
+      flyout,
+      ...this.valuationFlyouts,
+    ];
+    const keptFlyouts = [
+      ...nextFlyouts.filter((candidate) => candidate.direction === 'gain').slice(0, VALUATION_GAIN_FLYOUT_LIMIT),
+      ...nextFlyouts.filter((candidate) => candidate.direction === 'spend').slice(0, VALUATION_SPEND_FLYOUT_LIMIT),
+    ].sort((first, second) => second.id - first.id);
+    const keptIds = new Set(keptFlyouts.map((candidate) => candidate.id));
+
+    for (const existing of this.valuationFlyouts) {
+      if (!keptIds.has(existing.id)) {
+        this.clearValuationFlyoutTimer(existing.id);
+      }
+    }
+
+    this.valuationFlyouts = keptFlyouts;
+
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      this.ngZone.run(() => {
+        this.valuationFlyouts = this.valuationFlyouts.filter((candidate) => candidate.id !== flyout.id);
+        this.valuationFlyoutTimerIds.delete(flyout.id);
+        this.changeDetectorRef.markForCheck();
+      });
+    }, VALUATION_FLYOUT_LIFETIME_MS);
+
+    this.valuationFlyoutTimerIds.set(flyout.id, timerId);
+  }
+
+  private clearValuationFlyouts(): void {
+    for (const timerId of this.valuationFlyoutTimerIds.values()) {
+      window.clearTimeout(timerId);
+    }
+
+    this.valuationFlyoutTimerIds.clear();
+    this.valuationFlyouts = [];
+  }
+
+  private clearValuationFlyoutTimer(flyoutId: number): void {
+    const timerId = this.valuationFlyoutTimerIds.get(flyoutId);
+
+    if (timerId === undefined) {
+      return;
+    }
+
+    window.clearTimeout(timerId);
+    this.valuationFlyoutTimerIds.delete(flyoutId);
   }
 
   private setContextOverlayBodyState(isOpen: boolean): void {
@@ -1342,6 +1839,162 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     } catch {
       return null;
     }
+  }
+
+  private loadSavedRunState(savedNetWorth: number): GriftRunSave | null {
+    if (!this.isBrowser) {
+      return null;
+    }
+
+    try {
+      const rawSave = window.localStorage.getItem(RUN_STORAGE_KEY);
+
+      if (!rawSave) {
+        return null;
+      }
+
+      const parsed = JSON.parse(rawSave) as Partial<GriftRunSave>;
+
+      if (parsed.version !== 1 || !parsed.state) {
+        return null;
+      }
+
+      const selectedHustleId = this.isKnownHustleId(parsed.selectedHustleId)
+        ? parsed.selectedHustleId
+        : this.definitions[0].id;
+
+      return {
+        version: 1,
+        savedAt: Number.isFinite(parsed.savedAt) ? Number(parsed.savedAt) : Date.now(),
+        selectedHustleId,
+        state: this.reconcileSavedGameState(parsed.state, savedNetWorth),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private prepareOfflineReturn(savedRun: GriftRunSave | null): void {
+    if (!savedRun) {
+      return;
+    }
+
+    const elapsedMs = Date.now() - savedRun.savedAt;
+
+    if (elapsedMs < OFFLINE_RETURN_MIN_MS) {
+      return;
+    }
+
+    const simulatedElapsedMs = Math.min(elapsedMs, OFFLINE_RETURN_CAP_MS);
+    const offlineBaseState = {
+      ...this.state,
+      hustles: Object.fromEntries(
+        this.definitions.map((definition) => {
+          const hustle = this.state.hustles[definition.id];
+
+          return [
+            definition.id,
+            hustle.isAutomated
+              ? hustle
+              : {
+                  ...hustle,
+                  isActive: false,
+                  progressMs: 0,
+                },
+          ];
+        })
+      ) as unknown as GriftOsGameState['hustles'],
+    };
+    const result = advanceGame(offlineBaseState, this.definitions, simulatedElapsedMs);
+    const pendingPayout = Math.max(0, result.state.valuation - offlineBaseState.valuation);
+
+    if (pendingPayout <= 0) {
+      return;
+    }
+
+    this.offlineReturn = {
+      elapsedLabel: this.formatElapsed(elapsedMs),
+      payoutLabel: formatValuation(pendingPayout),
+      pendingPayout,
+      pendingState: result.state,
+    };
+  }
+
+  private reconcileSavedGameState(savedState: Partial<GriftOsGameState>, savedNetWorth: number): GriftOsGameState {
+    const initialState = createInitialGameState(this.definitions, savedNetWorth);
+    const netWorth = Math.max(
+      0,
+      this.finiteNumber(savedState.netWorth, savedNetWorth),
+      savedNetWorth
+    );
+    const valuation = Math.max(0, this.finiteNumber(savedState.valuation, initialState.valuation));
+    const peakValuation = Math.max(valuation, this.finiteNumber(savedState.peakValuation, valuation));
+    const hustles = Object.fromEntries(
+      this.definitions.map((definition) => {
+        const fallback = initialState.hustles[definition.id];
+        const savedHustle = savedState.hustles?.[definition.id];
+        const validMilestones = new Set(definition.milestones.map((milestone) => milestone.id));
+
+        return [
+          definition.id,
+          {
+            ...fallback,
+            units: Math.max(0, Math.floor(this.finiteNumber(savedHustle?.units, fallback.units))),
+            isActive: Boolean(savedHustle?.isActive),
+            isAutomated: Boolean(savedHustle?.isAutomated),
+            progressMs: Math.max(0, this.finiteNumber(savedHustle?.progressMs, 0)),
+            reachedMilestones: Array.isArray(savedHustle?.reachedMilestones)
+              ? savedHustle.reachedMilestones.filter((milestoneId): milestoneId is string =>
+                  typeof milestoneId === 'string' && validMilestones.has(milestoneId)
+                )
+              : [],
+          },
+        ];
+      })
+    ) as unknown as GriftOsGameState['hustles'];
+
+    return {
+      ...initialState,
+      valuation,
+      peakValuation,
+      netWorth,
+      rugPullState: savedState.rugPullState ?? initialState.rugPullState,
+      hustles,
+    };
+  }
+
+  private persistRunState(force = false): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const now = Date.now();
+
+    if (!force && now - this.lastRunSaveAt < RUN_SAVE_THROTTLE_MS) {
+      return;
+    }
+
+    try {
+      const save: GriftRunSave = {
+        version: 1,
+        savedAt: now,
+        state: this.state,
+        selectedHustleId: this.selectedHustleId,
+      };
+
+      window.localStorage.setItem(RUN_STORAGE_KEY, JSON.stringify(save));
+      this.lastRunSaveAt = now;
+    } catch {
+      // Local run persistence is non-critical for the active simulation.
+    }
+  }
+
+  private isKnownHustleId(value: unknown): value is HustleId {
+    return typeof value === 'string' && this.definitions.some((definition) => definition.id === value);
+  }
+
+  private finiteNumber(value: unknown, fallback: number): number {
+    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
   }
 
   private loadSavedNetWorth(): number {

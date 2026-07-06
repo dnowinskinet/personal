@@ -1,0 +1,1665 @@
+{
+  "screenshotFiles": [
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\01-fresh-wide.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\02-automation-ready-wide.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\03-buildout-wide.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\04-portfolio-wide.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\05-late-game-wide.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\06-portfolio-medium.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\07-fresh-mobile.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\08-portfolio-mobile.png",
+    "C:\\Users\\dnowi\\Documents\\Github\\personal\\artifacts\\griftos-m4\\09-portfolio-mobile-selected-context.png"
+  ],
+  "verification": [
+    {
+      "horizontalOverflow": false,
+      "label": "fresh-wide",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 0,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [],
+      "ownedRows": 1,
+      "rowNames": [
+        "Troll Network"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Troll People Online · $4",
+            "Add Forum · $56"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 171,
+              "text": "Troll People Online · $4",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 113,
+              "text": "Add Forum · $56",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-contextual"
+          ],
+          "name": "Troll Network"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 1432,
+      "selectedContextOpen": false,
+      "settledRows": [],
+      "valuation": "$0",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 1000,
+        "width": 1432
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "automation-ready-wide",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 0,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Troll Network"
+      ],
+      "ownedRows": 1,
+      "rowNames": [
+        "Troll Network"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Troll People Online · $8",
+            "Add Forum · $64",
+            "Automate · $110"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 171,
+              "text": "Troll People Online · $8",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 113,
+              "text": "Add Forum · $64",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 153,
+              "height": 42,
+              "scrollWidth": 153,
+              "text": "Automate · $110",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-contextual",
+            "grift-hustle-attention-opportunity"
+          ],
+          "name": "Troll Network"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 1432,
+      "selectedContextOpen": false,
+      "settledRows": [],
+      "valuation": "$130",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 1000,
+        "width": 1432
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "buildout-wide",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 4,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Culture-War Media",
+        "Masterclass Business"
+      ],
+      "ownedRows": 4,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $512",
+            "Max (21)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add Forum · $512",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (21)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $489",
+            "Max (21)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Launch Show · $489",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (21)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Pick a Fight · $600",
+            "Add Channel · $1.63K",
+            "Max (13)",
+            "Automate · $5.2K"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 141,
+              "text": "Pick a Fight · $600",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 143,
+              "text": "Add Channel · $1.63K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 72,
+              "height": 42,
+              "scrollWidth": 72,
+              "text": "Max (13)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 42,
+              "scrollWidth": 157,
+              "text": "Automate · $5.2K",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity",
+            "grift-hustle-contextual"
+          ],
+          "name": "Culture-War Media"
+        },
+        {
+          "actionText": [
+            "Sell a Masterclass · $950",
+            "Add Course · $7.47K",
+            "Max (5)",
+            "Automate · $44K"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 184,
+              "text": "Sell a Masterclass · $950",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 137,
+              "text": "Add Course · $7.47K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 72,
+              "height": 42,
+              "scrollWidth": 72,
+              "text": "Max (5)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 153,
+              "height": 42,
+              "scrollWidth": 153,
+              "text": "Automate · $44K",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity"
+          ],
+          "name": "Masterclass Business"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 1432,
+      "selectedContextOpen": false,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network"
+      ],
+      "valuation": "$60K",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 1000,
+        "width": 1432
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "portfolio-wide",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 7,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Venture Portfolio"
+      ],
+      "ownedRows": 8,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture",
+        "Venture Portfolio"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $2.42K",
+            "Max (84)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add Forum · $2.42K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (84)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $2.62K",
+            "Max (78)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 147,
+              "text": "Launch Show · $2.62K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (78)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Add Channel · $5.34K",
+            "Max (69)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add Channel · $5.34K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (69)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Culture-War Media"
+        },
+        {
+          "actionText": [
+            "Add Course · $19.9K",
+            "Max (63)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add Course · $19.9K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (63)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Masterclass Business"
+        },
+        {
+          "actionText": [
+            "Commission Title · $113K",
+            "Max (52)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 164,
+              "text": "Commission Title · $113K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (52)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Manifesto Imprint"
+        },
+        {
+          "actionText": [
+            "Add City · $709K",
+            "Max (40)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add City · $709K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (40)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Founder Retreat Circuit"
+        },
+        {
+          "actionText": [
+            "Launch Product Line · $4.51M",
+            "Max (27)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 189,
+              "text": "Launch Product Line · $4.51M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (27)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "AI Venture"
+        },
+        {
+          "actionText": [
+            "Place a Bet · $2.5M",
+            "Back Company · $33.9M",
+            "Max (12)",
+            "Automate · $210M"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 144,
+              "text": "Place a Bet · $2.5M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 159,
+              "text": "Back Company · $33.9M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 72,
+              "height": 42,
+              "scrollWidth": 72,
+              "text": "Max (12)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 167,
+              "height": 42,
+              "scrollWidth": 167,
+              "text": "Automate · $210M",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity",
+            "grift-hustle-contextual"
+          ],
+          "name": "Venture Portfolio"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 1432,
+      "selectedContextOpen": false,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture"
+      ],
+      "valuation": "$1000M",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 1000,
+        "width": 1432
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "late-game-wide",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 3,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Culture-War Media"
+      ],
+      "ownedRows": 3,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $182",
+            "Max (81)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Add Forum · $182",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (81)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-selected",
+            "grift-hustle-contextual"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $321",
+            "Max (71)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 143,
+              "height": 32,
+              "scrollWidth": 143,
+              "text": "Launch Show · $321",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 88,
+              "height": 32,
+              "scrollWidth": 88,
+              "text": "Max (71)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Pick a Fight · $450",
+            "Add Channel · $1.4K",
+            "Max (58)",
+            "Automate · $5.2K"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 128,
+              "height": 42,
+              "scrollWidth": 141,
+              "text": "Pick a Fight · $450",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 108,
+              "height": 42,
+              "scrollWidth": 135,
+              "text": "Add Channel · $1.4K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 72,
+              "height": 42,
+              "scrollWidth": 72,
+              "text": "Max (58)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 42,
+              "scrollWidth": 157,
+              "text": "Automate · $5.2K",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity"
+          ],
+          "name": "Culture-War Media"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 1432,
+      "selectedContextOpen": false,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network"
+      ],
+      "valuation": "$50M",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 1000,
+        "width": 1432
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "portfolio-medium",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 7,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Venture Portfolio"
+      ],
+      "ownedRows": 8,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture",
+        "Venture Portfolio"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $2.42K",
+            "Max (84)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Add Forum · $2.42K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (84)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $2.62K",
+            "Max (78)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Launch Show · $2.62K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (78)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Add Channel · $5.34K",
+            "Max (69)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Add Channel · $5.34K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (69)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Culture-War Media"
+        },
+        {
+          "actionText": [
+            "Add Course · $19.9K",
+            "Max (63)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Add Course · $19.9K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (63)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Masterclass Business"
+        },
+        {
+          "actionText": [
+            "Commission Title · $113K",
+            "Max (52)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Commission Title · $113K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (52)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Manifesto Imprint"
+        },
+        {
+          "actionText": [
+            "Add City · $709K",
+            "Max (40)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Add City · $709K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (40)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Founder Retreat Circuit"
+        },
+        {
+          "actionText": [
+            "Launch Product Line · $4.51M",
+            "Max (27)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 484,
+              "height": 32,
+              "scrollWidth": 484,
+              "text": "Launch Product Line · $4.51M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 203,
+              "height": 32,
+              "scrollWidth": 203,
+              "text": "Max (27)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "AI Venture"
+        },
+        {
+          "actionText": [
+            "Place a Bet · $2.5M",
+            "Back Company · $33.9M",
+            "Max (12)",
+            "Automate · $210M"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 323,
+              "height": 42,
+              "scrollWidth": 323,
+              "text": "Place a Bet · $2.5M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 239,
+              "height": 42,
+              "scrollWidth": 239,
+              "text": "Back Company · $33.9M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 118,
+              "height": 42,
+              "scrollWidth": 118,
+              "text": "Max (12)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 167,
+              "height": 42,
+              "scrollWidth": 167,
+              "text": "Automate · $210M",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity",
+            "grift-hustle-contextual"
+          ],
+          "name": "Venture Portfolio"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 852,
+      "selectedContextOpen": false,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture"
+      ],
+      "valuation": "$1000M",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 900,
+        "width": 852
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "fresh-mobile",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 0,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [],
+      "ownedRows": 1,
+      "rowNames": [
+        "Troll Network"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Troll People Online · $4",
+            "Add Forum · $56"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 171,
+              "text": "Troll People Online · $4",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 120,
+              "text": "Add Forum · $56",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-contextual"
+          ],
+          "name": "Troll Network"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 382,
+      "selectedContextOpen": false,
+      "settledRows": [],
+      "valuation": "$0",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 850,
+        "width": 382
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "portfolio-mobile",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 7,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Venture Portfolio"
+      ],
+      "ownedRows": 8,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture",
+        "Venture Portfolio"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $2.42K",
+            "Max (84)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Forum · $2.42K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (84)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $2.62K",
+            "Max (78)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Launch Show · $2.62K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (78)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Add Channel · $5.34K",
+            "Max (69)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Channel · $5.34K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (69)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Culture-War Media"
+        },
+        {
+          "actionText": [
+            "Add Course · $19.9K",
+            "Max (63)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Course · $19.9K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (63)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Masterclass Business"
+        },
+        {
+          "actionText": [
+            "Commission Title · $113K",
+            "Max (52)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 164,
+              "text": "Commission Title · $113K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (52)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Manifesto Imprint"
+        },
+        {
+          "actionText": [
+            "Add City · $709K",
+            "Max (40)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add City · $709K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (40)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Founder Retreat Circuit"
+        },
+        {
+          "actionText": [
+            "Launch Product Line · $4.51M",
+            "Max (27)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 189,
+              "text": "Launch Product Line · $4.51M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (27)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "AI Venture"
+        },
+        {
+          "actionText": [
+            "Place a Bet · $2.5M",
+            "Back Company · $33.9M",
+            "Max (12)",
+            "Automate · $210M"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 144,
+              "text": "Place a Bet · $2.5M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 159,
+              "text": "Back Company · $33.9M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 67,
+              "height": 42,
+              "scrollWidth": 70,
+              "text": "Max (12)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 315,
+              "height": 42,
+              "scrollWidth": 315,
+              "text": "Automate · $210M",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity",
+            "grift-hustle-contextual"
+          ],
+          "name": "Venture Portfolio"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 382,
+      "selectedContextOpen": false,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture"
+      ],
+      "valuation": "$1000M",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 850,
+        "width": 382
+      }
+    },
+    {
+      "horizontalOverflow": false,
+      "label": "portfolio-mobile-selected-context",
+      "localFeedbackCount": 0,
+      "milestoneInlineCount": 7,
+      "oldMilestoneCueCount": 0,
+      "opportunityRows": [
+        "Venture Portfolio"
+      ],
+      "ownedRows": 8,
+      "rowNames": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture",
+        "Venture Portfolio"
+      ],
+      "rows": [
+        {
+          "actionText": [
+            "Add Forum · $2.42K",
+            "Max (84)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Forum · $2.42K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (84)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Troll Network"
+        },
+        {
+          "actionText": [
+            "Launch Show · $2.62K",
+            "Max (78)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Launch Show · $2.62K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (78)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Podcast Network"
+        },
+        {
+          "actionText": [
+            "Add Channel · $5.34K",
+            "Max (69)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Channel · $5.34K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (69)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Culture-War Media"
+        },
+        {
+          "actionText": [
+            "Add Course · $19.9K",
+            "Max (63)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add Course · $19.9K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (63)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled",
+            "grift-hustle-contextual"
+          ],
+          "name": "Masterclass Business"
+        },
+        {
+          "actionText": [
+            "Commission Title · $113K",
+            "Max (52)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 164,
+              "text": "Commission Title · $113K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (52)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Manifesto Imprint"
+        },
+        {
+          "actionText": [
+            "Add City · $709K",
+            "Max (40)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Add City · $709K",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (40)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "Founder Retreat Circuit"
+        },
+        {
+          "actionText": [
+            "Launch Product Line · $4.51M",
+            "Max (27)"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 189,
+              "text": "Launch Product Line · $4.51M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 157,
+              "height": 32,
+              "scrollWidth": 157,
+              "text": "Max (27)",
+              "whiteSpace": "nowrap"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-automated",
+            "grift-hustle-settled"
+          ],
+          "name": "AI Venture"
+        },
+        {
+          "actionText": [
+            "Place a Bet · $2.5M",
+            "Back Company · $33.9M",
+            "Max (12)",
+            "Automate · $210M"
+          ],
+          "buttonWraps": [
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 144,
+              "text": "Place a Bet · $2.5M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 120,
+              "height": 42,
+              "scrollWidth": 159,
+              "text": "Back Company · $33.9M",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 67,
+              "height": 42,
+              "scrollWidth": 70,
+              "text": "Max (12)",
+              "whiteSpace": "nowrap"
+            },
+            {
+              "clientWidth": 315,
+              "height": 42,
+              "scrollWidth": 315,
+              "text": "Automate · $210M",
+              "whiteSpace": "normal"
+            }
+          ],
+          "classes": [
+            "grift-hustle-entry",
+            "grift-hustle-selected",
+            "grift-hustle-player-dependent",
+            "grift-hustle-attention-opportunity",
+            "grift-hustle-contextual"
+          ],
+          "name": "Venture Portfolio"
+        }
+      ],
+      "scroll": {
+        "x": 0,
+        "y": 1040
+      },
+      "scrollWidth": 382,
+      "selectedContextOpen": true,
+      "settledRows": [
+        "Troll Network",
+        "Podcast Network",
+        "Culture-War Media",
+        "Masterclass Business",
+        "Manifesto Imprint",
+        "Founder Retreat Circuit",
+        "AI Venture"
+      ],
+      "valuation": "$1000M",
+      "valuationFlyouts": [],
+      "viewport": {
+        "height": 850,
+        "width": 382
+      }
+    }
+  ]
+}

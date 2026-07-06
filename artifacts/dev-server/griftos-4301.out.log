@@ -1,0 +1,1198 @@
+
+> dnowinski@1.0.0 start
+> ng serve --host 127.0.0.1 --port 4301
+
+> Building...
+√ Building...
+Application bundle generation failed. [2.972 seconds] - 2026-07-05T21:12:26.634Z
+
+Watch mode enabled. Watching for file changes...
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 146.83 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 505.38 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-VKZD5QC3.js       | grift-os-game      | 194.62 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-GFV33KXP.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-7MP6XHNW.mjs      | grift-os-game      | 194.65 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [1.585 seconds] - 2026-07-05T21:13:38.170Z
+
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://127.0.0.1:4301/
+  ➜  press h + enter to show help
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-DMZYXVYR.js  | grift-os-game | 195.16 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-WBTQ7OZ5.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-M3SJOUE7.mjs | grift-os-game | 195.19 kB | 
+
+Application bundle generation complete. [0.735 seconds] - 2026-07-05T21:15:34.118Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-562TQEYC.js  | grift-os-game | 196.69 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-PBB7MNGP.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-WXO7R55S.mjs | grift-os-game | 196.73 kB | 
+
+Application bundle generation complete. [0.545 seconds] - 2026-07-05T21:15:45.583Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 149.29 kB | 
+
+Application bundle generation complete. [0.580 seconds] - 2026-07-05T21:16:14.790Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-CRJHJS5R.js  | grift-os-game | 198.83 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-444C7VYT.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-3HOP7RVV.mjs | grift-os-game | 198.86 kB | 
+
+Application bundle generation complete. [0.587 seconds] - 2026-07-05T21:16:43.708Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 149.41 kB | 
+
+Application bundle generation complete. [0.520 seconds] - 2026-07-05T21:17:08.423Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 149.41 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 507.96 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-CRJHJS5R.js       | grift-os-game      | 198.83 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-444C7VYT.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-3HOP7RVV.mjs      | grift-os-game      | 198.86 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.155 seconds] - 2026-07-05T21:17:30.688Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-LVKFR7RW.js  | grift-os-game | 198.83 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-35D2GK54.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-6U6NNTOF.mjs | grift-os-game | 198.86 kB | 
+
+Application bundle generation complete. [0.607 seconds] - 2026-07-05T21:18:48.466Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-IAE6BPRW.js  | grift-os-game | 199.90 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-UQ74A7TI.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-FS4JVU4G.mjs | grift-os-game | 199.94 kB | 
+
+Application bundle generation complete. [0.697 seconds] - 2026-07-05T21:19:16.386Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-IJWT3PEM.js  | grift-os-game | 199.92 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-7DZH43X5.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-YQV5RVKC.mjs | grift-os-game | 199.96 kB | 
+
+Application bundle generation complete. [0.508 seconds] - 2026-07-05T21:20:24.598Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-AHJYQYYP.js  | grift-os-game | 200.07 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-ONABPRTC.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-W5MNDWFO.mjs | grift-os-game | 200.10 kB | 
+
+Application bundle generation complete. [0.444 seconds] - 2026-07-05T21:20:33.305Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 149.41 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 507.96 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-AHJYQYYP.js       | grift-os-game      | 200.07 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-ONABPRTC.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-W5MNDWFO.mjs      | grift-os-game      | 200.10 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.130 seconds] - 2026-07-05T21:20:42.324Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-T7HBN3PX.js  | grift-os-game | 200.07 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-OO6BFNMD.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-5K5BNBHD.mjs | grift-os-game | 200.10 kB | 
+
+Application bundle generation complete. [0.584 seconds] - 2026-07-05T21:22:35.065Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 149.41 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 507.96 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-T7HBN3PX.js       | grift-os-game      | 200.07 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-OO6BFNMD.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-5K5BNBHD.mjs      | grift-os-game      | 200.10 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.144 seconds] - 2026-07-05T21:22:42.082Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-R7U7WA67.js  | grift-os-game | 200.38 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-SSRIVKSO.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-ELVILP5L.mjs | grift-os-game | 200.41 kB | 
+
+Application bundle generation complete. [0.378 seconds] - 2026-07-05T21:22:47.869Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-AUGAPP57.js  | grift-os-game | 200.39 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-ZXU3NS4F.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-NXZOSJ7A.mjs | grift-os-game | 200.42 kB | 
+
+Application bundle generation complete. [0.289 seconds] - 2026-07-05T21:22:51.430Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 149.41 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 507.96 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-AUGAPP57.js       | grift-os-game      | 200.39 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-ZXU3NS4F.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-NXZOSJ7A.mjs      | grift-os-game      | 200.42 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.097 seconds] - 2026-07-05T21:23:16.760Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-UYXW57A4.js  | grift-os-game | 200.58 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-FI4NOAPW.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-7VCU6R3X.mjs | grift-os-game | 200.61 kB | 
+
+Application bundle generation complete. [0.740 seconds] - 2026-07-05T22:07:17.267Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-PKSKJWUT.js  | grift-os-game | 201.31 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-LTQIXMXQ.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-O6NJJW2S.mjs | grift-os-game | 201.34 kB | 
+
+Application bundle generation complete. [0.526 seconds] - 2026-07-05T22:07:24.076Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-KSWDN2HE.js  | grift-os-game | 201.26 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-6SGJH4DN.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-CVP2ZOHS.mjs | grift-os-game | 201.30 kB | 
+
+Application bundle generation complete. [0.581 seconds] - 2026-07-05T22:07:39.808Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 150.72 kB | 
+
+Application bundle generation complete. [0.541 seconds] - 2026-07-05T22:08:03.940Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 151.01 kB | 
+
+Application bundle generation complete. [0.572 seconds] - 2026-07-05T22:08:24.891Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-RYK4VGVQ.js  | grift-os-game | 202.54 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-V73LLU44.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-MXTLCBAZ.mjs | grift-os-game | 202.58 kB | 
+
+Application bundle generation complete. [0.437 seconds] - 2026-07-05T22:08:59.806Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 151.01 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 509.56 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-RYK4VGVQ.js       | grift-os-game      | 202.54 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-V73LLU44.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-MXTLCBAZ.mjs      | grift-os-game      | 202.58 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.121 seconds] - 2026-07-05T22:09:23.213Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 151.01 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 509.56 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-RYK4VGVQ.js       | grift-os-game      | 202.54 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-V73LLU44.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-MXTLCBAZ.mjs      | grift-os-game      | 202.58 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.081 seconds] - 2026-07-05T22:09:40.953Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 150.46 kB | 
+
+Application bundle generation complete. [0.425 seconds] - 2026-07-05T22:10:05.120Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-L6COHJOK.js  | grift-os-game | 202.70 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-P3HYLTDF.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-4SF722ZP.mjs | grift-os-game | 202.73 kB | 
+
+Application bundle generation complete. [0.381 seconds] - 2026-07-05T22:10:19.340Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-6BA6E74T.js  | grift-os-game | 202.49 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-SF45VURR.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-ALE43MQS.mjs | grift-os-game | 202.53 kB | 
+
+Application bundle generation complete. [0.487 seconds] - 2026-07-05T22:10:27.073Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 150.73 kB | 
+
+Application bundle generation complete. [0.570 seconds] - 2026-07-05T23:44:58.084Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-TT7LELPS.js  | grift-os-game | 202.41 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-CRGQMQ4T.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-XYHABHGT.mjs | grift-os-game | 202.45 kB | 
+
+Application bundle generation complete. [0.513 seconds] - 2026-07-05T23:45:06.056Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 150.73 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 509.27 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-TT7LELPS.js       | grift-os-game      | 202.41 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-CRGQMQ4T.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-XYHABHGT.mjs      | grift-os-game      | 202.45 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.106 seconds] - 2026-07-05T23:45:13.845Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-NTPUMXAH.js  | grift-os-game | 202.42 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-UMVICUPT.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-FPHTCPGU.mjs | grift-os-game | 202.45 kB | 
+
+Application bundle generation complete. [0.455 seconds] - 2026-07-05T23:45:19.741Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 150.73 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 509.27 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-NTPUMXAH.js       | grift-os-game      | 202.42 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-UMVICUPT.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-FPHTCPGU.mjs      | grift-os-game      | 202.45 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.111 seconds] - 2026-07-05T23:45:30.968Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 150.70 kB | 
+
+Application bundle generation complete. [0.415 seconds] - 2026-07-05T23:47:20.510Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-OUSXWHNT.js  | grift-os-game | 202.42 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-XW7EZ767.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-FP2K4P5E.mjs | grift-os-game | 202.46 kB | 
+
+Application bundle generation complete. [0.476 seconds] - 2026-07-06T00:15:12.364Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 150.70 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 509.25 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-OUSXWHNT.js       | grift-os-game      | 202.42 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-XW7EZ767.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-FP2K4P5E.mjs      | grift-os-game      | 202.46 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.107 seconds] - 2026-07-06T00:15:21.190Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-5X3IBHY3.js  | grift-os-game | 202.42 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-R7YEMM5D.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-HHEK5WGS.mjs | grift-os-game | 202.46 kB | 
+
+Application bundle generation complete. [0.639 seconds] - 2026-07-06T01:41:23.095Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-XA47FDMQ.js  | grift-os-game | 202.68 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-ZJO2F73H.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-CLFYXDMQ.mjs | grift-os-game | 202.71 kB | 
+
+Application bundle generation complete. [0.403 seconds] - 2026-07-06T01:41:28.393Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-LCVACRNU.js  | grift-os-game | 203.20 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-PAUFPR44.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-HCGI5L3V.mjs | grift-os-game | 203.23 kB | 
+
+Application bundle generation complete. [0.370 seconds] - 2026-07-06T01:41:35.841Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-TDHXRKHI.js  | grift-os-game | 203.91 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-Z547KMBY.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-3OQR6UPM.mjs | grift-os-game | 203.95 kB | 
+
+Application bundle generation complete. [0.407 seconds] - 2026-07-06T01:41:48.587Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-UK7V7AY5.js  | grift-os-game | 203.95 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-BBYMYA2D.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-ALXD2QHL.mjs | grift-os-game | 203.98 kB | 
+
+Application bundle generation complete. [0.327 seconds] - 2026-07-06T01:41:53.402Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-IHMDQTRZ.js  | grift-os-game | 203.98 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-DVAQIODP.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-35NMVTEL.mjs | grift-os-game | 204.02 kB | 
+
+Application bundle generation complete. [0.499 seconds] - 2026-07-06T01:42:09.115Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-PXOWN72H.js  | grift-os-game | 208.33 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-KPHK3AHT.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-YZHR7OTN.mjs | grift-os-game | 208.37 kB | 
+
+Application bundle generation complete. [0.347 seconds] - 2026-07-06T01:42:38.442Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 152.82 kB | 
+
+Application bundle generation complete. [0.434 seconds] - 2026-07-06T01:43:23.359Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 152.63 kB | 
+
+Application bundle generation complete. [0.541 seconds] - 2026-07-06T01:43:48.914Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 152.50 kB | 
+
+Application bundle generation complete. [0.378 seconds] - 2026-07-06T01:43:58.526Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.32 kB | 
+styles.css                      | styles             | 152.50 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 511.05 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-PXOWN72H.js       | grift-os-game      | 208.33 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-KPHK3AHT.mjs              | -                  | 262.97 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-YZHR7OTN.mjs      | grift-os-game      | 208.37 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.094 seconds] - 2026-07-06T01:44:33.956Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.32 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-6YYJU76N.js  | grift-os-game | 208.28 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-JYLJ4IEB.mjs         | -             | 262.97 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-HSLZHB4J.mjs | grift-os-game | 208.31 kB | 
+
+Application bundle generation complete. [0.415 seconds] - 2026-07-06T01:48:42.516Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 152.66 kB | 
+
+Application bundle generation complete. [0.424 seconds] - 2026-07-06T02:01:36.862Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 152.68 kB | 
+
+Application bundle generation complete. [0.377 seconds] - 2026-07-06T02:01:42.802Z
+
+Stylesheet update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names       |  Raw size
+main.js             | main        | 262.53 kB | 
+
+
+Server bundles     
+Initial chunk files | Names       |  Raw size
+chunk-KOGUC65N.mjs  | -           | 263.17 kB | 
+server.mjs          | server      |   1.53 kB | 
+main.server.mjs     | main.server | 823 bytes | 
+
+Application bundle generation complete. [0.388 seconds] - 2026-07-06T02:03:18.541Z
+
+Component update sent to client(s).
+Page reload sent to client(s).
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.53 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-VY6X642Y.js  | grift-os-game | 208.34 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-C4XJ6ZOU.mjs         | -             | 263.17 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-VWKD63LU.mjs | grift-os-game | 208.38 kB | 
+
+Application bundle generation complete. [0.411 seconds] - 2026-07-06T02:05:15.933Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.53 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-VLLW6SLM.js  | grift-os-game | 208.34 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-5SADWLZA.mjs         | -             | 263.17 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-CAJEHP63.mjs | grift-os-game | 208.38 kB | 
+
+Application bundle generation complete. [0.183 seconds] - 2026-07-06T02:06:21.046Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.53 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-BUZFW3VK.js  | grift-os-game | 210.63 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-O7FKMNKR.mjs         | -             | 263.17 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-AGU57E6A.mjs | grift-os-game | 210.66 kB | 
+
+Application bundle generation complete. [0.462 seconds] - 2026-07-06T02:11:08.641Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.53 kB | 
+styles.css                      | styles             | 152.68 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 511.43 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-BUZFW3VK.js       | grift-os-game      | 210.63 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-O7FKMNKR.mjs              | -                  | 263.17 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-AGU57E6A.mjs      | grift-os-game      | 210.66 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.121 seconds] - 2026-07-06T02:13:16.627Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles                
+Initial chunk files             | Names              |  Raw size
+main.js                         | main               | 262.53 kB | 
+styles.css                      | styles             | 152.68 kB | 
+polyfills.js                    | polyfills          |  94.59 kB | 
+chunk-EVSPGG2W.js               | -                  |   1.64 kB | 
+
+                                | Initial total      | 511.43 kB
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-BUZFW3VK.js       | grift-os-game      | 210.63 kB | 
+ai-settlement-game-5PPMSV4E.js  | ai-settlement-game | 192.28 kB | 
+
+
+Server bundles                 
+Initial chunk files             | Names              |  Raw size
+chunk-O7FKMNKR.mjs              | -                  | 263.17 kB | 
+chunk-3ODA65P6.mjs              | -                  |   1.67 kB | 
+server.mjs                      | server             |   1.53 kB | 
+main.server.mjs                 | main.server        | 823 bytes | 
+polyfills.server.mjs            | polyfills.server   | 324 bytes | 
+
+Lazy chunk files                | Names              |  Raw size
+grift-os-game-AGU57E6A.mjs      | grift-os-game      | 210.66 kB | 
+ai-settlement-game-2C6IDQV7.mjs | ai-settlement-game | 192.32 kB | 
+
+Application bundle generation complete. [0.087 seconds] - 2026-07-06T02:15:27.493Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Browser bundles           
+Initial chunk files        | Names         |  Raw size
+main.js                    | main          | 262.53 kB | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-4IURPWC6.js  | grift-os-game | 209.83 kB | 
+
+
+Server bundles            
+Initial chunk files        | Names         |  Raw size
+chunk-LJFGC6KP.mjs         | -             | 263.17 kB | 
+server.mjs                 | server        |   1.53 kB | 
+main.server.mjs            | main.server   | 823 bytes | 
+
+Lazy chunk files           | Names         |  Raw size
+grift-os-game-2FWVOQGH.mjs | grift-os-game | 209.86 kB | 
+
+Application bundle generation complete. [0.488 seconds] - 2026-07-06T02:26:02.376Z
+
+Page reload sent to client(s).

@@ -1,12 +1,13 @@
 import { GameEvent } from '../game-engine/game-events';
 import { EnterprisePresentation } from '../game-engine/presentation';
 import {
+  audioBusGainsForSettings,
   createDefaultAudioSettings,
   createInitialAudioPolicyState,
   gameEventToAudioIntent,
-  musicLayerGainForIntensity,
   reduceAudioEvent,
 } from './audio-engine';
+import { MUSIC_MANIFEST } from './audio-manifest';
 
 describe('GriftOS audio engine policy', () => {
   const presentation: EnterprisePresentation = {
@@ -76,11 +77,39 @@ describe('GriftOS audio engine policy', () => {
     expect(purchase.suppressedReason).toBe('priority-window');
   });
 
-  it('calculates stage-ready adaptive music layer gains', () => {
+  it('calculates user-level bus gains without double-applying volume controls', () => {
     const settings = createDefaultAudioSettings();
 
-    expect(musicLayerGainForIntensity('base', 0.6, settings)).toBeCloseTo(0.315, 6);
-    expect(musicLayerGainForIntensity('intensity', 0.6, settings)).toBeCloseTo(0.14175, 6);
-    expect(musicLayerGainForIntensity('intensity', 0.6, { ...settings, adaptiveMusic: false })).toBe(0);
+    expect(audioBusGainsForSettings(settings)).toEqual({
+      masterGain: 0.7,
+      musicGain: 0.45,
+      sfxGain: 0.7,
+    });
+  });
+
+  it('keeps ordinary music volume independent of the Adaptive checkbox', () => {
+    const settings = {
+      ...createDefaultAudioSettings(),
+      adaptiveMusic: false,
+    };
+
+    expect(audioBusGainsForSettings(settings).musicGain).toBe(0.45);
+  });
+
+  it('applies mute at the master bus only', () => {
+    const gains = audioBusGainsForSettings({
+      ...createDefaultAudioSettings(),
+      isMuted: true,
+    });
+
+    expect(gains).toEqual({
+      masterGain: 0,
+      musicGain: 0.45,
+      sfxGain: 0.7,
+    });
+  });
+
+  it('uses the Angular assets path for the prototype background track', () => {
+    expect(MUSIC_MANIFEST[0].src).toBe('assets/audio/grift-os/music/prototype-background.opus');
   });
 });

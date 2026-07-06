@@ -1,0 +1,87 @@
+X [ERROR] TS2339: Property 'baseLayerGain' does not exist on type 'AudioDirectorDebugState'. [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.html:126:73:
+      126 │ ... / base {{ audioDirector.debugState().baseLayerGain.toFixed(2) }}
+          ╵                                          ~~~~~~~~~~~~~
+
+  Error occurs in the template of component GriftOsGameComponent.
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:232:15:
+      232 │   templateUrl: './grift-os-game.html',
+          ╵                ~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'intensityLayerGain' does not exist on type 'AudioDirectorDebugState'. [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.html:127:74:
+      127 │ ...er {{ audioDirector.debugState().intensityLayerGain.toFixed(2) }}
+          ╵                                     ~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component GriftOsGameComponent.
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:232:15:
+      232 │   templateUrl: './grift-os-game.html',
+          ╵                ~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of GriftOsGameComponent [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:245:12:
+      245 │   imports: [CurrencyPipe, PercentPipe],
+          ╵             ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of GriftOsGameComponent [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:245:12:
+      245 │   imports: [CurrencyPipe, PercentPipe],
+          ╵             ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of GriftOsGameComponent [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:245:12:
+      245 │   imports: [CurrencyPipe, PercentPipe],
+          ╵             ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of GriftOsGameComponent [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:245:12:
+      245 │   imports: [CurrencyPipe, PercentPipe],
+          ╵             ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: CurrencyPipe is not used within the template of GriftOsGameComponent [plugin angular-compiler]
+
+    src/app/pages/experimental/grift-os-game/grift-os-game.ts:245:12:
+      245 │   imports: [CurrencyPipe, PercentPipe],
+          ╵             ~~~~~~~~~~~~
+
+
+Component update failed: NG0201: No provider found for `DecoratorFactory`. Source: _AppModule. Find more at https://v21.angular.dev/errors/NG0201
+ɵNotFound: NG0201: No provider found for `DecoratorFactory`. Find more at https://v21.angular.dev/errors/NG0201
+    at createRuntimeError (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1209:17)
+    at NullInjector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1481:21)
+    at R3Injector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1804:27)
+    at R3Injector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1804:27)
+    at ChainedInjector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:11264:32)
+    at lookupTokenUsingModuleInjector (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4411:31)
+    at getOrCreateInjectable (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4434:10)
+    at Module.ɵɵdirectiveInject (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:11296:17)
+    at NodeInjectorFactory.GriftOsGameComponent_Factory [as factory] (http://127.0.0.1:4301/@ng/component?c=src%2Fapp%2Fpages%2Fexperimental%2Fgrift-os-game%2Fgrift-os-game.ts%40GriftOsGameComponent&t=1783303330530:975:191)
+    at getNodeInjectable (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4565:38)
+Please consider reporting the error at https://github.com/angular/angular-cli/issues
+Component update failed: NG0201: No provider found for `DecoratorFactory`. Source: _AppModule. Find more at https://v21.angular.dev/errors/NG0201
+ɵNotFound: NG0201: No provider found for `DecoratorFactory`. Find more at https://v21.angular.dev/errors/NG0201
+    at createRuntimeError (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1209:17)
+    at NullInjector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1481:21)
+    at R3Injector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1804:27)
+    at R3Injector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:1804:27)
+    at ChainedInjector.get (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:11264:32)
+    at lookupTokenUsingModuleInjector (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4411:31)
+    at getOrCreateInjectable (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4434:10)
+    at Module.ɵɵdirectiveInject (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:11296:17)
+    at NodeInjectorFactory.GriftOsGameComponent_Factory [as factory] (http://127.0.0.1:4301/@ng/component?c=src%2Fapp%2Fpages%2Fexperimental%2Fgrift-os-game%2Fgrift-os-game.ts%40GriftOsGameComponent&t=1783303297258:975:191)
+    at getNodeInjectable (http://127.0.0.1:4301/@fs/C:/Users/dnowi/Documents/Github/personal/.angular/cache/21.2.18/dnowinski/vite/deps/chunk-QPANWYDY.js?v=d501d0c4:4565:38)
+Please consider reporting the error at https://github.com/angular/angular-cli/issues

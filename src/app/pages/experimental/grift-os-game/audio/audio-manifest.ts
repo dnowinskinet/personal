@@ -1,5 +1,3 @@
-import { EnterpriseStage } from '../game-engine/presentation';
-
 export type SfxCategory = 'ui' | 'reward' | 'automation' | 'prestige';
 
 export interface SfxDefinition {
@@ -12,12 +10,11 @@ export interface SfxDefinition {
   priority?: number;
 }
 
-export interface MusicLayerDefinition {
+export interface MusicTrackDefinition {
   id: string;
   src?: string;
   loop: boolean;
-  baseGain: number;
-  unlockStage?: EnterpriseStage;
+  gain: number;
 }
 
 export const SFX_MANIFEST: readonly SfxDefinition[] = [
@@ -58,16 +55,11 @@ export const SFX_MANIFEST: readonly SfxDefinition[] = [
   },
 ];
 
-export const MUSIC_LAYER_MANIFEST: readonly MusicLayerDefinition[] = [
+export const MUSIC_MANIFEST: readonly MusicTrackDefinition[] = [
   {
-    id: 'base',
+    id: 'prototype-background',
+    src: 'assets/audio/grift-os/music/prototype-background.opus',
     loop: true,
-    baseGain: 0.4,
-  },
-  {
-    id: 'intensity',
-    loop: true,
-    baseGain: 0.25,
-    unlockStage: 'traction',
+    gain: 0.7,
   },
 ];

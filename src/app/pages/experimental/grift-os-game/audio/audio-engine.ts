@@ -28,6 +28,12 @@ export interface AudioPolicyResult {
   suppressedReason?: 'muted' | 'cooldown' | 'priority-window' | 'unmapped';
 }
 
+export interface AudioBusGains {
+  masterGain: number;
+  musicGain: number;
+  sfxGain: number;
+}
+
 export function createDefaultAudioSettings(): AudioSettings {
   return {
     masterVolume: 0.7,
@@ -42,6 +48,14 @@ export function createInitialAudioPolicyState(): AudioPolicyState {
   return {
     lastPlayedAt: {},
     suppressedUntilMs: 0,
+  };
+}
+
+export function audioBusGainsForSettings(settings: AudioSettings): AudioBusGains {
+  return {
+    masterGain: settings.isMuted ? 0 : clamp01(settings.masterVolume),
+    musicGain: clamp01(settings.musicVolume),
+    sfxGain: clamp01(settings.sfxVolume),
   };
 }
 
@@ -124,26 +138,6 @@ export function reduceAudioEvent(
   };
 }
 
-export function musicLayerGainForIntensity(
-  layerId: string,
-  enterpriseIntensity: number,
-  settings: AudioSettings
-): number {
-  if (settings.isMuted || !settings.adaptiveMusic) {
-    return 0;
-  }
-
-  if (layerId === 'base') {
-    return settings.masterVolume * settings.musicVolume;
-  }
-
-  if (layerId === 'intensity') {
-    return settings.masterVolume * settings.musicVolume * Math.max(0, enterpriseIntensity - 0.15);
-  }
-
-  return 0;
-}
-
 function createIntent(id: string, gain: number): AudioIntent | null {
   const definition = SFX_MANIFEST.find((candidate) => candidate.id === id);
 
@@ -157,4 +151,8 @@ function createIntent(id: string, gain: number): AudioIntent | null {
     priority: definition.priority ?? 1,
     gain,
   };
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
 }

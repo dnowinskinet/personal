@@ -13,6 +13,7 @@ describe('GriftOsGameComponent', () => {
     fixture = null;
     window.localStorage.removeItem(PLAYTEST_STORAGE_KEY);
     window.localStorage.removeItem('grift-os-meta-v1');
+    window.localStorage.removeItem('grift-os-run-v1');
     window.localStorage.removeItem('grift-os-audio-settings-v1');
   });
 
@@ -49,11 +50,135 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('TEST');
   });
 
+  it('exposes player-facing music and SFX mute controls', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    expect(fixture.nativeElement.textContent).toContain('Music on');
+    expect(fixture.nativeElement.textContent).toContain('SFX on');
+
+    const musicButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
+      .find((button): button is HTMLButtonElement =>
+        button.textContent?.includes('Music on') ?? false
+      );
+
+    musicButton?.click();
+    fixture.detectChanges();
+
+    expect(component.audioSettings.isMuted).toBeFalse();
+    expect(component.audioSettings.musicVolume).toBe(0);
+    expect(component.isMusicMuted).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Music off');
+  });
+
+  it('restores the local run state on the same machine', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component.applyRunShortcut('two-hustles');
+    detectStateChange(fixture);
+
+    expect(window.localStorage.getItem('grift-os-run-v1')).toContain('podcast-network');
+
+    fixture.destroy();
+    fixture = await createFixture({});
+    const restored = fixture.componentInstance;
+
+    expect(restored.state.valuation).toBe(320);
+    expect(restored.state.hustles['troll-network'].units).toBe(2);
+    expect(restored.state.hustles['podcast-network'].units).toBe(1);
+    expect(restored.selectedHustleId).toBe('podcast-network');
+  });
+
+  it('queues claimable automated offline production from a saved run', async () => {
+    const savedState = createInitialGameState();
+    const automatedState = {
+      ...savedState,
+      valuation: 100,
+      peakValuation: 100,
+      hustles: {
+        ...savedState.hustles,
+        'troll-network': {
+          ...savedState.hustles['troll-network'],
+          isActive: true,
+          isAutomated: true,
+          progressMs: 0,
+        },
+      },
+    };
+
+    window.localStorage.setItem('grift-os-run-v1', JSON.stringify({
+      version: 1,
+      savedAt: Date.now() - 120_000,
+      selectedHustleId: 'troll-network',
+      state: automatedState,
+    }));
+
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    expect(component.state.valuation).toBe(100);
+    expect(component.offlineReturn?.pendingPayout).toBeGreaterThan(0);
+    expect(fixture.nativeElement.textContent).toContain('Since you were gone');
+
+    component.claimOfflineReturn();
+    detectStateChange(fixture);
+
+    expect(component.offlineReturn).toBeNull();
+    expect(component.state.valuation).toBeGreaterThan(100);
+    expect(window.localStorage.getItem('grift-os-run-v1')).toContain(String(component.state.valuation));
+  });
+
+  it('closes the playtest debug menu from inside the popover', async () => {
+    fixture = await createFixture({ playtest: '1' });
+    const details = fixture.nativeElement.querySelector(
+      '[data-testid="grift-playtest-controls"]'
+    ) as HTMLDetailsElement | null;
+
+    expect(details).not.toBeNull();
+    details!.open = true;
+    fixture.detectChanges();
+
+    const closeButton = Array.from<HTMLButtonElement>(details!.querySelectorAll('button'))
+      .find((button): button is HTMLButtonElement =>
+        button.textContent?.includes('Close menu') ?? false
+      );
+
+    closeButton?.click();
+    fixture.detectChanges();
+
+    expect(details!.open).toBeFalse();
+    expect(document.activeElement).toBe(details!.querySelector('summary'));
+  });
+
+  it('closes the normal Run tools menu from inside the popover', async () => {
+    fixture = await createFixture({});
+    const details = fixture.nativeElement.querySelector('.grift-run-menu') as HTMLDetailsElement | null;
+
+    expect(details).not.toBeNull();
+    details!.open = true;
+    fixture.detectChanges();
+
+    const closeButton = Array.from<HTMLButtonElement>(details!.querySelectorAll('button'))
+      .find((button): button is HTMLButtonElement =>
+        button.textContent?.includes('Close menu') ?? false
+      );
+
+    closeButton?.click();
+    fixture.detectChanges();
+
+    expect(details!.open).toBeFalse();
+    expect(document.activeElement).toBe(details!.querySelector('summary'));
+  });
+
   it('provides run shortcuts for fast local progression QA', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
     expect(fixture.nativeElement.textContent).toContain('Jump: Two Hustles');
+    expect(fixture.nativeElement.textContent).toContain('Jump: Buildout');
+    expect(fixture.nativeElement.textContent).toContain('Jump: Portfolio');
+    expect(fixture.nativeElement.textContent).toContain('Jump: Post Rug');
 
     const twoHustlesButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
       .find((button): button is HTMLButtonElement =>
@@ -70,6 +195,88 @@ describe('GriftOsGameComponent', () => {
     expect(component.selectedHustleId).toBe('podcast-network');
     expect(fixture.nativeElement.textContent).toContain('Podcast Network');
     expect(fixture.nativeElement.textContent).toContain('Culture-War Media');
+  });
+
+  it('provides a buildout shortcut with a selected owned Hustle', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component.applyRunShortcut('portfolio-mid');
+    detectStateChange(fixture);
+
+    expect(component.ownedHustleCount).toBe(4);
+    expect(component.selectedHustleId).toBe('culture-war-media');
+    expect(component.state.hustles['culture-war-media'].units).toBe(4);
+    expect(component.state.hustles['venture-portfolio'].units).toBe(0);
+  });
+
+  it('provides a mature portfolio shortcut without reordering Hustles', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component.applyRunShortcut('portfolio-scale');
+    detectStateChange(fixture);
+
+    const names = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.grift-hustle-name'))
+      .map((element) => element.textContent?.trim());
+    const rows = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.grift-hustle-entry'));
+
+    expect(component.ownedHustleCount).toBe(8);
+    expect(component.selectedHustleId).toBe('venture-portfolio');
+    expect(names.slice(0, 8)).toEqual([
+      'Troll Network',
+      'Podcast Network',
+      'Culture-War Media',
+      'Masterclass Business',
+      'Manifesto Imprint',
+      'Founder Retreat Circuit',
+      'AI Venture',
+      'Venture Portfolio',
+    ]);
+    expect(rows[0].classList).toContain('grift-hustle-settled');
+    expect(rows[7].classList).toContain('grift-hustle-attention-opportunity');
+  });
+
+  it('can render a playtest Rug Pull proof state directly from query params', async () => {
+    fixture = await createFixture({ playtest: '1', run: 'rug-pull-ready', surface: 'rugPull' });
+    const component = fixture.componentInstance;
+
+    expect(component.selectedVisibleTab).toBe('rugPull');
+    expect(component.rugPullPreview.isAvailable).toBeTrue();
+    expect(component.rugPullPreview.projectedNetWorthGain).toBe(100_000);
+    expect(fixture.nativeElement.textContent).toContain('Walk away with');
+    expect(fixture.nativeElement.textContent).toContain('+$100K');
+  });
+
+  it('can render a playtest post-Rug proof state with Net Worth visible', async () => {
+    fixture = await createFixture({ playtest: '1', run: 'post-rug' });
+    const component = fixture.componentInstance;
+
+    expect(component.selectedVisibleTab).toBe('hustles');
+    expect(component.state.valuation).toBe(0);
+    expect(component.state.netWorth).toBe(100_000);
+    expect(component.showNetWorth).toBeTrue();
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
+  });
+
+  it('provides a post-Rug shortcut with the fresh-run multiplier active', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component.applyRunShortcut('post-rug');
+    detectStateChange(fixture);
+
+    expect(component.state.valuation).toBe(0);
+    expect(component.state.netWorth).toBe(100_000);
+    expect(component.showNetWorth).toBeTrue();
+    expect(component.selectedHustleId).toBe('troll-network');
+    expect(component.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
+    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
+    expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
+    expect(window.localStorage.getItem('grift-os-run-v1')).toContain('"netWorth":100000');
   });
 
   it('starts fresh with only the first owned Hustle and no next-enterprise horizon', async () => {
@@ -286,6 +493,142 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).not.toContain('+$4 Troll Network');
   });
 
+  it('creates a Valuation gain flyout from an actual payout event', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component['addPayoutFeedback'](
+      { hustleId: 'troll-network', payout: 4, cyclesCompleted: 2 },
+      performance.now()
+    );
+    detectStateChange(fixture);
+
+    expect(component.valuationFlyouts.length).toBe(1);
+    expect(component.valuationFlyouts[0].direction).toBe('gain');
+    expect(component.valuationFlyouts[0].label).toBe('↑ +$8');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--gain')?.textContent).toContain('↑ +$8');
+    expect(fixture.nativeElement.querySelector('.grift-local-feedback')).toBeNull();
+  });
+
+  it('creates one Valuation spend flyout from a successful unit purchase', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    component.state = {
+      ...component.state,
+      valuation: 100,
+      peakValuation: 100,
+    };
+    detectStateChange(fixture);
+
+    component.buyOne('troll-network');
+    detectStateChange(fixture);
+
+    expect(component.state.hustles['troll-network'].units).toBe(2);
+    expect(component.valuationFlyouts.length).toBe(1);
+    expect(component.valuationFlyouts[0].direction).toBe('spend');
+    expect(component.valuationFlyouts[0].label).toBe('↓ -$56');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$56');
+  });
+
+  it('creates one Valuation spend flyout from a Buy Max purchase', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    component.state = {
+      ...component.state,
+      valuation: 500,
+      peakValuation: 500,
+    };
+    detectStateChange(fixture);
+
+    component.buyMax('troll-network');
+
+    expect(component.valuationFlyouts.length).toBe(1);
+    expect(component.valuationFlyouts[0].direction).toBe('spend');
+    expect(component.valuationFlyouts[0].label).toMatch(/^↓ -\$/);
+    expect(component.state.hustles['troll-network'].units).toBeGreaterThan(2);
+  });
+
+  it('creates one Valuation spend flyout from an automation purchase', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    component.state = {
+      ...component.state,
+      valuation: 110,
+      peakValuation: 110,
+    };
+    detectStateChange(fixture);
+
+    component.automate('troll-network');
+    detectStateChange(fixture);
+
+    expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
+    expect(component.valuationFlyouts.length).toBe(1);
+    expect(component.valuationFlyouts[0].direction).toBe('spend');
+    expect(component.valuationFlyouts[0].label).toBe('↓ -$110');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$110');
+  });
+
+  it('bounds simultaneous Valuation flyouts by direction', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component['addValuationFlyout']('gain', 1);
+    component['addValuationFlyout']('gain', 2);
+    component['addValuationFlyout']('gain', 3);
+    component['addValuationFlyout']('gain', 4);
+    component['addValuationFlyout']('spend', 5);
+    component['addValuationFlyout']('spend', 6);
+    component['addValuationFlyout']('spend', 7);
+
+    expect(component.valuationFlyouts.filter((flyout) => flyout.direction === 'gain').length).toBe(3);
+    expect(component.valuationFlyouts.filter((flyout) => flyout.direction === 'spend').length).toBe(2);
+    expect(component.valuationFlyouts.some((flyout) => flyout.label === '↑ +$1')).toBeFalse();
+    expect(component.valuationFlyouts.some((flyout) => flyout.label === '↓ -$5')).toBeFalse();
+  });
+
+  it('completes a manual cycle from real elapsed time even when the browser callback is late', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    if (component['simulationTimerId'] !== null) {
+      window.clearInterval(component['simulationTimerId']);
+      component['simulationTimerId'] = null;
+    }
+
+    component.activate('troll-network');
+    component['lastTickTime'] = 1_000;
+    spyOn(performance, 'now').and.returnValue(3_150);
+
+    component['tick']();
+
+    expect(component.state.valuation).toBe(4);
+    expect(component.state.hustles['troll-network'].isActive).toBeFalse();
+    expect(component.state.hustles['troll-network'].progressMs).toBe(0);
+  });
+
+  it('flushes partial progress ticks without waiting for another interaction', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    if (component['simulationTimerId'] !== null) {
+      window.clearInterval(component['simulationTimerId']);
+      component['simulationTimerId'] = null;
+    }
+
+    component.activate('troll-network');
+    component['lastTickTime'] = 1_000;
+    spyOn(performance, 'now').and.returnValue(1_500);
+
+    component['tick']();
+
+    const progressTrack = fixture.nativeElement.querySelector(
+      '.grift-progress-track'
+    ) as HTMLElement | null;
+
+    expect(component.state.hustles['troll-network'].progressMs).toBe(500);
+    expect(progressTrack?.style.getPropertyValue('--grift-progress-scale')).toBe('0.2500');
+  });
+
   it('suppresses baseline modifier fields independently', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
@@ -313,7 +656,7 @@ describe('GriftOsGameComponent', () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
-    expect(fixture.nativeElement.textContent).not.toContain('Bots available');
+    expect(fixture.nativeElement.textContent).not.toContain('Bots ready');
 
     component.state = {
       ...component.state,
@@ -322,7 +665,7 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    expect(fixture.nativeElement.textContent).toContain('Bots available');
+    expect(fixture.nativeElement.textContent).toContain('Bots ready');
     expect(fixture.nativeElement.textContent).toContain('Automate · $110');
 
     const automateButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
@@ -334,7 +677,7 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
-    expect(fixture.nativeElement.textContent).toContain('Bots online');
+    expect(fixture.nativeElement.textContent).toContain('Bots compounding');
     expect(fixture.nativeElement.textContent).not.toContain('Troll People Online ·');
   });
 
@@ -342,7 +685,7 @@ describe('GriftOsGameComponent', () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
-    expect(fixture.nativeElement.textContent).not.toContain('Next milestone');
+    expect(fixture.nativeElement.querySelector('.grift-milestone-inline')).toBeNull();
 
     component.state = {
       ...component.state,
@@ -356,15 +699,15 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    expect(fixture.nativeElement.textContent).toContain('Next milestone');
-    expect(fixture.nativeElement.textContent).toContain('10 Forums');
+    expect(fixture.nativeElement.querySelector('.grift-milestone-inline')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Next 10');
   });
 
   it('hides Buy Max until at least two units are affordable', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
-    expect(fixture.nativeElement.textContent).not.toContain('Max');
+    expect(fixture.nativeElement.textContent).not.toContain('Buy +');
 
     component.state = {
       ...component.state,
@@ -374,7 +717,7 @@ describe('GriftOsGameComponent', () => {
     detectStateChange(fixture);
 
     expect(component.selectedHustle.buyMaxCount).toBeGreaterThanOrEqual(2);
-    expect(fixture.nativeElement.textContent).toContain('Max');
+    expect(fixture.nativeElement.textContent).toContain(`Buy +${component.selectedHustle.buyMaxCount}`);
   });
 
   it('hides Leverage and reveals Rug Pull only from real Rug Pull availability', async () => {
@@ -401,8 +744,56 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.selectedTab).toBe('rugPull');
-    expect(fixture.nativeElement.textContent).toContain('Projected Net Worth Gain');
+    expect(fixture.nativeElement.textContent).toContain('Walk away with');
+    expect(fixture.nativeElement.textContent).toContain('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('Net Worth');
+    expect(fixture.nativeElement.textContent).toContain('Run value sacrificed');
+    expect(fixture.nativeElement.textContent).toContain('This run ends');
+    expect(fixture.nativeElement.textContent).toContain('You keep');
     expect(component.state.valuation).toBe(50_000_000);
+  });
+
+  it('lets the player leave Rug Pull mode before committing', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    component.state = {
+      ...component.state,
+      valuation: 50_000_000,
+      peakValuation: 50_000_000,
+    };
+    detectStateChange(fixture);
+
+    component.setGameTab('rugPull');
+    detectStateChange(fixture);
+
+    const returnButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
+      .find((button): button is HTMLButtonElement => button.textContent?.trim() === 'Return to Hustles');
+    returnButton?.click();
+    fixture.detectChanges();
+
+    expect(component.selectedTab).toBe('hustles');
+    expect(component.state.valuation).toBe(50_000_000);
+    expect(component.state.netWorth).toBe(0);
+  });
+
+  it('cancels Rug Pull without changing run or persistent state', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    spyOn(window, 'confirm').and.returnValue(false);
+    component.state = {
+      ...component.state,
+      valuation: 50_000_000,
+      peakValuation: 50_000_000,
+    };
+    component.setGameTab('rugPull');
+    detectStateChange(fixture);
+
+    component.commitRugPull();
+
+    expect(component.state.valuation).toBe(50_000_000);
+    expect(component.state.netWorth).toBe(0);
+    expect(component.selectedTab).toBe('rugPull');
+    expect(component.rugPullResolution).toBeNull();
   });
 
   it('resets the current run to documented initial conditions while preserving Net Worth', async () => {
@@ -464,11 +855,34 @@ describe('GriftOsGameComponent', () => {
 
     component.commitRugPull();
     fixture.detectChanges();
+    await settleFocus();
+    fixture.detectChanges();
 
     expect(component.state.valuation).toBe(0);
     expect(component.state.netWorth).toBe(100_000);
     expect(component.state.hustles['troll-network'].units).toBe(1);
+    expect(component.selectedVisibleTab).toBe('hustles');
+    expect(component.payoutFeedback.some((feedback) => feedback.tone === 'rug-pull')).toBeFalse();
+    expect(component.valuationFlyouts.length).toBe(0);
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('Extraction committed');
+    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
+    expect(fixture.nativeElement.textContent).toContain('Net Worth');
+    expect(fixture.nativeElement.textContent).toContain('$100K');
+    expect(component.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
+    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
     expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
+
+    fixture.destroy();
+    fixture = await createFixture({});
+    const restored = fixture.componentInstance;
+
+    expect(restored.state.valuation).toBe(0);
+    expect(restored.state.netWorth).toBe(100_000);
+    expect(restored.state.hustles['troll-network'].units).toBe(1);
+    expect(restored.showNetWorth).toBeTrue();
+    expect(restored.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
+    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
   });
 
   async function createFixture(queryParams: Record<string, string>): Promise<ComponentFixture<GriftOsGameComponent>> {
