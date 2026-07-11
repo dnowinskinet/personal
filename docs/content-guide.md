@@ -43,10 +43,10 @@ Every Hustle must separate:
 Example:
 
 ```text
-Hustle: Troll Network
-Expansion unit: Forums
-Manual action: Troll People Online
-Automation: Bots
+Hustle: Creator Account
+Expansion unit: Accounts
+Manual action: Post an Affiliate Link
+Automation: Link-in-Bio Router
 ```
 
 Do not write:
@@ -58,10 +58,10 @@ Owned 17 Troll People Online
 Write:
 
 ```text
-17 Forums
-Add Forum
-Troll People Online
-Bots online
+17 Accounts
+Add Account
+Post an Affiliate Link
+Link-in-Bio Router online
 ```
 
 ## Naming Rules
@@ -104,16 +104,16 @@ Automation should be the industrialized version of the manual action.
 Current examples:
 
 ```text
-Troll People Online -> Bots
-Record an Episode -> Clip Farm
-Pick a Fight -> Outrage Engine
-Sell a Masterclass -> Funnel Stack
-Publish a Manifesto -> Ghostwriting Collective
-Host a Retreat -> Social Graph Concierge
-Demo the Future -> Synthetic Demo Team
-Place a Bet -> Associate Swarm
-Acquire an Outlet -> Editorial Independence
-Expand the Stack -> Aligned Population
+Post an Affiliate Link -> Link-in-Bio Router
+Sell a Subscription -> Membership Platform
+Launch a Merch Drop -> Fulfillment Partner
+Sell a Sponsor Read -> Ad Sales Desk
+Sell VIP Access -> Booking Agency
+Advance a Member -> Advancement Council
+Declare an Emergency -> Crisis Calendar
+Open a Presale -> Token Operations Desk
+Sell a Network Campaign -> Brand Partnerships Office
+Auction Ad Inventory -> Programmatic Exchange
 ```
 
 Avoid generic labels such as Manager or Assistant unless the genericness itself carries the joke.

@@ -14,7 +14,7 @@ Risk: players feel forced to spam.
 
 Translation: unit thresholds make old Hustles matter.
 
-Smallest prototype: tune 10/25-unit rewards for Troll Network and Podcast Network only.
+Smallest prototype: tune the Hustle-specific milestone values in `content/economy-tuning.ts` and compare output, cadence, expansion-cost, and automation-cost rewards in the balance simulator.
 
 Risk: hidden multiplier soup.
 
@@ -44,9 +44,9 @@ Risk: balance complexity.
 
 ## Experiment F: Rug Pull Tuning
 
-Translation: make the first reset viable and desirable.
+Translation: make each stratum reset viable and desirable.
 
-Smallest prototype: compare threshold/output changes through the balance simulator before changing code.
+Smallest prototype: compare `immediate`, `prepared`, and `deep` Founder Take strategies through the balance simulator before changing code.
 
 Risk: Rug Pull becomes either mandatory too early or unreachable.
 

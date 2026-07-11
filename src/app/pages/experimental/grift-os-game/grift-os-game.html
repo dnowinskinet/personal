@@ -182,29 +182,29 @@
     </header>
 
     @if (offlineReturn; as offline) {
-        <div class="grift-offline-backdrop" role="presentation">
-            <section
-                class="grift-offline-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="grift-offline-title"
-            >
+        <aside
+            class="grift-offline-notice"
+            data-testid="grift-offline-notice"
+            role="status"
+            aria-live="polite"
+            aria-labelledby="grift-offline-title"
+        >
+            <div>
                 <p class="grift-kicker">Since you were gone</p>
-                <h2 id="grift-offline-title">{{ offline.payoutLabel }} queued for Valuation</h2>
+                <h2 id="grift-offline-title">{{ offline.payoutLabel }} added to Valuation</h2>
                 <p>
-                    Automated Hustles kept compounding for {{ offline.elapsedLabel }}.
-                    Claim the staged value and continue the run.
+                    Automated Hustles compounded for {{ offline.elapsedLabel }}. The value is already yours.
                 </p>
-                <div class="grift-offline-actions">
-                    <button type="button" class="grift-action-button grift-action-primary grift-action-claim" (click)="claimOfflineReturn()">
-                        Collect {{ offline.payoutLabel }}
-                    </button>
-                    <button type="button" class="grift-quiet-button" (click)="dismissOfflineReturn()">
-                        Skip
-                    </button>
-                </div>
-            </section>
-        </div>
+            </div>
+            <button
+                type="button"
+                class="grift-quiet-button"
+                aria-label="Dismiss since-you-were-gone notice"
+                (click)="dismissOfflineReturn()"
+            >
+                Dismiss
+            </button>
+        </aside>
     }
 
     @if (showModeTabs) {
@@ -296,7 +296,12 @@
                                         ></span>
                                     </button>
 
-                                    <button type="button" class="grift-hustle-select" (click)="openSelectedContext(row.id, $event)">
+                                    <button
+                                        type="button"
+                                        class="grift-hustle-select"
+                                        [attr.data-grift-hustle-select]="row.id"
+                                        (click)="openSelectedContext(row.id, $event)"
+                                    >
                                         <span class="grift-hustle-name">{{ row.definition.name }}</span>
                                         <span class="grift-hustle-unit">{{ row.unitCountLabel }}</span>
                                         @if (row.showNextMilestone) {
@@ -427,10 +432,16 @@
                                         [disabled]="!horizon.canBuy"
                                         (click)="buyOne(horizon.id)"
                                     >
-                                        Establish · {{ horizon.costLabel }}
+                                        @if (horizon.isUnlocked) {
+                                            Establish · {{ horizon.costLabel }}
+                                        } @else {
+                                            Locked · {{ horizon.unlockRequirementLabel }}
+                                        }
                                     </button>
-                                    @if (!horizon.canBuy) {
+                                    @if (horizon.isUnlocked && !horizon.canBuy) {
                                         <span class="grift-horizon-shortfall">Need {{ horizon.shortfallLabel }} more</span>
+                                    } @else if (!horizon.isUnlocked) {
+                                        <span class="grift-horizon-shortfall">Build Net Worth through Rug Pulls to reveal this stratum</span>
                                     }
                                 </article>
                             }
@@ -518,96 +529,50 @@
                     <div class="grift-section-line">
                         <div>
                             <p>Leverage</p>
-                            <h2>Modifier proof layer</h2>
+                            <h2>Structural deals</h2>
                         </div>
-                        <span>{{ stageLabel }}</span>
+                        <span>{{ leveragePurchaseCount }} operating this run</span>
                     </div>
 
-                    <div class="grift-leverage-topology">
-                        <div class="grift-power-core">
-                            <p>Persistent Net Worth pressure</p>
-                            <strong>{{ wealthAdvantageLabel }}</strong>
-                            <span>{{ stageSummary }}</span>
-                        </div>
+                    <div class="grift-leverage-intro">
+                        <p>Expensive portfolio relationships that compete with unit growth.</p>
+                        <span>Deals reset on Rug Pull. Net Worth determines which strata can appear.</span>
+                    </div>
 
-                        <div class="grift-leverage-spine" aria-hidden="true">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
+                    <div class="grift-leverage-deals">
+                        @for (deal of leverageDeals; track deal.id) {
+                            <article
+                                class="grift-leverage-deal"
+                                [class.grift-leverage-deal--purchased]="deal.isPurchased"
+                                [class.grift-leverage-deal--ready]="deal.canBuy"
+                            >
+                                <div class="grift-leverage-deal-copy">
+                                    <p>{{ deal.definition.domain }}</p>
+                                    <h3>{{ deal.definition.name }}</h3>
+                                    <span>{{ deal.definition.description }}</span>
+                                </div>
 
-                        <div class="grift-domain-grid">
-                            @for (domain of leverageDomains; track domain.id) {
-                                <section class="grift-domain" [attr.data-accent]="domain.accent">
-                                    <header class="grift-domain-header">
-                                        <div>
-                                            <p>{{ domain.label }}</p>
-                                            <h3>{{ domain.title }}</h3>
-                                        </div>
-                                        <span>{{ domain.coverageLabel }}</span>
-                                    </header>
+                                <ul class="grift-leverage-effects">
+                                    @for (effect of deal.effectLabels; track effect) {
+                                        <li>{{ effect }}</li>
+                                    }
+                                </ul>
 
-                                    <strong class="grift-domain-thesis">{{ domain.thesis }}</strong>
-                                    <span>{{ domain.description }}</span>
-
-                                    <div class="grift-domain-metrics">
-                                        <span>{{ domain.pressureLabel }}</span>
-                                        <span>{{ domain.totalUnits }} total units</span>
-                                    </div>
-
-                                    <div class="grift-domain-links">
-                                        @for (row of domain.linkedHustles; track row.id) {
-                                            <button
-                                                type="button"
-                                                class="grift-domain-link"
-                                                [class.grift-domain-link--online]="row.units > 0"
-                                                [class.grift-domain-link--automated]="row.isAutomated"
-                                                (click)="selectHustle(row.id); setGameTab('hustles')"
-                                            >
-                                                <span class="grift-domain-link-name">{{ row.definition.name }}</span>
-                                                <small>{{ row.modifierSummaryLabel }}</small>
-                                            </button>
-                                        }
-                                    </div>
-                                </section>
-                            }
-                        </div>
-
-                        <div class="grift-modifier-lattice">
-                            @for (row of hustleRows; track trackHustle($index, row)) {
-                                <article
-                                    class="grift-modifier-node"
-                                    [class.grift-modifier-node--online]="row.units > 0"
-                                    [class.grift-modifier-node--automated]="row.isAutomated"
-                                >
-                                    <span>{{ row.definition.name }}</span>
-                                    <strong>{{ row.modifierSummaryLabel }}</strong>
-                                    <small>{{ row.nextMilestoneLabel }}</small>
-                                </article>
-                            }
-                        </div>
+                                <div class="grift-leverage-deal-action">
+                                    <span>{{ deal.statusLabel }}</span>
+                                    <button
+                                        type="button"
+                                        class="grift-action-button grift-action-leverage"
+                                        [disabled]="!deal.canBuy"
+                                        (click)="purchaseLeverage(deal.id)"
+                                    >
+                                        {{ deal.isPurchased ? 'Secured' : 'Acquire · ' + deal.costLabel }}
+                                    </button>
+                                </div>
+                            </article>
+                        }
                     </div>
                 </section>
-
-                <aside class="grift-leverage-summary">
-                    <div>
-                        <p>Pressure Model</p>
-                        <strong>{{ wealthAdvantageLabel }}</strong>
-                        <span>{{ stageSummary }}</span>
-                    </div>
-                    <div>
-                        <p>Milestones</p>
-                        <strong>{{ presentation.leverageProgress | percent:'1.0-0' }}</strong>
-                    </div>
-                    <div>
-                        <p>Automation Coverage</p>
-                        <strong>{{ presentation.automationRatio | percent:'1.0-0' }}</strong>
-                    </div>
-                    <div>
-                        <p>Active Surface</p>
-                        <strong>{{ presentation.activeRatio | percent:'1.0-0' }}</strong>
-                    </div>
-                </aside>
             </div>
         }
 
@@ -635,9 +600,61 @@
                         <div class="grift-rug-persistent-value">
                             <p>Persistent value received</p>
                             <strong>{{ rugPullResultingNetWorthLabel }}</strong>
-                            <span>{{ rugPullWealthAdvantageLabel }}</span>
+                            <span>
+                                {{ rugPullWealthAdvantageLabel }} · {{ rugPullPreview.recoveryMultiplier.toFixed(1) }}x
+                                opening acceleration versus this run
+                            </span>
                         </div>
                     </div>
+
+                    <div class="grift-rug-target-note">
+                        <span>{{ rugPullPreview.campaignStratumLabel }}</span>
+                        <strong>{{ peakValuationLabel }} peak against a {{ rugPullTargetLabel }} target</strong>
+                        <p>Waiting for a higher peak increases the Net Worth extracted from this run.</p>
+                    </div>
+
+                    <section class="grift-founder-take" aria-labelledby="grift-founder-take-title">
+                        <div class="grift-founder-take-summary">
+                            <div>
+                                <p id="grift-founder-take-title">Founder Take</p>
+                                <strong>{{ founderTakeRateLabel }}</strong>
+                            </div>
+                            <span>Peak Valuation × Founder Take × extraction shaping becomes personal Net Worth.</span>
+                        </div>
+
+                        @if (founderTake.isPreparing && founderTake.activeStage; as stage) {
+                            <div class="grift-founder-take-preparation" aria-live="polite">
+                                <div>
+                                    <p>{{ stage.name }} in progress</p>
+                                    <span>{{ founderTakeRemainingLabel }} remaining · {{ founderTakeOutputLabel }}</span>
+                                </div>
+                                <div class="grift-founder-take-progress" aria-hidden="true">
+                                    <span [style.transform]="'scaleX(' + founderTakeProgressScale + ')'" ></span>
+                                </div>
+                            </div>
+                        } @else if (founderTake.nextStage; as stage) {
+                            <div class="grift-founder-take-opportunity">
+                                <div>
+                                    <p>{{ stage.name }}</p>
+                                    <span>{{ stage.description }}</span>
+                                    <small>
+                                        {{ founderTakeDurationLabel }} commitment ·
+                                        {{ (stage.outputRetention * 100).toFixed(0) }}% output retained
+                                    </small>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="grift-action-button grift-action-founder-take"
+                                    [disabled]="!founderTake.canStartNextStage"
+                                    (click)="prepareFounderTake()"
+                                >
+                                    Prepare · {{ founderTakeNextCostLabel }}
+                                </button>
+                            </div>
+                        } @else {
+                            <p class="grift-founder-take-complete">Control preparations complete for this run.</p>
+                        }
+                    </section>
 
                     <div class="grift-rug-consequence-grid">
                         <section>
@@ -647,6 +664,7 @@
                                 <li>{{ resetHustleCount }} active Hustles reset</li>
                                 <li>{{ resetAutomationCount }} automations reset</li>
                                 <li>{{ resetMilestoneCount }} milestones reset</li>
+                                <li>{{ leveragePurchaseCount }} Leverage deals reset</li>
                             </ul>
                         </section>
 
@@ -655,6 +673,9 @@
                             <ul>
                                 <li>Net Worth</li>
                                 <li>Wealth Advantage on future Hustles</li>
+                                @for (unlock of rugPullPreview.newlyUnlocked; track unlock) {
+                                    <li>{{ unlock }} unlocked</li>
+                                }
                             </ul>
                         </section>
                     </div>

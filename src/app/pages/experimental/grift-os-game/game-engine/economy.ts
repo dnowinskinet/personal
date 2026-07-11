@@ -16,12 +16,18 @@ import {
   applyOutputModifiers,
   modifierBreakdownForHustle,
 } from './modifiers';
+import { isHustleUnlocked } from './progression';
+import {
+  advanceFounderTakePreparation,
+  founderTakePreparationRemainingMs,
+} from './founder-take';
 
 const DEFAULT_DEFINITIONS = HUSTLE_DEFINITIONS;
 
 export function createInitialGameState(
   definitions: readonly HustleDefinition[] = DEFAULT_DEFINITIONS,
-  netWorth = 0
+  netWorth = 0,
+  rugPullCount = 0
 ): GriftOsGameState {
   const hustles = Object.fromEntries(
     definitions.map((definition) => [
@@ -41,7 +47,14 @@ export function createInitialGameState(
     valuation: 0,
     peakValuation: 0,
     netWorth,
+    rugPullCount,
     rugPullState: 'unavailable',
+    founderTakePreparation: {
+      completedStages: 0,
+      isActive: false,
+      progressMs: 0,
+    },
+    leveragePurchases: [],
     hustles,
   };
 }
@@ -149,6 +162,16 @@ export function buyHustle(
 ): PurchaseResult {
   const definition = getHustleDefinition(definitions, hustleId);
   const hustle = state.hustles[hustleId];
+
+  if (!isHustleUnlocked(state, definition)) {
+    return {
+      state,
+      quantityPurchased: 0,
+      totalCost: 0,
+      milestonesReached: [],
+    };
+  }
+
   const quantityToBuy = quantity === 'max'
     ? maxAffordableQuantity(definition, hustle.units, state.valuation, state, definitions)
     : Math.max(0, Math.floor(quantity));
@@ -309,6 +332,36 @@ export function advanceGame(
   if (elapsedMs <= 0) {
     return { state, events: [] };
   }
+
+  let nextState = state;
+  let remainingMs = elapsedMs;
+  const events: AdvanceResult['events'] = [];
+
+  while (remainingMs > 0) {
+    const preparationRemainingMs = founderTakePreparationRemainingMs(nextState);
+
+    if (preparationRemainingMs !== null && preparationRemainingMs <= 0) {
+      nextState = advanceFounderTakePreparation(nextState, 0);
+      continue;
+    }
+
+    const sliceMs = preparationRemainingMs === null
+      ? remainingMs
+      : Math.min(remainingMs, preparationRemainingMs);
+    const advanced = advanceProduction(nextState, definitions, sliceMs);
+    events.push(...advanced.events);
+    nextState = advanceFounderTakePreparation(advanced.state, sliceMs);
+    remainingMs -= sliceMs;
+  }
+
+  return { state: nextState, events };
+}
+
+function advanceProduction(
+  state: GriftOsGameState,
+  definitions: readonly HustleDefinition[],
+  elapsedMs: number
+): AdvanceResult {
 
   let valuation = state.valuation;
   const events: AdvanceResult['events'] = [];

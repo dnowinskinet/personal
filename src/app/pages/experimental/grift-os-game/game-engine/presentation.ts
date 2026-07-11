@@ -1,5 +1,6 @@
 import { valuationPerSecond } from './economy';
 import { RUG_PULL_CONFIG } from './rug-pull';
+import { rugPullTargetForNetWorth } from './progression';
 import { GriftOsGameState, HustleDefinition } from './types';
 
 export type EnterpriseStage =
@@ -53,7 +54,7 @@ export function deriveEnterprisePresentation(
   );
   const valuationProgress = logarithmicProgress(
     state.peakValuation,
-    ENTERPRISE_INTENSITY_CONFIG.valuationSoftCap
+    rugPullTargetForNetWorth(state.netWorth)
   );
   const activeRatio = activeCount / definitions.length;
   const automationRatio = automatedCount / definitions.length;
@@ -72,7 +73,11 @@ export function deriveEnterprisePresentation(
 
   return {
     enterpriseIntensity,
-    enterpriseStage: stageForIntensity(enterpriseIntensity, state.peakValuation),
+    enterpriseStage: stageForIntensity(
+      enterpriseIntensity,
+      state.peakValuation,
+      rugPullTargetForNetWorth(state.netWorth)
+    ),
     activeRatio,
     automationRatio,
     valuationProgress,
@@ -84,9 +89,10 @@ export function deriveEnterprisePresentation(
 
 export function stageForIntensity(
   enterpriseIntensity: number,
-  peakValuation = 0
+  peakValuation = 0,
+  rugPullTarget = ENTERPRISE_INTENSITY_CONFIG.valuationSoftCap
 ): EnterpriseStage {
-  if (peakValuation >= RUG_PULL_CONFIG.unlockValuation) {
+  if (peakValuation >= rugPullTarget) {
     return 'pre-rug';
   }
 

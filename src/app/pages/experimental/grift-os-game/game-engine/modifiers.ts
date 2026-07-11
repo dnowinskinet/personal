@@ -6,6 +6,9 @@ import {
   ModifierKind,
   ModifierScope,
 } from './types';
+import { GRIFT_OS_CAMPAIGN_STRATA, GRIFT_OS_PRESTIGE_TUNING } from '../content/economy-tuning';
+import { LEVERAGE_DEFINITIONS } from '../content/leverage-definitions';
+import { founderTakeOutputRetention } from './founder-take';
 
 export interface ModifierBuckets {
   local: number;
@@ -30,14 +33,18 @@ const EMPTY_BUCKETS: ModifierBuckets = {
   meta: 1,
 };
 
-export function createMetaOutputModifier(netWorth: number): ModifierDefinition {
+export function createMetaOutputModifier(
+  netWorth: number,
+  definition: HustleDefinition
+): ModifierDefinition {
   return {
-    id: 'net-worth-wealth-advantage',
+    id: `net-worth-wealth-advantage-${definition.id}`,
     label: 'Wealth Advantage',
-    description: 'Permanent Net Worth makes all Hustles more persuasive.',
-    scope: 'meta',
+    description: 'Permanent Net Worth makes established Hustles easier to rebuild than the frontier.',
+    scope: 'hustle',
     kind: 'output',
-    value: wealthAdvantageBonus(netWorth),
+    value: wealthAdvantageBonusForHustle(netWorth, definition),
+    hustleId: definition.id,
     source: 'rug-pull',
   };
 }
@@ -49,7 +56,38 @@ export function wealthAdvantageMultiplier(netWorth: number): number {
 export function wealthAdvantageBonus(netWorth: number): number {
   const safeNetWorth = Math.max(0, finiteOrZero(netWorth));
 
-  return 0.2 * Math.log10(1 + safeNetWorth / 100_000);
+  return GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageCoefficient *
+    (safeNetWorth / GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageBase) **
+      GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageExponent;
+}
+
+export function wealthAdvantageMultiplierForHustle(
+  netWorth: number,
+  definition: HustleDefinition
+): number {
+  return 1 + wealthAdvantageBonusForHustle(netWorth, definition);
+}
+
+export function wealthAdvantageBonusForHustle(
+  netWorth: number,
+  definition: HustleDefinition
+): number {
+  const fullBonus = wealthAdvantageBonus(netWorth);
+
+  if (fullBonus <= 0 || definition.unlockNetWorth <= 0) {
+    return fullBonus;
+  }
+
+  const currentStratumIndex = stratumIndexForNetWorth(netWorth);
+  const hustleStratumIndex = stratumIndexForNetWorth(definition.unlockNetWorth);
+  const distance = currentStratumIndex - hustleStratumIndex;
+  const factor = distance <= 0
+    ? GRIFT_OS_PRESTIGE_TUNING.frontierWealthFactor
+    : distance === 1
+      ? GRIFT_OS_PRESTIGE_TUNING.priorStratumWealthFactor
+      : 1;
+
+  return fullBonus * factor;
 }
 
 export function collectActiveModifiers(
@@ -63,10 +101,27 @@ export function collectActiveModifiers(
       .filter((milestone) => hustle.reachedMilestones.includes(milestone.id))
       .map((milestone) => milestone.reward);
   });
+  const leverageModifiers = LEVERAGE_DEFINITIONS
+    .filter((definition) => state.leveragePurchases.includes(definition.id))
+    .flatMap((definition) => definition.modifiers);
+  const founderTakeRetention = founderTakeOutputRetention(state);
+  const founderTakeModifiers: ModifierDefinition[] = founderTakeRetention < 1
+    ? [{
+        id: 'founder-take-output-diversion',
+        label: 'Exit preparation output diversion',
+        description: 'Operating capacity is being redirected toward the Founder side of the extraction.',
+        scope: 'temporary',
+        kind: 'output',
+        value: founderTakeRetention - 1,
+        source: 'system',
+      }]
+    : [];
 
   return [
     ...milestoneModifiers,
-    createMetaOutputModifier(state.netWorth),
+    ...leverageModifiers,
+    ...founderTakeModifiers,
+    ...definitions.map((definition) => createMetaOutputModifier(state.netWorth, definition)),
   ].filter((modifier) => Number.isFinite(modifier.value) && modifier.value !== 0);
 }
 
@@ -131,6 +186,10 @@ function appliesToHustle(modifier: ModifierDefinition, hustleId: HustleId): bool
     return modifier.hustleId === hustleId;
   }
 
+  if (modifier.hustleIds) {
+    return modifier.hustleIds.includes(hustleId);
+  }
+
   return true;
 }
 
@@ -155,4 +214,16 @@ function safePositive(value: number): number {
 
 function finiteOrZero(value: number): number {
   return Number.isFinite(value) ? value : 0;
+}
+
+function stratumIndexForNetWorth(netWorth: number): number {
+  const safeNetWorth = Math.max(0, finiteOrZero(netWorth));
+
+  for (let index = GRIFT_OS_CAMPAIGN_STRATA.length - 1; index >= 0; index -= 1) {
+    if (safeNetWorth >= GRIFT_OS_CAMPAIGN_STRATA[index].minimumNetWorth) {
+      return index;
+    }
+  }
+
+  return 0;
 }

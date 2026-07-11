@@ -1,4 +1,9 @@
 const COMPACT_UNITS = [
+  { value: 1_000_000_000_000_000_000_000_000_000, suffix: 'Oc' },
+  { value: 1_000_000_000_000_000_000_000_000, suffix: 'Sp' },
+  { value: 1_000_000_000_000_000_000_000, suffix: 'Sx' },
+  { value: 1_000_000_000_000_000_000, suffix: 'Qi' },
+  { value: 1_000_000_000_000_000, suffix: 'Q' },
   { value: 1_000_000_000_000, suffix: 'T' },
   { value: 1_000_000_000, suffix: 'B' },
   { value: 1_000_000, suffix: 'M' },
@@ -12,7 +17,22 @@ export function formatValuation(value: number): string {
 
   const safeValue = Math.max(0, value);
 
-  if (safeValue >= 1e15) {
+  if (safeValue === 0) {
+    return '$0';
+  }
+
+  if (safeValue < 0.01) {
+    return `$${safeValue.toFixed(4)}`;
+  }
+
+  if (safeValue < 1_000) {
+    return `$${safeValue.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }
+
+  if (safeValue >= 1e30) {
     return `$${safeValue.toExponential(2)}`;
   }
 

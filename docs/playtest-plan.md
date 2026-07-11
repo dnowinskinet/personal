@@ -39,7 +39,7 @@ The logger remains local-only. It does not send analytics, create accounts, or c
 
 1. Does the player understand the first manual action without prior explanation?
 2. Is the manual action visibly discoverable without knowing that the Hustle icon is clickable?
-3. Does `Troll Network / Forums / Troll People Online / Bots` read better than old Generator grammar?
+3. Does `Creator Account / Accounts / Post an Affiliate Link / Link-in-Bio Router` read better than old Generator grammar?
 4. Does the first expansion at about 30 seconds feel earned or slow?
 5. Does the next-Hustle horizon create anticipation, confusion, or indifference?
 6. Does Hustle 2 arrive at a satisfying time?
@@ -241,15 +241,11 @@ Check:
 - manual action and expansion targets are touch-safe;
 - opening and closing context does not lose the player's place.
 
-## Current Balance Warning
+## Current Balance Note
 
-The balance simulator shows 30-minute runs do not reach the $50M Rug Pull threshold.
+The revised campaign is designed for roughly one to two weeks of intermittent play rather than a single continuous sitting. The current simulator reaches the campaign target in approximately 6.8 to 10.3 days across the tested hourly, four-hour, eight-hour, and morning/evening profiles.
 
-This creates a known conflict with the desired progressive reveal of Rug Pull / Net Worth.
-
-Do not hide the conflict by changing multiple balance levers during UX testing.
-
-If human play confirms Rug Pull feels impossibly distant, choose one explicit tuning path:
+Do not treat the simulator as final balance doctrine. If human play confirms Rug Pull feels too distant or too frequent, choose one explicit tuning path:
 
 - lower the prototype threshold;
 - increase mid/late Hustle output;

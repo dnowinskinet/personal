@@ -1,6 +1,6 @@
 import { nextHustleCost, valuationPerSecond } from '../game-engine/economy';
 import { createRugPullPreview } from '../game-engine/rug-pull';
-import { GriftOsGameState, HustleDefinition, HustleId } from '../game-engine/types';
+import { GriftOsGameState, HustleDefinition, HustleId, LeverageId } from '../game-engine/types';
 
 export const PLAYTEST_SCHEMA_VERSION = 2;
 export const GRIFT_OS_PLAYTEST_BUILD_ID = 'grift-os-modernization-playtest';
@@ -21,6 +21,7 @@ export type PlaytestEventType =
   | 'hustle_affordable'
   | 'automation_affordable'
   | 'automation_activated'
+  | 'leverage_purchased'
   | 'milestone_reached'
   | 'rug_pull_available'
   | 'rug_pull_preview_opened'
@@ -54,6 +55,7 @@ export interface PlaytestEvent {
   automationName?: string;
   milestoneId?: string;
   milestoneName?: string;
+  leverageId?: LeverageId;
   quantityPurchased?: number;
   resultingUnits?: number;
   valuationBefore?: number;
@@ -145,6 +147,7 @@ const PLAYER_INPUT_EVENT_TYPES = new Set<PlaytestEventType>([
   'hustle_expanded',
   'buy_max_purchase',
   'automation_activated',
+  'leverage_purchased',
   'rug_pull_preview_opened',
   'rug_pull_committed',
   'session_reset',

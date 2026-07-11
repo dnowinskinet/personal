@@ -382,20 +382,17 @@
   color: var(--grift-ink) !important;
 }
 
-.grift-offline-backdrop {
+.grift-offline-notice {
   position: fixed;
-  inset: 0;
+  top: calc(clamp(4.75rem, 8vh, 7rem) + 1rem);
+  right: 1rem;
   z-index: 55;
-  display: grid;
-  place-items: center;
-  background: rgba(5, 10, 12, 0.44);
-  padding: 1rem;
-}
-
-.grift-offline-modal {
-  display: grid;
+  display: flex;
   gap: 0.78rem;
-  width: min(30rem, 100%);
+  width: min(34rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - clamp(4.75rem, 8vh, 7rem) - 2rem);
+  overflow-y: auto;
+  align-items: flex-start;
   border: 1px solid var(--grift-border-strong);
   border-radius: 10px;
   background: var(--grift-plane-raised);
@@ -403,7 +400,12 @@
   box-shadow: 0 28px 85px rgba(0, 0, 0, 0.26);
 }
 
-.grift-offline-modal h2 {
+.grift-offline-notice > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.grift-offline-notice h2 {
   margin: 0;
   color: var(--grift-value);
   font-size: clamp(1.45rem, 5vw, 2.2rem);
@@ -411,18 +413,31 @@
   line-height: 1;
 }
 
-.grift-offline-modal p {
+.grift-offline-notice p {
   margin: 0;
   color: var(--grift-ink-soft);
   font-size: 0.92rem;
   line-height: 1.42;
 }
 
-.grift-offline-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: center;
+.grift-offline-notice .grift-quiet-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+  .grift-offline-notice {
+    top: 5.5rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    max-height: calc(100dvh - 6.25rem);
+    display: grid;
+
+    .grift-quiet-button {
+      justify-self: end;
+    }
+  }
 }
 
 .grift-context-overlay-open .scroll-to-top {
@@ -1233,7 +1248,7 @@
   padding-left: clamp(1rem, 2vw, 1.4rem);
 }
 
-.grift-inspector-panel--overlay-only {
+.grift-inspector-panel--overlay-only:not(.grift-inspector-panel--open) {
   display: none;
 }
 
@@ -1249,6 +1264,11 @@
   padding: 0.42rem 0.65rem;
   font-size: 0.72rem;
   font-weight: 650;
+}
+
+.grift-inspector-panel--overlay-only.grift-inspector-panel--open .grift-context-close {
+  display: inline-flex;
+  align-items: center;
 }
 
 .grift-copy {
@@ -1290,194 +1310,116 @@
 }
 
 .grift-work-surface--leverage {
-  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.28fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.grift-leverage-topology {
-  position: relative;
-  display: grid;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  padding: clamp(1rem, 2vw, 1.6rem) 0;
+.grift-leverage-plane {
+  width: min(72rem, 100%);
+  margin-inline: auto;
 }
 
-.grift-power-core {
-  justify-self: center;
-  width: min(34rem, 100%);
-  text-align: center;
-}
-
-.grift-power-core strong {
-  display: block;
-  color: var(--grift-value);
-  font-size: clamp(2.2rem, 5vw, 4.2rem);
-  line-height: 0.95;
-}
-
-.grift-leverage-spine {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  align-items: center;
-}
-
-.grift-leverage-spine span {
-  display: block;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--grift-border-strong), transparent);
-}
-
-.grift-domain-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
-}
-
-.grift-domain {
-  display: grid;
-  gap: 0.75rem;
-  min-height: 100%;
-  border: 1px solid var(--grift-border);
-  border-radius: 10px;
-  padding: 0.9rem;
-  background: color-mix(in srgb, var(--grift-plane-raised), transparent 6%);
-}
-
-.grift-domain h3 {
-  font-size: 1rem;
-}
-
-.grift-domain[data-accent="info"] {
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--grift-info), transparent 50%);
-}
-
-.grift-domain[data-accent="value"] {
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--grift-value), transparent 45%);
-}
-
-.grift-domain[data-accent="automation"] {
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--grift-automation), transparent 42%);
-}
-
-.grift-domain-header {
+.grift-leverage-intro {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem 1.5rem;
   align-items: baseline;
   justify-content: space-between;
+  padding-block: 0.8rem 1rem;
 }
 
-.grift-domain-header span,
-.grift-domain-metrics span {
-  color: var(--grift-ink-faint);
-  font-size: 0.75rem;
-  font-weight: 620;
-}
-
-.grift-domain-thesis {
-  color: var(--grift-ink);
-  font-size: 1.05rem;
-  line-height: 1.15;
-}
-
-.grift-domain-metrics,
-.grift-domain-links {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.grift-domain-metrics {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grift-domain-link {
-  display: grid;
-  gap: 0.2rem;
-  border-top: 1px solid var(--grift-border);
-  padding-top: 0.5rem;
-  text-align: left;
-}
-
-.grift-domain-link-name {
+.grift-leverage-intro p,
+.grift-leverage-intro span {
+  margin: 0;
   color: var(--grift-ink-soft);
   font-size: 0.84rem;
-  font-weight: 650;
+  line-height: 1.4;
 }
 
-.grift-domain-link small {
+.grift-leverage-intro span {
   color: var(--grift-ink-faint);
-  font-size: 0.71rem;
-  line-height: 1.35;
+  text-align: right;
 }
 
-.grift-domain-link--online .grift-domain-link-name,
-.grift-domain-link--automated .grift-domain-link-name {
+.grift-leverage-deals {
+  display: grid;
+}
+
+.grift-leverage-deal {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.1fr) minmax(12rem, 0.9fr) minmax(12rem, 0.6fr);
+  gap: clamp(0.9rem, 2.4vw, 1.6rem);
+  align-items: center;
+  border-top: 1px solid var(--grift-border);
+  padding-block: clamp(1rem, 2.3vw, 1.4rem);
+}
+
+.grift-leverage-deal--ready {
+  border-top-color: color-mix(in srgb, var(--grift-info), transparent 42%);
+}
+
+.grift-leverage-deal--purchased {
+  border-top-color: color-mix(in srgb, var(--grift-automation), transparent 38%);
+}
+
+.grift-leverage-deal-copy p {
+  margin: 0 0 0.24rem;
+  color: var(--grift-info);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.grift-leverage-deal-copy h3 {
+  margin: 0;
   color: var(--grift-ink);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-.grift-domain-link--automated small {
+.grift-leverage-deal-copy span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.grift-leverage-effects {
+  display: grid;
+  gap: 0.38rem;
+  margin: 0;
+  padding: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.grift-leverage-effects li::before {
+  margin-right: 0.4rem;
+  color: var(--grift-info);
+  content: "+";
+}
+
+.grift-leverage-deal--purchased .grift-leverage-effects li::before {
   color: var(--grift-automation);
 }
 
-.grift-modifier-lattice {
+.grift-leverage-deal-action {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.35rem;
+  gap: 0.45rem;
+  justify-items: stretch;
 }
 
-.grift-modifier-node {
-  min-height: 6.6rem;
-  border: 1px solid var(--grift-border);
-  border-radius: 9px;
-  padding: 0.65rem;
-  color: var(--grift-ink-soft);
+.grift-leverage-deal-action > span {
+  color: var(--grift-ink-faint);
+  font-size: 0.72rem;
+  font-weight: 560;
+  text-align: right;
 }
 
-.grift-modifier-node--online {
-  border-color: color-mix(in srgb, var(--grift-info), transparent 45%);
-  color: var(--grift-ink);
-}
-
-.grift-modifier-node--automated {
-  background: color-mix(in srgb, var(--grift-automation), transparent 90%);
-}
-
-.grift-modifier-node span,
-.grift-modifier-node strong,
-.grift-modifier-node small {
-  display: block;
-}
-
-.grift-modifier-node span {
-  font-weight: 650;
-}
-
-.grift-modifier-node strong {
-  margin-top: 0.45rem;
-  color: var(--grift-ink);
-  font-size: 0.82rem;
-  line-height: 1.2;
-}
-
-.grift-modifier-node small {
-  margin-top: 0.4rem;
-  font-size: 0.73rem;
-}
-
-.grift-leverage-summary {
-  display: grid;
-  gap: 1.1rem;
-  align-content: start;
-}
-
-.grift-leverage-summary strong {
-  display: block;
-  color: var(--grift-value);
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.grift-leverage-summary div:first-child strong {
-  font-size: 1.15rem;
-  line-height: 1.2;
+.grift-action-leverage {
+  border-color: color-mix(in srgb, var(--grift-info), transparent 48%);
+  color: var(--grift-info);
 }
 
 .grift-work-surface--rug {
@@ -1583,6 +1525,140 @@
   color: var(--grift-ink-soft);
   font-size: 0.88rem;
   line-height: 1.35;
+}
+
+.grift-rug-target-note {
+  border-block: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-block: 0.8rem;
+  text-align: center;
+}
+
+.grift-rug-target-note span,
+.grift-rug-target-note strong,
+.grift-rug-target-note p {
+  display: block;
+  margin: 0;
+}
+
+.grift-rug-target-note span {
+  color: var(--grift-warning);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.grift-rug-target-note strong {
+  margin-top: 0.24rem;
+  color: var(--grift-ink);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.grift-rug-target-note p {
+  margin-top: 0.28rem;
+  color: var(--grift-ink-faint);
+  font-size: 0.78rem;
+}
+
+.grift-founder-take {
+  display: grid;
+  gap: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-bottom: 1rem;
+}
+
+.grift-founder-take-summary,
+.grift-founder-take-opportunity,
+.grift-founder-take-preparation {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grift-founder-take-summary > div {
+  flex: 0 0 auto;
+}
+
+.grift-founder-take-summary p,
+.grift-founder-take-opportunity p,
+.grift-founder-take-preparation p,
+.grift-founder-take-complete {
+  margin: 0;
+}
+
+.grift-founder-take-summary p,
+.grift-founder-take-opportunity p,
+.grift-founder-take-preparation p {
+  color: var(--grift-warning);
+  font-size: 0.72rem;
+  font-weight: 680;
+  text-transform: uppercase;
+}
+
+.grift-founder-take-summary strong {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--grift-value);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.grift-founder-take-summary > span,
+.grift-founder-take-opportunity span,
+.grift-founder-take-preparation span,
+.grift-founder-take-complete {
+  color: var(--grift-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.grift-founder-take-summary > span {
+  max-width: 32rem;
+  text-align: right;
+}
+
+.grift-founder-take-opportunity > div,
+.grift-founder-take-preparation > div:first-child {
+  min-width: 0;
+}
+
+.grift-founder-take-opportunity span,
+.grift-founder-take-opportunity small,
+.grift-founder-take-preparation span {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.grift-founder-take-opportunity small {
+  color: var(--grift-ink-faint);
+  font-size: 0.75rem;
+}
+
+.grift-action-founder-take {
+  flex: 0 0 min(15rem, 42%);
+  min-height: 2.75rem;
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 58%);
+}
+
+.grift-founder-take-preparation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
+}
+
+.grift-founder-take-progress {
+  height: 3px;
+  overflow: hidden;
+  background: var(--grift-border);
+}
+
+.grift-founder-take-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: var(--grift-warning);
+  transform-origin: left center;
 }
 
 .grift-rug-consequence-grid {
@@ -1891,6 +1967,15 @@
     padding: 1rem 0 0;
   }
 
+  .grift-leverage-deal {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, auto);
+  }
+
+  .grift-leverage-effects {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
   .grift-inspector-panel {
     position: fixed;
     top: 1rem;
@@ -1927,8 +2012,24 @@
   .grift-domain-grid,
   .grift-modifier-lattice,
   .grift-rug-ledger,
-  .grift-rug-consequence-grid {
+  .grift-rug-consequence-grid,
+  .grift-founder-take-preparation {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-founder-take-summary,
+  .grift-founder-take-opportunity {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .grift-founder-take-summary > span {
+    text-align: left;
+  }
+
+  .grift-action-founder-take {
+    flex-basis: auto;
+    width: 100%;
   }
 
   .grift-stage-strip {
@@ -2114,6 +2215,27 @@
 
   .grift-domain-header {
     align-items: start;
+  }
+
+  .grift-leverage-intro {
+    display: grid;
+  }
+
+  .grift-leverage-intro span {
+    text-align: left;
+  }
+
+  .grift-leverage-deal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-leverage-effects {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .grift-leverage-deal-action > span {
+    text-align: left;
   }
 
   .grift-hustle-list {

@@ -1,210 +1,185 @@
 # GriftOS Economy
 
-This document records current formulas and temporary balance decisions. Values are simulation-backed hypotheses, not final doctrine.
+This document records the current economy implementation and the balance decisions behind it. The constants are simulation-backed hypotheses, not final doctrine. The editable source of truth is `src/app/pages/experimental/grift-os-game/content/economy-tuning.ts`.
 
-## Values
+## Value Model
 
-### Valuation
+`Valuation` is the only spendable in-run value. `Net Worth` is persistent prestige value and is not spendable during the current run. Average Rate is a display metric, not a currency.
 
-Valuation is the only in-run spendable value. It is stored as a JavaScript `number`.
+The opening Creator Account intentionally earns fractions of a cent. Values remain JavaScript `number`s; the formatter preserves sub-cent values until they become too small to display meaningfully.
 
-### Average Rate
+## Hustle Ladder
 
-Average Rate is a display metric, not a currency.
+The internal IDs remain the original prototype IDs so existing local saves can be reconciled. Player-facing content follows the attention-to-power career arc:
 
-Manual Hustles contribute only while a cycle is active. Automated Hustles contribute continuously because they restart themselves.
+| # | Hustle | Unit | Manual action | Automation |
+| ---: | --- | --- | --- | --- |
+| 1 | Creator Account | Accounts | Post an Affiliate Link | Link-in-Bio Router |
+| 2 | Subscriber Club | Tiers | Sell a Subscription | Membership Platform |
+| 3 | Merch Operation | Drops | Launch a Merch Drop | Fulfillment Partner |
+| 4 | Personality Show | Shows | Sell a Sponsor Read | Ad Sales Desk |
+| 5 | Appearance Circuit | Dates | Sell VIP Access | Booking Agency |
+| 6 | Inner Circle | Chapters | Advance a Member | Advancement Council |
+| 7 | Fundraising Machine | Campaigns | Declare an Emergency | Crisis Calendar |
+| 8 | Community Coin | Issues | Open a Presale | Token Operations Desk |
+| 9 | Personality Network | Personalities | Sell a Network Campaign | Brand Partnerships Office |
+| 10 | Social Platform | Ad Markets | Auction Ad Inventory | Programmatic Exchange |
+
+Every Hustle has a data-driven acquisition cost, geometric unit growth rate, per-unit payout, cadence, automation cost, unlock Net Worth, and milestone list.
+
+## Production Rules
+
+Manual production starts one cycle and returns to ready after the payout. Automated production restarts continuously and carries leftover elapsed time across cycle boundaries. The engine advances from elapsed time rather than assuming a fixed render tick.
+
+Average Rate is:
 
 ```text
 averageRate = effectivePayout / effectiveCadenceSeconds
 ```
 
-### Net Worth
-
-Net Worth is persistent meta progression created by Rug Pull. It is not spendable in the current prototype.
-
-## Expansion Cost
-
-Each Hustle defines:
+Base payout is:
 
 ```text
-acquisitionCost
-growthRate
-basePayout
-cadenceSeconds
-automationCost
-milestones
+basePayout = basePayoutPerCyclePerUnit * ownedUnits
 ```
 
-Next unit cost:
+The output multiplier is a product of additive scope buckets:
 
 ```text
-nextCost = acquisitionCost * growthRate ^ currentUnits
-```
-
-Quantity cost:
-
-```text
-cost(quantity) =
-  nextCost * ((growthRate ^ quantity - 1) / (growthRate - 1))
-```
-
-Buy Max uses the inverse geometric sum and verifies the final quantity against the exact cost.
-
-## Effective Output
-
-Base payout:
-
-```text
-baseRunPayout = basePayout * units
-```
-
-Effective payout:
-
-```text
-effectivePayout =
-  baseRunPayout
+effectivePayout = basePayout
   * localOutputBucket
   * globalOutputBucket
   * synergyOutputBucket
   * temporaryOutputBucket
   * metaOutputBucket
+
+bucket = 1 + sum(active bonuses in that scope)
 ```
 
-Buckets are additive internally and multiplicative across buckets:
+Cadence modifiers divide the base cadence. Cadence is clamped to a minimum of `0.25s`, and speed buckets are floored at `0.10`. Cost and automation-cost discount buckets are floored at `0.05`.
+
+## Expansion Costs
+
+For acquisition cost `A`, growth rate `g`, and `u` owned units:
 
 ```text
-bucket = 1 + sum(additive bonuses)
+nextUnitCost = A * g^u / combinedCostMultiplier
 ```
 
-Effective cadence:
+Buying `q` units uses the exact geometric sum:
 
 ```text
-effectiveCadence =
-  baseCadence
-  / localSpeedBucket
-  / globalSpeedBucket
+cost(q) = nextUnitCost * ((g^q - 1) / (g - 1))
 ```
 
-Cadence is clamped to avoid zero, negative, NaN, and Infinity behavior.
+When `g = 1`, the engine uses `nextUnitCost * q`. Buy Max estimates the affordable quantity with the inverse logarithm and then corrects it with exact cost checks, so it never intentionally overspends.
 
 ## Milestones
 
-Current milestone thresholds are:
+Milestones are Hustle-specific and data-driven. They can improve output, cadence, expansion cost, or automation cost. They are additive inside their scope bucket, then multiply with other buckets. For example, a Hustle with local output bonuses of `+2` and `+7` has a `10x` local output bucket, not `3x * 8x`.
 
-```text
-10 units -> +50% local Hustle output
-25 units -> +100% local Hustle output
-```
-
-Milestones are data-driven per Hustle and can be tuned individually.
+The current milestone sets contain four milestones per Hustle, with thresholds ranging from 2 to 100 units. The later milestones are intentionally lumpy: they are investment decisions, not a smooth global level curve.
 
 ## Automation
 
-Automation is a one-time Valuation purchase per Hustle. It changes:
+Automation is a one-time Valuation purchase for an owned Hustle. It changes restart behavior from manual to continuous. It is not a separate currency and does not grant an implicit output multiplier. Leverage may reduce automation costs where its definition says so.
+
+## Leverage
+
+Leverage is a run-scoped purchase layer. A deal must meet its Net Worth, ownership, automation, and Valuation requirements before it can be bought. A purchased deal applies its declared output, cadence, or cost modifier and resets on Rug Pull.
+
+Current deals are:
+
+| Deal | Cost | Role |
+| --- | ---: | --- |
+| Cross-Promotion Compact | $25M | Doubles the early creator portfolio |
+| Direct Audience Ledger | $750M | Doubles direct-audience output and discounts expansion |
+| Crisis Conversion Desk | $25B | Doubles belief-conversion output and halves automation costs |
+| Network Ad Exchange | $750B | Doubles network inventory and speeds selected network Hustles |
+| Controlling Interest | $25T | Triples owned attention-market output and discounts expansion |
+
+These are intended to compete with unit purchases, milestones, new Hustles, automation, saving for the next stratum, and Founder Take preparation. They are not mandatory toll booths by rule; the simulator tests their opportunity cost.
+
+## Provisional Tuning Baseline
+
+| # | Hustle | Acquisition | Growth | Payout | Cadence | Automation cost | Unlock Net Worth |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | Creator Account | $0.025 | 1.18 | $0.0025 | 2s | $0.50 | $0 |
+| 2 | Subscriber Club | $2 | 1.20 | $0.20 | 5s | $12 | $0 |
+| 3 | Merch Operation | $50 | 1.22 | $8 | 10s | $300 | $0 |
+| 4 | Personality Show | $1,500 | 1.24 | $250 | 20s | $9,000 | $0 |
+| 5 | Appearance Circuit | $50,000 | 1.26 | $8,000 | 30s | $300,000 | $0 |
+| 6 | Inner Circle | $2M | 1.28 | $120,000 | 45s | $12M | $1M |
+| 7 | Fundraising Machine | $75M | 1.30 | $600,000 | 60s | $450M | $30M |
+| 8 | Community Coin | $3B | 1.32 | $30M | 90s | $18B | $1B |
+| 9 | Personality Network | $100B | 1.34 | $200M | 120s | $500B | $30B |
+| 10 | Social Platform | $2T | 1.36 | $2B | 180s | $6T | $30B |
+
+These values are deliberately provisional. The first run uses microscopic output, while later Hustles bridge recognizable transaction scales to the prestige campaign without requiring quintillion-scale pre-victory Valuation.
+
+## Rug Pull and Founder Take
+
+Each Net Worth stratum has a target peak and reward shaping:
+
+| Stratum | Minimum Net Worth | Rug target |
+| --- | ---: | ---: |
+| Creator economy | $0 | $100M |
+| Direct audience economy | $1M | $3B |
+| Influence economy | $30M | $100B |
+| Network economy | $1B | $3T |
+| Platform economy | $30B | $100T |
+| Post-victory economy | $1T | $1Q |
+
+The current projected Net Worth gain is:
 
 ```text
-manual restart -> automatic restart
+gain = rugTarget
+  * founderTakeRate
+  * rewardShaping
+  * (peakValuation / rugTarget)^0.75
 ```
 
-It is treated primarily as relief and system activation, not as a separate currency or manager layer.
+The gain is available only after the current stratum target is reached. Base Founder Take is `10%` and is increased by completed preparation stages.
 
-Eligibility:
+Founder Take is a timed, run-scoped commitment rather than a last-second button:
+
+| Stage | Cost | Duration | Final take bonus | Output retained while preparing |
+| --- | ---: | ---: | ---: | ---: |
+| Retain the Rights | 3% of current Rug target | 2h | +5 percentage points | 75% |
+| Lock the Cap Table | 7% of current Rug target | 6h | +5 percentage points | 60% |
+
+Starting a stage spends Valuation immediately and diverts production while it runs. Completed stages reset on Rug Pull. A player can choose to make the empire larger or spend time and output preparing to capture more of it personally.
+
+## Net Worth Acceleration
+
+The full wealth bonus is:
 
 ```text
-units > 0
-not automated
-valuation >= automationCost
+wealthBonus = 4 * (NetWorth / $1M)^0.2
+wealthMultiplier = 1 + wealthBonus
 ```
 
-## Rug Pull
+The bonus is attenuated by Hustle frontier distance:
 
-Temporary prototype constants:
+- current frontier Hustles receive `5%` of the full bonus;
+- the immediately prior stratum receives `25%`;
+- older Hustles receive the full bonus.
 
-```text
-unlockValuation = 50,000,000
-baseNetWorthGain = 100,000
-```
+This keeps rebuilt early content fast while preserving difficulty for newly revealed content.
 
-Projected Net Worth gain:
+## Simulation Targets
 
-```text
-gain = 100,000 * sqrt(peakRunValuation / 50,000,000)
-```
+The campaign simulator is `src/app/pages/experimental/grift-os-game/game-engine/balance-sim.ts`, exposed through `npm run game:balance`. It models fractional-cent opening progress, active sessions, capped idle returns, purchases, milestones, Leverage, Founder Take, multiple Rug strategies, recovery, and post-victory scaling.
 
-Net Worth power:
+Using the current natural strategy with one prepared Founder Take stage:
 
-```text
-wealthAdvantage =
-  1 + 0.20 * log10(1 + netWorth / 100,000)
-```
-
-Displayed as:
-
-```text
-+X% all Hustle output
-```
-
-## Current Hustle Constants
-
-| # | Hustle | Acquisition | Growth | Payout | Cadence | Automation | Automation Cost |
-| ---: | --- | ---: | ---: | ---: | ---: | --- | ---: |
-| 1 | Troll Network | 50 | 1.138 | 4 | 2s | Bots | 110 |
-| 2 | Podcast Network | 160 | 1.150 | 28 | 5s | Clip Farm | 750 |
-| 3 | Culture-War Media | 900 | 1.160 | 150 | 9s | Outrage Engine | 5,200 |
-| 4 | Masterclass Business | 6,500 | 1.150 | 950 | 15s | Funnel Stack | 44,000 |
-| 5 | Manifesto Imprint | 50,000 | 1.145 | 7,200 | 24s | Ghostwriting Collective | 360,000 |
-| 6 | Founder Retreat Circuit | 420,000 | 1.140 | 54,000 | 38s | Social Graph Concierge | 3,000,000 |
-| 7 | AI Venture | 3,500,000 | 1.135 | 360,000 | 60s | Synthetic Demo Team | 25,000,000 |
-| 8 | Venture Portfolio | 30,000,000 | 1.130 | 2,500,000 | 95s | Associate Swarm | 210,000,000 |
-| 9 | Media Holdings | 260,000,000 | 1.125 | 18,000,000 | 150s | Editorial Independence | 1,800,000,000 |
-| 10 | Sovereign Network | 2,200,000,000 | 1.120 | 140,000,000 | 240s | Aligned Population | 15,000,000,000 |
-
-## Balance Targets
-
-Initial targets from the modernization brief:
-
-| Moment | Target |
+| Profile | Time to campaign target |
 | --- | ---: |
-| First payout | immediate |
-| First expansion | 20-35s |
-| Hustle 2 acquisition | 90-150s |
-| First automation | 2-4m |
-| First visible milestone | 3-6m |
-| Hustle 3 | 6-10m |
-| Hustle 4 | 12-20m |
-| Rug Pull preview interesting | 10-15m |
-| First viable Rug Pull | 20-30m |
+| Hourly returns | 9.1 days |
+| Four-hour returns | 10.3 days |
+| Eight-hour returns | 6.8 days |
+| Morning/evening returns | 10.1 days |
 
-## Balance Simulation
+An eight-hour profile with the immediate strategy reaches successive strata faster but extracts less per Rug. The deep strategy takes fewer, larger Rugs and delays extraction for two Founder Take stages. Post-victory simulation is intentionally uncapped; the curated pre-victory envelope is approximately below `$1Q` under the tested campaign paths.
 
-Simulator location:
-
-```text
-src/app/pages/experimental/grift-os-game/game-engine/balance-sim.ts
-```
-
-Strategies:
-
-- natural;
-- automation rush;
-- expansion first;
-- next-Hustle rush;
-- milestone rush;
-- rough ROI.
-
-30-minute simulation results from 2026-07-04:
-
-| Strategy | Peak Valuation | First Expansion | Hustle 2 | First Automation | First Milestone | Hustle 3 | Hustle 4 | Rug Pull |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| natural | $209,627 | 0:30 | 1:58 | 1:20 | 2:13 | 3:58 | 7:34 | no |
-| automation rush | $209,627 | 0:30 | 1:58 | 1:20 | 2:13 | 3:58 | 7:34 | no |
-| expansion first | $184,085 | 0:30 | 2:14 | 1:36 | 2:04 | 4:18 | 8:24 | no |
-| next-Hustle rush | $209,627 | 0:30 | 1:58 | 1:20 | 2:13 | 3:58 | 7:34 | no |
-| milestone rush | $1,253,240 | 5:56 | 2:16 | 0:56 | 5:56 | 6:22 | 8:52 | no |
-| rough ROI | $269,573 | 0:30 | 2:04 | 1:36 | 2:10 | 3:54 | 6:54 | no |
-
-## Current Balance Conflict
-
-The first expansion, Hustle 2, first automation, first milestone, Hustle 3, and Hustle 4 are broadly in the target neighborhood.
-
-Rug Pull is not. With the current constants, the 30-minute peak Valuation is far below the $50M threshold. This is an explicit known limitation. Do not silently lower the Rug Pull threshold or inflate late-Hustle output without a documented balance decision.
+The eight-hour offline credit remains capped at eight hours. Offline progress is a local playtest feature, not a new currency or backend system.

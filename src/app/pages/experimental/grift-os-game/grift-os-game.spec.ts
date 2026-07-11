@@ -90,7 +90,7 @@ describe('GriftOsGameComponent', () => {
     expect(restored.selectedHustleId).toBe('podcast-network');
   });
 
-  it('queues claimable automated offline production from a saved run', async () => {
+  it('credits automated offline production before showing a dismissible notice', async () => {
     const savedState = createInitialGameState();
     const automatedState = {
       ...savedState,
@@ -117,15 +117,24 @@ describe('GriftOsGameComponent', () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
-    expect(component.state.valuation).toBe(100);
     expect(component.offlineReturn?.pendingPayout).toBeGreaterThan(0);
+    expect(component.state.valuation).toBeGreaterThan(100);
     expect(fixture.nativeElement.textContent).toContain('Since you were gone');
+    expect(fixture.nativeElement.textContent).toContain('added to Valuation');
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.grift-offline-backdrop')).toBeNull();
 
-    component.claimOfflineReturn();
+    const creditedValuation = component.state.valuation;
+    const dismissButton = fixture.nativeElement.querySelector(
+      '[data-testid="grift-offline-notice"] button'
+    ) as HTMLButtonElement | null;
+
+    expect(dismissButton).not.toBeNull();
+    dismissButton?.click();
     detectStateChange(fixture);
 
     expect(component.offlineReturn).toBeNull();
-    expect(component.state.valuation).toBeGreaterThan(100);
+    expect(component.state.valuation).toBe(creditedValuation);
     expect(window.localStorage.getItem('grift-os-run-v1')).toContain(String(component.state.valuation));
   });
 
@@ -193,8 +202,8 @@ describe('GriftOsGameComponent', () => {
     expect(component.ownedHustleCount).toBe(2);
     expect(component.showPinnedSelectedContext).toBeTrue();
     expect(component.selectedHustleId).toBe('podcast-network');
-    expect(fixture.nativeElement.textContent).toContain('Podcast Network');
-    expect(fixture.nativeElement.textContent).toContain('Culture-War Media');
+    expect(fixture.nativeElement.textContent).toContain('Subscriber Club');
+    expect(fixture.nativeElement.textContent).toContain('Merch Operation');
   });
 
   it('provides a buildout shortcut with a selected owned Hustle', async () => {
@@ -224,17 +233,17 @@ describe('GriftOsGameComponent', () => {
     expect(component.ownedHustleCount).toBe(8);
     expect(component.selectedHustleId).toBe('venture-portfolio');
     expect(names.slice(0, 8)).toEqual([
-      'Troll Network',
-      'Podcast Network',
-      'Culture-War Media',
-      'Masterclass Business',
-      'Manifesto Imprint',
-      'Founder Retreat Circuit',
-      'AI Venture',
-      'Venture Portfolio',
+      'Creator Account',
+      'Subscriber Club',
+      'Merch Operation',
+      'Personality Show',
+      'Appearance Circuit',
+      'Inner Circle',
+      'Fundraising Machine',
+      'Community Coin',
     ]);
     expect(rows[0].classList).toContain('grift-hustle-settled');
-    expect(rows[7].classList).toContain('grift-hustle-attention-opportunity');
+    expect(rows[7].classList).toContain('grift-hustle-contextual');
   });
 
   it('can render a playtest Rug Pull proof state directly from query params', async () => {
@@ -243,9 +252,9 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.selectedVisibleTab).toBe('rugPull');
     expect(component.rugPullPreview.isAvailable).toBeTrue();
-    expect(component.rugPullPreview.projectedNetWorthGain).toBe(100_000);
+    expect(component.rugPullPreview.projectedNetWorthGain).toBe(1_000_000);
     expect(fixture.nativeElement.textContent).toContain('Walk away with');
-    expect(fixture.nativeElement.textContent).toContain('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('+$1M');
   });
 
   it('can render a playtest post-Rug proof state with Net Worth visible', async () => {
@@ -254,10 +263,10 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.selectedVisibleTab).toBe('hustles');
     expect(component.state.valuation).toBe(0);
-    expect(component.state.netWorth).toBe(100_000);
+    expect(component.state.netWorth).toBe(1_000_000);
     expect(component.showNetWorth).toBeTrue();
-    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
-    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$1M');
+    expect(fixture.nativeElement.textContent).toContain('+$1M Net Worth realized');
   });
 
   it('provides a post-Rug shortcut with the fresh-run multiplier active', async () => {
@@ -268,13 +277,13 @@ describe('GriftOsGameComponent', () => {
     detectStateChange(fixture);
 
     expect(component.state.valuation).toBe(0);
-    expect(component.state.netWorth).toBe(100_000);
+    expect(component.state.netWorth).toBe(1_000_000);
     expect(component.showNetWorth).toBeTrue();
     expect(component.selectedHustleId).toBe('troll-network');
-    expect(component.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
-    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
-    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
-    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
+    expect(component.selectedHustle.modifierSummaryLabel).toContain('x5.00 output');
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$1M');
+    expect(fixture.nativeElement.textContent).toContain('+$1M Net Worth realized');
+    expect(fixture.nativeElement.textContent).toContain('x5.00 output');
     expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
     expect(window.localStorage.getItem('grift-os-run-v1')).toContain('"netWorth":100000');
   });
@@ -284,20 +293,20 @@ describe('GriftOsGameComponent', () => {
     const component = fixture.componentInstance;
     const text = fixture.nativeElement.textContent;
 
-    expect(component.selectedHustle.definition.name).toBe('Troll Network');
+    expect(component.selectedHustle.definition.name).toBe('Creator Account');
     expect(component.showNextHustleHorizon).toBeFalse();
     expect(component.showPinnedSelectedContext).toBeFalse();
-    expect(text).toContain('Troll Network');
+    expect(text).toContain('Creator Account');
     expect(text).toContain('Your Hustles');
     expect(text).not.toContain('Active ledger');
     expect(text).not.toContain('Next enterprise');
-    expect(text).not.toContain('Podcast Network');
-    expect(text).not.toContain('Culture-War Media');
-    expect(text).not.toContain('Sovereign Network');
+    expect(text).not.toContain('Subscriber Club');
+    expect(text).not.toContain('Merch Operation');
+    expect(text).not.toContain('Social Platform');
     expect(text).not.toContain('Selected Hustle');
     expect(text).not.toContain('10 visible');
     expect(text).not.toContain('x1.00 output');
-    expect(text).not.toContain('Troll People OnlineTroll People Online');
+    expect(text).not.toContain('Post an Affiliate LinkPost an Affiliate Link');
     expect(fixture.nativeElement.querySelectorAll('.grift-hustle-icon').length).toBe(1);
     expect(fixture.nativeElement.querySelector('.grift-hustle-icon')?.textContent.trim()).toBe('');
   });
@@ -315,7 +324,7 @@ describe('GriftOsGameComponent', () => {
 
     const addForumButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
       .find((button): button is HTMLButtonElement =>
-        button.textContent?.includes('Add Forum') ?? false
+        button.textContent?.includes('Add Account') ?? false
       );
 
     addForumButton?.click();
@@ -324,8 +333,8 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.hustles['troll-network'].units).toBe(2);
     expect(component.showNextHustleHorizon).toBeTrue();
     expect(fixture.nativeElement.textContent).toContain('Next enterprise');
-    expect(fixture.nativeElement.textContent).toContain('Podcast Network');
-    expect(fixture.nativeElement.textContent).not.toContain('Culture-War Media');
+    expect(fixture.nativeElement.textContent).toContain('Subscriber Club');
+    expect(fixture.nativeElement.textContent).not.toContain('Merch Operation');
   });
 
   it('keeps one next-enterprise horizon after later Hustles are owned', async () => {
@@ -347,11 +356,11 @@ describe('GriftOsGameComponent', () => {
     detectStateChange(fixture);
 
     expect(component.showNextHustleHorizon).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Podcast Network');
+    expect(component.selectedHustle.definition.name).toBe('Subscriber Club');
     expect(fixture.nativeElement.textContent).toContain('Selected Hustle');
     expect(fixture.nativeElement.textContent).toContain('Next enterprise');
-    expect(fixture.nativeElement.textContent).toContain('Culture-War Media');
-    expect(fixture.nativeElement.textContent).not.toContain('Masterclass Business');
+    expect(fixture.nativeElement.textContent).toContain('Merch Operation');
+    expect(fixture.nativeElement.textContent).not.toContain('Personality Show');
     expect(fixture.nativeElement.textContent).not.toContain('Valuation pressure');
     expect(fixture.nativeElement.textContent).not.toContain('Automation spread');
     expect(fixture.nativeElement.textContent).not.toContain('Milestone density');
@@ -407,15 +416,15 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.selectedContextOpen).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Troll Network');
+    expect(component.selectedHustle.definition.name).toBe('Creator Account');
     expect(fixture.nativeElement.textContent).not.toContain('x1.00 output');
 
     rowSelectButtons[1].click();
     fixture.detectChanges();
 
     expect(component.selectedContextOpen).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Podcast Network');
-    expect(fixture.nativeElement.querySelector('.grift-inspector-panel')?.textContent).toContain('Podcast Network');
+    expect(component.selectedHustle.definition.name).toBe('Subscriber Club');
+    expect(fixture.nativeElement.querySelector('.grift-inspector-panel')?.textContent).toContain('Subscriber Club');
   });
 
   it('closes the selected-Hustle context with Escape', async () => {
@@ -428,7 +437,10 @@ describe('GriftOsGameComponent', () => {
     await settleFocus();
 
     expect(component.selectedContextOpen).toBeTrue();
-    expect(document.activeElement?.classList).toContain('grift-inspector-panel');
+    const contextPanel = fixture.nativeElement.querySelector('.grift-inspector-panel') as HTMLElement;
+    const contextCloseButton = contextPanel.querySelector('.grift-context-close') as HTMLButtonElement;
+    contextCloseButton.focus();
+    expect(document.activeElement).toBe(contextCloseButton);
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     fixture.detectChanges();
@@ -448,15 +460,15 @@ describe('GriftOsGameComponent', () => {
 
     const manualButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
       .find((button): button is HTMLButtonElement =>
-        button.textContent?.includes('Troll People Online ·') ?? false
+        button.textContent?.includes('Post an Affiliate Link ·') ?? false
       );
 
     manualButton?.click();
     fixture.detectChanges();
 
     expect(component.state.hustles['troll-network'].isActive).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Troll Network');
-    expect(fixture.nativeElement.textContent).toContain('Troll People Online...');
+    expect(component.selectedHustle.definition.name).toBe('Creator Account');
+    expect(fixture.nativeElement.textContent).toContain('Post an Affiliate Link...');
     expect(fixture.nativeElement.textContent).not.toContain('Running');
 
     component.state = {
@@ -475,7 +487,7 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.state.hustles['troll-network'].isActive).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Troll Network');
+    expect(component.selectedHustle.definition.name).toBe('Creator Account');
   });
 
   it('keeps payout feedback silent until a stable local feedback surface is designed', async () => {
@@ -490,7 +502,7 @@ describe('GriftOsGameComponent', () => {
 
     expect(fixture.nativeElement.querySelector('.grift-toast')).toBeNull();
     expect(fixture.nativeElement.querySelector('.grift-local-feedback')).toBeNull();
-    expect(fixture.nativeElement.textContent).not.toContain('+$4 Troll Network');
+    expect(fixture.nativeElement.textContent).not.toContain('+$0.01 Creator Account');
   });
 
   it('creates a Valuation gain flyout from an actual payout event', async () => {
@@ -505,8 +517,8 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('gain');
-    expect(component.valuationFlyouts[0].label).toBe('↑ +$8');
-    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--gain')?.textContent).toContain('↑ +$8');
+    expect(component.valuationFlyouts[0].label).toBe('↑ +$8.00');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--gain')?.textContent).toContain('↑ +$8.00');
     expect(fixture.nativeElement.querySelector('.grift-local-feedback')).toBeNull();
   });
 
@@ -526,8 +538,8 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.hustles['troll-network'].units).toBe(2);
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('spend');
-    expect(component.valuationFlyouts[0].label).toBe('↓ -$56');
-    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$56');
+    expect(component.valuationFlyouts[0].label).toBe('↓ -$0.03');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$0.03');
   });
 
   it('creates one Valuation spend flyout from a Buy Max purchase', async () => {
@@ -564,8 +576,8 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('spend');
-    expect(component.valuationFlyouts[0].label).toBe('↓ -$110');
-    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$110');
+    expect(component.valuationFlyouts[0].label).toBe('↓ -$0.50');
+    expect(fixture.nativeElement.querySelector('.grift-valuation-flyout--spend')?.textContent).toContain('↓ -$0.50');
   });
 
   it('bounds simultaneous Valuation flyouts by direction', async () => {
@@ -595,13 +607,14 @@ describe('GriftOsGameComponent', () => {
       component['simulationTimerId'] = null;
     }
 
+    spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
     component.activate('troll-network');
     component['lastTickTime'] = 1_000;
     spyOn(performance, 'now').and.returnValue(3_150);
 
     component['tick']();
 
-    expect(component.state.valuation).toBe(4);
+    expect(component.state.valuation).toBe(0.0025);
     expect(component.state.hustles['troll-network'].isActive).toBeFalse();
     expect(component.state.hustles['troll-network'].progressMs).toBe(0);
   });
@@ -615,6 +628,7 @@ describe('GriftOsGameComponent', () => {
       component['simulationTimerId'] = null;
     }
 
+    spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
     component.activate('troll-network');
     component['lastTickTime'] = 1_000;
     spyOn(performance, 'now').and.returnValue(1_500);
@@ -647,7 +661,7 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    expect(component.selectedHustle.modifierSummaryLabel).toBe('x1.50 output');
+    expect(component.selectedHustle.modifierSummaryLabel).toBe('x3.00 output');
     expect(component.selectedHustle.showModifierSummary).toBeTrue();
     expect(fixture.nativeElement.textContent).not.toContain('x1.00 speed');
   });
@@ -656,7 +670,7 @@ describe('GriftOsGameComponent', () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
-    expect(fixture.nativeElement.textContent).not.toContain('Bots ready');
+    expect(fixture.nativeElement.textContent).not.toContain('Link-in-Bio Router ready');
 
     component.state = {
       ...component.state,
@@ -665,8 +679,8 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    expect(fixture.nativeElement.textContent).toContain('Bots ready');
-    expect(fixture.nativeElement.textContent).toContain('Automate · $110');
+    expect(fixture.nativeElement.textContent).toContain('Link-in-Bio Router ready');
+    expect(fixture.nativeElement.textContent).toContain('Automate · $0.50');
 
     const automateButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
       .find((button): button is HTMLButtonElement =>
@@ -677,8 +691,8 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
-    expect(fixture.nativeElement.textContent).toContain('Bots compounding');
-    expect(fixture.nativeElement.textContent).not.toContain('Troll People Online ·');
+    expect(fixture.nativeElement.textContent).toContain('Link-in-Bio Router compounding');
+    expect(fixture.nativeElement.textContent).not.toContain('Post an Affiliate Link ·');
   });
 
   it('reveals milestone grammar only near an existing milestone threshold', async () => {
@@ -730,8 +744,8 @@ describe('GriftOsGameComponent', () => {
 
     component.state = {
       ...component.state,
-      valuation: 50_000_000,
-      peakValuation: 50_000_000,
+      valuation: 100_000_000,
+      peakValuation: 100_000_000,
     };
     detectStateChange(fixture);
 
@@ -745,12 +759,12 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.selectedTab).toBe('rugPull');
     expect(fixture.nativeElement.textContent).toContain('Walk away with');
-    expect(fixture.nativeElement.textContent).toContain('+$100K');
+    expect(fixture.nativeElement.textContent).toContain('+$1M');
     expect(fixture.nativeElement.textContent).toContain('Net Worth');
     expect(fixture.nativeElement.textContent).toContain('Run value sacrificed');
     expect(fixture.nativeElement.textContent).toContain('This run ends');
     expect(fixture.nativeElement.textContent).toContain('You keep');
-    expect(component.state.valuation).toBe(50_000_000);
+    expect(component.state.valuation).toBe(100_000_000);
   });
 
   it('lets the player leave Rug Pull mode before committing', async () => {
@@ -758,8 +772,8 @@ describe('GriftOsGameComponent', () => {
     const component = fixture.componentInstance;
     component.state = {
       ...component.state,
-      valuation: 50_000_000,
-      peakValuation: 50_000_000,
+      valuation: 100_000_000,
+      peakValuation: 100_000_000,
     };
     detectStateChange(fixture);
 
@@ -772,7 +786,7 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.selectedTab).toBe('hustles');
-    expect(component.state.valuation).toBe(50_000_000);
+    expect(component.state.valuation).toBe(100_000_000);
     expect(component.state.netWorth).toBe(0);
   });
 
@@ -782,15 +796,15 @@ describe('GriftOsGameComponent', () => {
     spyOn(window, 'confirm').and.returnValue(false);
     component.state = {
       ...component.state,
-      valuation: 50_000_000,
-      peakValuation: 50_000_000,
+      valuation: 100_000_000,
+      peakValuation: 100_000_000,
     };
     component.setGameTab('rugPull');
     detectStateChange(fixture);
 
     component.commitRugPull();
 
-    expect(component.state.valuation).toBe(50_000_000);
+    expect(component.state.valuation).toBe(100_000_000);
     expect(component.state.netWorth).toBe(0);
     expect(component.selectedTab).toBe('rugPull');
     expect(component.rugPullResolution).toBeNull();
@@ -849,8 +863,8 @@ describe('GriftOsGameComponent', () => {
     spyOn(window, 'confirm').and.returnValue(true);
     component.state = {
       ...createInitialGameState(component.definitions),
-      valuation: 50_000_000,
-      peakValuation: 50_000_000,
+      valuation: 100_000_000,
+      peakValuation: 100_000_000,
     };
 
     component.commitRugPull();
@@ -859,18 +873,18 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.state.valuation).toBe(0);
-    expect(component.state.netWorth).toBe(100_000);
+    expect(component.state.netWorth).toBe(1_000_000);
     expect(component.state.hustles['troll-network'].units).toBe(1);
     expect(component.selectedVisibleTab).toBe('hustles');
     expect(component.payoutFeedback.some((feedback) => feedback.tone === 'rug-pull')).toBeFalse();
     expect(component.valuationFlyouts.length).toBe(0);
-    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$100K');
+    expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$1M');
     expect(fixture.nativeElement.textContent).toContain('Extraction committed');
-    expect(fixture.nativeElement.textContent).toContain('+$100K Net Worth realized');
+    expect(fixture.nativeElement.textContent).toContain('+$1M Net Worth realized');
     expect(fixture.nativeElement.textContent).toContain('Net Worth');
-    expect(fixture.nativeElement.textContent).toContain('$100K');
-    expect(component.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
-    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
+    expect(fixture.nativeElement.textContent).toContain('$1M');
+    expect(component.selectedHustle.modifierSummaryLabel).toContain('x5.00 output');
+    expect(fixture.nativeElement.textContent).toContain('x5.00 output');
     expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
 
     fixture.destroy();
@@ -878,11 +892,11 @@ describe('GriftOsGameComponent', () => {
     const restored = fixture.componentInstance;
 
     expect(restored.state.valuation).toBe(0);
-    expect(restored.state.netWorth).toBe(100_000);
+    expect(restored.state.netWorth).toBe(1_000_000);
     expect(restored.state.hustles['troll-network'].units).toBe(1);
     expect(restored.showNetWorth).toBeTrue();
-    expect(restored.selectedHustle.modifierSummaryLabel).toContain('x1.06 output');
-    expect(fixture.nativeElement.textContent).toContain('x1.06 output');
+    expect(restored.selectedHustle.modifierSummaryLabel).toContain('x5.00 output');
+    expect(fixture.nativeElement.textContent).toContain('x5.00 output');
   });
 
   async function createFixture(queryParams: Record<string, string>): Promise<ComponentFixture<GriftOsGameComponent>> {

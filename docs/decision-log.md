@@ -160,14 +160,23 @@ Do not rename or replace them merely to fill space.
 - Do not invent a Leverage mechanic merely to justify revealing Leverage.
 - Do not redesign Rug Pull as part of the Hustles architecture reset.
 
+## 2026-07-11 Economy Scale And Extraction Revision
+
+- Replaced the retired prototype prestige assumptions with a six-stratum Rug Pull campaign: `$100M`, `$3B`, `$100B`, `$3T`, `$100T`, then `$1Q` post-victory target peaks.
+- Kept Valuation as the only spendable run value and Net Worth as persistent, non-spendable prestige value.
+- Rethemed the ten provisional Hustles around an attention-to-power arc while retaining the original internal IDs for local save compatibility.
+- Added run-scoped Founder Take preparation with two timed, output-diverting stages. It raises the extraction rate from `10%` to `15%` to `20%` and intentionally competes with growth.
+- Made Leverage a real run-scoped purchase layer with explicit costs, prerequisites, and output/cadence/cost effects. Leverage resets on Rug Pull.
+- Expanded the balance simulator to compare immediate, prepared, and deep Rug strategies across intermittent return profiles and post-victory scaling.
+- Treat all current numeric inputs as provisional until playtest data supports a further balance decision.
+
 ## Temporary Decisions
 
 - Internal compatibility aliases such as `GeneratorDefinition` may remain temporarily during migration, but player-facing UI should use Hustle vocabulary.
-- The $50M Rug Pull threshold remains the configured prototype threshold even though the current 30-minute simulation does not reach it.
+- The current six-stratum Rug Pull targets and reward formula are simulation-backed hypotheses, not final canon.
 - The ten-Hustle constants are hand-tuned and data-driven. They are not generated from a single tier formula.
-- Milestone thresholds are currently `10` and `25` units for each Hustle.
-- Milestone rewards are currently local output bonuses: `+50%` and `+100%`.
-- Net Worth power is currently a direct global output bonus using the documented logarithmic formula.
+- Milestone thresholds and rewards are Hustle-specific and may mix output, cadence, expansion cost, and automation cost.
+- Net Worth power uses a power-law wealth advantage with frontier and prior-stratum attenuation.
 - Audio assets are absent by design. The runtime must function without them.
 - Internal Enterprise Intensity / Enterprise Stage compatibility may remain while audio and debug code still consume it, but it is not required as visible player UI.
 - Exact responsive breakpoint values for pinned context, overlay drawer, and bottom sheet remain provisional.
@@ -184,9 +193,9 @@ Do not rename or replace them merely to fill space.
 - Final first-purchase timing.
 - Final automation pricing.
 - Final milestone thresholds and reward strengths.
-- Whether the $50M Rug Pull threshold should stay.
-- Whether late-Hustle constants should be inflated to make first-run Rug Pull viable.
-- Final prestige formula.
+- Whether the current six-stratum Rug Pull targets should stay after human playtesting.
+- Whether late-Hustle constants should be adjusted to keep the curated pre-victory envelope below `$1Q`.
+- Final prestige formula and Founder Take values after playtesting.
 - Whether Net Worth becomes spendable.
 - Final global evolution artifact form, meaning, name, and behavior.
 - Whether any future global evolution artifact becomes clickable.

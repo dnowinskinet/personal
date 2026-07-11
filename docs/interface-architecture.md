@@ -578,7 +578,7 @@ Product direction:
 - it should not occupy fresh-save navigation merely because the feature exists;
 - exact reveal timing must be reconciled with current prestige pacing.
 
-Do not rebalance the $50M threshold as part of interface architecture work.
+This was a UX-only constraint when the interface architecture was written. The 2026-07-11 Economy Scale And Extraction Revision supersedes the old `$50M` prototype target with the current six-stratum campaign documented in `docs/prestige.md`.
 
 ---
 

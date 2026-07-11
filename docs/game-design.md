@@ -46,10 +46,10 @@ Player-facing systems are **Hustles**, not Generators.
 
 Each Hustle separates:
 
-- durable enterprise: `Troll Network`;
-- expansion unit: `Forums`;
-- manual action: `Troll People Online`;
-- automation: `Bots`.
+- durable enterprise: `Creator Account`;
+- expansion unit: `Accounts`;
+- manual action: `Post an Affiliate Link`;
+- automation: `Link-in-Bio Router`.
 
 Invalid grammar:
 
@@ -60,26 +60,26 @@ Owned: 17 Troll People Online
 Valid grammar:
 
 ```text
-Troll Network
-17 Forums
-Troll People Online
-Bots online
+Creator Account
+17 Accounts
+Post an Affiliate Link
+Link-in-Bio Router online
 ```
 
 ## Current Ten-Hustle Ladder
 
 | # | Hustle | Expansion unit | Manual action | Automation |
 | ---: | --- | --- | --- | --- |
-| 1 | Troll Network | Forums | Troll People Online | Bots |
-| 2 | Podcast Network | Shows | Record an Episode | Clip Farm |
-| 3 | Culture-War Media | Channels | Pick a Fight | Outrage Engine |
-| 4 | Masterclass Business | Courses | Sell a Masterclass | Funnel Stack |
-| 5 | Manifesto Imprint | Titles | Publish a Manifesto | Ghostwriting Collective |
-| 6 | Founder Retreat Circuit | Cities | Host a Retreat | Social Graph Concierge |
-| 7 | AI Venture | Product Lines | Demo the Future | Synthetic Demo Team |
-| 8 | Venture Portfolio | Portfolio Companies | Place a Bet | Associate Swarm |
-| 9 | Media Holdings | Outlets | Acquire an Outlet | Editorial Independence |
-| 10 | Sovereign Network | Jurisdictions | Expand the Stack | Aligned Population |
+| 1 | Creator Account | Accounts | Post an Affiliate Link | Link-in-Bio Router |
+| 2 | Subscriber Club | Tiers | Sell a Subscription | Membership Platform |
+| 3 | Merch Operation | Drops | Launch a Merch Drop | Fulfillment Partner |
+| 4 | Personality Show | Shows | Sell a Sponsor Read | Ad Sales Desk |
+| 5 | Appearance Circuit | Dates | Sell VIP Access | Booking Agency |
+| 6 | Inner Circle | Chapters | Advance a Member | Advancement Council |
+| 7 | Fundraising Machine | Campaigns | Declare an Emergency | Crisis Calendar |
+| 8 | Community Coin | Issues | Open a Presale | Token Operations Desk |
+| 9 | Personality Network | Personalities | Sell a Network Campaign | Brand Partnerships Office |
+| 10 | Social Platform | Ad Markets | Auction Ad Inventory | Programmatic Exchange |
 
 These are hypotheses, not final canon.
 
@@ -190,8 +190,10 @@ Implemented:
 - data-driven milestones;
 - modifier engine;
 - Leverage summary surface;
+- purchasable run-scoped Leverage deals;
 - Rug Pull forecast and commit;
 - persistent Net Worth;
+- timed, output-diverting Founder Take preparation;
 - internal Enterprise Intensity and Enterprise Stage presentation derivation;
 - visual progression hooks;
 - semantic game events;

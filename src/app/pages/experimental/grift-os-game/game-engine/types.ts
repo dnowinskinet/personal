@@ -22,6 +22,19 @@ export type HustleIconKind =
   | 'media'
   | 'sovereignty';
 
+export type LeverageId =
+  | 'attention-loop'
+  | 'closed-circuit-doctrine'
+  | 'capital-access'
+  | 'institutional-capture'
+  | 'sovereign-stack';
+
+export type LeverageDomain =
+  | 'attention'
+  | 'doctrine'
+  | 'capital'
+  | 'sovereignty';
+
 export type ModifierScope =
   | 'hustle'
   | 'global'
@@ -44,6 +57,7 @@ export interface ModifierDefinition {
   kind: ModifierKind;
   value: number;
   hustleId?: HustleId;
+  hustleIds?: readonly HustleId[];
   source: 'milestone' | 'leverage' | 'rug-pull' | 'system';
 }
 
@@ -71,6 +85,7 @@ export interface HustleDefinition {
   basePayout: number;
   cadenceSeconds: number;
   initialUnits: number;
+  unlockNetWorth: number;
   order: number;
   iconKind: HustleIconKind;
   milestones: readonly HustleMilestoneDefinition[];
@@ -90,6 +105,12 @@ export interface HustleState {
   reachedMilestones: readonly string[];
 }
 
+export interface FounderTakePreparationState {
+  completedStages: number;
+  isActive: boolean;
+  progressMs: number;
+}
+
 export type RugPullState =
   | 'unavailable'
   | 'available'
@@ -102,8 +123,23 @@ export interface GriftOsGameState {
   valuation: number;
   peakValuation: number;
   netWorth: number;
+  rugPullCount: number;
   rugPullState: RugPullState;
+  founderTakePreparation: FounderTakePreparationState;
+  leveragePurchases: readonly LeverageId[];
   hustles: Record<HustleId, HustleState>;
+}
+
+export interface LeverageDefinition {
+  id: LeverageId;
+  domain: LeverageDomain;
+  name: string;
+  description: string;
+  cost: number;
+  unlockNetWorth: number;
+  requiredOwnedHustles: readonly HustleId[];
+  requiredAutomatedHustles: readonly HustleId[];
+  modifiers: readonly ModifierDefinition[];
 }
 
 export interface ProductionEvent {
@@ -132,6 +168,18 @@ export interface PurchaseResult {
 export interface AutomationPurchaseResult {
   state: GriftOsGameState;
   purchased: boolean;
+  totalCost: number;
+}
+
+export interface LeveragePurchaseResult {
+  state: GriftOsGameState;
+  purchased: boolean;
+  totalCost: number;
+}
+
+export interface FounderTakePreparationResult {
+  state: GriftOsGameState;
+  started: boolean;
   totalCost: number;
 }
 
