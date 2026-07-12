@@ -163,6 +163,7 @@ interface PayoutFeedback {
 }
 
 type ValuationFlyoutDirection = 'gain' | 'spend';
+type VisualCondition = 'manual' | 'automated' | 'structural';
 
 interface ValuationFlyout {
   id: number;
@@ -521,6 +522,14 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   get hasAnyMilestone(): boolean {
     return this.definitions.some((definition) => this.state.hustles[definition.id].reachedMilestones.length > 0);
+  }
+
+  get visualCondition(): VisualCondition {
+    if (this.state.leveragePurchases.length > 0) {
+      return 'structural';
+    }
+
+    return this.hasAnyAutomation ? 'automated' : 'manual';
   }
 
   get showPinnedSelectedContext(): boolean {

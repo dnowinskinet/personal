@@ -50,6 +50,64 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('TEST');
   });
 
+  it('derives the root visual condition only from automation and purchased Leverage', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    expect(component.visualCondition).toBe('manual');
+    expect(fixture.nativeElement.querySelector('.grift-os-app')?.getAttribute('data-visual-condition')).toBe('manual');
+
+    component.state = {
+      ...component.state,
+      netWorth: 1_000_000,
+      founderTakePreparation: {
+        completedStages: 1,
+        isActive: true,
+        progressMs: 1_000,
+      },
+    };
+    detectStateChange(fixture);
+
+    expect(component.visualCondition).toBe('manual');
+
+    component.state = {
+      ...component.state,
+      hustles: {
+        ...component.state.hustles,
+        'troll-network': {
+          ...component.state.hustles['troll-network'],
+          isAutomated: true,
+        },
+      },
+    };
+    detectStateChange(fixture);
+
+    expect(component.visualCondition).toBe('automated');
+    expect(fixture.nativeElement.querySelector('.grift-os-app')?.getAttribute('data-visual-condition')).toBe('automated');
+
+    component.state = {
+      ...component.state,
+      leveragePurchases: ['attention-loop'],
+    };
+    detectStateChange(fixture);
+
+    expect(component.visualCondition).toBe('structural');
+    expect(fixture.nativeElement.querySelector('.grift-os-app')?.getAttribute('data-visual-condition')).toBe('structural');
+  });
+
+  it('sizes the mode navigation from the number of available modes', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+
+    component.applyRunShortcut('portfolio-scale');
+    detectStateChange(fixture);
+
+    const modeNavigation = fixture.nativeElement.querySelector('.grift-mode-tabs') as HTMLElement | null;
+
+    expect(modeNavigation).not.toBeNull();
+    expect(modeNavigation?.style.getPropertyValue('--grift-mode-count')).toBe(String(component.availableTabs.length));
+  });
+
   it('exposes player-facing music and SFX mute controls', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
