@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 5d3b4f7db87e6158f99afa4a3f225bbf0ccf1092
+Last verified against commit: c88a3f06a3d79ffd41554be061dd507faf1177d9
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -89,6 +89,8 @@ Composition root associates mechanics/content/visual/audio packs
   -> audio director consumes semantic events + audio pack
 ```
 
+Equivalent Hustles across empires target one shared economic-slot catalog for costs, payout, cadence, growth, automation, and milestone effects. Each empire maps its local Hustle identity and expression onto those slots. This target is not implemented; CURRENT Influence mechanics remain the unchanged executable baseline.
+
 Target prohibitions:
 
 - engine must not depend on Angular, DOM/storage, content, visuals, audio, or renderers;
@@ -103,14 +105,14 @@ Target prohibitions:
 |---|---|---|---|---|---|---|---|
 | Navbar | Nowinski site navigation above the game | Site layout | Site layout | Stable | Shared site shell | Global navigation | Global compact navigation |
 | Shell | Boundary of the game below Navbar | Shared host plus global shell/theme bridge | Shared GriftOS host | CURRENT; replacement proven | Shared | Contains one registered renderer | Contains one registered renderer |
-| Stage | Primary Valuation and identity composition | `InfluenceStageComponent` with a presentation-only view and local styles | Influence Stage | CURRENT; K.2 identity authored | Empire-specific | Architectural focal composition | Compact authored composition |
-| Backdrop | Non-semantic atmospheric layer behind Stage content | Internal rectilinear element of `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Empire-specific | Canopy, columns, and dais establish depth | Simplified canopy/columns/dais |
+| Stage | Primary empire identity and Valuation composition | `InfluenceStageComponent` with a presentation-only view and local styles | Empire-owned Stage consuming the shared presentation contract | CURRENT; revised K.2 composition | Empire-specific | Centered Chamber plus right Capital Panel | Centered Chamber then stacked Capital Panel |
+| Backdrop | Replaceable non-semantic atmosphere behind Stage content | Four CSS image hooks with an assetless fallback | Empire visual pack feeding Stage-local hooks | Hooks CURRENT; final art absent | Empire-specific | Authored 32:9 desktop art | Authored 4:3 mobile art, not an automatic crop |
 | Chamber | Bounded focal area around Valuation | Internal Stage composition; no independent behavior | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Empire-specific | Anchors the dominant value | Compact focal area |
 | Frame | Structural visual boundary around a region | Stage Frame is component-local; other frames remain renderer-level | Owning Influence component | Stage CURRENT; other regions pending | Empire-specific | Authored valuation boundary | Reduced but preserved framing |
 | Valuation | Current spendable in-run value presentation | Shared facade data consumed by `InfluenceStageComponent` | Shared facade data; Influence Stage presentation | CURRENT | Shared mechanic, empire expression | Dominant value | Preserved dominant value |
 | Pulse | Gain/spend and production feedback tied to real events | Host feedback state + root-scoped Influence motion | Shared semantic feedback; Influence motion | Renderer ownership CURRENT | Shared event, empire expression | Directional feedback | Reduced non-obscuring feedback |
 | Rail | Long connective spine or track language used in operating flows | Circulating Institution Ledger styling | Influence Ledger/Lane | Visual prototype only; module pending | Empire-specific composition | Connects operating lanes | Simplified in stacked lanes |
-| Capital Panel | Stable owner/Net Worth presentation using only real facade data | Conditional panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Secondary stable panel when Net Worth exists | Compact and conditional |
+| Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
 | Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | Influence renderer template/root-scoped renderer SCSS | Influence Ledger | Styles contained; module pending | Empire-specific composition | Dominant operating surface | Full-width stack |
 | Lane | One Hustle's identity, production, and actions | Influence renderer loop/root-scoped renderer SCSS | Influence Lane | Styles contained; module pending | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
@@ -125,7 +127,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Change | CURRENT owner(s) | TARGET owner — not yet implemented |
 |---|---|---|
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
-| Influence balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Influence mechanics/tuning pack (CURRENT ownership; direct engine consumption deferred) |
+| Hustle-ladder balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Shared economic-slot tuning with empire-local identity mapping; not yet implemented |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
 | Icon or motion | ID unions, definitions, root-scoped Influence renderer SCSS | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |

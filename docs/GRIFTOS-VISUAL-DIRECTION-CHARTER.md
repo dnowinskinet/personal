@@ -240,7 +240,19 @@ The current empire may become monumental, atmospheric, and powerful without beco
 
 ## 7. Composition hierarchy
 
-The exact layout remains unresolved, but the following priority is stable.
+The following priority and Stage model are stable.
+
+### 7.0 Confirmed multi-empire Stage model
+
+Each empire owns a materially distinct Stage composed from three responsibilities:
+
+1. replaceable non-semantic background artwork;
+2. a strongly defined central Chamber/Frame containing the empire identity and Valuation;
+3. a stable Capital Panel using real persistent Net Worth data.
+
+The Chamber is the Stage's visual centerpiece. Valuation remains its most important current-run information, but the number complements the authored object rather than replacing it. Empire renderers share a presentation contract; they do not share one mandatory Chamber DOM or rely on a theme-only reskin.
+
+On desktop the Chamber remains centered and the Capital Panel occupies the right side. On mobile the current convention stacks the Capital Panel beneath the Chamber. Exact empire-specific silhouette, ornament, assets, and motion remain replaceable.
 
 ### 7.1 Valuation is the central current-run object
 
@@ -342,6 +354,39 @@ A replaceable atmospheric layer may provide:
 - backgrounds can be swapped without restructuring components;
 - the interface remains readable when the atmospheric asset is absent;
 - light and dark mode may use different treatments rather than one image with inversion.
+
+### Stage background asset contract
+
+Provide four authored source masters per completed empire:
+
+| Variant | Source dimensions | Aspect ratio |
+|---|---:|---:|
+| Desktop dark | 2560 × 720 px | 32:9 |
+| Desktop light | 2560 × 720 px | 32:9 |
+| Mobile dark | 1440 × 1080 px | 4:3 |
+| Mobile light | 1440 × 1080 px | 4:3 |
+
+Source delivery should be opaque, 8-bit sRGB PNG. PNG is the editable/generation master, not the intended runtime payload. Runtime export should use AVIF as the primary format with WebP fallback; no JPEG is needed unless an image fails to encode acceptably. Target production payloads are at most roughly 650 KB per desktop AVIF and 400 KB per mobile AVIF, with fallback WebP kept as lean as practical.
+
+Desktop composition safe areas at the displayed crop:
+
+- the Chamber overlays approximately the center 28–72% horizontally and 15–82% vertically;
+- the Capital Panel overlays approximately 80–97% horizontally and 24–76% vertically;
+- important faces, symbols, or unique environmental events should remain outside those regions;
+- architecture, lighting, texture, and incidental activity may continue behind the overlays.
+
+Mobile composition safe areas:
+
+- the Chamber occupies approximately 5–95% horizontally and the upper 10–62%;
+- the Capital Panel occupies approximately 5–95% horizontally around 68–88%;
+- treat the mobile image as an authored scenic crop, not an automatic crop of desktop art.
+
+Do not bake in the Chamber, Frame, Capital Panel, values, labels, graphs, or readable signage. The environment should frame the semantic UI rather than duplicate it. Current CSS hooks accept an image or `image-set()` through:
+
+- `--influence-stage-backdrop-dark-desktop`;
+- `--influence-stage-backdrop-light-desktop`;
+- `--influence-stage-backdrop-dark-mobile`;
+- `--influence-stage-backdrop-light-mobile`.
 
 ### Avoid
 
@@ -605,8 +650,6 @@ An empty placeholder is not neutral. It creates layout debt and implies a produc
 
 The following remain open and require human approval:
 
-- exact Valuation-stage composition;
-- exact hero height;
 - scenic/architectural versus typographic/editorial emphasis;
 - whether the Hustle ledger visually overlaps the hero;
 - degree of atmospheric visibility;
@@ -620,7 +663,6 @@ The following remain open and require human approval:
 - final icon treatment;
 - final motion timings;
 - final global evolution artifact;
-- whether different future empires receive materially different atmospheric shells.
 
 Codex must flag these rather than silently settling them.
 

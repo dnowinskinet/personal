@@ -184,6 +184,17 @@ Do not rename or replace them merely to fill space.
 - Do not implement `runsByEmpire`, inactive-run progress, or a parallel multi-run save envelope.
 - Do not change current Rug Pull thresholds, reward formulas, Founder Take, or the magnitude-based progression rule in this decision phase. Whether prestige requirements should later be loosened to make empire switching more accessible is deferred to playtesting and a separate economy decision.
 
+## 2026-07-12 Multi-Empire Stage And Economic Parity
+
+- Make the Stage each empire's primary visual identity: replaceable background artwork, a strongly defined central Chamber/Frame, and a stable Capital Panel on desktop.
+- Keep Valuation important but contained within and complementary to the Chamber rather than letting the number become the entire Stage composition.
+- Let each empire own materially different Stage markup, silhouette, ornament, assets, motion, and responsive expression. Share the presentation data contract, not one universal reskinnable Chamber DOM.
+- Author mobile as a separate composition. The current convention stacks the Capital Panel beneath the Chamber; it is not a squeezed desktop scene.
+- Keep the Capital Panel present from a fresh run and show real `$0` Net Worth before the first exit. Do not fill it with fake tiers, telemetry, graphs, or invented status.
+- Keep background art replaceable and non-semantic. It must not contain dynamic values, controls, required text, or fake mechanics.
+- Treat equivalent Hustle positions across empires as expressions of one shared economic ladder. Base cost, payout, cadence, growth, automation, and milestone effects remain equal for the equivalent slot while names, nouns, verbs, descriptions, icons, audio, motion, and visual treatment may differ.
+- This decision does not rebalance the current Influence empire. Extracting the shared economic-slot ownership is deferred to a separately approved implementation phase.
+
 ## Temporary Decisions
 
 - Internal compatibility aliases such as `GeneratorDefinition` may remain temporarily during migration, but player-facing UI should use Hustle vocabulary.
@@ -203,7 +214,7 @@ Do not rename or replace them merely to fill space.
 - Exact responsive breakpoints.
 - Exact next-Hustle horizon affordability treatment.
 - Exact Leverage reveal prerequisite.
-- Exact Rug Pull / Net Worth reveal condition.
+- Exact Rug Pull navigation reveal condition.
 - Final first-purchase timing.
 - Final automation pricing.
 - Final milestone thresholds and reward strengths.

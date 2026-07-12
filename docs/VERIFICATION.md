@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: 5d3b4f7db87e6158f99afa4a3f225bbf0ccf1092
+Last verified against commit: c88a3f06a3d79ffd41554be061dd507faf1177d9
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -82,6 +82,7 @@ For every visual check also confirm:
 - reduced motion preserves state clarity;
 - no browser console errors;
 - utilities remain subordinate.
+- after every CSS/template edit, explicitly reload or navigate the fixture and wait for the settled render before evaluating or capturing evidence; do not treat an HMR frame as final evidence.
 
 No screenshot-testing dependency is currently installed. Capture and compare browser evidence during review rather than adding tooling implicitly.
 
