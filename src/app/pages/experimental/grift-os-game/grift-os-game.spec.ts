@@ -41,12 +41,25 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="grift-reset-run"]')).not.toBeNull();
   });
 
+  it('mounts one runtime-selected Influence renderer while the host owns utilities', async () => {
+    fixture = await createFixture({});
+    const renderers = fixture.nativeElement.querySelectorAll('app-influence-empire-renderer');
+    const renderer = renderers.item(0) as HTMLElement | null;
+
+    expect(renderers.length).toBe(1);
+    expect(renderer?.querySelector('[aria-label="Hustles"]')).not.toBeNull();
+    expect(renderer?.querySelector('[aria-label="Game utilities"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.grift-os-app > [aria-label="Game utilities"]')).not.toBeNull();
+  });
+
   it('dispatches semantic gameplay actions through the existing runtime entrypoints', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
     const buyOne = spyOn(component, 'buyOne');
     const setGameTab = spyOn(component, 'setGameTab');
     const closeContext = spyOn(component, 'closeSelectedContext');
+    const dismissOffline = spyOn(component, 'dismissOfflineReturn');
+    const dismissResolution = spyOn(component, 'dismissRugPullResolution');
 
     component.dispatchGameAction({
       type: 'hustle.expand',
@@ -55,10 +68,14 @@ describe('GriftOsGameComponent', () => {
     });
     component.dispatchGameAction({ type: 'mode.select', modeId: 'hustles' });
     component.dispatchGameAction({ type: 'context.close', restoreFocus: false });
+    component.dispatchGameAction({ type: 'offline.dismiss' });
+    component.dispatchGameAction({ type: 'rugPull.resolution.dismiss' });
 
     expect(buyOne).toHaveBeenCalledOnceWith('troll-network');
     expect(setGameTab).toHaveBeenCalledOnceWith('hustles');
     expect(closeContext).toHaveBeenCalledOnceWith(false);
+    expect(dismissOffline).toHaveBeenCalledTimes(1);
+    expect(dismissResolution).toHaveBeenCalledTimes(1);
   });
 
   it('shows compact playtest controls only through the playtest query parameter', async () => {

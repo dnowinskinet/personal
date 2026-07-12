@@ -1,0 +1,161 @@
+<section
+    class="grift-os-app"
+    data-game="grift-os"
+    [attr.data-stage]="presentation.enterpriseStage"
+    [attr.data-visual-condition]="visualCondition"
+    [style.--grift-intensity]="presentation.enterpriseIntensity"
+    (pointerdown)="unlockAudio()"
+>
+    <ng-container
+        *ngComponentOutlet="activeEmpireRenderer; inputs: activeEmpireRendererInputs"
+    ></ng-container>
+
+    <section class="grift-support-tools" aria-label="Game utilities">
+        <div class="grift-audio-controls" aria-label="Audio controls">
+            <button
+                type="button"
+                [class.grift-audio-toggle-muted]="isMusicMuted"
+                [attr.aria-pressed]="!isMusicMuted"
+                (click)="toggleAudioChannel('music')"
+            >
+                {{ musicToggleLabel }}
+            </button>
+            <button
+                type="button"
+                [class.grift-audio-toggle-muted]="isSfxMuted"
+                [attr.aria-pressed]="!isSfxMuted"
+                (click)="toggleAudioChannel('sfx')"
+            >
+                {{ sfxToggleLabel }}
+            </button>
+        </div>
+
+        @if (isPlaytestMode) {
+            <details class="grift-playtest-menu" data-testid="grift-playtest-controls">
+                <summary>TEST tools</summary>
+
+                <div class="grift-popover-panel">
+                    <button type="button" class="grift-popover-close" (click)="closeUtilityMenu($event)">
+                        Close menu
+                    </button>
+                    <p class="grift-session-id">
+                        Session {{ playtestSessionIdLabel }} · {{ playtestElapsedLabel }} · {{ playtestEventCount }} events
+                    </p>
+                    <div class="grift-popover-grid">
+                        <button type="button" (click)="startFreshPlaytestSession()">Fresh Session</button>
+                        <button type="button" (click)="resetSimulationRun()">Reset Run</button>
+                        @for (shortcut of runShortcuts; track trackRunShortcut($index, shortcut)) {
+                            <button type="button" (click)="applyRunShortcut(shortcut.id); closeUtilityMenu($event)">
+                                Jump: {{ shortcut.label }}
+                            </button>
+                        }
+                        <button type="button" (click)="exportPlaytestLog()">Export JSON</button>
+                        <button type="button" (click)="copyPlaytestSummary()">Copy Summary</button>
+                        <button type="button" (click)="clearStoredPlaytestLogs()">Clear Logs</button>
+                    </div>
+
+                    <section class="grift-audio-debug" aria-label="Audio debug">
+                        <div>
+                            <p>Audio</p>
+                            <strong>{{ audioDirector.debugState().audioContextState }}</strong>
+                        </div>
+                        <label>
+                            <input
+                                type="checkbox"
+                                [checked]="audioSettings.isMuted"
+                                (change)="updateAudioBoolean('isMuted', $any($event.target).checked)"
+                            >
+                            Mute
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                [checked]="audioSettings.adaptiveMusic"
+                                (change)="updateAudioBoolean('adaptiveMusic', $any($event.target).checked)"
+                            >
+                            Adaptive
+                        </label>
+                        <label>
+                            Master
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                [value]="audioSettings.masterVolume"
+                                (input)="updateAudioVolume('masterVolume', $event)"
+                            >
+                        </label>
+                        <label>
+                            Music
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                [value]="audioSettings.musicVolume"
+                                (input)="updateAudioVolume('musicVolume', $event)"
+                            >
+                        </label>
+                        <label>
+                            SFX
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                [value]="audioSettings.sfxVolume"
+                                (input)="updateAudioVolume('sfxVolume', $event)"
+                            >
+                        </label>
+                        <button type="button" (click)="testAudioCue()">Test Cue</button>
+                        <p class="grift-audio-state">
+                            Intensity {{ enterpriseIntensityPercent }}% / {{ presentation.enterpriseStage }}
+                            / track {{ audioDirector.debugState().activeMusicTrackId }}
+                            / {{ audioDirector.debugState().musicPlaybackState }}
+                        </p>
+                    </section>
+
+                    @if (playtestStatusMessage) {
+                        <p class="grift-playtest-status">{{ playtestStatusMessage }}</p>
+                    }
+                </div>
+            </details>
+        } @else {
+            <details class="grift-playtest-menu grift-run-menu">
+                <summary>Run tools</summary>
+
+                <div class="grift-popover-panel">
+                    <button type="button" class="grift-popover-close" (click)="closeUtilityMenu($event)">
+                        Close menu
+                    </button>
+                    <div class="grift-popover-grid">
+                        <button
+                            type="button"
+                            data-testid="grift-reset-run"
+                            (click)="resetSimulationRun()"
+                        >
+                            Reset Run
+                        </button>
+                        @for (shortcut of runShortcuts; track trackRunShortcut($index, shortcut)) {
+                            <button type="button" (click)="applyRunShortcut(shortcut.id); closeUtilityMenu($event)">
+                                Jump: {{ shortcut.label }}
+                            </button>
+                        }
+                    </div>
+                </div>
+            </details>
+        }
+    </section>
+
+    @if (isPlaytestMode) {
+        <details class="grift-event-history">
+            <summary>Event history</summary>
+            <ol>
+                @for (event of gameEvents; track trackGameEvent($index, event)) {
+                    <li>{{ event.type }}</li>
+                }
+            </ol>
+        </details>
+    }
+</section>

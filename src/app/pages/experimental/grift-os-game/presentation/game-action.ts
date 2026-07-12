@@ -9,5 +9,7 @@ export type GameAction =
   | { type: 'hustle.expand'; hustleId: HustleId; quantity: 1 | 'max' }
   | { type: 'hustle.automate'; hustleId: HustleId }
   | { type: 'leverage.purchase'; leverageId: LeverageId }
+  | { type: 'offline.dismiss' }
   | { type: 'rugPull.prepare' }
-  | { type: 'rugPull.commit' };
+  | { type: 'rugPull.commit' }
+  | { type: 'rugPull.resolution.dismiss' };

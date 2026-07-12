@@ -27,8 +27,14 @@ await scanBoundary(
   ['@angular/', '/content/', '/empires/', '/audio/', '/presentation/', '/renderer/', '/playtest/', '../grift-os-game'],
   'runtime'
 );
+await scanBoundary(
+  path.join(featureRoot, 'empires', 'influence', 'renderer'),
+  ['/game-engine/economy', '/game-engine/leverage', '/game-engine/modifiers', '/runtime/', '/audio/', '/playtest/', '../grift-os-game'],
+  'influence-renderer',
+  false
+);
 
-async function scanBoundary(root, forbiddenImports, boundaryName) {
+async function scanBoundary(root, forbiddenImports, boundaryName, forbidBrowserGlobals = true) {
   for (const entry of await readdir(root, { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith('.ts') || entry.name.endsWith('.spec.ts')) {
       continue;
@@ -45,7 +51,7 @@ async function scanBoundary(root, forbiddenImports, boundaryName) {
       }
     }
 
-    if (forbiddenGlobals.test(source)) {
+    if (forbidBrowserGlobals && forbiddenGlobals.test(source)) {
       violations.push(`${boundaryName}/${entry.name}: browser DOM or storage global access`);
     }
   }
@@ -55,5 +61,5 @@ if (violations.length > 0) {
   console.error(['GriftOS architecture boundary violations:', ...violations.map((item) => `- ${item}`)].join('\n'));
   process.exitCode = 1;
 } else {
-  console.log('GriftOS engine, presentation, and runtime boundaries pass.');
+  console.log('GriftOS engine, presentation, runtime, and renderer boundaries pass.');
 }
