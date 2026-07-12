@@ -2,160 +2,161 @@
 
 .grift-stage {
   --stage-metal: #8b641f;
-  --stage-metal-dim: #8b641f59;
-  --stage-depth: color-mix(in srgb, var(--grift-plane) 92%, #d5c49f);
+  --stage-metal-dim: #8b641f66;
+  --stage-depth: color-mix(in srgb, var(--grift-plane) 91%, #d8c9a9);
+  --stage-backdrop: var(--influence-stage-backdrop-light-desktop, none);
   position: relative;
   display: grid;
   box-sizing: border-box;
-  min-block-size: clamp(17rem, 27vw, 23rem);
+  min-block-size: clamp(20rem, 28vw, 27rem);
   overflow: hidden;
-  border-block: 1px solid var(--stage-metal-dim);
   background: var(--stage-depth);
-  padding: clamp(1.3rem, 2.8vw, 2.4rem) clamp(1rem, 3vw, 2.6rem);
+  padding: clamp(1.4rem, 3vw, 2.8rem) clamp(1rem, 3vw, 2.7rem);
   isolation: isolate;
 }
 
 :host-context(.dark) .grift-stage {
-  --stage-metal: #caa461;
-  --stage-metal-dim: #caa46161;
-  --stage-depth: color-mix(in srgb, var(--grift-plane) 84%, #020508);
+  --stage-metal: #d0aa64;
+  --stage-metal-dim: #d0aa646b;
+  --stage-depth: color-mix(in srgb, var(--grift-plane) 82%, #020506);
+  --stage-backdrop: var(--influence-stage-backdrop-dark-desktop, none);
 }
 
 .grift-stage__atmosphere,
-.grift-stage__scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
+.grift-stage__scrim { position: absolute; inset: 0; pointer-events: none; }
 
 .grift-stage__atmosphere {
   z-index: 0;
-  background:
-    linear-gradient(90deg, transparent 0 14%, var(--stage-metal-dim) 14.1%, transparent 14.3% 85.7%, var(--stage-metal-dim) 85.9%, transparent 86%),
-    linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 9%, transparent), transparent 42%);
-  opacity: calc(0.74 + var(--grift-intensity-safe) * 0.14);
-}
-
-.grift-stage__canopy,
-.grift-stage__dais,
-.grift-stage__column { position: absolute; }
-
-.grift-stage__canopy {
-  inset: 0 12% auto;
-  height: 18%;
-  border-bottom: 1px solid var(--stage-metal-dim);
-}
-
-.grift-stage__column {
-  inset-block: 12% 7%;
-  width: clamp(1.4rem, 3.8vw, 3.8rem);
-  border-inline: 1px solid var(--stage-metal-dim);
-  background: repeating-linear-gradient(90deg, transparent 0 22%, var(--stage-metal-dim) 24% 26%, transparent 28% 48%);
-}
-
-.grift-stage__column--left { left: clamp(0.8rem, 4vw, 4.2rem); }
-.grift-stage__column--right { right: clamp(0.8rem, 4vw, 4.2rem); }
-
-.grift-stage__dais {
-  inset: auto 18% 4%;
-  height: 10%;
-  border-block: 1px solid var(--stage-metal-dim);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 8%, transparent), transparent);
-  transform: perspective(8rem) rotateX(42deg);
+  background-image:
+    var(--stage-backdrop),
+    linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 11%, transparent), transparent 52%);
+  background-position: center;
+  background-size: cover;
 }
 
 .grift-stage__scrim {
   z-index: 1;
   background:
-    linear-gradient(90deg, var(--stage-depth), transparent 23% 77%, var(--stage-depth)),
-    linear-gradient(180deg, color-mix(in srgb, var(--stage-depth), transparent 30%), transparent 35% 72%, var(--stage-depth));
+    linear-gradient(90deg, color-mix(in srgb, var(--stage-depth), transparent 10%), transparent 22% 78%, color-mix(in srgb, var(--stage-depth), transparent 6%)),
+    linear-gradient(180deg, color-mix(in srgb, var(--stage-depth), transparent 48%), transparent 32% 68%, var(--stage-depth));
 }
 
-.grift-stage__content {
+.grift-stage__composition {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-areas: "identity valuation gains owner";
-  grid-template-columns: minmax(8rem, 0.6fr) minmax(22rem, 1.55fr) minmax(4rem, 0.3fr) minmax(10rem, 0.68fr);
-  gap: clamp(0.8rem, 2vw, 1.7rem);
-  width: 100%;
-  min-width: 0;
-  align-items: center;
+  place-items: center;
 }
 
-.grift-stage__identity { grid-area: identity; }
-.grift-stage__valuation { grid-area: valuation; }
-.grift-stage__owner { grid-area: owner; }
-
-.grift-title-block { display: grid; }
-.grift-title-block .grift-kicker { color: var(--stage-metal); letter-spacing: 0.17em; }
-.grift-title-block h1 {
-  margin: 0;
-  color: var(--grift-ink);
-  font: 560 clamp(1.35rem, 2vw, 1.85rem)/1 Georgia, "Times New Roman", serif;
-  letter-spacing: -0.02em;
-}
+.grift-stage__centerpiece { width: min(50rem, 60vw); }
 
 .grift-stage__chamber {
-  padding: clamp(0.42rem, 0.8vw, 0.65rem);
-  border: 1px solid var(--stage-metal-dim);
-  background: linear-gradient(145deg, color-mix(in srgb, var(--stage-metal) 10%, transparent), transparent 28% 72%, color-mix(in srgb, var(--stage-metal) 7%, transparent));
-  clip-path: polygon(4% 0, 96% 0, 100% 12%, 100% 88%, 96% 100%, 4% 100%, 0 88%, 0 12%);
+  position: relative;
+  padding: clamp(0.6rem, 1vw, 0.9rem);
+  border: 0.28rem double var(--stage-metal);
+  background: color-mix(in srgb, var(--stage-metal) 22%, var(--stage-depth));
+  box-shadow: 0 1.7rem 3rem #0005;
+  clip-path: polygon(5% 0, 95% 0, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0 85%, 0 15%);
 }
 
 .grift-stage__frame {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
   border: 1px solid var(--stage-metal);
-  background: color-mix(in srgb, var(--stage-depth) 90%, transparent);
-  padding: clamp(1.15rem, 2vw, 1.8rem) 1rem;
+  background: color-mix(in srgb, var(--stage-depth) 92%, transparent);
+  padding: clamp(1.35rem, 2.4vw, 2.2rem) clamp(1rem, 3vw, 2.6rem);
   clip-path: inherit;
 }
 
-.grift-valuation-object { display: grid; justify-items: center; gap: 0.22rem; min-width: 0; text-align: center; }
-.grift-valuation-object p { color: var(--stage-metal); letter-spacing: 0.14em; }
-.grift-valuation-amount { display: inline-grid; justify-items: center; }
+.grift-stage__crest {
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  z-index: 2;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--stage-metal);
+  background: var(--stage-depth);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.grift-stage__plinth {
+  position: absolute;
+  inset: auto 9% -1.15rem;
+  height: 1rem;
+  border-block: 1px solid var(--stage-metal-dim);
+  background: var(--stage-depth);
+}
+
+.grift-stage__title { display: grid; gap: 0.22rem; justify-items: center; text-align: center; }
+.grift-stage__title .grift-kicker { color: var(--stage-metal); letter-spacing: 0.18em; }
+.grift-stage__title h1 {
+  margin: 0;
+  color: var(--grift-ink);
+  font: 560 clamp(1.15rem, 1.8vw, 1.6rem)/1 Georgia, "Times New Roman", serif;
+}
+
+.grift-valuation-object { display: grid; justify-items: center; gap: 0.2rem; min-width: 0; text-align: center; }
+.grift-valuation-object p { color: var(--stage-metal); }
 .grift-valuation-object strong {
   color: var(--grift-value);
-  font: 540 clamp(3.8rem, 6.4vw, 6.2rem)/0.84 Georgia, "Times New Roman", serif;
-  letter-spacing: -0.055em;
+  font: 540 clamp(3.2rem, 5.2vw, 5rem)/0.86 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.045em;
 }
-.grift-valuation-object span { color: var(--grift-info); font-size: clamp(0.84rem, 1.2vw, 1rem); font-weight: 650; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+.grift-valuation-object span { color: var(--grift-info); font-size: clamp(0.82rem, 1.1vw, 1rem); font-weight: 650; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 
-.grift-stage__gains { position: relative; grid-area: gains; min-block-size: 5rem; overflow: clip; pointer-events: none; }
+.grift-stage__capital {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: clamp(11rem, 17vw, 15rem);
+  transform: translateY(-50%);
+}
+
+.grift-capital-panel {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--stage-metal-dim);
+  border-top-color: var(--stage-metal);
+  background: color-mix(in srgb, var(--stage-depth) 90%, transparent);
+  padding: 1rem;
+}
+.grift-capital-panel p { color: var(--stage-metal); letter-spacing: 0.13em; }
+.grift-capital-panel strong { display: block; color: var(--grift-ink); font: 560 clamp(1.4rem, 2.2vw, 2rem)/1 Georgia, "Times New Roman", serif; }
+.grift-capital-panel span { color: var(--grift-ink-soft); font-size: 0.7rem; font-weight: 650; }
+.grift-capital-panel--established span { color: var(--grift-info); }
+
+.grift-stage__feedback { position: absolute; top: 50%; left: calc(50% + min(25rem, 30vw)); width: min(9rem, 10vw); min-block-size: 5rem; overflow: clip; pointer-events: none; transform: translateY(-50%); }
 .grift-valuation-flyout { position: absolute; left: 0; max-width: 100%; overflow: hidden; font-size: 0.76rem; font-weight: 720; white-space: nowrap; }
 .grift-valuation-flyout--gain { top: 1rem; color: #9abf78; animation: grift-stage-value 620ms ease-out both; --flyout-end: -12px; }
 .grift-valuation-flyout--spend { bottom: 1rem; color: #d9877f; animation: grift-stage-value 620ms ease-out both; --flyout-end: 12px; }
 
-.grift-capital-panel {
-  width: 100%;
-  border: 1px solid var(--stage-metal-dim);
-  border-top-color: var(--stage-metal);
-  background: color-mix(in srgb, var(--stage-depth) 87%, transparent);
-  padding: 1rem;
-}
-.grift-capital-panel p { color: var(--stage-metal); letter-spacing: 0.12em; }
-.grift-capital-panel strong { display: block; color: var(--grift-ink); font: 560 clamp(1.45rem, 2.5vw, 2.1rem)/1 Georgia, "Times New Roman", serif; }
-.grift-capital-panel span { color: var(--grift-info); font-size: 0.7rem; font-weight: 650; }
-
 @media (max-width: 72rem) {
-  .grift-stage__content { grid-template-areas: "identity owner" "valuation valuation"; grid-template-columns: 1fr auto; }
-  .grift-stage__gains { display: none; }
+  .grift-stage__composition { gap: 1.4rem; }
+  .grift-stage__centerpiece { width: min(44rem, 86vw); }
+  .grift-stage__capital { position: static; width: min(36rem, 76vw); transform: none; }
+  .grift-capital-panel { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+  .grift-capital-panel span { grid-column: 1 / -1; }
+  .grift-stage__feedback { display: none; }
 }
 
 @media (max-width: 44rem) {
-  .grift-stage { min-block-size: 17.5rem; padding: 0.9rem 0.85rem 1.15rem; }
-  .grift-stage__atmosphere { background: linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 8%, transparent), transparent 45%); }
-  .grift-stage__column { width: 1rem; }
-  .grift-stage__column--left { left: 0.45rem; }
-  .grift-stage__column--right { right: 0.45rem; }
-  .grift-stage__dais { inset-inline: 8%; }
-  .grift-stage__content { grid-template-areas: "identity owner" "valuation valuation"; grid-template-columns: minmax(0, 1fr) auto; gap: 0.8rem 0.55rem; align-items: end; }
-  .grift-title-block h1 { font-size: 1.2rem; }
-  .grift-stage__chamber { padding: 0.3rem; }
-  .grift-stage__frame { padding: 1.2rem 0.55rem; }
-  .grift-valuation-object strong { font-size: clamp(3.55rem, 16vw, 4.55rem); }
-  .grift-capital-panel { width: auto; max-width: 8.5rem; padding: 0.65rem; }
-  .grift-capital-panel strong { font-size: 1.2rem; }
-  .grift-capital-panel span { display: none; }
+  .grift-stage {
+    --stage-backdrop: var(--influence-stage-backdrop-light-mobile, none);
+    min-block-size: 21rem;
+    padding: 1.5rem 0.85rem 1.15rem;
+  }
+  :host-context(.dark) .grift-stage { --stage-backdrop: var(--influence-stage-backdrop-dark-mobile, none); }
+  .grift-stage__composition { gap: 1.25rem; align-content: center; }
+  .grift-stage__centerpiece { width: 100%; }
+  .grift-stage__chamber { padding: 0.42rem; }
+  .grift-stage__frame { gap: 0.55rem; padding: 1.25rem 0.6rem 1.35rem; }
+  .grift-valuation-object strong { font-size: clamp(2.9rem, 13vw, 3.8rem); }
+  .grift-stage__capital { width: 100%; }
+  .grift-capital-panel { padding: 0.7rem 0.85rem; }
+  .grift-capital-panel strong { font-size: 1.25rem; }
+  .grift-capital-panel span { font-size: 0.64rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -32,7 +32,7 @@ describe('InfluenceStageComponent', () => {
     expect(fixture.nativeElement.querySelector('button')).toBeNull();
   });
 
-  it('does not invent an Owner Capital panel before Net Worth exists', () => {
+  it('keeps a real-data Capital Panel in the Stage before Net Worth is established', () => {
     const fixture = TestBed.createComponent(InfluenceStageComponent);
     fixture.componentInstance.view = {
       copy: GRIFT_OS_COPY,
@@ -47,6 +47,8 @@ describe('InfluenceStageComponent', () => {
 
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.grift-capital-panel')).toBeNull();
+    const capitalPanel = fixture.nativeElement.querySelector('.grift-capital-panel') as HTMLElement;
+    expect(capitalPanel.textContent).toContain('$0');
+    expect(capitalPanel.classList).not.toContain('grift-capital-panel--established');
   });
 });

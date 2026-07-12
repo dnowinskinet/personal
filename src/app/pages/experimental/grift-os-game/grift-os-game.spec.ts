@@ -71,7 +71,8 @@ describe('GriftOsGameComponent', () => {
     expect(text).toContain('Valuation');
     expect(text).not.toContain('Leverage');
     expect(text).not.toContain('Rug Pull');
-    expect(text).not.toContain('Net Worth');
+    expect(text).toContain('Net Worth');
+    expect(fixture.nativeElement.querySelector('.grift-capital-panel')?.textContent).toContain('$0');
     expect(text).not.toContain('Enterprise Stage');
     expect(text).not.toContain('intensity');
     expect(text).not.toContain('Paper Valuation');

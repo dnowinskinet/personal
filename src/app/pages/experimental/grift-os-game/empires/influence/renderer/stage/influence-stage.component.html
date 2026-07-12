@@ -3,25 +3,18 @@
   aria-label="GriftOS status"
   [attr.data-visual-condition]="view.visualCondition"
 >
-  <div class="grift-stage__atmosphere" aria-hidden="true">
-    <span class="grift-stage__canopy"></span>
-    <span class="grift-stage__column grift-stage__column--left"></span>
-    <span class="grift-stage__column grift-stage__column--right"></span>
-    <span class="grift-stage__dais"></span>
-  </div>
+  <div class="grift-stage__atmosphere" aria-hidden="true"></div>
   <div class="grift-stage__scrim" aria-hidden="true"></div>
 
-  <div class="grift-stage__content">
-    <div class="grift-stage__identity">
-      <div class="grift-title-block">
-        <p class="grift-kicker">{{ view.copy.eyebrow }}</p>
-        <h1>{{ view.copy.title }}</h1>
-      </div>
-    </div>
-
-    <div class="grift-stage__valuation">
+  <div class="grift-stage__composition">
+    <div class="grift-stage__centerpiece">
       <div class="grift-stage__chamber">
+        <span class="grift-stage__crest" aria-hidden="true"></span>
         <div class="grift-stage__frame">
+          <div class="grift-stage__title">
+            <p class="grift-kicker">{{ view.copy.eyebrow }}</p>
+            <h1>{{ view.copy.title }}</h1>
+          </div>
           <div class="grift-valuation-object" aria-label="Current valuation">
             <p>{{ view.copy.valuationLabel }}</p>
             <div class="grift-valuation-amount">
@@ -30,10 +23,11 @@
             <span>{{ view.valuationPerSecondLabel }}</span>
           </div>
         </div>
+        <span class="grift-stage__plinth" aria-hidden="true"></span>
       </div>
     </div>
 
-    <div class="grift-stage__gains" aria-hidden="true">
+    <div class="grift-stage__feedback" aria-hidden="true">
       @for (flyout of view.valuationFlyouts; track trackValuationFlyout($index, flyout)) {
         <span
           class="grift-valuation-flyout"
@@ -46,14 +40,16 @@
       }
     </div>
 
-    <div class="grift-stage__owner">
-      @if (view.showNetWorth) {
-        <aside class="grift-net-worth grift-capital-panel" [attr.aria-label]="view.copy.netWorthLabel">
-          <p>{{ view.copy.netWorthLabel }}</p>
-          <strong>{{ view.netWorthLabel }}</strong>
-          <span>{{ view.wealthAdvantageLabel }}</span>
-        </aside>
-      }
+    <div class="grift-stage__capital">
+      <aside
+        class="grift-net-worth grift-capital-panel"
+        [class.grift-capital-panel--established]="view.showNetWorth"
+        [attr.aria-label]="view.copy.netWorthLabel"
+      >
+        <p>{{ view.copy.netWorthLabel }}</p>
+        <strong>{{ view.netWorthLabel }}</strong>
+        <span>{{ view.wealthAdvantageLabel }}</span>
+      </aside>
     </div>
   </div>
 </header>
