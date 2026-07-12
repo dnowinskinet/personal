@@ -1,21 +1,15 @@
-import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
-import {
-  GRIFT_OS_FOUNDER_TAKE_TUNING,
-  GRIFT_OS_PRESTIGE_TUNING,
-} from '../content/economy-tuning';
 import { createInitialGameState } from './economy';
 import { founderTakeRate } from './founder-take';
+import { GameMechanics, GameUnlock } from './mechanics';
+import { wealthAdvantageMultiplier } from './modifiers';
 import {
   campaignStratumForNetWorth,
-  newlyUnlockedLabels,
+  newlyUnlockedMechanics,
   rugPullTargetForNetWorth,
 } from './progression';
-import { wealthAdvantageMultiplier } from './modifiers';
-import { GriftOsGameState, HustleDefinition, RugPullState } from './types';
+import { GriftOsGameState, RugPullState } from './types';
 
-export const RUG_PULL_CONFIG = GRIFT_OS_PRESTIGE_TUNING;
-
-export interface RugPullPreview {
+export interface RugPullMechanicsPreview {
   state: RugPullState;
   currentValuation: number;
   peakValuation: number;
@@ -25,8 +19,8 @@ export interface RugPullPreview {
   requiredPeakValuation: number;
   valuationRemaining: number;
   recoveryMultiplier: number;
-  newlyUnlocked: readonly string[];
-  campaignStratumLabel: string;
+  newlyUnlocked: readonly GameUnlock[];
+  campaignStratumId: string;
   founderTakeRate: number;
   isAvailable: boolean;
 }
@@ -36,20 +30,26 @@ export interface RugPullCommitResult {
   netWorthGained: number;
 }
 
-export function rugPullStateForValuation(state: GriftOsGameState): RugPullState {
+export function rugPullStateForValuation(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): RugPullState {
   if (state.rugPullState === 'preview' || state.rugPullState === 'committed' || state.rugPullState === 'extracting') {
     return state.rugPullState;
   }
 
-  return state.peakValuation >= rugPullTargetForNetWorth(state.netWorth) ? 'available' : 'unavailable';
+  return state.peakValuation >= rugPullTargetForNetWorth(state.netWorth, mechanics)
+    ? 'available'
+    : 'unavailable';
 }
 
 export function projectedNetWorthGain(
   peakValuation: number,
-  currentNetWorth = 0,
-  takeRate: number = GRIFT_OS_FOUNDER_TAKE_TUNING.baseTake
+  currentNetWorth: number,
+  takeRate: number,
+  mechanics: GameMechanics
 ): number {
-  const stratum = campaignStratumForNetWorth(currentNetWorth);
+  const stratum = campaignStratumForNetWorth(currentNetWorth, mechanics);
 
   if (!Number.isFinite(peakValuation) || peakValuation < stratum.rugPullTarget) {
     return 0;
@@ -57,23 +57,29 @@ export function projectedNetWorthGain(
 
   return Math.floor(
     stratum.rugPullTarget * Math.max(0, takeRate) * stratum.rewardShaping *
-    (peakValuation / stratum.rugPullTarget) ** RUG_PULL_CONFIG.netWorthGainExponent
+    (peakValuation / stratum.rugPullTarget) ** mechanics.prestige.netWorthGainExponent
   );
 }
 
 export function createRugPullPreview(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[] = HUSTLE_DEFINITIONS
-): RugPullPreview {
-  const requiredPeakValuation = rugPullTargetForNetWorth(state.netWorth);
-  const takeRate = founderTakeRate(state);
-  const projectedGain = projectedNetWorthGain(state.peakValuation, state.netWorth, takeRate);
+  mechanics: GameMechanics
+): RugPullMechanicsPreview {
+  const requiredPeakValuation = rugPullTargetForNetWorth(state.netWorth, mechanics);
+  const takeRate = founderTakeRate(state, mechanics);
+  const projectedGain = projectedNetWorthGain(
+    state.peakValuation,
+    state.netWorth,
+    takeRate,
+    mechanics
+  );
   const resultingNetWorth = state.netWorth + projectedGain;
-  const resultingMultiplier = wealthAdvantageMultiplier(resultingNetWorth);
-  const currentMultiplier = wealthAdvantageMultiplier(state.netWorth);
+  const resultingMultiplier = wealthAdvantageMultiplier(resultingNetWorth, mechanics);
+  const currentMultiplier = wealthAdvantageMultiplier(state.netWorth, mechanics);
+  const stratum = campaignStratumForNetWorth(state.netWorth, mechanics);
 
   return {
-    state: rugPullStateForValuation(state),
+    state: rugPullStateForValuation(state, mechanics),
     currentValuation: state.valuation,
     peakValuation: state.peakValuation,
     projectedNetWorthGain: projectedGain,
@@ -82,8 +88,8 @@ export function createRugPullPreview(
     requiredPeakValuation,
     valuationRemaining: Math.max(0, requiredPeakValuation - state.peakValuation),
     recoveryMultiplier: resultingMultiplier / Math.max(1, currentMultiplier),
-    newlyUnlocked: newlyUnlockedLabels(state.netWorth, resultingNetWorth),
-    campaignStratumLabel: campaignStratumForNetWorth(state.netWorth).label,
+    newlyUnlocked: newlyUnlockedMechanics(state.netWorth, resultingNetWorth, mechanics),
+    campaignStratumId: stratum.id,
     founderTakeRate: takeRate,
     isAvailable: projectedGain > 0,
   };
@@ -91,12 +97,13 @@ export function createRugPullPreview(
 
 export function commitRugPull(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[] = HUSTLE_DEFINITIONS
+  mechanics: GameMechanics
 ): RugPullCommitResult {
   const netWorthGained = projectedNetWorthGain(
     state.peakValuation,
     state.netWorth,
-    founderTakeRate(state)
+    founderTakeRate(state, mechanics),
+    mechanics
   );
 
   if (netWorthGained <= 0) {
@@ -111,7 +118,7 @@ export function commitRugPull(
 
   return {
     state: createInitialGameState(
-      definitions,
+      mechanics,
       state.netWorth + netWorthGained,
       state.rugPullCount + 1
     ),

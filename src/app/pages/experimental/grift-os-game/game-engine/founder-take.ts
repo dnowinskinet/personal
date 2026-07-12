@@ -1,7 +1,4 @@
-import {
-  FounderTakeStageTuning,
-  GRIFT_OS_FOUNDER_TAKE_TUNING,
-} from '../content/economy-tuning';
+import { FounderTakeStageMechanics, GameMechanics } from './mechanics';
 import { rugPullTargetForNetWorth } from './progression';
 import {
   FounderTakePreparationResult,
@@ -12,8 +9,8 @@ export interface FounderTakeStatus {
   takeRate: number;
   completedStages: number;
   isPreparing: boolean;
-  activeStage: FounderTakeStageTuning | null;
-  nextStage: FounderTakeStageTuning | null;
+  activeStage: FounderTakeStageMechanics | null;
+  nextStage: FounderTakeStageMechanics | null;
   nextStageCost: number;
   progressMs: number;
   remainingMs: number;
@@ -21,28 +18,31 @@ export interface FounderTakeStatus {
   canStartNextStage: boolean;
 }
 
-export function founderTakeRate(state: GriftOsGameState): number {
-  const completedStages = safeCompletedStages(state);
-  const completedBonus = GRIFT_OS_FOUNDER_TAKE_TUNING.stages
+export function founderTakeRate(state: GriftOsGameState, mechanics: GameMechanics): number {
+  const completedStages = safeCompletedStages(state, mechanics);
+  const completedBonus = mechanics.founderTake.stages
     .slice(0, completedStages)
     .reduce((total, stage) => total + stage.takeBonus, 0);
 
-  return GRIFT_OS_FOUNDER_TAKE_TUNING.baseTake + completedBonus;
+  return mechanics.founderTake.baseTake + completedBonus;
 }
 
-export function founderTakeStatus(state: GriftOsGameState): FounderTakeStatus {
-  const completedStages = safeCompletedStages(state);
+export function founderTakeStatus(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): FounderTakeStatus {
+  const completedStages = safeCompletedStages(state, mechanics);
   const activeStage = state.founderTakePreparation.isActive
-    ? GRIFT_OS_FOUNDER_TAKE_TUNING.stages[completedStages] ?? null
+    ? mechanics.founderTake.stages[completedStages] ?? null
     : null;
-  const nextStage = GRIFT_OS_FOUNDER_TAKE_TUNING.stages[completedStages] ?? null;
-  const nextStageCost = nextStage ? founderTakeStageCost(state, nextStage) : 0;
+  const nextStage = mechanics.founderTake.stages[completedStages] ?? null;
+  const nextStageCost = nextStage ? founderTakeStageCost(state, mechanics, nextStage) : 0;
   const remainingMs = activeStage
     ? Math.max(0, activeStage.durationMs - state.founderTakePreparation.progressMs)
     : 0;
 
   return {
-    takeRate: founderTakeRate(state),
+    takeRate: founderTakeRate(state, mechanics),
     completedStages,
     isPreparing: activeStage !== null,
     activeStage,
@@ -51,44 +51,54 @@ export function founderTakeStatus(state: GriftOsGameState): FounderTakeStatus {
     progressMs: state.founderTakePreparation.progressMs,
     remainingMs,
     outputRetention: activeStage?.outputRetention ?? 1,
-    canStartNextStage: canStartFounderTakePreparation(state),
+    canStartNextStage: canStartFounderTakePreparation(state, mechanics),
   };
 }
 
 export function founderTakeStageCost(
   state: GriftOsGameState,
-  stage?: FounderTakeStageTuning | null
+  mechanics: GameMechanics,
+  stage?: FounderTakeStageMechanics | null
 ): number {
-  const targetStage = stage ?? nextFounderTakeStage(state);
+  const targetStage = stage ?? nextFounderTakeStage(state, mechanics);
 
   if (!targetStage) {
     return 0;
   }
 
-  return rugPullTargetForNetWorth(state.netWorth) * targetStage.costTargetRatio;
+  return rugPullTargetForNetWorth(state.netWorth, mechanics) * targetStage.costTargetRatio;
 }
 
-export function nextFounderTakeStage(state: GriftOsGameState): FounderTakeStageTuning | null {
-  return GRIFT_OS_FOUNDER_TAKE_TUNING.stages[safeCompletedStages(state)] ?? null;
+export function nextFounderTakeStage(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): FounderTakeStageMechanics | null {
+  return mechanics.founderTake.stages[safeCompletedStages(state, mechanics)] ?? null;
 }
 
-export function canStartFounderTakePreparation(state: GriftOsGameState): boolean {
-  const stage = nextFounderTakeStage(state);
+export function canStartFounderTakePreparation(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): boolean {
+  const stage = nextFounderTakeStage(state, mechanics);
 
   return stage !== null &&
     !state.founderTakePreparation.isActive &&
-    state.peakValuation >= rugPullTargetForNetWorth(state.netWorth) &&
-    state.valuation >= founderTakeStageCost(state, stage);
+    state.peakValuation >= rugPullTargetForNetWorth(state.netWorth, mechanics) &&
+    state.valuation >= founderTakeStageCost(state, mechanics, stage);
 }
 
-export function startFounderTakePreparation(state: GriftOsGameState): FounderTakePreparationResult {
-  const stage = nextFounderTakeStage(state);
+export function startFounderTakePreparation(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): FounderTakePreparationResult {
+  const stage = nextFounderTakeStage(state, mechanics);
 
-  if (!stage || !canStartFounderTakePreparation(state)) {
+  if (!stage || !canStartFounderTakePreparation(state, mechanics)) {
     return { state, started: false, totalCost: 0 };
   }
 
-  const totalCost = founderTakeStageCost(state, stage);
+  const totalCost = founderTakeStageCost(state, mechanics, stage);
 
   return {
     state: {
@@ -105,12 +115,15 @@ export function startFounderTakePreparation(state: GriftOsGameState): FounderTak
   };
 }
 
-export function founderTakePreparationRemainingMs(state: GriftOsGameState): number | null {
+export function founderTakePreparationRemainingMs(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): number | null {
   if (!state.founderTakePreparation.isActive) {
     return null;
   }
 
-  const stage = nextFounderTakeStage(state);
+  const stage = nextFounderTakeStage(state, mechanics);
 
   return stage
     ? Math.max(0, stage.durationMs - state.founderTakePreparation.progressMs)
@@ -119,19 +132,20 @@ export function founderTakePreparationRemainingMs(state: GriftOsGameState): numb
 
 export function advanceFounderTakePreparation(
   state: GriftOsGameState,
-  elapsedMs: number
+  elapsedMs: number,
+  mechanics: GameMechanics
 ): GriftOsGameState {
   if (!state.founderTakePreparation.isActive) {
     return state;
   }
 
-  const stage = nextFounderTakeStage(state);
+  const stage = nextFounderTakeStage(state, mechanics);
 
   if (!stage) {
     return {
       ...state,
       founderTakePreparation: {
-        completedStages: GRIFT_OS_FOUNDER_TAKE_TUNING.stages.length,
+        completedStages: mechanics.founderTake.stages.length,
         isActive: false,
         progressMs: 0,
       },
@@ -154,8 +168,8 @@ export function advanceFounderTakePreparation(
     ...state,
     founderTakePreparation: {
       completedStages: Math.min(
-        GRIFT_OS_FOUNDER_TAKE_TUNING.stages.length,
-        safeCompletedStages(state) + 1
+        mechanics.founderTake.stages.length,
+        safeCompletedStages(state, mechanics) + 1
       ),
       isActive: false,
       progressMs: 0,
@@ -163,13 +177,16 @@ export function advanceFounderTakePreparation(
   };
 }
 
-export function founderTakeOutputRetention(state: GriftOsGameState): number {
-  return founderTakeStatus(state).outputRetention;
+export function founderTakeOutputRetention(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): number {
+  return founderTakeStatus(state, mechanics).outputRetention;
 }
 
-function safeCompletedStages(state: GriftOsGameState): number {
+function safeCompletedStages(state: GriftOsGameState, mechanics: GameMechanics): number {
   return Math.min(
-    GRIFT_OS_FOUNDER_TAKE_TUNING.stages.length,
+    mechanics.founderTake.stages.length,
     Math.max(0, Math.floor(state.founderTakePreparation.completedStages))
   );
 }

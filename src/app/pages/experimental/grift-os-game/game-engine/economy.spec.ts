@@ -1,4 +1,5 @@
 import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
+import { RUG_PULL_CONFIG } from '../content/rug-pull-preview';
 import {
   GRIFT_OS_HUSTLE_TUNING,
   GRIFT_OS_MILESTONE_TUNING,
@@ -31,8 +32,8 @@ import {
 } from './modifiers';
 import { buyLeverage } from './leverage';
 import { deriveEnterprisePresentation } from './presentation';
-import { newlyUnlockedLabels } from './progression';
-import { commitRugPull, createRugPullPreview, projectedNetWorthGain, RUG_PULL_CONFIG } from './rug-pull';
+import { newlyUnlockedMechanics } from './progression';
+import { commitRugPull, createRugPullPreview, projectedNetWorthGain } from './rug-pull';
 
 describe('GriftOS Hustle economy', () => {
   const trollDefinition = HUSTLE_DEFINITIONS[0];
@@ -174,10 +175,10 @@ describe('GriftOS Hustle economy', () => {
   });
 
   it('keeps Hustles out of Rug Pull unlock forecasts', () => {
-    const labels = newlyUnlockedLabels(0, 1_000_000_000_000);
+    const unlocks = newlyUnlockedMechanics(0, 1_000_000_000_000, HUSTLE_DEFINITIONS);
 
     for (const definition of HUSTLE_DEFINITIONS) {
-      expect(labels).not.toContain(definition.name);
+      expect(unlocks.some((unlock) => unlock.id === definition.id)).toBeFalse();
     }
   });
 
@@ -197,13 +198,18 @@ describe('GriftOS Hustle economy', () => {
     const payout = hustlePayout(milestoneState, HUSTLE_DEFINITIONS, 'troll-network');
 
     expect(modifiers.map((modifier) => modifier.id)).toContain('troll-network-units-10-output');
-    expect(wealthAdvantageMultiplier(100_000)).toBeCloseTo(3.0, 2);
+    expect(wealthAdvantageMultiplier(100_000, HUSTLE_DEFINITIONS)).toBeCloseTo(3.0, 2);
     expect(payout).toBeGreaterThan(trollDefinition.basePayout * 10 * 1.5);
   });
 
   it('makes $1T Net Worth a decisive post-victory advantage without changing the frontier rule', () => {
-    expect(wealthAdvantageMultiplier(1_000_000_000_000)).toBeCloseTo(253.38, 2);
-    expect(wealthAdvantageMultiplierForHustle(1_000_000_000_000, sovereignDefinition))
+    expect(wealthAdvantageMultiplier(1_000_000_000_000, HUSTLE_DEFINITIONS))
+      .toBeCloseTo(253.38, 2);
+    expect(wealthAdvantageMultiplierForHustle(
+      1_000_000_000_000,
+      sovereignDefinition,
+      HUSTLE_DEFINITIONS
+    ))
       .toBeCloseTo(64.1, 2);
   });
 
@@ -284,13 +290,13 @@ describe('GriftOS Hustle economy', () => {
       peakValuation: RUG_PULL_CONFIG.unlockValuation,
     };
 
-    const preview = createRugPullPreview(state);
+    const preview = createRugPullPreview(state, HUSTLE_DEFINITIONS);
     const result = commitRugPull(state, HUSTLE_DEFINITIONS);
 
     expect(preview.isAvailable).toBeTrue();
-    expect(projectedNetWorthGain(50_000_000)).toBe(0);
-    expect(projectedNetWorthGain(100_000_000)).toBe(1_000_000);
-    expect(projectedNetWorthGain(200_000_000)).toBe(1_681_792);
+    expect(projectedNetWorthGain(50_000_000, 0, 0.1, HUSTLE_DEFINITIONS)).toBe(0);
+    expect(projectedNetWorthGain(100_000_000, 0, 0.1, HUSTLE_DEFINITIONS)).toBe(1_000_000);
+    expect(projectedNetWorthGain(200_000_000, 0, 0.1, HUSTLE_DEFINITIONS)).toBe(1_681_792);
     expect(result.netWorthGained).toBe(1_000_000);
     expect(result.state.valuation).toBe(0);
     expect(result.state.netWorth).toBe(1_000_000);
@@ -313,19 +319,20 @@ describe('GriftOS Hustle economy', () => {
         },
       },
     };
-    const preparation = startFounderTakePreparation(readyState);
+    const preparation = startFounderTakePreparation(readyState, HUSTLE_DEFINITIONS);
 
     expect(preparation.started).toBeTrue();
     expect(preparation.totalCost).toBe(3_000_000);
-    expect(founderTakeRate(preparation.state)).toBe(0.1);
+    expect(founderTakeRate(preparation.state, HUSTLE_DEFINITIONS)).toBe(0.1);
     expect(hustlePayout(preparation.state, HUSTLE_DEFINITIONS, 'troll-network')).toBeCloseTo(0.001875, 8);
 
     const completed = advanceGame(preparation.state, HUSTLE_DEFINITIONS, 2 * 60 * 60 * 1000);
 
     expect(completed.state.founderTakePreparation.completedStages).toBe(1);
     expect(completed.state.founderTakePreparation.isActive).toBeFalse();
-    expect(founderTakeRate(completed.state)).toBeCloseTo(0.15, 8);
-    expect(createRugPullPreview(completed.state).projectedNetWorthGain).toBe(1_500_000);
+    expect(founderTakeRate(completed.state, HUSTLE_DEFINITIONS)).toBeCloseTo(0.15, 8);
+    expect(createRugPullPreview(completed.state, HUSTLE_DEFINITIONS).projectedNetWorthGain)
+      .toBe(1_500_000);
   });
 
   it('makes Leverage an expensive run-scoped output decision', () => {
@@ -343,7 +350,7 @@ describe('GriftOS Hustle economy', () => {
       },
     };
     const beforePayout = hustlePayout(eligibleState, HUSTLE_DEFINITIONS, 'troll-network');
-    const purchased = buyLeverage(eligibleState, 'attention-loop');
+    const purchased = buyLeverage(eligibleState, 'attention-loop', HUSTLE_DEFINITIONS);
 
     expect(purchased.purchased).toBeTrue();
     expect(purchased.state.valuation).toBe(0);
@@ -368,7 +375,7 @@ describe('GriftOS Hustle economy', () => {
     const activeState = activateHustle(result.state, 'troll-network');
     const advanced = advanceGame(activeState, HUSTLE_DEFINITIONS, 2_000);
     const expectedPayout = trollDefinition.basePayout *
-      wealthAdvantageMultiplier(result.state.netWorth);
+      wealthAdvantageMultiplier(result.state.netWorth, HUSTLE_DEFINITIONS);
 
     expect(result.state.netWorth).toBe(1_000_000);
     expect(advanced.events.length).toBe(1);
@@ -412,7 +419,7 @@ describe('GriftOS Hustle economy', () => {
       strategy: 'automation-rush',
       durationMs: 4 * 60 * 1000,
       stepMs: 500,
-      definitions: HUSTLE_DEFINITIONS,
+      mechanics: HUSTLE_DEFINITIONS,
     });
 
     expect(result.timeline.length).toBeGreaterThan(2);

@@ -1,6 +1,3 @@
-import { GRIFT_OS_PRESTIGE_TUNING } from '../content/economy-tuning';
-import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
-import { LEVERAGE_DEFINITIONS } from '../content/leverage-definitions';
 import {
   activateHustle,
   advanceGame,
@@ -21,9 +18,9 @@ import {
   startFounderTakePreparation,
 } from './founder-take';
 import { commitRugPull, createRugPullPreview } from './rug-pull';
+import { GameMechanics, GameUnlock, HustleMechanicsDefinition } from './mechanics';
 import {
   GriftOsGameState,
-  HustleDefinition,
   HustleId,
   LeverageId,
   ProductionEvent,
@@ -81,9 +78,9 @@ export interface BalanceSimulationResult {
 
 export interface BalanceSimulationOptions {
   strategy: BalanceStrategy;
+  mechanics: GameMechanics;
   durationMs?: number;
   stepMs?: number;
-  definitions?: readonly HustleDefinition[];
   startingNetWorth?: number;
 }
 
@@ -105,7 +102,7 @@ export interface CampaignRugPullSummary {
   netWorthGained: number;
   resultingNetWorth: number;
   recoveryMs: number | null;
-  newlyUnlocked: readonly string[];
+  newlyUnlocked: readonly GameUnlock[];
   founderTakeRate: number;
   founderTakeStages: number;
 }
@@ -140,8 +137,8 @@ export interface CampaignSimulationResult {
 
 export interface CampaignSimulationOptions {
   profile: BalanceProfileId | BalanceProfile;
+  mechanics: GameMechanics;
   strategy?: BalanceStrategy;
-  definitions?: readonly HustleDefinition[];
   targetNetWorth?: number;
   maxWallClockMs?: number;
   startingNetWorth?: number;
@@ -221,7 +218,7 @@ export const BALANCE_PROFILES: Readonly<Record<BalanceProfileId, BalanceProfile>
 };
 
 export function runBalanceSimulation(options: BalanceSimulationOptions): BalanceSimulationResult {
-  const definitions = options.definitions ?? HUSTLE_DEFINITIONS;
+  const definitions = options.mechanics;
   const durationMs = options.durationMs ?? DEFAULT_DURATION_MS;
   const stepMs = options.stepMs ?? DEFAULT_STEP_MS;
   let state = createInitialGameState(definitions, options.startingNetWorth ?? 0);
@@ -253,11 +250,11 @@ export function runBalanceSimulation(options: BalanceSimulationOptions): Balance
 }
 
 export function runCampaignSimulation(options: CampaignSimulationOptions): CampaignSimulationResult {
-  const definitions = options.definitions ?? HUSTLE_DEFINITIONS;
+  const definitions = options.mechanics;
   const profile = typeof options.profile === 'string' ? BALANCE_PROFILES[options.profile] : options.profile;
   const strategy = options.strategy ?? 'natural';
   const rugPullStrategy = options.rugPullStrategy ?? 'immediate';
-  const targetNetWorth = options.targetNetWorth ?? GRIFT_OS_PRESTIGE_TUNING.campaignTargetNetWorth;
+  const targetNetWorth = options.targetNetWorth ?? definitions.prestige.campaignTargetNetWorth;
   const maxWallClockMs = options.maxWallClockMs ?? DEFAULT_CAMPAIGN_LIMIT_MS;
   let state = createInitialGameState(definitions, options.startingNetWorth ?? 0);
   let elapsedMs = 0;
@@ -419,7 +416,7 @@ export function runCampaignSimulation(options: CampaignSimulationOptions): Campa
 
 function choosePurchase(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   strategy: BalanceStrategy,
   expectedReturnMs: number,
   rugPullStrategy: RugPullStrategy
@@ -433,7 +430,7 @@ function choosePurchase(
   switch (strategy) {
     case 'automation-rush':
       return firstAffordableAutomation(state, definitions) ??
-        firstAffordableLeverage(state) ??
+        firstAffordableLeverage(state, definitions) ??
         firstAffordableUnowned(state, definitions) ??
         bestRoiExpansion(state, definitions);
     case 'expansion-first':
@@ -441,22 +438,22 @@ function choosePurchase(
         bestRoiExpansion(state, definitions) ??
         firstAffordableUnowned(state, definitions) ??
         firstAffordableAutomation(state, definitions) ??
-        firstAffordableLeverage(state);
+        firstAffordableLeverage(state, definitions);
     case 'next-hustle-rush':
       return firstAffordableUnowned(state, definitions) ??
-        firstAffordableLeverage(state) ??
+        firstAffordableLeverage(state, definitions) ??
         firstAffordableAutomation(state, definitions) ??
         bestRoiExpansion(state, definitions);
     case 'milestone-rush':
       return nextMilestonePurchase(state, definitions) ??
-        firstAffordableLeverage(state) ??
+        firstAffordableLeverage(state, definitions) ??
         firstAffordableAutomation(state, definitions) ??
         firstAffordableUnowned(state, definitions) ??
         bestRoiExpansion(state, definitions);
     case 'rough-roi':
       return bestRoiDecision(state, definitions);
     case 'natural':
-      return firstAffordableLeverage(state) ??
+      return firstAffordableLeverage(state, definitions) ??
         firstAffordableAutomation(state, definitions) ??
         firstAffordableUnowned(state, definitions) ??
         (
@@ -469,11 +466,11 @@ function choosePurchase(
 
 function founderTakePreparationDecision(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   rugPullStrategy: RugPullStrategy
 ): PurchaseDecision | null | undefined {
   const desiredStages = rugPullStrategy === 'immediate' ? 0 : rugPullStrategy === 'prepared' ? 1 : 2;
-  const status = founderTakeStatus(state);
+  const status = founderTakeStatus(state, definitions);
 
   if (
     desiredStages <= status.completedStages ||
@@ -483,12 +480,12 @@ function founderTakePreparationDecision(
     return undefined;
   }
 
-  return canStartFounderTakePreparation(state) ? { kind: 'founder-take' } : null;
+  return canStartFounderTakePreparation(state, definitions) ? { kind: 'founder-take' } : null;
 }
 
 function shouldSaveForStructuralPurchase(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   expectedReturnMs: number
 ): boolean {
   const rugPreview = createRugPullPreview(state, definitions);
@@ -521,7 +518,7 @@ function shouldSaveForStructuralPurchase(
     return [];
   });
 
-  for (const definition of LEVERAGE_DEFINITIONS) {
+  for (const definition of definitions.leverage) {
     if (
       !state.leveragePurchases.includes(definition.id) &&
       isLeverageUnlocked(state, definition)
@@ -590,7 +587,7 @@ function savingsPolicyForReturn(expectedReturnMs: number): {
 
 function firstAffordableAutomation(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): PurchaseDecision | null {
   const candidate = [...definitions]
     .reverse()
@@ -605,15 +602,20 @@ function firstAffordableAutomation(
   return candidate ? { kind: 'automation', hustleId: candidate.id } : null;
 }
 
-function firstAffordableLeverage(state: GriftOsGameState): PurchaseDecision | null {
-  const candidate = LEVERAGE_DEFINITIONS.find((definition) => canBuyLeverage(state, definition.id));
+function firstAffordableLeverage(
+  state: GriftOsGameState,
+  definitions: GameMechanics
+): PurchaseDecision | null {
+  const candidate = definitions.leverage.find((definition) =>
+    canBuyLeverage(state, definition.id, definitions)
+  );
 
   return candidate ? { kind: 'leverage', leverageId: candidate.id } : null;
 }
 
 function firstAffordableUnowned(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): PurchaseDecision | null {
   const candidate = definitions.find((definition) =>
     state.hustles[definition.id].units === 0 &&
@@ -625,7 +627,7 @@ function firstAffordableUnowned(
 
 function nextMilestonePurchase(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): PurchaseDecision | null {
   const candidates = definitions.flatMap((definition) => {
     const hustle = state.hustles[definition.id];
@@ -659,7 +661,7 @@ function nextMilestonePurchase(
 
 function bestRoiExpansion(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): PurchaseDecision | null {
   const candidate = definitions
     .filter((definition) => state.hustles[definition.id].units > 0)
@@ -685,7 +687,7 @@ function bestRoiExpansion(
 
 function bestRoiDecision(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): PurchaseDecision | null {
   const candidates: { decision: PurchaseDecision; score: number }[] = [];
   const expansion = bestRoiExpansion(state, definitions);
@@ -735,12 +737,12 @@ function bestRoiDecision(
     }
   }
 
-  for (const definition of LEVERAGE_DEFINITIONS) {
-    if (!canBuyLeverage(state, definition.id)) {
+  for (const definition of definitions.leverage) {
+    if (!canBuyLeverage(state, definition.id, definitions)) {
       continue;
     }
 
-    const purchased = buyLeverage(state, definition.id).state;
+    const purchased = buyLeverage(state, definition.id, definitions).state;
     candidates.push({
       decision: { kind: 'leverage', leverageId: definition.id },
       score: (
@@ -754,7 +756,7 @@ function bestRoiDecision(
 
 function applyDecision(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   decision: PurchaseDecision | null
 ): AppliedDecision {
   if (!decision) {
@@ -762,8 +764,8 @@ function applyDecision(
   }
 
   if (decision.kind === 'founder-take') {
-    const stage = founderTakeStatus(state).nextStage;
-    const result = startFounderTakePreparation(state);
+    const stage = founderTakeStatus(state, definitions).nextStage;
+    const result = startFounderTakePreparation(state, definitions);
 
     return result.started
       ? {
@@ -795,7 +797,7 @@ function applyDecision(
   }
 
   if (decision.kind === 'leverage') {
-    const result = buyLeverage(state, decision.leverageId);
+    const result = buyLeverage(state, decision.leverageId, definitions);
 
     return result.purchased
       ? {
@@ -828,7 +830,7 @@ function applyDecision(
 
 function applyRugPullIfReady(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   elapsedMs: number,
   collectionWindow: number,
   rugPulls: CampaignRugPullSummary[],
@@ -842,7 +844,7 @@ function applyRugPullIfReady(
   }
 
   const previousPeak = state.peakValuation;
-  const takeRate = founderTakeRate(state);
+  const takeRate = founderTakeRate(state, definitions);
   const takeStages = state.founderTakePreparation.completedStages;
   const result = commitRugPull(state, definitions);
   const rugIndex = rugPulls.length;
@@ -948,7 +950,7 @@ function captureAppliedDecision(
 
 function captureReveals(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   timings: CampaignTimingSummary,
   elapsedMs: number
 ): void {
@@ -964,7 +966,7 @@ function captureReveals(
 
 function captureInitialOwnership(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   timings: CampaignTimingSummary
 ): void {
   for (const definition of definitions) {
@@ -976,7 +978,7 @@ function captureInitialOwnership(
 
 function activateManualHustles(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): GriftOsGameState {
   let nextState = state;
 
@@ -993,7 +995,7 @@ function activateManualHustles(
 
 function prepareIdleState(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): GriftOsGameState {
   return {
     ...state,
@@ -1018,17 +1020,20 @@ function collectProduction(
 
 function hustleRate(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): number {
   const activeState = activateHustle(state, hustleId);
 
-  return valuationPerSecond(activeState, [definitionFor(definitions, hustleId)]);
+  return valuationPerSecond(
+    activeState,
+    mechanicsSubset(definitions, definitionFor(definitions, hustleId))
+  );
 }
 
 function hustleRateForUnits(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId,
   units: number
 ): number {
@@ -1044,12 +1049,15 @@ function hustleRateForUnits(
     },
   };
 
-  return valuationPerSecond(hypothetical, [definitionFor(definitions, hustleId)]);
+  return valuationPerSecond(
+    hypothetical,
+    mechanicsSubset(definitions, definitionFor(definitions, hustleId))
+  );
 }
 
 function fullPortfolioRate(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): number {
   return definitions.reduce(
     (total, definition) => total + hustleRate(state, definitions, definition.id),
@@ -1059,7 +1067,7 @@ function fullPortfolioRate(
 
 function automatedPortfolioRate(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): number {
   const automatedState = {
     ...state,
@@ -1076,9 +1084,9 @@ function automatedPortfolioRate(
 }
 
 function definitionFor(
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
-): HustleDefinition {
+): HustleMechanicsDefinition {
   const definition = definitions.find((candidate) => candidate.id === hustleId);
 
   if (!definition) {
@@ -1086,6 +1094,18 @@ function definitionFor(
   }
 
   return definition;
+}
+
+function mechanicsSubset(
+  mechanics: GameMechanics,
+  definition: HustleMechanicsDefinition
+): GameMechanics {
+  return Object.assign([definition], {
+    leverage: mechanics.leverage,
+    campaignStrata: mechanics.campaignStrata,
+    prestige: mechanics.prestige,
+    founderTake: mechanics.founderTake,
+  });
 }
 
 function emptyAppliedDecision(state: GriftOsGameState): AppliedDecision {
@@ -1105,7 +1125,7 @@ function createTimelineEntry(
   collectionWindow: number,
   action: string,
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): BalanceTimelineEntry {
   return {
     elapsedMs,
@@ -1123,14 +1143,14 @@ function createTimelineEntry(
       .map((definition) => definition.id),
     milestones: definitions.flatMap((definition) => state.hustles[definition.id].reachedMilestones),
     leverage: [...state.leveragePurchases],
-    founderTakeRate: founderTakeRate(state),
+    founderTakeRate: founderTakeRate(state, definitions),
     founderTakeStages: state.founderTakePreparation.completedStages,
     rugPullAvailable: createRugPullPreview(state, definitions).isAvailable,
   };
 }
 
 function emptyHustleNumberRecord(
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): Record<HustleId, number> {
   return Object.fromEntries(definitions.map((definition) => [definition.id, 0])) as Record<HustleId, number>;
 }
@@ -1153,7 +1173,7 @@ function summarizePurchaseActions(actions: ReadonlyMap<string, number>): string[
 
 export function affordableMilestoneQuantity(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): number {
   const definition = definitionFor(definitions, hustleId);
@@ -1167,8 +1187,11 @@ export function affordableMilestoneQuantity(
   );
 }
 
-export function structurallyAvailableLeverage(state: GriftOsGameState): readonly LeverageId[] {
-  return LEVERAGE_DEFINITIONS
+export function structurallyAvailableLeverage(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): readonly LeverageId[] {
+  return mechanics.leverage
     .filter((definition) => isLeverageUnlocked(state, definition))
     .map((definition) => definition.id);
 }

@@ -5,6 +5,7 @@ import {
   ModifierKind,
   ModifierScope,
 } from '../../../game-engine/types';
+import { GameMechanics } from '../../../game-engine/mechanics';
 
 export type InfluenceCampaignStratumId =
   | 'attention'
@@ -187,6 +188,37 @@ export const INFLUENCE_MECHANICS_PACK = {
   founderTake,
   leverage,
 } as const;
+
+export const INFLUENCE_ENGINE_MECHANICS: GameMechanics = Object.assign(
+  hustleOrder.map((hustleId) => ({
+    id: hustleId,
+    ...hustles[hustleId],
+    milestones: milestones[hustleId].map((entry) => ({
+      id: entry.id,
+      requiredUnits: entry.requiredUnits,
+      reward: {
+        id: `${hustleId}-units-${entry.requiredUnits}-${entry.kind}`,
+        scope: 'hustle' as const,
+        kind: entry.kind,
+        value: entry.value,
+        hustleId,
+        source: 'milestone' as const,
+      },
+    })),
+  })),
+  {
+    leverage: leverage.map((definition) => ({
+      ...definition,
+      modifiers: definition.modifiers.map((modifier) => ({
+        ...modifier,
+        source: 'leverage' as const,
+      })),
+    })),
+    campaignStrata,
+    prestige: INFLUENCE_MECHANICS_PACK.prestige,
+    founderTake,
+  }
+);
 
 function milestone(
   hustleId: HustleId,

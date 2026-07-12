@@ -1,14 +1,13 @@
-import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
 import {
   AdvanceResult,
   AutomationPurchaseResult,
   GriftOsGameState,
-  HustleDefinition,
   HustleId,
   HustleState,
   MilestoneReachedEvent,
   PurchaseResult,
 } from './types';
+import { GameMechanics, HustleMechanicsDefinition } from './mechanics';
 import {
   applyAutomationCostModifiers,
   applyCadenceModifiers,
@@ -21,10 +20,8 @@ import {
   founderTakePreparationRemainingMs,
 } from './founder-take';
 
-const DEFAULT_DEFINITIONS = HUSTLE_DEFINITIONS;
-
 export function createInitialGameState(
-  definitions: readonly HustleDefinition[] = DEFAULT_DEFINITIONS,
+  definitions: GameMechanics,
   netWorth = 0,
   rugPullCount = 0
 ): GriftOsGameState {
@@ -59,9 +56,9 @@ export function createInitialGameState(
 }
 
 export function getHustleDefinition(
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
-): HustleDefinition {
+): HustleMechanicsDefinition {
   const definition = definitions.find((candidate) => candidate.id === hustleId);
 
   if (!definition) {
@@ -72,10 +69,10 @@ export function getHustleDefinition(
 }
 
 export function nextHustleCost(
-  definition: HustleDefinition,
+  definition: HustleMechanicsDefinition,
   units: number,
   state?: GriftOsGameState,
-  definitions: readonly HustleDefinition[] = DEFAULT_DEFINITIONS
+  definitions?: GameMechanics
 ): number {
   const baseCost = definition.acquisitionCost * definition.growthRate ** units;
 
@@ -85,16 +82,16 @@ export function nextHustleCost(
 
   return applyCostModifiers(
     baseCost,
-    modifierBreakdownForHustle(state, definitions, definition.id)
+    modifierBreakdownForHustle(state, requireMechanics(definitions), definition.id)
   );
 }
 
 export function hustleCostForQuantity(
-  definition: HustleDefinition,
+  definition: HustleMechanicsDefinition,
   units: number,
   quantity: number,
   state?: GriftOsGameState,
-  definitions: readonly HustleDefinition[] = DEFAULT_DEFINITIONS
+  definitions?: GameMechanics
 ): number {
   if (quantity <= 0) {
     return 0;
@@ -110,11 +107,11 @@ export function hustleCostForQuantity(
 }
 
 export function maxAffordableQuantity(
-  definition: HustleDefinition,
+  definition: HustleMechanicsDefinition,
   units: number,
   availableValuation: number,
   state?: GriftOsGameState,
-  definitions: readonly HustleDefinition[] = DEFAULT_DEFINITIONS
+  definitions?: GameMechanics
 ): number {
   if (availableValuation <= 0) {
     return 0;
@@ -155,7 +152,7 @@ export function maxAffordableQuantity(
 
 export function buyHustle(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId,
   quantity: number | 'max'
 ): PurchaseResult {
@@ -206,7 +203,7 @@ export function buyHustle(
 
 export function automationCost(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
@@ -219,7 +216,7 @@ export function automationCost(
 
 export function canBuyAutomation(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): boolean {
   const hustle = state.hustles[hustleId];
@@ -229,7 +226,7 @@ export function canBuyAutomation(
 
 export function buyAutomation(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): AutomationPurchaseResult {
   if (!canBuyAutomation(state, definitions, hustleId)) {
@@ -288,7 +285,7 @@ export function activateHustle(
 
 export function hustlePayout(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
@@ -303,7 +300,7 @@ export function hustlePayout(
 
 export function effectiveCadenceSeconds(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   hustleId: HustleId
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
@@ -316,7 +313,7 @@ export function effectiveCadenceSeconds(
 
 export function advanceGame(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   elapsedMs: number
 ): AdvanceResult {
   if (elapsedMs <= 0) {
@@ -328,10 +325,10 @@ export function advanceGame(
   const events: AdvanceResult['events'] = [];
 
   while (remainingMs > 0) {
-    const preparationRemainingMs = founderTakePreparationRemainingMs(nextState);
+    const preparationRemainingMs = founderTakePreparationRemainingMs(nextState, definitions);
 
     if (preparationRemainingMs !== null && preparationRemainingMs <= 0) {
-      nextState = advanceFounderTakePreparation(nextState, 0);
+      nextState = advanceFounderTakePreparation(nextState, 0, definitions);
       continue;
     }
 
@@ -340,7 +337,7 @@ export function advanceGame(
       : Math.min(remainingMs, preparationRemainingMs);
     const advanced = advanceProduction(nextState, definitions, sliceMs);
     events.push(...advanced.events);
-    nextState = advanceFounderTakePreparation(advanced.state, sliceMs);
+    nextState = advanceFounderTakePreparation(advanced.state, sliceMs, definitions);
     remainingMs -= sliceMs;
   }
 
@@ -349,7 +346,7 @@ export function advanceGame(
 
 function advanceProduction(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  definitions: GameMechanics,
   elapsedMs: number
 ): AdvanceResult {
 
@@ -412,7 +409,7 @@ function advanceProduction(
 
 export function valuationPerSecond(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: GameMechanics
 ): number {
   return definitions.reduce((total, definition) => {
     const hustle = state.hustles[definition.id];
@@ -427,7 +424,7 @@ export function valuationPerSecond(
 }
 
 function newlyReachedMilestones(
-  definition: HustleDefinition,
+  definition: HustleMechanicsDefinition,
   hustle: HustleState,
   nextUnits: number
 ): MilestoneReachedEvent[] {
@@ -446,5 +443,13 @@ export const nextGeneratorCost = nextHustleCost;
 export const generatorCostForQuantity = hustleCostForQuantity;
 export const buyGenerator = buyHustle;
 export const activateGenerator = activateHustle;
-export const generatorPayout = (definition: HustleDefinition, units: number): number =>
+export const generatorPayout = (definition: HustleMechanicsDefinition, units: number): number =>
   definition.basePayout * units;
+
+function requireMechanics(mechanics?: GameMechanics): GameMechanics {
+  if (!mechanics) {
+    throw new Error('GriftOS mechanics are required when calculating modified values.');
+  }
+
+  return mechanics;
+}

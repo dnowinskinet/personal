@@ -1,5 +1,9 @@
 import { INFLUENCE_CONTENT_PACK } from '../empires/influence/content/influence-content';
-import { INFLUENCE_MECHANICS_PACK } from '../empires/influence/mechanics/influence-mechanics';
+import {
+  INFLUENCE_ENGINE_MECHANICS,
+  INFLUENCE_MECHANICS_PACK,
+} from '../empires/influence/mechanics/influence-mechanics';
+import { GameMechanics } from '../game-engine/mechanics';
 import {
   HustleDefinition,
   HustleIconKind,
@@ -27,7 +31,7 @@ const LEGACY_HUSTLE_PRESENTATION: Readonly<Record<HustleId, LegacyHustlePresenta
   'sovereign-network': appearance('sovereignty', 'platform-exchange'),
 };
 
-export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] =
+export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] & GameMechanics = Object.assign(
   INFLUENCE_MECHANICS_PACK.hustleOrder.map((hustleId, index) => ({
     id: hustleId,
     ...GRIFT_OS_HUSTLE_TUNING[hustleId],
@@ -35,7 +39,14 @@ export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] =
     order: index + 1,
     ...LEGACY_HUSTLE_PRESENTATION[hustleId],
     milestones: milestoneSet(hustleId),
-  }));
+  })),
+  {
+    leverage: INFLUENCE_ENGINE_MECHANICS.leverage,
+    campaignStrata: INFLUENCE_ENGINE_MECHANICS.campaignStrata,
+    prestige: INFLUENCE_ENGINE_MECHANICS.prestige,
+    founderTake: INFLUENCE_ENGINE_MECHANICS.founderTake,
+  }
+);
 
 function milestoneSet(hustleId: HustleId): HustleDefinition['milestones'] {
   const unitPlural = INFLUENCE_CONTENT_PACK.hustles[hustleId].unitPlural;

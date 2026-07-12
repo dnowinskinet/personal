@@ -1,5 +1,6 @@
 import { nextHustleCost, valuationPerSecond } from '../game-engine/economy';
-import { createRugPullPreview } from '../game-engine/rug-pull';
+import { createRugPullPreview } from '../content/rug-pull-preview';
+import { GameMechanics } from '../game-engine/mechanics';
 import { GriftOsGameState, HustleDefinition, HustleId, LeverageId } from '../game-engine/types';
 
 export const PLAYTEST_SCHEMA_VERSION = 2;
@@ -357,6 +358,7 @@ export function recordDiscoveryEvents(
   session: PlaytestSession,
   state: GriftOsGameState,
   definitions: readonly HustleDefinition[],
+  mechanics: GameMechanics,
   nowMs = Date.now()
 ): PlaytestSession {
   let nextSession = session;
@@ -366,7 +368,7 @@ export function recordDiscoveryEvents(
 
     if (
       hustle.units <= 0 &&
-      state.valuation >= nextHustleCost(definition, 0, state, definitions) &&
+      state.valuation >= nextHustleCost(definition, 0, state, mechanics) &&
       !hasEvent(nextSession, 'hustle_affordable', (event) => event.hustleId === definition.id)
     ) {
       nextSession = appendPlaytestEvent(
@@ -376,7 +378,7 @@ export function recordDiscoveryEvents(
           hustleId: definition.id,
           hustleName: definition.name,
           valuationAfter: state.valuation,
-          totalCost: nextHustleCost(definition, 0, state, definitions),
+          totalCost: nextHustleCost(definition, 0, state, mechanics),
         },
         nowMs
       );
@@ -426,6 +428,7 @@ export function recordSnapshotIfDue(
   session: PlaytestSession,
   state: GriftOsGameState,
   definitions: readonly HustleDefinition[],
+  mechanics: GameMechanics,
   nowMs = Date.now()
 ): PlaytestSession {
   const elapsedMs = elapsedForSession(session, nowMs);
@@ -438,7 +441,7 @@ export function recordSnapshotIfDue(
     session,
     'economy_snapshot',
     {
-      snapshot: createEconomySnapshot(state, definitions),
+      snapshot: createEconomySnapshot(state, definitions, mechanics),
     },
     nowMs
   );
@@ -617,7 +620,8 @@ export function clearStoredPlaytestSessions(storage: Storage): void {
 
 function createEconomySnapshot(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
+  definitions: readonly HustleDefinition[],
+  mechanics: GameMechanics
 ): PlaytestEconomySnapshot {
   const hustles = Object.fromEntries(
     definitions.map((definition) => {
@@ -640,7 +644,7 @@ function createEconomySnapshot(
     valuation: state.valuation,
     peakValuation: state.peakValuation,
     netWorth: state.netWorth,
-    valuationPerSecond: valuationPerSecond(state, definitions),
+    valuationPerSecond: valuationPerSecond(state, mechanics),
     rugPullAvailable: createRugPullPreview(state).isAvailable,
     hustles,
   };

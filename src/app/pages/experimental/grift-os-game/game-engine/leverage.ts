@@ -1,8 +1,7 @@
-import { LEVERAGE_DEFINITIONS } from '../content/leverage-definitions';
+import { GameMechanics, LeverageMechanicsDefinition } from './mechanics';
 import {
   GriftOsGameState,
   HustleId,
-  LeverageDefinition,
   LeverageId,
   LeveragePurchaseResult,
 } from './types';
@@ -13,8 +12,11 @@ export interface LeverageRequirements {
   missingAutomatedHustles: readonly HustleId[];
 }
 
-export function getLeverageDefinition(leverageId: LeverageId): LeverageDefinition {
-  const definition = LEVERAGE_DEFINITIONS.find((candidate) => candidate.id === leverageId);
+export function getLeverageDefinition(
+  leverageId: LeverageId,
+  mechanics: GameMechanics
+): LeverageMechanicsDefinition {
+  const definition = mechanics.leverage.find((candidate) => candidate.id === leverageId);
 
   if (!definition) {
     throw new Error(`Unknown GriftOS Leverage deal: ${leverageId}`);
@@ -25,7 +27,7 @@ export function getLeverageDefinition(leverageId: LeverageId): LeverageDefinitio
 
 export function isLeverageUnlocked(
   state: GriftOsGameState,
-  definition: LeverageDefinition
+  definition: LeverageMechanicsDefinition
 ): boolean {
   const requirements = leverageRequirements(state, definition);
 
@@ -36,9 +38,10 @@ export function isLeverageUnlocked(
 
 export function canBuyLeverage(
   state: GriftOsGameState,
-  leverageId: LeverageId
+  leverageId: LeverageId,
+  mechanics: GameMechanics
 ): boolean {
-  const definition = getLeverageDefinition(leverageId);
+  const definition = getLeverageDefinition(leverageId, mechanics);
 
   return !state.leveragePurchases.includes(leverageId) &&
     isLeverageUnlocked(state, definition) &&
@@ -47,11 +50,12 @@ export function canBuyLeverage(
 
 export function buyLeverage(
   state: GriftOsGameState,
-  leverageId: LeverageId
+  leverageId: LeverageId,
+  mechanics: GameMechanics
 ): LeveragePurchaseResult {
-  const definition = getLeverageDefinition(leverageId);
+  const definition = getLeverageDefinition(leverageId, mechanics);
 
-  if (!canBuyLeverage(state, leverageId)) {
+  if (!canBuyLeverage(state, leverageId, mechanics)) {
     return { state, purchased: false, totalCost: 0 };
   }
 
@@ -68,7 +72,7 @@ export function buyLeverage(
 
 export function leverageRequirements(
   state: GriftOsGameState,
-  definition: LeverageDefinition
+  definition: LeverageMechanicsDefinition
 ): LeverageRequirements {
   return {
     netWorthRequired: Math.max(0, definition.unlockNetWorth - state.netWorth),

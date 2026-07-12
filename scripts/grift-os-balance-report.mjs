@@ -12,6 +12,30 @@ const simulationPath = path.join(
   'game-engine',
   'balance-sim.ts'
 ).replaceAll('\\', '/');
+const mechanicsPath = path.join(
+  projectRoot,
+  'src',
+  'app',
+  'pages',
+  'experimental',
+  'grift-os-game',
+  'empires',
+  'influence',
+  'mechanics',
+  'influence-mechanics.ts'
+).replaceAll('\\', '/');
+const contentPath = path.join(
+  projectRoot,
+  'src',
+  'app',
+  'pages',
+  'experimental',
+  'grift-os-game',
+  'empires',
+  'influence',
+  'content',
+  'influence-content.ts'
+).replaceAll('\\', '/');
 const profileArgument = process.argv.find((argument) => argument.startsWith('--profile='));
 const strategyArgument = process.argv.find((argument) => argument.startsWith('--strategy='));
 const rugStrategyArgument = process.argv.find((argument) => argument.startsWith('--rug-strategy='));
@@ -36,6 +60,8 @@ const entrySource = `
     BALANCE_PROFILES,
     runCampaignSimulation,
   } from ${JSON.stringify(simulationPath)};
+  import { INFLUENCE_ENGINE_MECHANICS } from ${JSON.stringify(mechanicsPath)};
+  import { INFLUENCE_CONTENT_PACK } from ${JSON.stringify(contentPath)};
 
   const profileIds = ${JSON.stringify(selectedProfiles)};
   const strategyIds = [
@@ -48,6 +74,7 @@ const entrySource = `
   ];
   const profiles = profileIds.map((profile) => summarize(runCampaignSimulation({
     profile,
+    mechanics: INFLUENCE_ENGINE_MECHANICS,
     strategy: ${JSON.stringify(selectedStrategy)},
     rugPullStrategy: ${JSON.stringify(selectedRugStrategy)},
     targetNetWorth: ${JSON.stringify(selectedTarget)} ?? undefined,
@@ -57,6 +84,7 @@ const entrySource = `
   const sensitivity = ${JSON.stringify(includeSensitivity)}
     ? strategyIds.map((strategy) => summarize(runCampaignSimulation({
         profile: BALANCE_PROFILES['eight-hour'],
+        mechanics: INFLUENCE_ENGINE_MECHANICS,
         strategy,
         rugPullStrategy: ${JSON.stringify(selectedRugStrategy)},
         maxWallClockMs: 21 * 86_400_000,
@@ -82,7 +110,7 @@ const entrySource = `
         netWorthGained: rug.netWorthGained,
         resultingNetWorth: rug.resultingNetWorth,
         recoveryHours: rug.recoveryMs === null ? null : round(rug.recoveryMs / 3_600_000, 2),
-        newlyUnlocked: rug.newlyUnlocked,
+        newlyUnlocked: rug.newlyUnlocked.map(unlockLabel),
         founderTakePercent: round(rug.founderTakeRate * 100, 1),
         founderTakeStages: rug.founderTakeStages,
       })),
@@ -121,6 +149,14 @@ const entrySource = `
     return Object.fromEntries(
       Object.entries(values).map(([id, elapsedMs]) => [id, round(elapsedMs / 3_600_000, 2)])
     );
+  }
+
+  function unlockLabel(unlock) {
+    if (unlock.kind === 'leverage') {
+      return INFLUENCE_CONTENT_PACK.leverage[unlock.id].name;
+    }
+
+    return INFLUENCE_CONTENT_PACK.campaignStrata[unlock.id] ?? unlock.id;
   }
 
   function round(value, digits) {

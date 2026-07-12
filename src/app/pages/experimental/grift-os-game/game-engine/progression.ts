@@ -1,43 +1,42 @@
-import {
-  CampaignStratumTuning,
-  GRIFT_OS_CAMPAIGN_STRATA,
-  GRIFT_OS_PRESTIGE_TUNING,
-} from '../content/economy-tuning';
-import { LEVERAGE_DEFINITIONS } from '../content/leverage-definitions';
+import { CampaignStratumMechanics, GameMechanics, GameUnlock } from './mechanics';
 
-export function campaignStratumForNetWorth(netWorth: number): CampaignStratumTuning {
+export function campaignStratumForNetWorth(
+  netWorth: number,
+  mechanics: GameMechanics
+): CampaignStratumMechanics {
   const safeNetWorth = Math.max(0, Number.isFinite(netWorth) ? netWorth : 0);
 
-  return [...GRIFT_OS_CAMPAIGN_STRATA]
+  return [...mechanics.campaignStrata]
     .reverse()
-    .find((stratum) => safeNetWorth >= stratum.minimumNetWorth) ?? GRIFT_OS_CAMPAIGN_STRATA[0];
+    .find((stratum) => safeNetWorth >= stratum.minimumNetWorth) ?? mechanics.campaignStrata[0];
 }
 
-export function rugPullTargetForNetWorth(netWorth: number): number {
-  return campaignStratumForNetWorth(netWorth).rugPullTarget;
+export function rugPullTargetForNetWorth(netWorth: number, mechanics: GameMechanics): number {
+  return campaignStratumForNetWorth(netWorth, mechanics).rugPullTarget;
 }
 
-export function campaignComplete(netWorth: number): boolean {
-  return netWorth >= GRIFT_OS_PRESTIGE_TUNING.campaignTargetNetWorth;
+export function campaignComplete(netWorth: number, mechanics: GameMechanics): boolean {
+  return netWorth >= mechanics.prestige.campaignTargetNetWorth;
 }
 
-export function newlyUnlockedLabels(
+export function newlyUnlockedMechanics(
   currentNetWorth: number,
-  resultingNetWorth: number
-): readonly string[] {
-  const labels = new Set<string>();
+  resultingNetWorth: number,
+  mechanics: GameMechanics
+): readonly GameUnlock[] {
+  const unlocks: GameUnlock[] = [];
 
-  for (const definition of LEVERAGE_DEFINITIONS) {
+  for (const definition of mechanics.leverage) {
     if (currentNetWorth < definition.unlockNetWorth && resultingNetWorth >= definition.unlockNetWorth) {
-      labels.add(definition.name);
+      unlocks.push({ kind: 'leverage', id: definition.id });
     }
   }
 
-  for (const stratum of GRIFT_OS_CAMPAIGN_STRATA) {
+  for (const stratum of mechanics.campaignStrata) {
     if (currentNetWorth < stratum.minimumNetWorth && resultingNetWorth >= stratum.minimumNetWorth) {
-      labels.add(stratum.label);
+      unlocks.push({ kind: 'campaign-stratum', id: stratum.id });
     }
   }
 
-  return [...labels];
+  return unlocks;
 }

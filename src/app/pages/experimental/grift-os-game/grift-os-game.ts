@@ -17,8 +17,21 @@ import { AudioDirectorService } from './audio/audio-director.service';
 import { AudioSettings } from './audio/audio-engine';
 import { GRIFT_OS_COPY } from './content/game-copy';
 import { GRIFT_OS_FOUNDER_TAKE_TUNING } from './content/economy-tuning';
+import {
+  FounderTakeStatus,
+  founderTakeStatus,
+  startFounderTakePreparation,
+} from './content/founder-take';
 import { HUSTLE_DEFINITIONS } from './content/hustle-definitions';
 import { LEVERAGE_DEFINITIONS } from './content/leverage-definitions';
+import {
+  commitRugPull,
+  createRugPullPreview,
+  projectedNetWorthGain,
+  RugPullPreview,
+  RUG_PULL_CONFIG,
+} from './content/rug-pull-preview';
+import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
 import {
   activateHustle as activateHustleInState,
   advanceGame,
@@ -35,11 +48,6 @@ import {
   valuationPerSecond,
 } from './game-engine/economy';
 import { GameEvent, GameEventRecord, GameTabId, createGameEventRecord } from './game-engine/game-events';
-import {
-  FounderTakeStatus,
-  founderTakeStatus,
-  startFounderTakePreparation,
-} from './game-engine/founder-take';
 import { buyLeverage, canBuyLeverage, isLeverageUnlocked, leverageRequirements } from './game-engine/leverage';
 import {
   combinedMultiplier,
@@ -47,13 +55,6 @@ import {
   wealthAdvantageMultiplier,
 } from './game-engine/modifiers';
 import { deriveEnterprisePresentation, EnterprisePresentation, EnterpriseStage } from './game-engine/presentation';
-import {
-  commitRugPull,
-  createRugPullPreview,
-  projectedNetWorthGain,
-  RugPullPreview,
-  RUG_PULL_CONFIG,
-} from './game-engine/rug-pull';
 import { elapsedForegroundSimulationMs } from './game-engine/simulation-clock';
 import {
   GriftOsGameState,
@@ -266,6 +267,7 @@ const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = 
 export class GriftOsGameComponent implements OnInit, OnDestroy {
   readonly copy = GRIFT_OS_COPY;
   readonly definitions = HUSTLE_DEFINITIONS;
+  readonly mechanics = INFLUENCE_ENGINE_MECHANICS;
   readonly isPlaytestMode: boolean;
   readonly runShortcuts: readonly { id: RunShortcutId; label: string }[] = [
     { id: 'fresh', label: 'Fresh' },
@@ -288,7 +290,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   @ViewChild('selectedContextPanel') private selectedContextPanel?: ElementRef<HTMLElement>;
   @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
 
-  state: GriftOsGameState = createInitialGameState(this.definitions);
+  state: GriftOsGameState = createInitialGameState(this.mechanics);
   payoutFeedback: PayoutFeedback[] = [];
   valuationFlyouts: ValuationFlyout[] = [];
   rugPullResolution: RugPullResolution | null = null;
@@ -351,7 +353,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     const savedMeta = this.loadSavedMeta();
     const savedRun = this.initialRouteRunState ? null : this.loadSavedRunState(savedMeta);
     this.state = savedRun?.state ?? createInitialGameState(
-      this.definitions,
+      this.mechanics,
       savedMeta.netWorth,
       savedMeta.rugPullCount
     );
@@ -398,7 +400,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get valuationPerSecondLabel(): string {
-    return formatMoneyRate(valuationPerSecond(this.state, this.definitions));
+    return formatMoneyRate(valuationPerSecond(this.state, this.mechanics));
   }
 
   get netWorthLabel(): string {
@@ -406,7 +408,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get wealthAdvantageLabel(): string {
-    const outputAdvantagePercent = (wealthAdvantageMultiplier(this.state.netWorth) - 1) * 100;
+    const outputAdvantagePercent = (
+      wealthAdvantageMultiplier(this.state.netWorth, this.mechanics) - 1
+    ) * 100;
 
     return `Up to +${formatPercentage(outputAdvantagePercent)} established output`;
   }
@@ -432,7 +436,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get presentation(): EnterprisePresentation {
-    return deriveEnterprisePresentation(this.state, this.definitions);
+    return deriveEnterprisePresentation(this.state, this.mechanics);
   }
 
   get enterpriseIntensityPercent(): number {
@@ -498,7 +502,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       definition,
       this.state.hustles[definition.id].units,
       this.state,
-      this.definitions
+      this.mechanics
     );
     return {
       definition,
@@ -557,7 +561,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get rugPullPreview(): RugPullPreview {
-    return createRugPullPreview(this.state, this.definitions);
+    return createRugPullPreview(this.state);
   }
 
   get founderTake(): FounderTakeStatus {
@@ -621,7 +625,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           costLabel: formatMoney(definition.cost, 'transaction'),
           isPurchased,
           isUnlocked,
-          canBuy: canBuyLeverage(this.state, definition.id),
+          canBuy: canBuyLeverage(this.state, definition.id, this.mechanics),
           statusLabel: isPurchased
             ? 'Operating for this run'
             : requirements.netWorthRequired > 0
@@ -672,20 +676,20 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     const rows = this.definitions.map((definition) => {
       const hustle = this.state.hustles[definition.id];
-      const cadenceSeconds = effectiveCadenceSeconds(this.state, this.definitions, definition.id);
+      const cadenceSeconds = effectiveCadenceSeconds(this.state, this.mechanics, definition.id);
       const cadenceMs = cadenceSeconds * 1000;
       const progressPercent = hustle.isActive
         ? Math.min(100, (hustle.progressMs / cadenceMs) * 100)
         : 0;
-      const nextCost = nextHustleCost(definition, hustle.units, this.state, this.definitions);
+      const nextCost = nextHustleCost(definition, hustle.units, this.state, this.mechanics);
       const buyMaxCount = maxAffordableQuantity(
         definition,
         hustle.units,
         this.state.valuation,
         this.state,
-        this.definitions
+        this.mechanics
       );
-      const payout = hustlePayout(this.state, this.definitions, definition.id);
+      const payout = hustlePayout(this.state, this.mechanics, definition.id);
       const nextMilestone = definition.milestones.find((milestone) =>
         !hustle.reachedMilestones.includes(milestone.id)
       );
@@ -694,7 +698,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         ? remainingUnitsForMilestone <= Math.max(2, Math.ceil(nextMilestone.requiredUnits * 0.2))
         : false;
       const automationEligible = hustle.units > 0 && !hustle.isAutomated;
-      const canBuyAutomationForHustle = canBuyAutomation(this.state, this.definitions, definition.id);
+      const canBuyAutomationForHustle = canBuyAutomation(this.state, this.mechanics, definition.id);
       const modifierSummaryLabel = this.modifierSummaryLabel(definition.id);
       const isPlayerDependent = hustle.units > 0 && !hustle.isAutomated;
       const showNextMilestone = hustle.units > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone);
@@ -721,7 +725,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         productionLabel: `${formatMoney(payout, 'payout')} every ${this.formatSeconds(cadenceSeconds)}`,
         nextCostLabel: formatMoney(nextCost, 'transaction'),
         automationCostLabel: formatMoney(
-          automationCost(this.state, this.definitions, definition.id),
+          automationCost(this.state, this.mechanics, definition.id),
           'transaction'
         ),
         automationStatusLabel: hustle.isAutomated
@@ -749,7 +753,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           hustle.units,
           1,
           this.state,
-          this.definitions
+          this.mechanics
         ),
         canBuyMax: buyMaxCount > 0,
         canBuyAutomation: canBuyAutomationForHustle,
@@ -873,7 +877,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.selectHustle(hustleId);
     this.capturePlaytestDiscoveries();
     const previousState = this.state;
-    const result = buyAutomation(this.state, this.definitions, hustleId);
+    const result = buyAutomation(this.state, this.mechanics, hustleId);
     this.state = result.state;
 
     if (result.purchased) {
@@ -918,7 +922,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   purchaseLeverage(leverageId: LeverageId): void {
     this.unlockAudio();
     const definition = LEVERAGE_DEFINITIONS.find((candidate) => candidate.id === leverageId);
-    const result = buyLeverage(this.state, leverageId);
+    const result = buyLeverage(this.state, leverageId, this.mechanics);
     this.state = result.state;
 
     if (result.purchased && definition) {
@@ -1062,7 +1066,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     const previousState = this.state;
-    const result = commitRugPull(this.state, this.definitions);
+    const result = commitRugPull(this.state);
     this.state = result.state;
     this.selectedTab = 'hustles';
     this.selectedHustleId = this.definitions[0].id;
@@ -1349,12 +1353,12 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     this.ngZone.runOutsideAngular(() => {
       const previousState = this.state;
-      const result = advanceGame(this.state, this.definitions, elapsedMs);
+      const result = advanceGame(this.state, this.mechanics, elapsedMs);
       this.state = result.state;
       const nowMs = Date.now();
 
       if (result.events.length > 0) {
-        const previousPresentation = deriveEnterprisePresentation(previousState, this.definitions);
+        const previousPresentation = deriveEnterprisePresentation(previousState, this.mechanics);
 
         for (const event of result.events) {
           this.progressTransitionResetIds.add(event.hustleId);
@@ -1406,7 +1410,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.selectHustle(hustleId);
     this.capturePlaytestDiscoveries();
     const previousState = this.state;
-    const result = buyHustle(this.state, this.definitions, hustleId, quantity);
+    const result = buyHustle(this.state, this.mechanics, hustleId, quantity);
     this.state = result.state;
 
     if (result.quantityPurchased > 0) {
@@ -1521,7 +1525,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     resultingNetWorth: number,
     peakValuation: number
   ): RugPullResolution {
-    const preview = createRugPullPreview(createInitialGameState(this.definitions, resultingNetWorth));
+    const preview = createRugPullPreview(createInitialGameState(this.mechanics, resultingNetWorth));
 
     return {
       netWorthGainLabel: `+${formatMoney(netWorthGained, 'payout')}`,
@@ -1533,7 +1537,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private resetRunState(preserveMeta = true): void {
     this.state = createInitialGameState(
-      this.definitions,
+      this.mechanics,
       preserveMeta ? this.state.netWorth : 0,
       preserveMeta ? this.state.rugPullCount : 0
     );
@@ -1555,7 +1559,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private createRunShortcutState(shortcutId: RunShortcutId): GriftOsGameState {
     const state = createInitialGameState(
-      this.definitions,
+      this.mechanics,
       this.state.netWorth,
       this.state.rugPullCount
     );
@@ -1710,8 +1714,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       case 'rug-pull-ready':
         return {
           ...state,
-          valuation: createRugPullPreview(state, this.definitions).requiredPeakValuation,
-          peakValuation: createRugPullPreview(state, this.definitions).requiredPeakValuation,
+          valuation: createRugPullPreview(state).requiredPeakValuation,
+          peakValuation: createRugPullPreview(state).requiredPeakValuation,
           hustles: {
             ...state.hustles,
             'troll-network': {
@@ -1735,7 +1739,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         };
       case 'post-rug':
         return createInitialGameState(
-          this.definitions,
+          this.mechanics,
           Math.max(
             state.netWorth,
             projectedNetWorthGain(RUG_PULL_CONFIG.unlockValuation)
@@ -1744,7 +1748,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         );
       case 'endgame': {
         const endgameState = createInitialGameState(
-          this.definitions,
+          this.mechanics,
           ENDGAME_NET_WORTH,
           ENDGAME_RUG_PULL_COUNT
         );
@@ -1810,7 +1814,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       const firstRugGain = projectedNetWorthGain(RUG_PULL_CONFIG.unlockValuation);
       const resultingNetWorth = Math.max(netWorth, firstRugGain);
       this.state = createInitialGameState(
-        this.definitions,
+        this.mechanics,
         resultingNetWorth,
         Math.max(this.state.rugPullCount, 1)
       );
@@ -1944,7 +1948,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   private modifierSummaryLabel(hustleId: HustleId): string {
-    const breakdown = modifierBreakdownForHustle(this.state, this.definitions, hustleId);
+    const breakdown = modifierBreakdownForHustle(this.state, this.mechanics, hustleId);
     const outputMultiplier = combinedMultiplier(breakdown.output);
     const cadenceMultiplier = combinedMultiplier(breakdown.cadence);
     const parts: string[] = [];
@@ -1984,13 +1988,13 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private capturePlaytestDiscoveries(nowMs = Date.now()): void {
     this.updatePlaytestSession((session) =>
-      recordDiscoveryEvents(session, this.state, this.definitions, nowMs)
+      recordDiscoveryEvents(session, this.state, this.definitions, this.mechanics, nowMs)
     );
   }
 
   private capturePlaytestSnapshot(nowMs = Date.now()): void {
     this.updatePlaytestSession((session) =>
-      recordSnapshotIfDue(session, this.state, this.definitions, nowMs)
+      recordSnapshotIfDue(session, this.state, this.definitions, this.mechanics, nowMs)
     );
   }
 
@@ -2106,7 +2110,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         })
       ) as unknown as GriftOsGameState['hustles'],
     };
-    const result = advanceGame(offlineBaseState, this.definitions, simulatedElapsedMs);
+    const result = advanceGame(offlineBaseState, this.mechanics, simulatedElapsedMs);
     const pendingPayout = Math.max(0, result.state.valuation - offlineBaseState.valuation);
 
     if (pendingPayout <= 0) {
@@ -2139,7 +2143,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       Math.floor(this.finiteNumber(savedState.rugPullCount, savedMeta.rugPullCount)),
       savedMeta.rugPullCount
     );
-    const initialState = createInitialGameState(this.definitions, netWorth, rugPullCount);
+    const initialState = createInitialGameState(this.mechanics, netWorth, rugPullCount);
     const valuation = Math.max(0, this.finiteNumber(savedState.valuation, initialState.valuation));
     const peakValuation = Math.max(valuation, this.finiteNumber(savedState.peakValuation, valuation));
     const validLeverageIds = new Set(LEVERAGE_DEFINITIONS.map((definition) => definition.id));

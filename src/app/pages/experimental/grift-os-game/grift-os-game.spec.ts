@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 import { GriftOsGameComponent } from './grift-os-game';
+import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
 import { createInitialGameState } from './game-engine/economy';
 import { PLAYTEST_STORAGE_KEY } from './playtest/playtest-session';
 
@@ -149,7 +150,7 @@ describe('GriftOsGameComponent', () => {
   });
 
   it('credits automated offline production before showing a dismissible notice', async () => {
-    const savedState = createInitialGameState();
+    const savedState = createInitialGameState(INFLUENCE_ENGINE_MECHANICS);
     const automatedState = {
       ...savedState,
       valuation: 100,

@@ -1,14 +1,15 @@
 import {
   GriftOsGameState,
-  HustleDefinition,
   HustleId,
-  ModifierDefinition,
   ModifierKind,
   ModifierScope,
 } from './types';
-import { GRIFT_OS_CAMPAIGN_STRATA, GRIFT_OS_PRESTIGE_TUNING } from '../content/economy-tuning';
-import { LEVERAGE_DEFINITIONS } from '../content/leverage-definitions';
 import { founderTakeOutputRetention } from './founder-take';
+import {
+  GameMechanics,
+  HustleMechanicsDefinition,
+  MechanicalModifierDefinition,
+} from './mechanics';
 
 export interface ModifierBuckets {
   local: number;
@@ -35,56 +36,57 @@ const EMPTY_BUCKETS: ModifierBuckets = {
 
 export function createMetaOutputModifier(
   netWorth: number,
-  definition: HustleDefinition
-): ModifierDefinition {
+  definition: HustleMechanicsDefinition,
+  mechanics: GameMechanics
+): MechanicalModifierDefinition {
   return {
     id: `net-worth-wealth-advantage-${definition.id}`,
-    label: 'Wealth Advantage',
-    description: 'Permanent Net Worth makes established Hustles easier to rebuild than the frontier.',
     scope: 'hustle',
     kind: 'output',
-    value: wealthAdvantageBonusForHustle(netWorth, definition),
+    value: wealthAdvantageBonusForHustle(netWorth, definition, mechanics),
     hustleId: definition.id,
     source: 'rug-pull',
   };
 }
 
-export function wealthAdvantageMultiplier(netWorth: number): number {
-  return 1 + wealthAdvantageBonus(netWorth);
+export function wealthAdvantageMultiplier(netWorth: number, mechanics: GameMechanics): number {
+  return 1 + wealthAdvantageBonus(netWorth, mechanics);
 }
 
-export function wealthAdvantageBonus(netWorth: number): number {
+export function wealthAdvantageBonus(netWorth: number, mechanics: GameMechanics): number {
   const safeNetWorth = Math.max(0, finiteOrZero(netWorth));
 
-  return GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageCoefficient *
-    (safeNetWorth / GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageBase) **
-      GRIFT_OS_PRESTIGE_TUNING.wealthAdvantageExponent;
+  return mechanics.prestige.wealthAdvantageCoefficient *
+    (safeNetWorth / mechanics.prestige.wealthAdvantageBase) **
+      mechanics.prestige.wealthAdvantageExponent;
 }
 
 export function wealthAdvantageMultiplierForHustle(
   netWorth: number,
-  definition: HustleDefinition
+  definition: HustleMechanicsDefinition,
+  mechanics: GameMechanics
 ): number {
-  return 1 + wealthAdvantageBonusForHustle(netWorth, definition);
+  return 1 + wealthAdvantageBonusForHustle(netWorth, definition, mechanics);
 }
 
 export function wealthAdvantageBonusForHustle(
   netWorth: number,
-  definition: HustleDefinition
+  definition: HustleMechanicsDefinition,
+  mechanics: GameMechanics
 ): number {
-  const fullBonus = wealthAdvantageBonus(netWorth);
+  const fullBonus = wealthAdvantageBonus(netWorth, mechanics);
 
   if (fullBonus <= 0 || definition.unlockNetWorth <= 0) {
     return fullBonus;
   }
 
-  const currentStratumIndex = stratumIndexForNetWorth(netWorth);
-  const hustleStratumIndex = stratumIndexForNetWorth(definition.unlockNetWorth);
+  const currentStratumIndex = stratumIndexForNetWorth(netWorth, mechanics);
+  const hustleStratumIndex = stratumIndexForNetWorth(definition.unlockNetWorth, mechanics);
   const distance = currentStratumIndex - hustleStratumIndex;
   const factor = distance <= 0
-    ? GRIFT_OS_PRESTIGE_TUNING.frontierWealthFactor
+    ? mechanics.prestige.frontierWealthFactor
     : distance === 1
-      ? GRIFT_OS_PRESTIGE_TUNING.priorStratumWealthFactor
+      ? mechanics.prestige.priorStratumWealthFactor
       : 1;
 
   return fullBonus * factor;
@@ -92,24 +94,22 @@ export function wealthAdvantageBonusForHustle(
 
 export function collectActiveModifiers(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[]
-): ModifierDefinition[] {
-  const milestoneModifiers = definitions.flatMap((definition) => {
+  mechanics: GameMechanics
+): MechanicalModifierDefinition[] {
+  const milestoneModifiers = mechanics.flatMap((definition) => {
     const hustle = state.hustles[definition.id];
 
     return definition.milestones
       .filter((milestone) => hustle.reachedMilestones.includes(milestone.id))
       .map((milestone) => milestone.reward);
   });
-  const leverageModifiers = LEVERAGE_DEFINITIONS
+  const leverageModifiers = mechanics.leverage
     .filter((definition) => state.leveragePurchases.includes(definition.id))
     .flatMap((definition) => definition.modifiers);
-  const founderTakeRetention = founderTakeOutputRetention(state);
-  const founderTakeModifiers: ModifierDefinition[] = founderTakeRetention < 1
+  const founderTakeRetention = founderTakeOutputRetention(state, mechanics);
+  const founderTakeModifiers: MechanicalModifierDefinition[] = founderTakeRetention < 1
     ? [{
         id: 'founder-take-output-diversion',
-        label: 'Exit preparation output diversion',
-        description: 'Operating capacity is being redirected toward the Founder side of the extraction.',
         scope: 'temporary',
         kind: 'output',
         value: founderTakeRetention - 1,
@@ -121,16 +121,16 @@ export function collectActiveModifiers(
     ...milestoneModifiers,
     ...leverageModifiers,
     ...founderTakeModifiers,
-    ...definitions.map((definition) => createMetaOutputModifier(state.netWorth, definition)),
+    ...mechanics.map((definition) => createMetaOutputModifier(state.netWorth, definition, mechanics)),
   ].filter((modifier) => Number.isFinite(modifier.value) && modifier.value !== 0);
 }
 
 export function modifierBreakdownForHustle(
   state: GriftOsGameState,
-  definitions: readonly HustleDefinition[],
+  mechanics: GameMechanics,
   hustleId: HustleId
 ): ModifierBreakdown {
-  const modifiers = collectActiveModifiers(state, definitions)
+  const modifiers = collectActiveModifiers(state, mechanics)
     .filter((modifier) => appliesToHustle(modifier, hustleId));
 
   return {
@@ -168,7 +168,7 @@ export function applyAutomationCostModifiers(baseCost: number, breakdown: Modifi
 }
 
 function bucketsFor(
-  modifiers: readonly ModifierDefinition[],
+  modifiers: readonly MechanicalModifierDefinition[],
   kind: ModifierKind
 ): ModifierBuckets {
   const buckets = { ...EMPTY_BUCKETS };
@@ -181,7 +181,7 @@ function bucketsFor(
   return buckets;
 }
 
-function appliesToHustle(modifier: ModifierDefinition, hustleId: HustleId): boolean {
+function appliesToHustle(modifier: MechanicalModifierDefinition, hustleId: HustleId): boolean {
   if (modifier.scope === 'hustle') {
     return modifier.hustleId === hustleId;
   }
@@ -216,11 +216,11 @@ function finiteOrZero(value: number): number {
   return Number.isFinite(value) ? value : 0;
 }
 
-function stratumIndexForNetWorth(netWorth: number): number {
+function stratumIndexForNetWorth(netWorth: number, mechanics: GameMechanics): number {
   const safeNetWorth = Math.max(0, finiteOrZero(netWorth));
 
-  for (let index = GRIFT_OS_CAMPAIGN_STRATA.length - 1; index >= 0; index -= 1) {
-    if (safeNetWorth >= GRIFT_OS_CAMPAIGN_STRATA[index].minimumNetWorth) {
+  for (let index = mechanics.campaignStrata.length - 1; index >= 0; index -= 1) {
+    if (safeNetWorth >= mechanics.campaignStrata[index].minimumNetWorth) {
       return index;
     }
   }

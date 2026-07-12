@@ -1,6 +1,6 @@
 import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
 import { createInitialGameState } from '../game-engine/economy';
-import { RUG_PULL_CONFIG } from '../game-engine/rug-pull';
+import { RUG_PULL_CONFIG } from '../content/rug-pull-preview';
 import {
   appendPlaytestEvent,
   createHumanReadablePlaytestSummary,
@@ -169,11 +169,41 @@ describe('GriftOS playtest session', () => {
       peakValuation: RUG_PULL_CONFIG.unlockValuation,
     };
 
-    session = recordDiscoveryEvents(session, state, HUSTLE_DEFINITIONS, startedAtMs + 1_000);
-    session = recordSnapshotIfDue(session, state, HUSTLE_DEFINITIONS, startedAtMs + 5_000);
-    session = recordSnapshotIfDue(session, state, HUSTLE_DEFINITIONS, startedAtMs + 10_000);
-    session = recordSnapshotIfDue(session, state, HUSTLE_DEFINITIONS, startedAtMs + 11_000);
-    session = recordSnapshotIfDue(session, state, HUSTLE_DEFINITIONS, startedAtMs + 20_000);
+    session = recordDiscoveryEvents(
+      session,
+      state,
+      HUSTLE_DEFINITIONS,
+      HUSTLE_DEFINITIONS,
+      startedAtMs + 1_000
+    );
+    session = recordSnapshotIfDue(
+      session,
+      state,
+      HUSTLE_DEFINITIONS,
+      HUSTLE_DEFINITIONS,
+      startedAtMs + 5_000
+    );
+    session = recordSnapshotIfDue(
+      session,
+      state,
+      HUSTLE_DEFINITIONS,
+      HUSTLE_DEFINITIONS,
+      startedAtMs + 10_000
+    );
+    session = recordSnapshotIfDue(
+      session,
+      state,
+      HUSTLE_DEFINITIONS,
+      HUSTLE_DEFINITIONS,
+      startedAtMs + 11_000
+    );
+    session = recordSnapshotIfDue(
+      session,
+      state,
+      HUSTLE_DEFINITIONS,
+      HUSTLE_DEFINITIONS,
+      startedAtMs + 20_000
+    );
 
     expect(session.events.some((event) => event.type === 'hustle_affordable' && event.hustleId === 'podcast-network')).toBeTrue();
     expect(session.events.some((event) => event.type === 'rug_pull_available')).toBeTrue();
