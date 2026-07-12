@@ -34,6 +34,8 @@ await scanBoundary(
   false
 );
 
+await checkStyleBoundaries();
+
 async function scanBoundary(root, forbiddenImports, boundaryName, forbidBrowserGlobals = true) {
   for (const entry of await readdir(root, { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith('.ts') || entry.name.endsWith('.spec.ts')) {
@@ -57,9 +59,63 @@ async function scanBoundary(root, forbiddenImports, boundaryName, forbidBrowserG
   }
 }
 
+async function checkStyleBoundaries() {
+  const styleFiles = [
+    {
+      name: 'global GriftOS bridge',
+      path: path.join(process.cwd(), 'src', 'styles', '_grift-os.scss'),
+      importantBaseline: 1,
+      global: true,
+    },
+    {
+      name: 'shared host styles',
+      path: path.join(featureRoot, 'grift-os-game.scss'),
+      importantBaseline: 1,
+    },
+    {
+      name: 'Influence renderer styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'influence-empire-renderer.scss'),
+      importantBaseline: 11,
+    },
+  ];
+
+  for (const styleFile of styleFiles) {
+    const source = await readFile(styleFile.path, 'utf8');
+    if (source.includes('::ng-deep')) {
+      violations.push(`${styleFile.name}: ::ng-deep is prohibited`);
+    }
+    if (/\/\*\s*Phase\s+\d/i.test(source)) {
+      violations.push(`${styleFile.name}: append-only phase sections are prohibited`);
+    }
+
+    const importantCount = (source.match(/!important/g) ?? []).length;
+    if (importantCount > styleFile.importantBaseline) {
+      violations.push(
+        `${styleFile.name}: added !important (${importantCount}; baseline ${styleFile.importantBaseline})`
+      );
+    }
+
+    if (styleFile.global) {
+      const griftClasses = [...source.matchAll(/\.([a-zA-Z_][\w-]*grift[\w-]*)/g)]
+        .map((match) => match[1]);
+      const unexpectedClasses = griftClasses.filter(
+        (className) => !['grift-os-app', 'grift-context-overlay-open'].includes(className)
+      );
+      if (unexpectedClasses.length > 0 || source.includes('@keyframes')) {
+        violations.push(`${styleFile.name}: empire presentation leaked into global styles`);
+      }
+    }
+
+    if (styleFile.name === 'Influence renderer styles' &&
+        (!source.includes('.grift-influence-renderer {') || source.includes(':host-context'))) {
+      violations.push(`${styleFile.name}: renderer styles must remain explicitly root-scoped`);
+    }
+  }
+}
+
 if (violations.length > 0) {
   console.error(['GriftOS architecture boundary violations:', ...violations.map((item) => `- ${item}`)].join('\n'));
   process.exitCode = 1;
 } else {
-  console.log('GriftOS engine, presentation, runtime, and renderer boundaries pass.');
+  console.log('GriftOS engine, presentation, runtime, renderer, and style boundaries pass.');
 }

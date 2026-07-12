@@ -53,7 +53,10 @@ export interface InfluenceEmpireRendererView {
   standalone: true,
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { style: 'display: contents' },
+  host: {
+    class: 'grift-influence-renderer',
+    style: 'display: contents',
+  },
 })
 export class InfluenceEmpireRendererComponent {
   @Input({ required: true }) view!: InfluenceEmpireRendererView;

@@ -1,0 +1,2506 @@
+/* Influence renderer styles. Keep selectors within this Angular ownership boundary. */
+.grift-influence-renderer {
+
+
+button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.grift-title-block,
+.grift-valuation-object,
+.grift-hustle-plane,
+.grift-inspector-panel,
+.grift-leverage-plane,
+.grift-rug-stage {
+  min-width: 0;
+}
+
+.grift-kicker,
+.grift-valuation-object p,
+.grift-net-worth p,
+.grift-section-line p,
+.grift-label {
+  margin: 0;
+  color: var(--grift-ink-faint);
+  font-size: 0.72rem;
+  font-weight: 680;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.grift-title-block h1 {
+  margin: 0.1rem 0 0;
+  color: var(--grift-ink);
+  font-size: clamp(1.14rem, 1.95vw, 1.58rem);
+  font-weight: 780;
+  line-height: 1;
+}
+
+.grift-title-block p:last-child {
+  margin: 0.22rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.25;
+}
+
+.grift-title-block p:last-child,
+.grift-copy,
+.grift-inspector-section p {
+  color: var(--grift-ink-soft);
+}
+
+.grift-valuation-object {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  text-align: center;
+}
+
+.grift-valuation-amount {
+  position: relative;
+  display: inline-grid;
+  justify-items: center;
+  min-width: min(100%, 12rem);
+  --grift-flyout-offset: clamp(0.45rem, 1vw, 0.8rem);
+}
+
+.grift-valuation-object strong {
+  color: var(--grift-value);
+  font-size: clamp(2.65rem, 5vw, 5.1rem);
+  font-weight: 820;
+  line-height: 0.84;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.grift-valuation-flyout {
+  position: absolute;
+  left: calc(100% + var(--grift-flyout-offset));
+  z-index: 1;
+  --grift-flyout-stagger: 0.64rem;
+  color: var(--grift-automation);
+  font-size: clamp(0.78rem, 1.25vw, 0.95rem);
+  font-weight: 720;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  will-change: opacity, transform;
+}
+
+.grift-valuation-flyout--gain {
+  top: 0.08rem;
+  color: #9abf78;
+  animation: grift-valuation-gain 620ms ease-out both;
+  transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 3px);
+}
+
+.grift-valuation-flyout--spend {
+  bottom: 0.08rem;
+  color: #d9877f;
+  animation: grift-valuation-spend 620ms ease-out both;
+  transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), -3px);
+}
+
+.grift-valuation-object span {
+  color: var(--grift-info);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.grift-net-worth {
+  width: min(100%, 20rem);
+  border-left: 1px solid var(--grift-border-strong);
+  padding-left: 1rem;
+}
+
+.grift-net-worth strong {
+  display: block;
+  color: var(--grift-ink);
+  font-size: 1.8rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.grift-net-worth span {
+  color: var(--grift-info);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.grift-quiet-button,
+.grift-action-button,
+.grift-rug-button,
+.grift-mode-tabs button {
+  min-height: 2.4rem;
+  border: 1px solid var(--grift-border);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.grift-quiet-button {
+  color: var(--grift-ink-soft);
+}
+
+.grift-mode-tabs {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem clamp(1rem, 2.4vw, 2rem);
+  border-bottom: 1px solid var(--grift-border);
+}
+
+.grift-mode-tabs button {
+  border-radius: 6px;
+  color: var(--grift-ink-soft);
+  text-transform: uppercase;
+}
+
+.grift-mode-tabs button:hover,
+.grift-tab-active {
+  border-color: var(--grift-selection) !important;
+  background: color-mix(in srgb, var(--grift-selection), transparent 88%) !important;
+  color: var(--grift-ink) !important;
+}
+
+.grift-offline-notice {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 55;
+  display: flex;
+  gap: 0.78rem;
+  width: min(34rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  align-items: flex-start;
+  border: 1px solid var(--grift-border-strong);
+  border-radius: 10px;
+  background: var(--grift-plane-raised);
+  padding: clamp(1rem, 3vw, 1.45rem);
+  box-shadow: 0 28px 85px rgba(0, 0, 0, 0.26);
+  transform: translate(-50%, -50%);
+}
+
+.grift-offline-notice > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.grift-offline-notice h2 {
+  margin: 0;
+  color: var(--grift-value);
+  font-size: clamp(1.45rem, 5vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.grift-offline-notice p {
+  margin: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.42;
+}
+
+.grift-offline-notice .grift-quiet-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+  .grift-offline-notice {
+    top: 50%;
+    left: 0.75rem;
+    width: auto;
+    max-height: calc(100dvh - 6.25rem);
+    display: grid;
+    transform: translateY(-50%);
+
+    .grift-quiet-button {
+      justify-self: end;
+    }
+  }
+}
+
+.grift-work-surface {
+  display: grid;
+  gap: clamp(0.8rem, 1.7vw, 1.35rem);
+  padding: clamp(0.85rem, 1.9vw, 1.45rem) clamp(1rem, 2.4vw, 2rem);
+  background: var(--grift-bg);
+}
+
+.grift-work-surface--hustles {
+  grid-template-columns: minmax(0, 2.2fr) minmax(18rem, 0.66fr);
+  align-items: start;
+}
+
+.grift-work-surface--ledger-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.grift-section-line {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.grift-section-line h2 {
+  margin: 0.12rem 0 0;
+  color: var(--grift-ink);
+  font-size: clamp(1.02rem, 1.55vw, 1.34rem);
+  font-weight: 740;
+}
+
+.grift-section-line span {
+  color: var(--grift-ink-faint);
+  font-size: 0.8rem;
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.grift-hustle-list {
+  display: grid;
+  gap: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.grift-hustle-entry {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--grift-border);
+  background: var(--grift-plane-raised);
+}
+
+.grift-hustle-entry::after {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--grift-selection);
+  content: "";
+  opacity: 0;
+}
+
+.grift-hustle-active::after,
+.grift-hustle-attention-opportunity::after {
+  opacity: 1;
+}
+
+.grift-hustle-selected::after {
+  opacity: 1;
+}
+
+.grift-hustle-automated::after {
+  background: var(--grift-automation);
+  opacity: 0.42;
+}
+
+.grift-hustle-selected::after {
+  background: var(--grift-selection);
+}
+
+.grift-hustle-selected {
+  background: color-mix(in srgb, var(--grift-plane-raised), var(--grift-selection) 3%);
+}
+
+.grift-hustle-automated {
+  background: color-mix(in srgb, var(--grift-plane-raised), var(--grift-automation) 2.5%);
+}
+
+.grift-hustle-attention-opportunity {
+  background: color-mix(in srgb, var(--grift-plane-raised), var(--grift-automation) 5%);
+}
+
+.grift-hustle-settled .grift-hustle-grid {
+  padding-block: 0.34rem;
+}
+
+.grift-hustle-player-dependent .grift-hustle-grid {
+  padding-block: 0.58rem;
+}
+
+.grift-hustle-grid {
+  position: relative;
+  display: grid;
+  gap: 0.62rem;
+  padding: 0.5rem 0.56rem;
+}
+
+.grift-row-select-hitbox {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.grift-row-select-hitbox::after {
+  position: absolute;
+  inset: 0.34rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  content: "";
+  opacity: 0;
+  transition:
+    border-color 140ms ease,
+    opacity 140ms ease;
+}
+
+.grift-hustle-entry:hover .grift-row-select-hitbox::after,
+.grift-row-select-hitbox:focus-visible::after {
+  border-color: color-mix(in srgb, var(--grift-selection), transparent 52%);
+  opacity: 1;
+}
+
+.grift-icon-button,
+.grift-hustle-select,
+.grift-hustle-metrics,
+.grift-hustle-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.grift-icon-button {
+  position: relative;
+  display: grid;
+  width: 2.42rem;
+  height: 2.42rem;
+  place-items: center;
+  border: 1px solid var(--grift-border);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--grift-plane), var(--grift-info) 3%);
+  filter: grayscale(1);
+  opacity: 0.5;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    filter 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.grift-icon-button:disabled {
+  cursor: default;
+}
+
+.grift-icon-owned,
+.grift-icon-active,
+.grift-icon-automated {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.grift-icon-active {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 35%);
+  background: color-mix(in srgb, var(--grift-plane-raised), var(--grift-selection) 10%);
+  transform: translateY(-1px);
+}
+
+.grift-icon-active .grift-hustle-icon {
+  animation: grift-producing-icon var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon::before,
+.grift-icon-active .grift-hustle-icon::after {
+  animation: grift-icon-pulse var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-icon-automated {
+  border-color: color-mix(in srgb, var(--grift-automation), transparent 26%);
+  box-shadow: 0 0 calc(10px * var(--grift-glow-strength)) color-mix(in srgb, var(--grift-automation), transparent 78%);
+}
+
+.grift-icon-automated::after {
+  position: absolute;
+  right: 0.28rem;
+  bottom: 0.28rem;
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: var(--grift-automation);
+  content: "";
+  opacity: 0.55;
+  animation: grift-automation-marker var(--grift-cycle-duration, 2000ms) linear infinite;
+}
+
+.grift-hustle-icon {
+  position: relative;
+  display: block;
+  width: 1.56rem;
+  height: 1.56rem;
+  color: var(--grift-info);
+}
+
+.grift-hustle-icon::before,
+.grift-hustle-icon::after {
+  position: absolute;
+  content: "";
+}
+
+.grift-hustle-icon::before {
+  inset: 0.25rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+
+.grift-hustle-icon::after {
+  inset: 0.75rem 0.1rem auto;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--grift-value);
+}
+
+.grift-hustle-icon[data-icon-kind="signal"]::before {
+  inset: 0.18rem 0.28rem;
+  border-radius: 0.32rem;
+}
+
+.grift-hustle-icon[data-icon-kind="signal"]::after {
+  inset: 0.4rem 0.48rem auto;
+  height: 0.22rem;
+  box-shadow:
+    0 0.38rem 0 currentColor,
+    0 0.76rem 0 currentColor;
+}
+
+.grift-hustle-icon[data-icon-kind="broadcast"]::before {
+  inset: 0.2rem 0.48rem 0.28rem;
+  border-radius: 0.24rem 0.24rem 0.75rem 0.75rem;
+}
+
+.grift-hustle-icon[data-icon-kind="broadcast"]::after {
+  inset: 0.28rem 0.08rem auto;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-left-color: transparent;
+  background: transparent;
+}
+
+.grift-hustle-icon[data-icon-kind="outrage"]::before {
+  inset: 0.2rem 0.38rem 0.52rem;
+  border-radius: 0.16rem;
+  transform: skew(-12deg);
+}
+
+.grift-hustle-icon[data-icon-kind="outrage"]::after {
+  inset: auto 0.38rem 0.22rem;
+  height: 0.4rem;
+  clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%);
+  background: currentColor;
+}
+
+.grift-hustle-icon[data-icon-kind="funnel"]::before {
+  inset: 0.16rem 0.16rem auto;
+  height: 0.98rem;
+  border: 0;
+  clip-path: polygon(0 0, 100% 0, 62% 100%, 38% 100%);
+  background: currentColor;
+}
+
+.grift-hustle-icon[data-icon-kind="funnel"]::after {
+  inset: auto 0.64rem 0.18rem;
+  height: 0.5rem;
+  background: currentColor;
+}
+
+.grift-hustle-icon[data-icon-kind="manifesto"]::before {
+  inset: 0.12rem 0.36rem;
+  border-radius: 0.1rem;
+}
+
+.grift-hustle-icon[data-icon-kind="manifesto"]::after {
+  inset: 0.42rem 0.58rem auto;
+  height: 0.15rem;
+  box-shadow:
+    0 0.34rem 0 var(--grift-value),
+    0 0.68rem 0 var(--grift-value);
+}
+
+.grift-hustle-icon[data-icon-kind="summit"]::before {
+  inset: 0.18rem 0.12rem 0.2rem;
+  border: 0;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: currentColor;
+  opacity: 0.82;
+}
+
+.grift-hustle-icon[data-icon-kind="summit"]::after {
+  inset: auto 0.38rem 0.24rem;
+  height: 0.28rem;
+  background: var(--grift-bg);
+}
+
+.grift-hustle-icon[data-icon-kind="ai"]::before {
+  inset: 0.22rem;
+  border-radius: 0.36rem;
+  box-shadow: inset 0 0 0 0.34rem color-mix(in srgb, var(--grift-info), transparent 70%);
+}
+
+.grift-hustle-icon[data-icon-kind="ai"]::after {
+  inset: 0.56rem;
+  height: auto;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow:
+    -0.46rem 0 0 -0.09rem currentColor,
+    0.46rem 0 0 -0.09rem currentColor,
+    0 -0.46rem 0 -0.09rem currentColor,
+    0 0.46rem 0 -0.09rem currentColor;
+}
+
+.grift-hustle-icon[data-icon-kind="fund"]::before {
+  inset: 0.2rem 0.34rem;
+  border-radius: 0.12rem;
+  transform: rotate(12deg);
+}
+
+.grift-hustle-icon[data-icon-kind="fund"]::after {
+  inset: 0.42rem 0.52rem auto;
+  height: 0.18rem;
+  box-shadow:
+    0 0.34rem 0 var(--grift-value),
+    0 0.68rem 0 var(--grift-value);
+}
+
+.grift-hustle-icon[data-icon-kind="media"]::before {
+  inset: 0.36rem 0.06rem;
+  border-radius: 999px;
+}
+
+.grift-hustle-icon[data-icon-kind="media"]::after {
+  inset: 0.3rem 0.48rem auto;
+  height: 0.96rem;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow:
+    -0.42rem 0.18rem 0 -0.13rem currentColor,
+    0.42rem 0.18rem 0 -0.13rem currentColor,
+    0 0.54rem 0 -0.1rem var(--grift-value);
+}
+
+.grift-hustle-icon[data-icon-kind="sovereignty"]::before {
+  inset: 0.24rem;
+  border-radius: 0.08rem;
+  transform: rotate(45deg);
+}
+
+.grift-hustle-icon[data-icon-kind="sovereignty"]::after {
+  inset: 0.56rem;
+  height: auto;
+  border-radius: 0.08rem;
+  background: var(--grift-value);
+  transform: rotate(45deg);
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="signal"]::after {
+  animation: grift-packet 1.6s linear infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="signal"]::before {
+  animation: grift-terminal-blink 1.6s steps(2, end) infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="broadcast"]::after {
+  animation: grift-wave 1.4s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="broadcast"]::before {
+  animation: grift-broadcast-bob var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="outrage"]::before {
+  animation: grift-outrage-shake 520ms steps(2, end) infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="outrage"]::after {
+  animation: grift-outrage-stamp 820ms ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="funnel"]::before {
+  animation: grift-funnel-squeeze 1.35s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="funnel"]::after {
+  animation: grift-funnel-drop 1.35s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="manifesto"]::before {
+  animation: grift-page-flutter 1.55s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="manifesto"]::after {
+  animation: grift-ledger-scan 1.55s linear infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="ai"]::after,
+.grift-icon-active .grift-hustle-icon[data-icon-kind="media"]::after {
+  animation: grift-orbit 1.6s linear infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="fund"]::before {
+  animation: grift-card-count 1.35s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="fund"]::after {
+  animation: grift-ledger-scan 1.35s linear infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="media"]::before {
+  animation: grift-media-tune 1.7s ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="summit"]::before {
+  animation: grift-signal-rise var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="sovereignty"]::before {
+  animation: grift-sovereign-rise var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-icon-active .grift-hustle-icon[data-icon-kind="sovereignty"]::after {
+  animation: grift-sovereign-core var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
+}
+
+.grift-hustle-select {
+  min-width: 0;
+  text-align: left;
+  border-radius: 7px;
+  padding: 0.16rem 0.22rem;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.grift-hustle-select:hover,
+.grift-hustle-select:focus-visible {
+  background: color-mix(in srgb, var(--grift-selection), transparent 91%);
+}
+
+.grift-hustle-name,
+.grift-hustle-unit {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grift-hustle-name {
+  color: var(--grift-ink);
+  font-size: 0.9rem;
+  font-weight: 720;
+}
+
+.grift-hustle-unit {
+  margin-top: 0.1rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.76rem;
+  font-weight: 560;
+}
+
+.grift-milestone-inline {
+  display: grid;
+  grid-template-columns: auto minmax(2.4rem, 1fr);
+  gap: 0.38rem;
+  align-items: center;
+  max-width: min(100%, 9.5rem);
+  margin-top: 0.28rem;
+  color: var(--grift-ink-faint);
+  font-size: 0.66rem;
+  font-weight: 620;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.grift-milestone-track {
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--grift-ink), transparent 88%);
+}
+
+.grift-milestone-track span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--grift-selection), transparent 22%);
+  transform: scaleX(var(--grift-milestone-scale, 0));
+  transform-origin: left center;
+}
+
+.grift-hustle-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.2rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.76rem;
+  font-weight: 560;
+  font-variant-numeric: tabular-nums;
+}
+
+.grift-modifier-inline {
+  color: var(--grift-info);
+  font-weight: 650;
+}
+
+.grift-hustle-actions {
+  display: grid;
+  grid-column: auto !important;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.45rem;
+}
+
+.grift-hustle-actions--automated {
+  grid-template-columns: minmax(11rem, 1fr) minmax(7.25rem, 0.52fr);
+}
+
+.grift-action-button {
+  min-width: 0;
+  border-color: color-mix(in srgb, var(--grift-info), transparent 50%);
+  color: var(--grift-info);
+  overflow-wrap: anywhere;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 120ms ease;
+}
+
+.grift-action-primary {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 24%);
+  background: color-mix(in srgb, var(--grift-value), transparent 88%);
+  color: var(--grift-value);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff, transparent 88%);
+}
+
+.grift-action-perform {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 22%);
+  background: color-mix(in srgb, var(--grift-value), transparent 88%);
+  color: var(--grift-value);
+}
+
+.grift-action-expand {
+  border-color: color-mix(in srgb, var(--grift-border-strong), transparent 12%);
+  background: color-mix(in srgb, var(--grift-plane), var(--grift-value) 2%);
+  color: var(--grift-ink-soft);
+}
+
+.grift-action-automate {
+  border-color: color-mix(in srgb, var(--grift-automation), transparent 36%);
+  background: color-mix(in srgb, var(--grift-automation), transparent 91%);
+  color: var(--grift-automation);
+}
+
+.grift-action-establish {
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 52%);
+  color: var(--grift-ink-soft);
+}
+
+.grift-hustle-actions .grift-action-button {
+  border-radius: 5px;
+  font-size: 0.75rem;
+}
+
+.grift-hustle-actions--manual .grift-action-primary {
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.grift-hustle-active .grift-hustle-actions--manual .grift-action-primary:disabled {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 18%);
+  background: color-mix(in srgb, var(--grift-value), transparent 86%);
+  color: var(--grift-value);
+  opacity: 1;
+}
+
+.grift-action-compact {
+  flex: 0 0 auto;
+  border-color: var(--grift-border);
+  color: var(--grift-ink-faint);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.grift-action-secondary {
+  border-color: color-mix(in srgb, var(--grift-border-strong), transparent 16%);
+  color: var(--grift-ink-soft);
+}
+
+.grift-action-secondary:not(:disabled) {
+  background: color-mix(in srgb, var(--grift-plane), transparent 18%);
+  box-shadow: none;
+}
+
+.grift-action-secondary.grift-action-compact {
+  border-color: var(--grift-border);
+  color: var(--grift-ink-faint);
+}
+
+.grift-action-primary.grift-action-expand,
+.grift-action-secondary.grift-action-expand {
+  border-color: color-mix(in srgb, var(--grift-border-strong), transparent 12%);
+  background: color-mix(in srgb, var(--grift-plane), var(--grift-value) 2%);
+  color: var(--grift-ink-soft);
+  box-shadow: none;
+}
+
+.grift-action-primary.grift-action-perform {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 22%);
+  background: color-mix(in srgb, var(--grift-value), transparent 88%);
+  color: var(--grift-value);
+}
+
+.grift-action-secondary.grift-action-max {
+  border-color: var(--grift-border);
+  background: transparent;
+  color: var(--grift-ink-faint);
+}
+
+.grift-hustle-settled .grift-hustle-name {
+  font-size: 0.86rem;
+}
+
+.grift-hustle-settled .grift-hustle-unit,
+.grift-hustle-settled .grift-milestone-inline,
+.grift-hustle-settled .grift-hustle-metrics {
+  color: var(--grift-ink-faint);
+}
+
+.grift-hustle-settled .grift-milestone-inline {
+  margin-top: 0.2rem;
+  opacity: 0.74;
+}
+
+.grift-hustle-settled .grift-hustle-metrics span:first-child {
+  color: var(--grift-ink-soft);
+  font-weight: 650;
+}
+
+.grift-hustle-settled .grift-icon-button {
+  opacity: 0.82;
+}
+
+.grift-hustle-settled .grift-icon-automated {
+  box-shadow: none;
+}
+
+.grift-hustle-settled .grift-action-button {
+  min-height: 2rem;
+}
+
+.grift-hustle-settled .grift-action-primary {
+  border-color: color-mix(in srgb, var(--grift-info), transparent 68%);
+  background: transparent;
+  color: var(--grift-ink-soft);
+  box-shadow: none;
+}
+
+.grift-hustle-attention-opportunity .grift-row-reveal--automation {
+  padding-block: 0.78rem;
+}
+
+.grift-action-button:disabled,
+.grift-rug-button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.grift-action-button:not(:disabled):hover {
+  border-color: currentColor;
+  background: color-mix(in srgb, currentColor, transparent 89%);
+}
+
+.grift-action-button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.grift-row-reveal {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.72rem 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--grift-border), transparent 12%);
+  background: var(--grift-plane);
+}
+
+.grift-row-reveal span,
+.grift-next-horizon p {
+  color: var(--grift-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.grift-row-reveal--automation {
+  border-color: color-mix(in srgb, var(--grift-automation), transparent 58%);
+  background: color-mix(in srgb, var(--grift-plane), var(--grift-automation) 4%);
+}
+
+.grift-next-horizon {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) minmax(10rem, auto);
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 0.3rem;
+  border-top: 1px dashed color-mix(in srgb, var(--grift-info), transparent 45%);
+  padding: 0.7rem 0.56rem 0.28rem;
+  background: var(--grift-plane);
+}
+
+.grift-next-horizon h3 {
+  margin: 0 0 0.16rem;
+  color: var(--grift-ink);
+  font-size: 1rem;
+  font-weight: 720;
+}
+
+.grift-next-horizon p {
+  margin: 0;
+}
+
+.grift-horizon-shortfall {
+  color: var(--grift-ink-faint);
+  font-size: 0.72rem;
+  font-weight: 560;
+  text-align: right;
+}
+
+.grift-progress-track {
+  height: 0.18rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--grift-ink), transparent 92%);
+}
+
+.grift-progress {
+  width: 100%;
+  height: 100%;
+  background: var(--grift-progress);
+  transform: scaleX(var(--grift-progress-scale, 0));
+  transform-origin: left center;
+  transition: transform 90ms linear;
+}
+
+.grift-hustle-automated .grift-progress {
+  background: var(--grift-progress);
+}
+
+.grift-progress-reset .grift-progress {
+  animation: none;
+  transform: scaleX(0);
+  transition: none;
+}
+
+.grift-progress-reset {
+  animation: none;
+}
+
+.grift-inspector-panel {
+  border-left: 1px solid var(--grift-border);
+  padding-left: clamp(1rem, 2vw, 1.4rem);
+}
+
+.grift-inspector-panel--overlay-only:not(.grift-inspector-panel--open) {
+  display: none;
+}
+
+.grift-context-backdrop {
+  display: none;
+}
+
+.grift-context-close {
+  display: none;
+  border: 1px solid var(--grift-border);
+  border-radius: 999px;
+  color: var(--grift-ink-soft);
+  padding: 0.42rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.grift-inspector-panel--overlay-only.grift-inspector-panel--open .grift-context-close {
+  display: inline-flex;
+  align-items: center;
+}
+
+.grift-copy {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.grift-inspector-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.grift-inspector-facts span {
+  border: 1px solid var(--grift-border);
+  border-radius: 999px;
+  color: var(--grift-ink-soft);
+  padding: 0.38rem 0.62rem;
+  font-size: 0.8rem;
+  font-weight: 560;
+}
+
+.grift-inspector-section {
+  border-top: 1px solid var(--grift-border);
+  padding: 0.85rem 0;
+}
+
+.grift-inspector-section h3 {
+  margin: 0.1rem 0 0.25rem;
+  color: var(--grift-ink);
+  font-size: 1.05rem;
+  font-weight: 720;
+}
+
+.grift-automation-online {
+  border-color: color-mix(in srgb, var(--grift-automation), transparent 38%);
+}
+
+.grift-work-surface--leverage {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.grift-leverage-plane {
+  width: min(72rem, 100%);
+  margin-inline: auto;
+}
+
+.grift-leverage-intro {
+  display: flex;
+  gap: 0.5rem 1.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: 0.8rem 1rem;
+}
+
+.grift-leverage-intro p,
+.grift-leverage-intro span {
+  margin: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.grift-leverage-intro span {
+  color: var(--grift-ink-faint);
+  text-align: right;
+}
+
+.grift-leverage-deals {
+  display: grid;
+}
+
+.grift-leverage-deal {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.1fr) minmax(12rem, 0.9fr) minmax(12rem, 0.6fr);
+  gap: clamp(0.9rem, 2.4vw, 1.6rem);
+  align-items: center;
+  border-top: 1px solid var(--grift-border);
+  padding-block: clamp(1rem, 2.3vw, 1.4rem);
+}
+
+.grift-leverage-deal--ready {
+  border-top-color: color-mix(in srgb, var(--grift-info), transparent 42%);
+}
+
+.grift-leverage-deal--purchased {
+  border-top-color: color-mix(in srgb, var(--grift-automation), transparent 38%);
+}
+
+.grift-leverage-deal-copy p {
+  margin: 0 0 0.24rem;
+  color: var(--grift-info);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.grift-leverage-deal-copy h3 {
+  margin: 0;
+  color: var(--grift-ink);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.grift-leverage-deal-copy span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.grift-leverage-effects {
+  display: grid;
+  gap: 0.38rem;
+  margin: 0;
+  padding: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.grift-leverage-effects li::before {
+  margin-right: 0.4rem;
+  color: var(--grift-info);
+  content: "+";
+}
+
+.grift-leverage-deal--purchased .grift-leverage-effects li::before {
+  color: var(--grift-automation);
+}
+
+.grift-leverage-deal-action {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: stretch;
+}
+
+.grift-leverage-deal-action > span {
+  color: var(--grift-ink-faint);
+  font-size: 0.72rem;
+  font-weight: 560;
+  text-align: right;
+}
+
+.grift-action-leverage {
+  border-color: color-mix(in srgb, var(--grift-info), transparent 48%);
+  color: var(--grift-info);
+}
+
+.grift-work-surface--rug {
+  display: block;
+  padding-block: clamp(1.2rem, 3vw, 2.4rem);
+}
+
+.grift-rug-stage {
+  display: grid;
+  margin-inline: auto;
+  border: 1px solid color-mix(in srgb, var(--grift-warning), transparent 72%);
+  border-radius: 8px;
+  padding: clamp(1.15rem, 3.8vw, 2.8rem);
+}
+
+.grift-rug-intro {
+  display: grid;
+}
+
+.grift-rug-intro p,
+.grift-rug-ledger p,
+.grift-rug-consequence-grid p,
+.grift-rug-resolution p {
+  margin: 0;
+  color: var(--grift-warning);
+  font-size: 0.74rem;
+  font-weight: 680;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.grift-rug-intro h2 {
+  color: var(--grift-ink);
+  line-height: 1.05;
+}
+
+.grift-rug-intro strong {
+  display: block;
+  color: var(--grift-value);
+  font-weight: 850;
+}
+
+.grift-rug-intro span {
+  color: var(--grift-ink);
+  font-weight: 700;
+}
+
+.grift-rug-thesis {
+  max-width: 42rem;
+  margin: 0 auto;
+  color: var(--grift-ink-soft);
+  font-size: clamp(0.98rem, 1.8vw, 1.18rem);
+  line-height: 1.45;
+  text-align: center;
+}
+
+.grift-rug-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 2.4rem);
+}
+
+.grift-rug-resolution {
+  border: 1px solid var(--grift-border);
+  border-radius: 7px;
+  background: var(--grift-plane);
+  padding: clamp(0.9rem, 2vw, 1.2rem);
+}
+
+.grift-rug-ledger > div,
+.grift-rug-consequence-grid section {
+  min-width: 0;
+  border-top: 1px solid color-mix(in srgb, var(--grift-warning), transparent 72%);
+  padding-top: clamp(0.78rem, 1.8vw, 1rem);
+}
+
+.grift-rug-ledger strong {
+  display: block;
+  margin-top: 0.42rem;
+  color: var(--grift-ink);
+  line-height: 1;
+}
+
+.grift-rug-persistent-value strong {
+  color: var(--grift-value);
+}
+
+.grift-rug-ledger span {
+  display: block;
+  margin-top: 0.55rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.grift-rug-target-note {
+  border-block: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-block: 0.8rem;
+  text-align: center;
+}
+
+.grift-rug-target-note span,
+.grift-rug-target-note strong,
+.grift-rug-target-note p {
+  display: block;
+  margin: 0;
+}
+
+.grift-rug-target-note span {
+  color: var(--grift-warning);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.grift-rug-target-note strong {
+  margin-top: 0.24rem;
+  color: var(--grift-ink);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.grift-rug-target-note p {
+  margin-top: 0.28rem;
+  color: var(--grift-ink-faint);
+  font-size: 0.78rem;
+}
+
+.grift-founder-take {
+  display: grid;
+  gap: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-bottom: 1rem;
+}
+
+.grift-founder-take-summary,
+.grift-founder-take-opportunity,
+.grift-founder-take-preparation {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.grift-founder-take-summary > div {
+  flex: 0 0 auto;
+}
+
+.grift-founder-take-summary p,
+.grift-founder-take-opportunity p,
+.grift-founder-take-preparation p,
+.grift-founder-take-complete {
+  margin: 0;
+}
+
+.grift-founder-take-summary p,
+.grift-founder-take-opportunity p,
+.grift-founder-take-preparation p {
+  color: var(--grift-warning);
+  font-size: 0.72rem;
+  font-weight: 680;
+  text-transform: uppercase;
+}
+
+.grift-founder-take-summary strong {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--grift-value);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.grift-founder-take-summary > span,
+.grift-founder-take-opportunity span,
+.grift-founder-take-preparation span,
+.grift-founder-take-complete {
+  color: var(--grift-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.grift-founder-take-summary > span {
+  max-width: 32rem;
+  text-align: right;
+}
+
+.grift-founder-take-opportunity > div,
+.grift-founder-take-preparation > div:first-child {
+  min-width: 0;
+}
+
+.grift-founder-take-opportunity span,
+.grift-founder-take-opportunity small,
+.grift-founder-take-preparation span {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.grift-founder-take-opportunity small {
+  color: var(--grift-ink-faint);
+  font-size: 0.75rem;
+}
+
+.grift-action-founder-take {
+  flex: 0 0 min(15rem, 42%);
+  min-height: 2.75rem;
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 58%);
+}
+
+.grift-founder-take-preparation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
+}
+
+.grift-founder-take-progress {
+  height: 3px;
+  overflow: hidden;
+  background: var(--grift-border);
+}
+
+.grift-founder-take-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: var(--grift-warning);
+  transform-origin: left center;
+}
+
+.grift-rug-consequence-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 2.4rem);
+}
+
+.grift-rug-consequence-grid ul {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.grift-rug-consequence-grid li::before {
+  color: var(--grift-warning);
+  content: "- ";
+}
+
+.grift-rug-action-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.grift-rug-button {
+  display: block;
+  width: min(24rem, 100%);
+  min-height: 3.45rem;
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 34%);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--grift-warning), transparent 91%);
+  color: var(--grift-value);
+  font-size: 1rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.grift-rug-button:not(:disabled):hover,
+.grift-rug-button:not(:disabled):focus-visible {
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 18%);
+  background: color-mix(in srgb, var(--grift-warning), transparent 86%);
+}
+
+.grift-rug-resolution {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.9rem;
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 62%);
+}
+
+.grift-rug-resolution h2 {
+  margin: 0.18rem 0 0;
+  color: var(--grift-value);
+  font-size: clamp(1.15rem, 2.6vw, 1.65rem);
+  line-height: 1.08;
+}
+
+.grift-rug-resolution span {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.grift-os-app & button:focus-visible,
+.grift-os-app & summary:focus-visible,
+.grift-os-app & input:focus-visible {
+  outline: 2px solid var(--grift-selection);
+  outline-offset: 3px;
+}
+
+@keyframes grift-packet {
+  0% { transform: translateX(-0.35rem); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(0.35rem); opacity: 0; }
+}
+
+@keyframes grift-wave {
+  0%, 100% { transform: scaleX(0.72); opacity: 0.58; }
+  50% { transform: scaleX(1.05); opacity: 1; }
+}
+
+@keyframes grift-terminal-blink {
+  0%, 100% { box-shadow: inset 0 0 0 0 color-mix(in srgb, currentColor, transparent 100%); }
+  50% { box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor, transparent 40%); }
+}
+
+@keyframes grift-broadcast-bob {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-1px); }
+  70% { transform: translateY(1px); }
+}
+
+@keyframes grift-outrage-shake {
+  0%, 100% { transform: translateX(0) skew(-12deg); }
+  25% { transform: translateX(-1px) skew(-16deg); }
+  50% { transform: translateX(1px) skew(-8deg); }
+  75% { transform: translateX(-0.5px) skew(-14deg); }
+}
+
+@keyframes grift-outrage-stamp {
+  0%, 100% { transform: translateY(0) scaleY(1); opacity: 0.78; }
+  42% { transform: translateY(-2px) scaleY(0.82); opacity: 0.62; }
+  58% { transform: translateY(1px) scaleY(1.12); opacity: 1; }
+}
+
+@keyframes grift-funnel-squeeze {
+  0%, 100% { transform: scaleX(1); opacity: 0.88; }
+  45% { transform: scaleX(0.72); opacity: 1; }
+  72% { transform: scaleX(1.08); opacity: 0.92; }
+}
+
+@keyframes grift-funnel-drop {
+  0% { transform: translateY(-3px) scaleY(0.55); opacity: 0; }
+  34% { opacity: 0.95; }
+  68%, 100% { transform: translateY(3px) scaleY(1.12); opacity: 0; }
+}
+
+@keyframes grift-page-flutter {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  45% { transform: rotate(-3deg) translateX(-1px); }
+  72% { transform: rotate(2deg) translateX(1px); }
+}
+
+@keyframes grift-ledger-scan {
+  0% {
+    opacity: 0.55;
+    transform: translateY(-0.18rem);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+    transform: translateY(0.18rem);
+  }
+}
+
+@keyframes grift-icon-pulse {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+
+@keyframes grift-orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes grift-signal-rise {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1px) scale(1.05); }
+}
+
+@keyframes grift-card-count {
+  0%, 100% { transform: rotate(12deg) translateY(0); }
+  38% { transform: rotate(18deg) translateY(-1px); }
+  72% { transform: rotate(7deg) translateY(1px); }
+}
+
+@keyframes grift-media-tune {
+  0%, 100% { transform: scaleX(1); opacity: 0.82; }
+  50% { transform: scaleX(0.84); opacity: 1; }
+}
+
+@keyframes grift-sovereign-rise {
+  0%, 100% { transform: rotate(45deg) translateY(0) scale(1); }
+  50% { transform: rotate(45deg) translateY(-1px) scale(1.06); }
+}
+
+@keyframes grift-sovereign-core {
+  0%, 100% { transform: rotate(45deg) scale(1); opacity: 0.82; }
+  50% { transform: rotate(45deg) scale(0.72); opacity: 1; }
+}
+
+@keyframes grift-valuation-gain {
+  0% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 3px); }
+  18% { opacity: 1; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 0); }
+  100% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), -12px); }
+}
+
+@keyframes grift-valuation-spend {
+  0% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), -3px); }
+  18% { opacity: 1; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 0); }
+  100% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 12px); }
+}
+
+@keyframes grift-automation-marker {
+  0%, 100% { opacity: 0.35; transform: scale(0.82); }
+  82% { opacity: 0.35; transform: scale(0.82); }
+  92% { opacity: 0.85; transform: scale(1); }
+}
+
+@keyframes grift-producing-icon {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-1px) scale(1.04); }
+}
+
+@media (max-width: 1200px) {
+
+  .grift-net-worth {
+    width: 100%;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 3rem minmax(10rem, 1fr) minmax(12rem, 0.8fr);
+  }
+
+  .grift-hustle-actions {
+    grid-column: 2 / -1 !important;
+  }
+
+  .grift-hustle-actions--manual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: 1 / -1;
+  }
+
+  .grift-hustle-actions--automated {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-next-horizon {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 64rem) {
+  .grift-work-surface--hustles,
+  .grift-work-surface--leverage,
+  .grift-work-surface--rug {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-mode-tabs {
+    position: relative;
+    top: auto;
+  }
+
+  .grift-leverage-deal {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, auto);
+  }
+
+  .grift-leverage-effects {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .grift-inspector-panel {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 8;
+    display: none;
+    width: min(28rem, calc(100vw - 2rem));
+    overflow: auto;
+    border: 1px solid var(--grift-border-strong);
+    border-radius: 10px;
+    background: var(--grift-plane-raised);
+    padding: 1rem;
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+  }
+
+  .grift-inspector-panel--open {
+    display: block;
+  }
+
+  .grift-context-close {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .grift-context-backdrop--open {
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    display: block;
+    background: rgba(0, 0, 0, 0.34);
+  }
+
+  .grift-rug-ledger,
+  .grift-rug-consequence-grid,
+  .grift-founder-take-preparation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-founder-take-summary,
+  .grift-founder-take-opportunity {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .grift-founder-take-summary > span {
+    text-align: left;
+  }
+
+  .grift-action-founder-take {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .grift-rug-resolution {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 44rem) {
+
+  .grift-work-surface {
+    padding-inline: 0.85rem;
+  }
+
+  .grift-title-block {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .grift-title-block h1 {
+    font-size: 1.12rem;
+  }
+
+  .grift-title-block p:last-child {
+    margin-top: 0.16rem;
+    font-size: 0.72rem;
+  }
+
+  .grift-valuation-object {
+    grid-column: 1;
+    grid-row: 2;
+    justify-items: start;
+    gap: 0.02rem;
+    text-align: left;
+  }
+
+  .grift-valuation-object strong {
+    font-size: clamp(2.8rem, 13vw, 3.82rem);
+  }
+
+  .grift-valuation-object span {
+    font-size: 0.95rem;
+  }
+
+  .grift-net-worth {
+    width: auto;
+    min-width: 6.4rem;
+    padding-left: 0.58rem;
+  }
+
+  .grift-net-worth strong {
+    font-size: 1.28rem;
+  }
+
+  .grift-net-worth span {
+    font-size: 0.68rem;
+    line-height: 1.18;
+  }
+
+  .grift-valuation-flyout {
+    display: none;
+  }
+
+  .grift-mode-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-inline: 0.85rem;
+  }
+
+  .grift-mode-tabs button {
+    min-height: 2.42rem;
+    padding-inline: 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  .grift-inspector-panel {
+    top: auto;
+    right: 0.65rem;
+    bottom: 0.65rem;
+    left: 0.65rem;
+    width: auto;
+    max-height: min(76vh, 42rem);
+    border-radius: 14px 14px 10px 10px;
+    padding: 0.95rem;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 3rem minmax(0, 1fr);
+  }
+
+  .grift-hustle-metrics,
+  .grift-hustle-actions {
+    grid-column: 1 / -1 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-hustle-actions--manual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: 1 / -1;
+  }
+
+  .grift-row-reveal,
+  .grift-next-horizon {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-row-reveal {
+    display: grid;
+  }
+
+  .grift-leverage-intro {
+    display: grid;
+  }
+
+  .grift-leverage-intro span {
+    text-align: left;
+  }
+
+  .grift-leverage-deal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-leverage-effects {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .grift-leverage-deal-action > span {
+    text-align: left;
+  }
+
+  .grift-hustle-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-hustle-automated .grift-hustle-icon::after,
+  .grift-icon-active .grift-hustle-icon,
+  .grift-icon-active .grift-hustle-icon::before,
+  .grift-icon-active .grift-hustle-icon::after,
+  .grift-icon-automated::after,
+  .grift-progress,
+  .grift-progress-reset {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .grift-valuation-flyout--gain,
+  .grift-valuation-flyout--spend {
+    animation: grift-valuation-reduced 620ms ease-out both;
+  }
+}
+
+@keyframes grift-valuation-reduced {
+  0% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 0); }
+  18% { opacity: 1; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 0); }
+  100% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * var(--grift-flyout-stagger)), 0); }
+}
+
+.grift-stage {
+  position: relative;
+  display: grid;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--grift-border);
+  background: var(--grift-plane);
+  padding:
+    clamp(0.75rem, 2vw, 1rem)
+    clamp(0.85rem, 3vw, 1.25rem);
+}
+
+.grift-stage__atmosphere,
+.grift-stage__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grift-stage__atmosphere {
+  z-index: 0;
+  background-image: var(--grift-stage-media);
+  background-position: center;
+  background-size: cover;
+  opacity: var(--grift-stage-atmosphere-opacity);
+}
+
+.grift-stage__atmosphere::before,
+.grift-stage__atmosphere::after {
+  position: absolute;
+  border: 1px solid var(--grift-stage-frame-color);
+  content: "";
+  opacity: var(--grift-stage-frame-opacity);
+  transform-origin: center;
+}
+
+.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
+.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
+  animation: grift-stage-breathe var(--grift-stage-motion-duration) ease-in-out infinite;
+}
+
+.grift-stage__scrim {
+  z-index: 1;
+  background: var(--grift-stage-scrim);
+}
+
+.grift-stage__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+}
+
+.grift-stage__identity {
+  grid-area: identity;
+  min-width: 0;
+}
+
+.grift-stage__valuation {
+  grid-area: valuation;
+  min-width: 0;
+}
+
+.grift-stage__owner {
+  grid-area: owner;
+  min-width: 0;
+  justify-self: end;
+}
+
+.grift-stage__gains {
+  inset: 0;
+}
+
+.grift-stage .grift-title-block p:last-child {
+  margin-top: 0.16rem;
+  font-size: 0.72rem;
+}
+
+.grift-stage .grift-valuation-object {
+  gap: 0.02rem;
+}
+
+.grift-stage .grift-net-worth {
+  width: auto;
+}
+
+.grift-stage .grift-net-worth span {
+  font-size: 0.68rem;
+  line-height: 1.18;
+}
+
+.grift-mode-tabs {
+  position: sticky;
+  top: var(--grift-nav-clearance, 4.6rem);
+  grid-template-columns: repeat(var(--grift-mode-count, 1), minmax(0, 1fr));
+  min-block-size: 2.75rem;
+  padding-block: 0.25rem;
+}
+
+@media (min-width: 44rem) {
+  .grift-stage {
+    min-block-size: clamp(10.5rem, 12vw, 11rem);
+    padding:
+      clamp(0.85rem, 1.8vw, 1.1rem)
+      clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .grift-stage__content {
+    grid-template-areas:
+      "identity valuation owner"
+      "utilities valuation owner";
+    grid-template-columns: minmax(9rem, 0.65fr) minmax(17rem, 1.35fr) minmax(9rem, 0.65fr);
+    gap: 0.42rem clamp(0.75rem, 2vw, 1.25rem);
+    align-items: center;
+  }
+
+  .grift-stage__valuation {
+    align-self: center;
+  }
+
+  .grift-stage__owner {
+    justify-self: stretch;
+  }
+
+  .grift-stage .grift-net-worth {
+    width: 100%;
+    padding-left: 0.72rem;
+    border-left: 1px solid var(--grift-border-strong);
+  }
+
+  .grift-stage .grift-valuation-object {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .grift-stage .grift-valuation-object strong {
+    font-size: clamp(3.5rem, 7vw, 4.65rem);
+  }
+
+  .grift-mode-tabs {
+    min-block-size: 3rem;
+  }
+}
+
+@media (min-width: 72rem) {
+  .grift-stage {
+    min-block-size: clamp(11rem, calc(5vw + 6.75rem), 14rem);
+    padding:
+      clamp(0.95rem, 1.6vw, 1.35rem)
+      clamp(1.25rem, 2.4vw, 2rem);
+  }
+
+  .grift-stage__content {
+    grid-template-areas: "identity valuation owner utilities";
+    grid-template-columns:
+      minmax(11rem, 0.62fr)
+      minmax(26rem, 1.5fr)
+      minmax(12rem, 0.68fr)
+      minmax(12rem, 0.68fr);
+    gap: 0.45rem clamp(1rem, 2vw, 1.7rem);
+    align-items: center;
+  }
+
+  .grift-stage__identity {
+    align-self: center;
+  }
+
+  .grift-stage__owner {
+    justify-self: stretch;
+  }
+
+  .grift-stage .grift-net-worth {
+    width: 100%;
+    border-left: 1px solid var(--grift-border-strong);
+    padding-left: 1rem;
+  }
+
+  .grift-stage .grift-valuation-object strong {
+    font-size: clamp(4rem, 5vw, 5.1rem);
+  }
+}
+
+@media (max-width: 71.999rem) {
+  .grift-work-surface--hustles,
+  .grift-work-surface--leverage,
+  .grift-work-surface--rug {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-inspector-panel {
+    position: fixed;
+    top: calc(var(--grift-nav-clearance, 4.6rem) + 0.75rem);
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 8;
+    display: none;
+    width: min(28rem, calc(100vw - 2rem));
+    overflow: auto;
+    border: 1px solid var(--grift-border-strong);
+    border-radius: 10px;
+    background: var(--grift-plane-raised);
+    padding: 1rem;
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+  }
+
+  .grift-inspector-panel--open {
+    display: block;
+  }
+
+  .grift-context-close {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .grift-context-backdrop--open {
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    display: block;
+    background: rgba(0, 0, 0, 0.34);
+  }
+}
+
+@media (max-width: 44rem) {
+  .grift-mode-tabs {
+    padding-block: 0.15rem;
+  }
+
+  .grift-stage__atmosphere::before {
+    inset-inline: 8%;
+  }
+
+  .grift-stage__atmosphere::after {
+    inset-inline: 18%;
+  }
+
+  .grift-stage__owner {
+    max-width: 9.4rem;
+  }
+
+  .grift-stage .grift-net-worth span {
+    display: none;
+  }
+
+  .grift-stage__gains {
+    display: none;
+  }
+
+  .grift-inspector-panel {
+    top: auto;
+    right: 0.65rem;
+    bottom: 0.65rem;
+    left: 0.65rem;
+    width: auto;
+    max-height: min(76vh, 42rem);
+    border-radius: 14px 14px 10px 10px;
+    padding: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-stage__atmosphere::before,
+  .grift-stage__atmosphere::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes grift-stage-breathe {
+  0%, 100% { transform: scaleX(0.98); }
+  50% { transform: scaleX(1.02); }
+}
+
+.grift-stage {
+  min-block-size: clamp(9.65rem, 16vw, 12rem);
+  overflow: visible;
+  border-bottom-color: color-mix(in srgb, var(--grift-border-strong), transparent 20%);
+}
+
+.grift-stage__atmosphere {
+  overflow: hidden;
+}
+
+.grift-stage__atmosphere::before {
+  inset: 14% 6%;
+  border-inline-width: 0;
+  border-block-width: 1px;
+}
+
+.grift-stage__atmosphere::after {
+  inset: 28% 22%;
+  border-block-width: 0;
+  border-inline-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::before {
+  inset-inline: 4%;
+  opacity: calc(var(--grift-stage-frame-opacity) + 0.1);
+}
+
+.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after {
+  inset-inline: 16%;
+  border-block-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::before {
+  inset: 8% 2.5%;
+  border-inline-width: 1px;
+  border-block-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
+  inset: 19% 11%;
+  border-inline-width: 1px;
+  border-block-width: 1px;
+  opacity: calc(var(--grift-stage-frame-opacity) + 0.08);
+}
+
+.grift-stage__content {
+  grid-template-areas:
+    "identity owner"
+    "valuation gains";
+  grid-template-columns: minmax(0, 1fr) minmax(6.75rem, 0.42fr);
+  gap: 0.28rem clamp(0.6rem, 2vw, 1rem);
+  align-items: center;
+}
+
+.grift-stage__identity {
+  align-self: end;
+}
+
+.grift-stage__owner {
+  align-self: end;
+}
+
+.grift-stage__valuation {
+  overflow: visible;
+}
+
+.grift-stage__gains {
+  position: relative;
+  grid-area: gains;
+  align-self: center;
+  min-block-size: 3.4rem;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.grift-stage__gains .grift-valuation-flyout {
+  left: 0;
+  max-width: 100%;
+  font-size: clamp(0.7rem, 1.1vw, 0.88rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grift-stage__gains .grift-valuation-flyout--gain {
+  top: 0.5rem;
+}
+
+.grift-stage__gains .grift-valuation-flyout--spend {
+  bottom: 0.5rem;
+}
+
+.grift-stage .grift-title-block {
+  display: flex;
+  gap: 0.36rem;
+  align-items: baseline;
+}
+
+.grift-stage .grift-title-block .grift-kicker {
+  margin: 0;
+  color: var(--grift-ink-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.grift-stage .grift-title-block h1 {
+  font-size: 0.98rem;
+  font-weight: 680;
+}
+
+.grift-stage .grift-valuation-object {
+  justify-items: start;
+  text-align: left;
+}
+
+.grift-stage .grift-valuation-object strong {
+  font-size: clamp(2.75rem, 8vw, 4.6rem);
+  line-height: 0.88;
+}
+
+.grift-stage .grift-valuation-object span {
+  margin-top: 0.15rem;
+  font-size: clamp(0.82rem, 1.25vw, 1rem);
+}
+
+.grift-stage .grift-net-worth {
+  min-width: 0;
+  padding-left: 0.7rem;
+  border-left: 1px solid var(--grift-border-strong);
+}
+
+.grift-stage .grift-net-worth strong {
+  font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+}
+
+.grift-mode-tabs {
+  z-index: 3;
+  isolation: isolate;
+  border-bottom-color: var(--grift-border-strong);
+  background: var(--grift-plane);
+  box-shadow: 0 0.5rem 0.8rem color-mix(in srgb, var(--grift-plane), transparent 25%);
+}
+
+.grift-work-surface {
+  position: relative;
+  z-index: 0;
+}
+
+.grift-hustle-grid {
+  grid-template-columns: 2.7rem minmax(8.5rem, 0.82fr) minmax(8.25rem, 0.74fr) minmax(15rem, 1.18fr);
+  align-items: stretch;
+}
+
+.grift-hustle-actions {
+  align-content: center;
+}
+
+.grift-hustle-actions--manual {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(5.8rem, 0.58fr);
+}
+
+.grift-hustle-actions .grift-action-button {
+  min-height: 2.55rem;
+  overflow: visible;
+  padding: 0.44rem 0.6rem;
+  line-height: 1.18;
+  text-align: left;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.grift-hustle-actions--manual .grift-action-primary {
+  min-height: 2.7rem;
+}
+
+.grift-rug-stage {
+  gap: clamp(1rem, 2.2vw, 1.5rem);
+  width: min(64rem, 100%);
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 78%);
+  background: color-mix(in srgb, var(--grift-plane-raised), #000 4%);
+}
+
+.grift-rug-intro {
+  grid-template-columns: minmax(13rem, 0.78fr) minmax(0, 1.22fr);
+  gap: 0.65rem clamp(1rem, 4vw, 2.8rem);
+  align-items: end;
+  justify-items: start;
+  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-bottom: clamp(0.9rem, 2.2vw, 1.35rem);
+  text-align: left;
+}
+
+.grift-rug-intro > p:first-child,
+.grift-rug-intro-value {
+  grid-column: 1;
+}
+
+.grift-rug-intro-value {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.grift-rug-intro h2 {
+  margin: 0;
+  font-size: clamp(1.12rem, 2vw, 1.45rem);
+}
+
+.grift-rug-intro strong {
+  font-size: clamp(2.85rem, 5.4vw, 4.85rem);
+  line-height: 0.9;
+}
+
+.grift-rug-intro span {
+  font-size: 0.96rem;
+}
+
+.grift-rug-intro .grift-rug-thesis {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  max-width: 34rem;
+  margin: 0;
+  font-size: clamp(0.88rem, 1.45vw, 1.04rem);
+  text-align: left;
+}
+
+.grift-rug-ledger,
+.grift-rug-consequence-grid {
+  gap: clamp(0.85rem, 3vw, 2rem);
+}
+
+.grift-rug-ledger strong {
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+}
+
+@media (min-width: 44rem) {
+  .grift-stage {
+    min-block-size: clamp(10rem, 13vw, 11.5rem);
+  }
+
+  .grift-stage__content {
+    grid-template-areas: "identity valuation gains owner";
+    grid-template-columns: minmax(6.5rem, 0.42fr) minmax(17rem, 1.42fr) minmax(8.5rem, 0.52fr) minmax(8rem, 0.45fr);
+    gap: clamp(0.7rem, 1.7vw, 1.3rem);
+  }
+
+  .grift-stage__identity,
+  .grift-stage__owner {
+    align-self: center;
+  }
+
+  .grift-stage__gains {
+    min-block-size: 4.5rem;
+  }
+
+  .grift-stage .grift-valuation-object {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+@media (min-width: 72rem) {
+  .grift-stage {
+    min-block-size: clamp(10.75rem, calc(5vw + 6.4rem), 13.25rem);
+  }
+
+  .grift-stage__content {
+    grid-template-columns: minmax(7rem, 0.46fr) minmax(21rem, 1.45fr) minmax(10.5rem, 0.52fr) minmax(9rem, 0.48fr);
+  }
+
+  .grift-stage .grift-valuation-object strong {
+    font-size: clamp(3.8rem, 5vw, 5.05rem);
+  }
+}
+
+@media (max-width: 71.999rem) {
+  .grift-mode-tabs {
+    position: relative;
+    top: auto;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 2.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr);
+  }
+
+  .grift-hustle-actions {
+    grid-column: 2 / -1 !important;
+  }
+
+  .grift-hustle-actions--manual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 44rem) {
+  .grift-stage {
+    min-block-size: 9.4rem;
+  }
+
+  .grift-stage__gains {
+    display: block;
+    min-block-size: 3.2rem;
+  }
+
+  .grift-stage .grift-net-worth span {
+    display: none;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 2.7rem minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .grift-hustle-metrics,
+  .grift-hustle-actions {
+    grid-column: 2;
+  }
+
+  .grift-hustle-actions--manual,
+  .grift-hustle-actions--automated {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: auto;
+  }
+
+  .grift-rug-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .grift-rug-intro .grift-rug-thesis {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
+  .grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
+    animation: none;
+  }
+}
+}

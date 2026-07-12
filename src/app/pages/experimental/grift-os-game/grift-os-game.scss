@@ -1,1 +1,260 @@
-/* GriftOS visual system lives in src/styles/_grift-os.scss under .grift-os-app. */
+/* Shared GriftOS host styles. Keep selectors within this Angular ownership boundary. */
+.grift-os-app button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.grift-audio-state,
+.grift-session-id,
+.grift-playtest-status {
+  color: var(--grift-ink-soft);
+}
+
+.grift-audio-controls {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  border: 1px solid var(--grift-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--grift-plane-raised), transparent 20%);
+  padding: 0.18rem;
+}
+
+.grift-audio-controls button {
+  min-height: 2.05rem;
+  border-radius: 999px;
+  padding: 0.38rem 0.66rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.grift-audio-controls button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--grift-info), transparent 86%);
+  color: var(--grift-ink);
+}
+
+.grift-audio-toggle-muted {
+  color: var(--grift-ink-faint) !important;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.grift-playtest-menu summary,
+.grift-popover-grid button,
+.grift-popover-close,
+.grift-audio-debug button {
+  min-height: 2.4rem;
+  border: 1px solid var(--grift-border);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.grift-popover-grid button,
+.grift-popover-close,
+.grift-audio-debug button {
+  color: var(--grift-ink-soft);
+}
+
+.grift-playtest-menu {
+  position: relative;
+}
+
+.grift-playtest-menu[open] {
+  z-index: 40;
+}
+
+.grift-playtest-menu:not([open]) .grift-popover-panel {
+  display: none;
+}
+
+.grift-playtest-menu summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--grift-warning);
+}
+
+.grift-popover-panel {
+  position: fixed;
+  top: 6.25rem;
+  right: clamp(0.75rem, 2vw, 1.75rem);
+  z-index: 40;
+  width: min(23rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 7.5rem);
+  overflow: auto;
+  border: 1px solid var(--grift-border-strong);
+  border-radius: 8px;
+  background: var(--grift-plane-raised);
+  padding: 0.9rem;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+}
+
+.grift-popover-close {
+  display: block;
+  margin: 0 0 0.65rem auto;
+  background: var(--grift-plane);
+}
+
+.grift-popover-grid,
+.grift-audio-debug {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.grift-audio-debug {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--grift-border);
+  padding-top: 0.75rem;
+}
+
+.grift-audio-debug label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--grift-ink-soft);
+  font-size: 0.78rem;
+}
+
+.grift-audio-debug input[type="range"] {
+  width: 100%;
+}
+
+.grift-event-history {
+  border-top: 1px solid var(--grift-border);
+  padding: 0.65rem clamp(1rem, 2.4vw, 2rem);
+}
+
+.grift-event-history summary {
+  cursor: pointer;
+  color: var(--grift-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 560;
+}
+
+.grift-event-history ol {
+  display: grid;
+  gap: 0.2rem;
+  max-height: 8rem;
+  margin: 0.5rem 0 0;
+  overflow: auto;
+  color: var(--grift-ink-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.72rem;
+}
+
+.grift-os-app button:focus-visible,
+.grift-os-app summary:focus-visible,
+.grift-os-app input:focus-visible {
+  outline: 2px solid var(--grift-selection);
+  outline-offset: 3px;
+}
+
+@media (max-width: 44rem) {
+  .grift-os-app {
+    border-radius: 8px;
+  }
+
+  .grift-audio-controls {
+    gap: 0.18rem;
+    padding: 0.12rem;
+  }
+
+  .grift-audio-controls button {
+    min-height: 1.65rem;
+    padding: 0.26rem 0.42rem;
+    font-size: 0.62rem;
+  }
+
+  .grift-playtest-menu summary {
+    max-width: 8.4rem;
+    min-height: 1.9rem;
+    overflow: hidden;
+    padding: 0.36rem 0.48rem;
+    font-size: 0.62rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .grift-popover-panel {
+    top: 5.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    max-height: calc(100vh - 6.75rem);
+  }
+
+  .grift-popover-close {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.grift-os-app {
+  --grift-stage-media: none;
+  --grift-stage-atmosphere-opacity: 0.08;
+  --grift-stage-scrim: rgba(248, 250, 249, 0.76);
+  --grift-stage-frame-color: var(--grift-info);
+  --grift-stage-frame-opacity: 0.12;
+  --grift-stage-motion-duration: 12s;
+
+  overflow: visible;
+}
+
+:host-context(.dark) .grift-os-app {
+  --grift-stage-scrim: rgba(11, 16, 19, 0.72);
+  --grift-stage-frame-opacity: 0.16;
+}
+
+.grift-os-app[data-visual-condition="automated"] {
+  --grift-stage-atmosphere-opacity: 0.16;
+  --grift-stage-frame-opacity: 0.2;
+  --grift-stage-motion-duration: 10s;
+}
+
+.grift-os-app[data-visual-condition="structural"] {
+  --grift-stage-atmosphere-opacity: 0.24;
+  --grift-stage-frame-opacity: 0.28;
+  --grift-stage-motion-duration: 14s;
+}
+
+.grift-support-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid var(--grift-border);
+  background: var(--grift-plane);
+  padding: 0.46rem clamp(0.85rem, 2.4vw, 2rem);
+}
+
+.grift-support-tools .grift-audio-controls {
+  border-color: color-mix(in srgb, var(--grift-border), transparent 20%);
+  padding: 0.1rem;
+}
+
+.grift-support-tools .grift-audio-controls button,
+.grift-support-tools .grift-playtest-menu summary {
+  min-height: 1.85rem;
+  padding: 0.28rem 0.48rem;
+  font-size: 0.65rem;
+}
+
+.grift-support-tools .grift-playtest-menu summary {
+  color: var(--grift-ink-faint);
+}
+
+@media (max-width: 44rem) {
+
+  .grift-support-tools {
+    justify-content: space-between;
+  }
+}
