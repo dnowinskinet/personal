@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 5bb1401eca74481d572c0e37d3e429c50f62c052
+Last verified against commit: 61617f8cbdf298ef561713fc3af0b56f03aeb534
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -17,12 +17,13 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Selected future Influence direction: Circulating Institution; prototype remains paused.
 - Save formats and keys: `grift-os-meta-v1` and `grift-os-run-v1`.
 - Global Net Worth is settled. The current `rugPullCount` field is compatibility state with unresolved future ownership.
-- Current verification baseline: 114 tests, lint, and production build pass.
+- Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for current engine and component imports.
+- Current verification baseline: 117 tests, lint, and production build pass.
 
 ## TARGET — NOT YET IMPLEMENTED
 
 - Shared mechanics/runtime/presentation contracts with one active empire-renderer boundary.
-- Separable mechanics, content, visual, and audio packs.
+- Separable visual and audio packs; mechanics and content separation is CURRENT.
 - Modular Influence renderer with component-local visual ownership.
 
 ## DEFERRED
@@ -33,4 +34,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase A Codex-readiness and characterization foundation is complete. No production architecture or runtime phase is approved. Phase B requires separate review and authorization.
+Phase B Influence mechanics/content/tuning ownership is complete at `61617f8`. Phase C engine dependency inversion has not begun and requires separate review and authorization.

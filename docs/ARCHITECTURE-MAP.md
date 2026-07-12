@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 5bb1401eca74481d572c0e37d3e429c50f62c052
+Last verified against commit: 61617f8cbdf298ef561713fc3af0b56f03aeb534
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -15,7 +15,11 @@ The route lazy-loads `GriftOsGameComponent` from `src/app/pages/experimental/gri
 
 ```text
 grift-os-game/
-  content/        Influence copy, catalogs, and mixed tuning/content definitions
+  content/        Compatibility assembly exports for current consumers
+  empires/
+    influence/
+      mechanics/  CURRENT Influence tuning and mechanical catalogs
+      content/    CURRENT Influence player-facing language
   game-engine/    Economy formulas, state, modifiers, prestige, simulation
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
@@ -30,14 +34,14 @@ src/styles/_grift-os.scss
 
 Current dependency problems are known implementation evidence, not approved boundaries:
 
-- engine modules import current Influence catalogs and tuning;
+- engine modules still import compatibility catalogs and tuning assembled from the Influence packs;
 - `HustleDefinition` mixes mechanics, content, icons, and audio references;
 - the component owns simulation, persistence, presentation, overlays, fixtures, and rendering;
 - the global stylesheet uses source-order Phase 1/1.1 overrides as visual architecture.
 
 ## TARGET — approved destination, not yet implemented
 
-The following structure is a migration destination. These paths and boundaries do not yet exist:
+The following structure is the approved migration destination. The Influence `mechanics/` and `content/` paths now exist under the current feature root; the other proposed paths and boundaries below are not yet implemented:
 
 ```text
 grift-os/
@@ -100,9 +104,9 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 
 | Change | CURRENT owner(s) | TARGET owner — not yet implemented |
 |---|---|---|
-| Formula | Engine plus direct Influence imports | Shared engine formula |
-| Influence balance | `content/economy-tuning.ts` and related definitions | Influence mechanics/tuning pack |
-| Hustle/manual/automation wording | Hustle definitions and component string assembly | Influence content pack |
+| Formula | Engine formulas consuming compatibility exports assembled from the Influence mechanics pack | Shared engine formula |
+| Influence balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Influence mechanics/tuning pack (CURRENT ownership; direct engine consumption deferred) |
+| Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; some component string assembly remains | Influence content pack (CURRENT catalog ownership; presentation facade deferred) |
 | Icon or motion | ID unions, definitions, global SCSS | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |
 | Action availability/mode reveal | Main component getters | Shared runtime/presentation facade |
