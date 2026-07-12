@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: af88c319beb273edbb15e801cd4d7edb48cf7dc7
+Last verified against commit: 9a6eb593b742cd7bbd34846e6dc3e0db61e9fa8f
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -17,7 +17,7 @@ Focused GriftOS tests:
 npm run grift:test
 ```
 
-Engine, presentation, runtime, and renderer dependency boundaries:
+Engine, presentation, runtime, renderer, and style-ownership boundaries:
 
 ```bash
 npm run grift:arch
