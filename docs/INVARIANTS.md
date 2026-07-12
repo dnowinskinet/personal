@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: ca7d8e36873ca1acece28cf0562697f7366c3119
+Last verified against commit: af88c319beb273edbb15e801cd4d7edb48cf7dc7
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -27,6 +27,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | The current renderer consumes rule-complete presentation models for display state and emits typed semantic gameplay actions rather than reconstructing costs, affordability, or mode reveal in the template. | `presentation/game-presentation.spec.ts`; component action-dispatch test; `npm run grift:arch` |
+| Exactly one runtime-selected empire renderer is mounted. Shared utilities remain outside it in the host, and the Influence renderer does not import economy, runtime, audio, or playtest code. | `grift-os-game.spec.ts`: renderer/utility ownership test; `npm run grift:arch` |
 | Presentation production sources import no Angular, browser storage/DOM, audio, renderer, playtest, or current component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Storage keys and formats remain `grift-os-meta-v1` and `grift-os-run-v1` until an approved migration. Corrupt or partial v1 data reconciles safely against current mechanics. | `runtime/run-persistence.spec.ts`; component persistence tests |
 | Runtime production sources import no Angular, browser globals, empire content/visual/audio, presentation, renderer, playtest, or component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
@@ -42,7 +43,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 ## TARGET — approved constraints not yet enforceable
 
 - Visual and audio pack extraction is not yet implemented.
-- One dynamic empire-renderer boundary contains ordinary statically composed Angular components.
+- The Influence renderer is internally composed from ordinary responsibility-owned Angular components.
 - Empire styles and keyframes do not leak globally or across empires.
 - Catalog assembly validates IDs and cross-references before a run begins.
 

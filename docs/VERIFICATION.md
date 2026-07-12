@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: ca7d8e36873ca1acece28cf0562697f7366c3119
+Last verified against commit: af88c319beb273edbb15e801cd4d7edb48cf7dc7
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -17,7 +17,7 @@ Focused GriftOS tests:
 npm run grift:test
 ```
 
-Engine, presentation, and runtime dependency boundaries:
+Engine, presentation, runtime, and renderer dependency boundaries:
 
 ```bash
 npm run grift:arch
@@ -41,7 +41,7 @@ Balance work additionally requires the applicable commands from `docs/economy-tu
 npm run game:balance -- --strategy=natural --rug-strategy=prepared --max-days=14
 ```
 
-`npm run grift:test` runs the engine, presentation, and runtime dependency boundaries before the focused browser tests. `npm run verify` does not run tests. GriftOS implementation phases normally require `grift:test` and `verify`; use the full test command for phase completion and before commits that alter shared project behavior.
+`npm run grift:test` runs the engine, presentation, runtime, and renderer dependency boundaries before the focused browser tests. `npm run verify` does not run tests. GriftOS implementation phases normally require `grift:test` and `verify`; use the full test command for phase completion and before commits that alter shared project behavior.
 
 ## Deterministic fixture routes
 
