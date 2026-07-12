@@ -1,0 +1,18 @@
+<section class="grift-hustle-plane" aria-label="Hustles">
+  <div class="grift-section-line"><div><h2>Your Hustles</h2></div><span>{{ countLabel }}</span></div>
+  <div class="grift-hustle-list">
+    @for (row of rows; track trackRow($index, row)) {
+      <app-influence-lane [row]="row" [selected]="row.id === selectedHustleId" (request)="forward($event)"></app-influence-lane>
+    }
+    @if (horizon; as next) {
+      <article class="grift-next-horizon">
+        <div><p class="grift-label">Next enterprise</p><h3>{{ next.definition.name }}</h3><p>{{ next.definition.description }}</p></div>
+        <button type="button" class="grift-action-button grift-action-establish" [disabled]="!next.canBuy"
+          (click)="request.emit({ action: { type: 'hustle.expand', hustleId: next.id, quantity: 1 } })">
+          Establish · {{ next.costLabel }}
+        </button>
+        @if (!next.canBuy) { <span class="grift-horizon-shortfall">Need {{ next.shortfallLabel }} more</span> }
+      </article>
+    }
+  </div>
+</section>

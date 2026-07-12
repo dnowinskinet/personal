@@ -21,6 +21,7 @@ import {
   InfluenceStageComponent,
   InfluenceStageView,
 } from './stage/influence-stage.component';
+import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -29,7 +30,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent],
+  imports: [InfluenceStageComponent, InfluenceLedgerComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -102,13 +103,16 @@ export class InfluenceEmpireRendererComponent {
   }
 
   dispatchGameAction(action: GameAction, sourceEvent?: Event): void {
-    const request: EmpireRendererRequest = { action, sourceEvent };
+    this.dispatchRendererRequest({ action, sourceEvent });
+  }
+
+  dispatchRendererRequest(request: EmpireRendererRequest): void {
     this.dispatch(request);
 
-    if (action.type === 'context.open') {
+    if (request.action.type === 'context.open') {
       window.setTimeout(() => this.selectedContextPanel?.nativeElement.focus(), 0);
       window.setTimeout(() => this.selectedContextPanel?.nativeElement.focus(), 80);
-    } else if (action.type === 'rugPull.commit') {
+    } else if (request.action.type === 'rugPull.commit') {
       window.setTimeout(() => this.hustlesSurface?.nativeElement.focus(), 0);
     }
   }
