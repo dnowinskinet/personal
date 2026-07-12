@@ -22,6 +22,11 @@ await scanBoundary(
   ['@angular/', '/audio/', '/renderer/', '/playtest/', '../grift-os-game'],
   'presentation'
 );
+await scanBoundary(
+  path.join(featureRoot, 'runtime'),
+  ['@angular/', '/content/', '/empires/', '/audio/', '/presentation/', '/renderer/', '/playtest/', '../grift-os-game'],
+  'runtime'
+);
 
 async function scanBoundary(root, forbiddenImports, boundaryName) {
   for (const entry of await readdir(root, { withFileTypes: true })) {
@@ -50,5 +55,5 @@ if (violations.length > 0) {
   console.error(['GriftOS architecture boundary violations:', ...violations.map((item) => `- ${item}`)].join('\n'));
   process.exitCode = 1;
 } else {
-  console.log('GriftOS engine and presentation boundaries pass.');
+  console.log('GriftOS engine, presentation, and runtime boundaries pass.');
 }

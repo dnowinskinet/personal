@@ -16,7 +16,6 @@ import { ActivatedRoute } from '@angular/router';
 import { AudioDirectorService } from './audio/audio-director.service';
 import { AudioSettings } from './audio/audio-engine';
 import { GRIFT_OS_COPY } from './content/game-copy';
-import { GRIFT_OS_FOUNDER_TAKE_TUNING } from './content/economy-tuning';
 import {
   FounderTakeStatus,
   startFounderTakePreparation,
@@ -33,15 +32,13 @@ import {
 import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
 import {
   activateHustle as activateHustleInState,
-  advanceGame,
   buyAutomation,
   buyHustle,
   createInitialGameState,
 } from './game-engine/economy';
-import { GameEvent, GameEventRecord, GameTabId, createGameEventRecord } from './game-engine/game-events';
+import { GameEvent, GameEventRecord, GameTabId } from './game-engine/game-events';
 import { buyLeverage } from './game-engine/leverage';
 import { deriveEnterprisePresentation, EnterprisePresentation } from './game-engine/presentation';
-import { elapsedForegroundSimulationMs } from './game-engine/simulation-clock';
 import {
   GriftOsGameState,
   HustleDefinition,
@@ -80,6 +77,13 @@ import {
   LeverageDealView,
   VisualCondition,
 } from './presentation/game-presentation';
+import { GameEventLog } from './runtime/game-event-log';
+import {
+  GriftMetaSaveV1,
+  GriftRunSaveV1,
+  GriftV1Persistence,
+} from './runtime/run-persistence';
+import { GriftRunRuntime } from './runtime/run-runtime';
 
 interface PayoutFeedback {
   id: number;
@@ -106,18 +110,6 @@ interface RugPullResolution {
   peakValuationLabel: string;
 }
 
-interface GriftMetaSave {
-  netWorth: number;
-  rugPullCount: number;
-}
-
-interface GriftRunSave {
-  version: 1;
-  savedAt: number;
-  state: GriftOsGameState;
-  selectedHustleId: HustleId;
-}
-
 interface OfflineReturn {
   elapsedLabel: string;
   payoutLabel: string;
@@ -137,17 +129,12 @@ type RunShortcutId =
   | 'endgame';
 type InitialRouteRunState = RunShortcutId;
 
-const META_STORAGE_KEY = 'grift-os-meta-v1';
-const RUN_STORAGE_KEY = 'grift-os-run-v1';
 const SIMULATION_TICK_MS = 50;
 const UI_RENDER_INTERVAL_MS = 100;
 const PROGRESS_RESET_RESTORE_MS = 24;
 const VALUATION_GAIN_FLYOUT_LIMIT = 3;
 const VALUATION_SPEND_FLYOUT_LIMIT = 2;
 const VALUATION_FLYOUT_LIFETIME_MS = 680;
-const RUN_SAVE_THROTTLE_MS = 2000;
-const OFFLINE_RETURN_MIN_MS = 30_000;
-const OFFLINE_RETURN_CAP_MS = 8 * 60 * 60 * 1000;
 const DEFAULT_MUSIC_VOLUME = 0.45;
 const DEFAULT_SFX_VOLUME = 0.7;
 const ENDGAME_NET_WORTH = 1_000_000_000_000;
@@ -190,6 +177,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.mechanics,
     this.tabs
   );
+  private readonly runRuntime = new GriftRunRuntime(this.mechanics);
+  private readonly gameEventLog = new GameEventLog();
 
   @ViewChild('selectedContextPanel') private selectedContextPanel?: ElementRef<HTMLElement>;
   @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
@@ -213,6 +202,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   readonly audioDirector = inject(AudioDirectorService);
   private readonly isBrowser: boolean;
+  private readonly persistence: GriftV1Persistence;
   private simulationTimerId: number | null = null;
   private progressTransitionRestoreTimerId: number | null = null;
   private readonly progressTransitionResetIds = new Set<HustleId>();
@@ -220,8 +210,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private feedbackId = 0;
   private valuationFlyoutId = 0;
   private readonly valuationFlyoutTimerIds = new Map<number, number>();
-  private gameEventId = 0;
-  private lastRunSaveAt = 0;
   private selectedContextReturnTarget: HTMLElement | null = null;
   private selectedContextReturnHustleId: HustleId | null = null;
   private lastUiRenderTime = 0;
@@ -241,6 +229,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    this.persistence = new GriftV1Persistence(this.getLocalStorage(), this.mechanics);
     this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
     this.initialRouteRunState = this.parseInitialRouteRunState(this.route.snapshot.queryParamMap.get('run'));
     this.initialRouteSurface = this.parseInitialRouteSurface(this.route.snapshot.queryParamMap.get('surface'));
@@ -1014,7 +1003,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const storage = this.getPlaytestStorage();
+    const storage = this.getLocalStorage();
 
     if (storage) {
       clearStoredPlaytestSessions(storage);
@@ -1098,12 +1087,12 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const elapsedMs = elapsedForegroundSimulationMs(this.lastTickTime, timestamp);
+    const previousTimestamp = this.lastTickTime;
     this.lastTickTime = timestamp;
 
     this.ngZone.runOutsideAngular(() => {
       const previousState = this.state;
-      const result = advanceGame(this.state, this.mechanics, elapsedMs);
+      const result = this.runRuntime.advanceForeground(this.state, previousTimestamp, timestamp);
       this.state = result.state;
       const nowMs = Date.now();
 
@@ -1260,7 +1249,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   private initializePlaytestSession(): void {
-    const storage = this.getPlaytestStorage();
+    const storage = this.getLocalStorage();
     this.playtestSession = storage ? loadStoredPlaytestSession(storage) : null;
 
     if (!this.playtestSession) {
@@ -1754,7 +1743,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const storage = this.getPlaytestStorage();
+    const storage = this.getLocalStorage();
 
     if (!storage) {
       return;
@@ -1767,7 +1756,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getPlaytestStorage(): Storage | null {
+  private getLocalStorage(): Storage | null {
     if (!this.isBrowser) {
       return null;
     }
@@ -1779,244 +1768,49 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadSavedRunState(savedMeta: GriftMetaSave): GriftRunSave | null {
-    if (!this.isBrowser) {
-      return null;
-    }
-
-    try {
-      const rawSave = window.localStorage.getItem(RUN_STORAGE_KEY);
-
-      if (!rawSave) {
-        return null;
-      }
-
-      const parsed = JSON.parse(rawSave) as Partial<GriftRunSave>;
-
-      if (parsed.version !== 1 || !parsed.state) {
-        return null;
-      }
-
-      const selectedHustleId = this.isKnownHustleId(parsed.selectedHustleId)
-        ? parsed.selectedHustleId
-        : this.definitions[0].id;
-
-      return {
-        version: 1,
-        savedAt: Number.isFinite(parsed.savedAt) ? Number(parsed.savedAt) : Date.now(),
-        selectedHustleId,
-        state: this.reconcileSavedGameState(parsed.state, savedMeta),
-      };
-    } catch {
-      return null;
-    }
+  private loadSavedRunState(savedMeta: GriftMetaSaveV1): GriftRunSaveV1 | null {
+    return this.persistence.loadRun(savedMeta);
   }
 
-  private prepareOfflineReturn(savedRun: GriftRunSave | null): void {
+  private prepareOfflineReturn(savedRun: GriftRunSaveV1 | null): void {
     if (!savedRun) {
       return;
     }
 
     const elapsedMs = Date.now() - savedRun.savedAt;
+    const result = this.runRuntime.creditOffline(this.state, elapsedMs);
 
-    if (elapsedMs < OFFLINE_RETURN_MIN_MS) {
-      return;
-    }
-
-    const simulatedElapsedMs = Math.min(elapsedMs, OFFLINE_RETURN_CAP_MS);
-    const offlineBaseState = {
-      ...this.state,
-      hustles: Object.fromEntries(
-        this.definitions.map((definition) => {
-          const hustle = this.state.hustles[definition.id];
-
-          return [
-            definition.id,
-            hustle.isAutomated
-              ? hustle
-              : {
-                  ...hustle,
-                  isActive: false,
-                  progressMs: 0,
-                },
-          ];
-        })
-      ) as unknown as GriftOsGameState['hustles'],
-    };
-    const result = advanceGame(offlineBaseState, this.mechanics, simulatedElapsedMs);
-    const pendingPayout = Math.max(0, result.state.valuation - offlineBaseState.valuation);
-
-    if (pendingPayout <= 0) {
+    if (!result) {
       return;
     }
 
     this.state = result.state;
     this.offlineReturn = {
       elapsedLabel: this.formatElapsed(elapsedMs),
-      payoutLabel: formatMoney(pendingPayout, 'payout'),
-      pendingPayout,
+      payoutLabel: formatMoney(result.pendingPayout, 'payout'),
+      pendingPayout: result.pendingPayout,
     };
-    this.addValuationFlyout('gain', pendingPayout);
+    this.addValuationFlyout('gain', result.pendingPayout);
     this.addFeedback('Away money', this.offlineReturn.payoutLabel, 'payout', null);
     this.persistRunState(true);
     this.updateAudioPresentation();
   }
 
-  private reconcileSavedGameState(
-    savedState: Partial<GriftOsGameState>,
-    savedMeta: GriftMetaSave
-  ): GriftOsGameState {
-    const netWorth = Math.max(
-      0,
-      this.finiteNumber(savedState.netWorth, savedMeta.netWorth),
-      savedMeta.netWorth
-    );
-    const rugPullCount = Math.max(
-      0,
-      Math.floor(this.finiteNumber(savedState.rugPullCount, savedMeta.rugPullCount)),
-      savedMeta.rugPullCount
-    );
-    const initialState = createInitialGameState(this.mechanics, netWorth, rugPullCount);
-    const valuation = Math.max(0, this.finiteNumber(savedState.valuation, initialState.valuation));
-    const peakValuation = Math.max(valuation, this.finiteNumber(savedState.peakValuation, valuation));
-    const validLeverageIds = new Set(LEVERAGE_DEFINITIONS.map((definition) => definition.id));
-    const leveragePurchases = Array.isArray(savedState.leveragePurchases)
-      ? savedState.leveragePurchases.filter((leverageId): leverageId is LeverageId =>
-          typeof leverageId === 'string' && validLeverageIds.has(leverageId as LeverageId)
-        )
-      : [];
-    const savedPreparation = savedState.founderTakePreparation;
-    const completedFounderTakeStages = Math.min(
-      GRIFT_OS_FOUNDER_TAKE_TUNING.stages.length,
-      Math.max(0, Math.floor(this.finiteNumber(savedPreparation?.completedStages, 0)))
-    );
-    const activeFounderTakeStage = GRIFT_OS_FOUNDER_TAKE_TUNING.stages[completedFounderTakeStages];
-    const isFounderTakePreparationActive = Boolean(savedPreparation?.isActive && activeFounderTakeStage);
-    const founderTakeProgressMs = isFounderTakePreparationActive
-      ? Math.min(
-          activeFounderTakeStage.durationMs,
-          Math.max(0, this.finiteNumber(savedPreparation?.progressMs, 0))
-        )
-      : 0;
-    const hustles = Object.fromEntries(
-      this.definitions.map((definition) => {
-        const fallback = initialState.hustles[definition.id];
-        const savedHustle = savedState.hustles?.[definition.id];
-        const validMilestones = new Set(definition.milestones.map((milestone) => milestone.id));
-
-        return [
-          definition.id,
-          {
-            ...fallback,
-            units: Math.max(0, Math.floor(this.finiteNumber(savedHustle?.units, fallback.units))),
-            isActive: Boolean(savedHustle?.isActive),
-            isAutomated: Boolean(savedHustle?.isAutomated),
-            progressMs: Math.max(0, this.finiteNumber(savedHustle?.progressMs, 0)),
-            reachedMilestones: Array.isArray(savedHustle?.reachedMilestones)
-              ? savedHustle.reachedMilestones.filter((milestoneId): milestoneId is string =>
-                  typeof milestoneId === 'string' && validMilestones.has(milestoneId)
-                )
-              : [],
-          },
-        ];
-      })
-    ) as unknown as GriftOsGameState['hustles'];
-
-    return {
-      ...initialState,
-      valuation,
-      peakValuation,
-      netWorth,
-      rugPullCount,
-      rugPullState: savedState.rugPullState ?? initialState.rugPullState,
-      founderTakePreparation: {
-        completedStages: completedFounderTakeStages,
-        isActive: isFounderTakePreparationActive,
-        progressMs: founderTakeProgressMs,
-      },
-      leveragePurchases,
-      hustles,
-    };
-  }
-
   private persistRunState(force = false): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    const now = Date.now();
-
-    if (!force && now - this.lastRunSaveAt < RUN_SAVE_THROTTLE_MS) {
-      return;
-    }
-
-    try {
-      const save: GriftRunSave = {
-        version: 1,
-        savedAt: now,
-        state: this.state,
-        selectedHustleId: this.selectedHustleId,
-      };
-
-      window.localStorage.setItem(RUN_STORAGE_KEY, JSON.stringify(save));
-      this.lastRunSaveAt = now;
-    } catch {
-      // Local run persistence is non-critical for the active simulation.
-    }
+    this.persistence.saveRun(this.state, this.selectedHustleId, force);
   }
 
-  private isKnownHustleId(value: unknown): value is HustleId {
-    return typeof value === 'string' && this.definitions.some((definition) => definition.id === value);
-  }
-
-  private finiteNumber(value: unknown, fallback: number): number {
-    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
-  }
-
-  private loadSavedMeta(): GriftMetaSave {
-    if (!this.isBrowser) {
-      return { netWorth: 0, rugPullCount: 0 };
-    }
-
-    try {
-      const rawMeta = window.localStorage.getItem(META_STORAGE_KEY);
-
-      if (!rawMeta) {
-        return { netWorth: 0, rugPullCount: 0 };
-      }
-
-      const meta = JSON.parse(rawMeta) as Partial<GriftMetaSave>;
-
-      return {
-        netWorth: Math.max(0, this.finiteNumber(meta.netWorth, 0)),
-        rugPullCount: Math.max(0, Math.floor(this.finiteNumber(meta.rugPullCount, 0))),
-      };
-    } catch {
-      return { netWorth: 0, rugPullCount: 0 };
-    }
+  private loadSavedMeta(): GriftMetaSaveV1 {
+    return this.persistence.loadMeta();
   }
 
   private persistNetWorth(): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    try {
-      const meta: GriftMetaSave = {
-        netWorth: this.state.netWorth,
-        rugPullCount: this.state.rugPullCount,
-      };
-      window.localStorage.setItem(META_STORAGE_KEY, JSON.stringify(meta));
-    } catch {
-      // Net Worth persistence is local-only and non-critical for the running sim.
-    }
+    this.persistence.saveMeta(this.state);
   }
 
   private emitGameEvent(event: GameEvent): void {
-    this.gameEventId += 1;
     const timestampMs = this.isBrowser ? performance.now() : Date.now();
-    const record = createGameEventRecord(this.gameEventId, event, timestampMs);
-    this.gameEvents = [record, ...this.gameEvents].slice(0, 12);
+    this.gameEvents = [...this.gameEventLog.record(event, timestampMs)];
     this.audioDirector.handleGameEvent(event, Date.now());
   }
 
