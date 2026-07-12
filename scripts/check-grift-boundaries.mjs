@@ -39,7 +39,12 @@ await checkHostRendererBoundary();
 
 async function scanBoundary(root, forbiddenImports, boundaryName, forbidBrowserGlobals = true) {
   for (const entry of await readdir(root, { withFileTypes: true })) {
-    if (!entry.isFile() || !entry.name.endsWith('.ts') || entry.name.endsWith('.spec.ts')) {
+    if (entry.isDirectory()) {
+      await scanBoundary(path.join(root, entry.name), forbiddenImports, boundaryName, forbidBrowserGlobals);
+      continue;
+    }
+
+    if (!entry.name.endsWith('.ts') || entry.name.endsWith('.spec.ts')) {
       continue;
     }
 
@@ -77,10 +82,17 @@ async function checkStyleBoundaries() {
       name: 'Influence renderer styles',
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'influence-empire-renderer.scss'),
       importantBaseline: 11,
+      rootScoped: true,
     },
     {
       name: 'Influence Circulating Institution styles',
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', '_circulating-institution.scss'),
+      importantBaseline: 0,
+      rootScoped: true,
+    },
+    {
+      name: 'Influence Stage component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'stage', 'influence-stage.component.scss'),
       importantBaseline: 0,
     },
   ];
@@ -112,9 +124,13 @@ async function checkStyleBoundaries() {
       }
     }
 
-    if (styleFile.name.startsWith('Influence ') &&
+    if (styleFile.rootScoped &&
         (!source.includes('.grift-influence-renderer {') || source.includes(':host-context'))) {
       violations.push(`${styleFile.name}: renderer styles must remain explicitly root-scoped`);
+    }
+
+    if (styleFile.name === 'Influence Circulating Institution styles' && source.includes('.grift-stage')) {
+      violations.push(`${styleFile.name}: Stage rules must remain owned by the Stage component`);
     }
   }
 }

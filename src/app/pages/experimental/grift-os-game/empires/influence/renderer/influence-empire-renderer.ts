@@ -12,12 +12,15 @@ import {
   EmpireActionDispatcher,
   EmpireRendererRequest,
   EmpireRendererHostView,
-  ValuationFlyoutView,
 } from '../../../host/empire-renderer-contract';
 import { GameAction } from '../../../presentation/game-action';
 import {
   HustleViewModel,
 } from '../../../presentation/game-presentation';
+import {
+  InfluenceStageComponent,
+  InfluenceStageView,
+} from './stage/influence-stage.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -26,6 +29,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
+  imports: [InfluenceStageComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -84,6 +88,19 @@ export class InfluenceEmpireRendererComponent {
   get resetAutomationCount() { return this.view.presentation.resetAutomationCount; }
   get resetMilestoneCount() { return this.view.presentation.resetMilestoneCount; }
 
+  get stageView(): InfluenceStageView {
+    return {
+      copy: this.copy,
+      valuationLabel: this.valuationLabel,
+      valuationPerSecondLabel: this.valuationPerSecondLabel,
+      valuationFlyouts: this.valuationFlyouts,
+      showNetWorth: this.showNetWorth,
+      netWorthLabel: this.netWorthLabel,
+      wealthAdvantageLabel: this.wealthAdvantageLabel,
+      visualCondition: this.visualCondition,
+    };
+  }
+
   dispatchGameAction(action: GameAction, sourceEvent?: Event): void {
     const request: EmpireRendererRequest = { action, sourceEvent };
     this.dispatch(request);
@@ -102,10 +119,6 @@ export class InfluenceEmpireRendererComponent {
 
   dismissRugPullResolution(): void {
     this.dispatch({ action: { type: 'rugPull.resolution.dismiss' } });
-  }
-
-  trackValuationFlyout(_index: number, flyout: ValuationFlyoutView): number {
-    return flyout.id;
   }
 
   trackTab(_index: number, tab: { id: GameTabId; label: string }): GameTabId {
