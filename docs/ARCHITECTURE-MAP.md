@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 4f6e808a1db296d52375ec844abd4d0bb69ef95b
+Last verified against commit: fea65642a9a12bfbd403fd26b7fa3338c56e6f23
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -129,11 +129,12 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 
 ## DEFERRED
 
-- Multiple-run versus sequential-run architecture.
-- Empire selection and transition ownership.
-- Inactive-empire simulation.
-- New save envelope or empire-namespaced persistence.
-- Global, per-empire, or combined exit-count semantics.
+- Implementation of a single-active-run envelope containing the active empire ID, its run state, explicit unlocked empire IDs, global Net Worth, and per-empire exit counts.
+- V1 migration that assigns `rugPullCount` to Influence without changing current keys or formats before Phase J approval.
+- Exact prestige-complete transition UI, final shared terminology, and empire unlock requirements.
+- Any later economy change that makes prestige easier for empire switching.
+
+The approved TARGET is not `runsByEmpire`: completed runs are replaced after a prestige-gated, player-chosen transition; inactive empires have no saved run and earn no offline progress.
 
 ## HISTORICAL
 

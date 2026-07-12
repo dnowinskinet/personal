@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 4f6e808a1db296d52375ec844abd4d0bb69ef95b
+Last verified against commit: fea65642a9a12bfbd403fd26b7fa3338c56e6f23
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -16,7 +16,7 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Accepted visual baseline: `3bb5884` plus `ec59e9b`; transitional, not final art direction.
 - Selected future Influence direction: Circulating Institution; prototype remains paused.
 - Save formats and keys: `grift-os-meta-v1` and `grift-os-run-v1`.
-- Global Net Worth is settled. The current `rugPullCount` field is compatibility state with unresolved future ownership.
+- Global Net Worth is settled. The current globally persisted v1 `rugPullCount` remains compatibility state; the approved future migration assigns it to Influence's per-empire lifetime exit count.
 - Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for component and tooling consumers.
 - Shared engine functions now receive an explicit mechanics-only catalog. Engine sources do not import Angular, browser storage/DOM, or empire content, visual, audio, renderer, or playtest layers.
 - A pure presentation facade now derives rule-complete display state, action availability, affordability, progress, mode reveal, and selected Context data. The current template emits a minimal typed gameplay-action vocabulary through the component dispatcher.
@@ -31,13 +31,16 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 - Separable visual and audio packs; mechanics and content separation is CURRENT.
 - Modular Influence renderer internals and region-level component style ownership; renderer-level visual containment and the single dynamic renderer boundary are CURRENT.
+- One active empire run. Changing empires requires completing the active empire's prestige, then explicitly choosing an unlocked empire; the completed run is replaced rather than suspended.
+- Global Net Worth crosses empires. Only the active run receives offline credit. Exit counts are per empire, with no separately persisted global total.
+- Explicit unlocked empire IDs support initially sequential progression without committing persistence to permanent array order.
 
 ## DEFERRED
 
-- Empire transition, coexistence, switching, unlock order, inactive offline progress, and exit-count semantics.
-- Any multi-empire save envelope or v1 migration.
+- Exact unlock requirements, shared transition UI/terminology, and whether later balance work should make prestige easier for empire switching.
+- Implementation of the approved single-active-run save envelope and v1 migration.
 - Circulating Institution implementation until architecture extraction is approved and complete.
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase H renderer-replacement proof is complete at `4f6e808`. Phase I is a product-decision gate for empire transition and persistence semantics, not an authorized implementation phase. Static Stage/Lane/Context component decomposition remains TARGET and was not silently folded into Phase H.
+Phase I's single-active-run, prestige-gated transition model is settled in the Decision Log. No persistence or prestige mechanics changed. Phase J save-envelope design and migration implementation has not begun and requires separate authorization. Static Stage/Lane/Context component decomposition remains TARGET.

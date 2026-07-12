@@ -170,6 +170,20 @@ Do not rename or replace them merely to fill space.
 - Expanded the balance simulator to compare immediate, prepared, and deep Rug strategies across intermittent return profiles and post-victory scaling.
 - Treat all current numeric inputs as provisional until playtest data supports a further balance decision.
 
+## 2026-07-12 Multi-Empire Transition Model
+
+- Keep exactly one active empire run. Empires are sequential identities, not parallel planet-style simulations.
+- Require a successful prestige in the active empire before the player may change empires. A renderer or content swap must never carry the old empire's Hustles, units, automation, Leverage, milestones, or current Valuation into the new empire.
+- Prestige grants an explicit transition opportunity; it does not force an automatic empire change. The player may begin another run in the current empire or choose an unlocked empire.
+- Rebranding into another empire replaces the completed active run. Old empire runs are not suspended, resumed, or simulated offline.
+- Preserve global personal Net Worth across every empire and fresh run.
+- Give offline credit only to the single active saved run, retaining the current eight-hour cap unless a later mechanics decision changes it.
+- Let the player choose among unlocked empires. Initial unlock progression may be authored sequentially, but persistence should store explicit unlocked empire IDs rather than infer them permanently from array position.
+- Treat lifetime exits as per-empire state. Migrate the current v1 `rugPullCount` to Influence's lifetime exit count; do not persist an additional global lifetime-exit counter unless a later product need justifies it.
+- Keep visible prestige and transition terminology empire-specific. `Rug Pull` may remain the Influence term; the eventual shared transition presentation and the word `Rebrand` remain provisional.
+- Do not implement `runsByEmpire`, inactive-run progress, or a parallel multi-run save envelope.
+- Do not change current Rug Pull thresholds, reward formulas, Founder Take, or the magnitude-based progression rule in this decision phase. Whether prestige requirements should later be loosened to make empire switching more accessible is deferred to playtesting and a separate economy decision.
+
 ## Temporary Decisions
 
 - Internal compatibility aliases such as `GeneratorDefinition` may remain temporarily during migration, but player-facing UI should use Hustle vocabulary.

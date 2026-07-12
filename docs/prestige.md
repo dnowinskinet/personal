@@ -86,9 +86,17 @@ Rug Pull resets:
 Rug Pull preserves:
 
 - Net Worth;
-- Rug Pull count;
+- the current v1 `rugPullCount` compatibility field;
 - audio settings;
 - local playtest logs.
+
+For the approved multi-empire TARGET, v1 `rugPullCount` migrates to Influence's per-empire lifetime exit count. It is not a settled global lifetime-exit counter.
+
+## Future Empire Transition — TARGET, Not Yet Implemented
+
+Changing empires requires completing the active empire's prestige. After prestige, the player may begin another run in the current empire or explicitly choose an unlocked empire. The completed run is replaced; its Hustles and other run-scoped progress do not carry into the chosen empire, and inactive empires have no suspended run or offline production. Global Net Worth persists.
+
+This decision does not change the current Rug Pull threshold ladder, reward formula, Founder Take, or reset behavior. Whether prestige requirements should later be loosened to make empire switching more accessible remains a separate playtest-driven economy decision.
 
 ## Validation
 

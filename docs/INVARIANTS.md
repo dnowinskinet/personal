@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 4f6e808a1db296d52375ec844abd4d0bb69ef95b
+Last verified against commit: fea65642a9a12bfbd403fd26b7fa3338c56e6f23
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -47,15 +47,16 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 - Visual and audio pack extraction is not yet implemented.
 - The Influence renderer is internally composed from ordinary responsibility-owned Angular components with smaller region-owned sheets.
 - Catalog assembly validates IDs and cross-references before a run begins.
+- Multi-empire persistence contains one active run, preserves global Net Worth, stores explicit unlocks and per-empire exit counts, and never resumes or simulates an inactive empire run.
+- Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 
 These become CURRENT only after their implementation phase lands with executable checks.
 
 ## DEFERRED
 
-- Run coexistence and inactive-run behavior.
-- Empire transition and unlock behavior.
-- Exit-count meaning and persistence ownership.
-- Any v2 or multi-empire save invariant.
+- Exact empire unlock thresholds and transition presentation.
+- Any prestige accessibility retuning.
+- Executable evidence and final envelope details for the approved Phase J migration.
 
 ## HISTORICAL
 
