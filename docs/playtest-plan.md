@@ -39,7 +39,7 @@ The logger remains local-only. It does not send analytics, create accounts, or c
 
 1. Does the player understand the first manual action without prior explanation?
 2. Is the manual action visibly discoverable without knowing that the Hustle icon is clickable?
-3. Does `Creator Account / Accounts / Post an Affiliate Link / Link-in-Bio Router` read better than old Generator grammar?
+3. Does `Social Media Account / Followers / Post an Affiliate Link / Auto-Poster` read better than old Generator grammar?
 4. Does the first expansion at about 30 seconds feel earned or slow?
 5. Does the next-Hustle horizon create anticipation, confusion, or indifference?
 6. Does Hustle 2 arrive at a satisfying time?

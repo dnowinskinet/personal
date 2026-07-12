@@ -20,7 +20,6 @@ import {
   founderTakeStatus,
   startFounderTakePreparation,
 } from './founder-take';
-import { isHustleUnlocked } from './progression';
 import { commitRugPull, createRugPullPreview } from './rug-pull';
 import {
   GriftOsGameState,
@@ -511,7 +510,7 @@ function shouldSaveForStructuralPurchase(
   const structuralCosts = definitions.flatMap((definition) => {
     const hustle = state.hustles[definition.id];
 
-    if (hustle.units === 0 && isHustleUnlocked(state, definition)) {
+    if (hustle.units === 0) {
       return [nextHustleCost(definition, 0, state, definitions)];
     }
 
@@ -618,7 +617,6 @@ function firstAffordableUnowned(
 ): PurchaseDecision | null {
   const candidate = definitions.find((definition) =>
     state.hustles[definition.id].units === 0 &&
-    isHustleUnlocked(state, definition) &&
     state.valuation >= nextHustleCost(definition, 0, state, definitions)
   );
 
@@ -715,7 +713,6 @@ function bestRoiDecision(
 
     if (
       hustle.units === 0 &&
-      isHustleUnlocked(state, definition) &&
       state.valuation >= nextHustleCost(definition, 0, state, definitions)
     ) {
       candidates.push({

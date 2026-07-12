@@ -13,6 +13,7 @@ import themeColorData from '../../../data/theme-color.data'
             <li class="p-2.5 rounded-full border-2 cursor-pointer"
                 [ngClass]="{'dark:border-gray-300 border-gray-900': color === themeColor.getColor(), 'dark:border-gray-900 border-transparent': color !== themeColor.getColor()}"
                 [ngStyle]="{'background-color': color}"
+                [attr.aria-label]="'Use ' + color + ' accent color'"
                 (click)="changeColor(color)">
             </li>
             }

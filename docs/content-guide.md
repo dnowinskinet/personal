@@ -40,13 +40,15 @@ Every Hustle must separate:
 - manual action;
 - automation.
 
+Expansion units must match the scale of their economic slot. A late-Hustle unit is an institution or territory, not a single customer or worker.
+
 Example:
 
 ```text
-Hustle: Creator Account
-Expansion unit: Accounts
+Hustle: Social Media Account
+Expansion unit: Followers
 Manual action: Post an Affiliate Link
-Automation: Link-in-Bio Router
+Automation: Auto-Poster
 ```
 
 Do not write:
@@ -58,10 +60,10 @@ Owned 17 Troll People Online
 Write:
 
 ```text
-17 Accounts
-Add Account
+17 Followers
+Add Follower
 Post an Affiliate Link
-Link-in-Bio Router online
+Auto-Poster online
 ```
 
 ## Naming Rules
@@ -100,20 +102,21 @@ src/app/pages/experimental/grift-os-game/content/hustle-definitions.ts
 ## Automation Copy
 
 Automation should be the industrialized version of the manual action.
+The automated ledger status uses `Automation name · activity label`; activity labels stay in Hustle content data.
 
 Current examples:
 
 ```text
-Post an Affiliate Link -> Link-in-Bio Router
-Sell a Subscription -> Membership Platform
-Launch a Merch Drop -> Fulfillment Partner
-Sell a Sponsor Read -> Ad Sales Desk
-Sell VIP Access -> Booking Agency
-Advance a Member -> Advancement Council
-Declare an Emergency -> Crisis Calendar
-Open a Presale -> Token Operations Desk
-Sell a Network Campaign -> Brand Partnerships Office
-Auction Ad Inventory -> Programmatic Exchange
+Post an Affiliate Link -> Auto-Poster -> posting links
+Charge a Fee -> Auto-Renewal -> renewing memberships
+Sell Merch -> Fulfillment Partner -> processing orders
+Sell a Sponsor Spot -> Ad Sales Team -> booking sponsors
+Sell VIP Access -> Ticketing Site -> selling access
+Enroll a Student -> Admissions Office -> enrolling students
+Charge a Sign-Up Fee -> Recruiting Team -> signing up ambassadors
+Charge Fees -> Collections Team -> charging fees
+Sell a Coaching Session -> Booking Team -> booking sessions
+Charge HOA Fees -> HOA Office -> collecting HOA fees
 ```
 
 Avoid generic labels such as Manager or Assistant unless the genericness itself carries the joke.

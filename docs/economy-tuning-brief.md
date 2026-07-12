@@ -39,7 +39,7 @@ effectiveCadence = baseCadence / localSpeedBucket / globalSpeedBucket
 Rug gain = rugTarget * founderTakeRate * rewardShaping
   * (peakValuation / rugTarget)^0.75
 
-wealthBonus = 4 * (NetWorth / $1M)^0.2
+wealthBonus = 4 * (NetWorth / $1M)^0.3
 ```
 
 The engine clamps cadence, speed, cost, and automation-cost multipliers to stable positive floors. Buy Max uses an inverse estimate followed by exact geometric cost checks.
@@ -83,7 +83,7 @@ prestige:
   net_worth_gain_exponent: 0.75
   wealth_advantage_base: 1000000
   wealth_advantage_coefficient: 4.0
-  wealth_advantage_exponent: 0.2
+  wealth_advantage_exponent: 0.3
   frontier_wealth_factor: 0.05
   prior_stratum_wealth_factor: 0.25
   campaign_target_net_worth: 1000000000000
@@ -106,20 +106,20 @@ founder_take:
 
 ## Hustle Inputs
 
-The IDs are intentionally retained for existing save compatibility. Names and content are editable separately in `content/hustle-definitions.ts`.
+The IDs are intentionally retained for existing save compatibility. The player-facing names below are the current working Hustle ladder and remain editable separately in `content/hustle-definitions.ts`.
 
 | ID | Player-facing Hustle | Acquisition | Growth | Payout/cycle/unit | Cadence | Automation cost | Unlock Net Worth |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `troll-network` | Creator Account | 0.025 | 1.18 | 0.0025 | 2s | 0.50 | 0 |
-| `podcast-network` | Subscriber Club | 2 | 1.20 | 0.20 | 5s | 12 | 0 |
-| `culture-war-media` | Merch Operation | 50 | 1.22 | 8 | 10s | 300 | 0 |
-| `masterclass-business` | Personality Show | 1,500 | 1.24 | 250 | 20s | 9,000 | 0 |
-| `manifesto-imprint` | Appearance Circuit | 50,000 | 1.26 | 8,000 | 30s | 300,000 | 0 |
-| `founder-retreat-circuit` | Inner Circle | 2,000,000 | 1.28 | 120,000 | 45s | 12,000,000 | 1,000,000 |
-| `ai-venture` | Fundraising Machine | 75,000,000 | 1.30 | 600,000 | 60s | 450,000,000 | 30,000,000 |
-| `venture-portfolio` | Community Coin | 3,000,000,000 | 1.32 | 30,000,000 | 90s | 18,000,000,000 | 1,000,000,000 |
-| `media-holdings` | Personality Network | 100,000,000,000 | 1.34 | 200,000,000 | 120s | 500,000,000,000 | 30,000,000,000 |
-| `sovereign-network` | Social Platform | 2,000,000,000,000 | 1.36 | 2,000,000,000 | 180s | 6,000,000,000,000 | 30,000,000,000 |
+| `troll-network` | Social Media Account | 0.025 | 1.18 | 0.0025 | 2s | 0.50 | 0 |
+| `podcast-network` | Paid Fan Club | 2 | 1.20 | 0.20 | 5s | 12 | 0 |
+| `culture-war-media` | Merch Store | 50 | 1.22 | 8 | 10s | 300 | 0 |
+| `masterclass-business` | Podcast | 1,500 | 1.24 | 250 | 20s | 9,000 | 0 |
+| `manifesto-imprint` | VIP Events | 50,000 | 1.26 | 8,000 | 30s | 300,000 | 0 |
+| `founder-retreat-circuit` | Success University | 2,000,000 | 1.28 | 120,000 | 45s | 12,000,000 | 1,000,000 |
+| `ai-venture` | Brand Ambassador Program | 75,000,000 | 1.30 | 600,000 | 60s | 450,000,000 | 30,000,000 |
+| `venture-portfolio` | Coaching Company | 3,000,000,000 | 1.32 | 30,000,000 | 90s | 18,000,000,000 | 1,000,000,000 |
+| `media-holdings` | Member Bank | 100,000,000,000 | 1.34 | 200,000,000 | 120s | 500,000,000,000 | 30,000,000,000 |
+| `sovereign-network` | Private Community | 2,000,000,000,000 | 1.36 | 2,000,000,000 | 180s | 6,000,000,000,000 | 30,000,000,000 |
 
 ## Milestone Inputs
 
@@ -127,16 +127,16 @@ Milestones are per-Hustle in `GRIFT_OS_MILESTONE_TUNING`. Each entry has `requir
 
 | Hustle | Required units / kind / value |
 | --- | --- |
-| Creator Account | 10 / output / 2; 25 / cadence / 1; 50 / output / 7; 100 / cost / 1 |
-| Subscriber Club | 5 / output / 1.5; 15 / automation-cost / 1; 30 / cadence / 1; 75 / output / 8.5 |
-| Merch Operation | 5 / output / 2; 20 / cadence / 0.75; 40 / output / 8; 100 / cost / 1.5 |
-| Personality Show | 5 / automation-cost / 1; 15 / output / 3; 35 / cadence / 1; 75 / output / 12 |
-| Appearance Circuit | 5 / output / 3; 15 / cadence / 1; 30 / cost / 1; 60 / output / 15 |
-| Inner Circle | 3 / output / 4; 10 / automation-cost / 1; 25 / cadence / 1.5; 50 / output / 10 |
-| Fundraising Machine | 3 / output / 5; 10 / cadence / 1; 25 / cost / 1.5; 50 / output / 15 |
-| Community Coin | 2 / output / 7; 8 / automation-cost / 1.5; 20 / cadence / 1.5; 40 / output / 10 |
-| Personality Network | 2 / output / 9; 6 / cost / 1.5; 15 / cadence / 2; 30 / output / 10 |
-| Social Platform | 2 / output / 4; 5 / automation-cost / 2; 12 / cadence / 1; 25 / output / 10 |
+| Social Media Account | 10 / output / 2; 25 / cadence / 1; 50 / output / 7; 100 / cost / 1 |
+| Paid Fan Club | 5 / output / 1.5; 15 / automation-cost / 1; 30 / cadence / 1; 75 / output / 8.5 |
+| Merch Store | 5 / output / 2; 20 / cadence / 0.75; 40 / output / 8; 100 / cost / 1.5 |
+| Podcast | 5 / automation-cost / 1; 15 / output / 3; 35 / cadence / 1; 75 / output / 12 |
+| VIP Events | 5 / output / 3; 15 / cadence / 1; 30 / cost / 1; 60 / output / 15 |
+| Success University | 3 / output / 4; 10 / automation-cost / 1; 25 / cadence / 1.5; 50 / output / 10 |
+| Brand Ambassador Program | 3 / output / 5; 10 / cadence / 1; 25 / cost / 1.5; 50 / output / 15 |
+| Coaching Company | 2 / output / 7; 8 / automation-cost / 1.5; 20 / cadence / 1.5; 40 / output / 10 |
+| Member Bank | 2 / output / 9; 6 / cost / 1.5; 15 / cadence / 2; 30 / output / 10 |
+| Private Community | 2 / output / 4; 5 / automation-cost / 2; 12 / cadence / 1; 25 / output / 10 |
 
 ## Leverage Inputs
 

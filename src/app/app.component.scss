@@ -1,8 +1,10 @@
 .site-main--grift-os {
+  --grift-nav-clearance: 4.6rem;
+
   max-width: none;
   width: min(1500px, calc(100vw - 48px));
   min-height: 0;
-  margin-block: clamp(4.75rem, 8vh, 7rem) 1.5rem;
+  margin-block: var(--grift-nav-clearance) 1.5rem;
   padding-inline: 0;
   overflow-x: visible;
 }
@@ -10,6 +12,6 @@
 @media (max-width: 48rem) {
   .site-main--grift-os {
     width: calc(100vw - 24px);
-    margin-block: 4.75rem 1rem;
+    margin-block: var(--grift-nav-clearance) 1rem;
   }
 }

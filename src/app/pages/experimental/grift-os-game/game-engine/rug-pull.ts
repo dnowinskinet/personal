@@ -82,7 +82,7 @@ export function createRugPullPreview(
     requiredPeakValuation,
     valuationRemaining: Math.max(0, requiredPeakValuation - state.peakValuation),
     recoveryMultiplier: resultingMultiplier / Math.max(1, currentMultiplier),
-    newlyUnlocked: newlyUnlockedLabels(state.netWorth, resultingNetWorth, definitions),
+    newlyUnlocked: newlyUnlockedLabels(state.netWorth, resultingNetWorth),
     campaignStratumLabel: campaignStratumForNetWorth(state.netWorth).label,
     founderTakeRate: takeRate,
     isAvailable: projectedGain > 0,

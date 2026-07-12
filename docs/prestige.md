@@ -64,7 +64,7 @@ A stage can start only when the run has reached the current Rug target and has e
 Net Worth is preserved across Rug Pulls and grants an output advantage:
 
 ```text
-wealthBonus = 4 * (NetWorth / $1M)^0.2
+wealthBonus = 4 * (NetWorth / $1M)^0.3
 wealthMultiplier = 1 + wealthBonus
 ```
 

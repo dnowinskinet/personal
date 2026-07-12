@@ -24,9 +24,14 @@ import {
   nextHustleCost,
   valuationPerSecond,
 } from './economy';
-import { collectActiveModifiers, wealthAdvantageMultiplier } from './modifiers';
+import {
+  collectActiveModifiers,
+  wealthAdvantageMultiplier,
+  wealthAdvantageMultiplierForHustle,
+} from './modifiers';
 import { buyLeverage } from './leverage';
 import { deriveEnterprisePresentation } from './presentation';
+import { newlyUnlockedLabels } from './progression';
 import { commitRugPull, createRugPullPreview, projectedNetWorthGain, RUG_PULL_CONFIG } from './rug-pull';
 
 describe('GriftOS Hustle economy', () => {
@@ -64,13 +69,24 @@ describe('GriftOS Hustle economy', () => {
       'media-holdings',
       'sovereign-network',
     ]);
-    expect(trollDefinition.name).toBe('Creator Account');
-    expect(trollDefinition.unitPlural).toBe('Accounts');
-    expect(trollDefinition.manualActionLabel).toBe('Post an Affiliate Link');
-    expect(podcastDefinition.name).toBe('Subscriber Club');
-    expect(podcastDefinition.manualActionLabel).toBe('Sell a Subscription');
-    expect(cultureWarDefinition.automationName).toBe('Fulfillment Partner');
-    expect(sovereignDefinition.unitPlural).toBe('Ad Markets');
+    expect(HUSTLE_DEFINITIONS.map((definition) => ({
+      name: definition.name,
+      unitPlural: definition.unitPlural,
+      manualActionLabel: definition.manualActionLabel,
+      automationName: definition.automationName,
+      automationActivityLabel: definition.automationActivityLabel,
+    }))).toEqual([
+      { name: 'Social Media Account', unitPlural: 'Followers', manualActionLabel: 'Post an Affiliate Link', automationName: 'Auto-Poster', automationActivityLabel: 'posting links' },
+      { name: 'Paid Fan Club', unitPlural: 'Members', manualActionLabel: 'Charge a Fee', automationName: 'Auto-Renewal', automationActivityLabel: 'renewing memberships' },
+      { name: 'Merch Store', unitPlural: 'Products', manualActionLabel: 'Sell Merch', automationName: 'Fulfillment Partner', automationActivityLabel: 'processing orders' },
+      { name: 'Podcast', unitPlural: 'Episodes', manualActionLabel: 'Sell a Sponsor Spot', automationName: 'Ad Sales Team', automationActivityLabel: 'booking sponsors' },
+      { name: 'VIP Events', unitPlural: 'Cities', manualActionLabel: 'Sell VIP Access', automationName: 'Ticketing Site', automationActivityLabel: 'selling access' },
+      { name: 'Success University', unitPlural: 'Campuses', manualActionLabel: 'Enroll a Student', automationName: 'Admissions Office', automationActivityLabel: 'enrolling students' },
+      { name: 'Brand Ambassador Program', unitPlural: 'Branches', manualActionLabel: 'Charge a Sign-Up Fee', automationName: 'Recruiting Team', automationActivityLabel: 'signing up ambassadors' },
+      { name: 'Coaching Company', unitPlural: 'Regions', manualActionLabel: 'Sell a Coaching Session', automationName: 'Booking Team', automationActivityLabel: 'booking sessions' },
+      { name: 'Member Bank', unitPlural: 'Banks', manualActionLabel: 'Charge Fees', automationName: 'Collections Team', automationActivityLabel: 'charging fees' },
+      { name: 'Private Community', unitPlural: 'Towns', manualActionLabel: 'Charge HOA Fees', automationName: 'HOA Office', automationActivityLabel: 'collecting HOA fees' },
+    ]);
     expect(sovereignDefinition.audio?.ambientSignature).toBe('platform-exchange');
     expect(trollDefinition.milestones.map((milestone) => milestone.requiredUnits)).toEqual([
       10,
@@ -143,6 +159,28 @@ describe('GriftOS Hustle economy', () => {
     ]);
   });
 
+  it('allows any Hustle to be established once its valuation cost is affordable', () => {
+    const state = {
+      ...createInitialGameState(HUSTLE_DEFINITIONS),
+      valuation: 2_000_000,
+      peakValuation: 2_000_000,
+    };
+
+    const result = buyHustle(state, HUSTLE_DEFINITIONS, 'founder-retreat-circuit', 1);
+
+    expect(result.quantityPurchased).toBe(1);
+    expect(result.state.hustles['founder-retreat-circuit'].units).toBe(1);
+    expect(result.state.netWorth).toBe(0);
+  });
+
+  it('keeps Hustles out of Rug Pull unlock forecasts', () => {
+    const labels = newlyUnlockedLabels(0, 1_000_000_000_000);
+
+    for (const definition of HUSTLE_DEFINITIONS) {
+      expect(labels).not.toContain(definition.name);
+    }
+  });
+
   it('applies milestone and Net Worth modifiers through the central stack', () => {
     const milestoneState = buyHustle(
       {
@@ -159,8 +197,14 @@ describe('GriftOS Hustle economy', () => {
     const payout = hustlePayout(milestoneState, HUSTLE_DEFINITIONS, 'troll-network');
 
     expect(modifiers.map((modifier) => modifier.id)).toContain('troll-network-units-10-output');
-    expect(wealthAdvantageMultiplier(100_000)).toBeCloseTo(3.52, 2);
+    expect(wealthAdvantageMultiplier(100_000)).toBeCloseTo(3.0, 2);
     expect(payout).toBeGreaterThan(trollDefinition.basePayout * 10 * 1.5);
+  });
+
+  it('makes $1T Net Worth a decisive post-victory advantage without changing the frontier rule', () => {
+    expect(wealthAdvantageMultiplier(1_000_000_000_000)).toBeCloseTo(253.38, 2);
+    expect(wealthAdvantageMultiplierForHustle(1_000_000_000_000, sovereignDefinition))
+      .toBeCloseTo(64.1, 2);
   });
 
   it('requires manual activation before production begins', () => {

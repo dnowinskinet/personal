@@ -1,5 +1,6 @@
 import { HUSTLE_DEFINITIONS } from '../content/hustle-definitions';
 import { createInitialGameState } from '../game-engine/economy';
+import { RUG_PULL_CONFIG } from '../game-engine/rug-pull';
 import {
   appendPlaytestEvent,
   createHumanReadablePlaytestSummary,
@@ -66,7 +67,7 @@ describe('GriftOS playtest session', () => {
     expect(session.events[1].type).toBe('hustle_expanded');
     expect(session.events[2].type).toBe('automation_activated');
     expect(session.events[2].elapsedMs).toBeGreaterThanOrEqual(session.events[1].elapsedMs);
-    expect(session.events[2].automationName).toBe('Bots');
+    expect(session.events[2].automationName).toBe('Auto-Poster');
     expect(session.events[3].type).toBe('milestone_reached');
     expect(session.events[4].type).toBe('rug_pull_committed');
   });
@@ -164,8 +165,8 @@ describe('GriftOS playtest session', () => {
     let session = createPlaytestSession(startedAtMs, 'snapshot-session');
     const state = {
       ...createInitialGameState(HUSTLE_DEFINITIONS),
-      valuation: 50_000_000,
-      peakValuation: 50_000_000,
+      valuation: RUG_PULL_CONFIG.unlockValuation,
+      peakValuation: RUG_PULL_CONFIG.unlockValuation,
     };
 
     session = recordDiscoveryEvents(session, state, HUSTLE_DEFINITIONS, startedAtMs + 1_000);
@@ -190,12 +191,12 @@ describe('GriftOS playtest session', () => {
     expect(parsed.schemaVersion).toBe(2);
     expect(parsed.gameId).toBe('grift-os');
     expect(parsed.tuning.hustles.length).toBe(10);
-    expect(parsed.tuning.hustles[0].name).toBe('Troll Network');
-    expect(parsed.tuning.hustles[0].unitPlural).toBe('Forums');
-    expect(parsed.tuning.hustles[0].automationCost).toBe(110);
-    expect(parsed.tuning.hustles[2].name).toBe('Culture-War Media');
-    expect(parsed.tuning.hustles[3].automationName).toBe('Funnel Stack');
-    expect(parsed.tuning.hustles[9].name).toBe('Sovereign Network');
+    expect(parsed.tuning.hustles[0].name).toBe('Social Media Account');
+    expect(parsed.tuning.hustles[0].unitPlural).toBe('Followers');
+    expect(parsed.tuning.hustles[0].automationCost).toBe(0.5);
+    expect(parsed.tuning.hustles[2].name).toBe('Merch Store');
+    expect(parsed.tuning.hustles[3].automationName).toBe('Ad Sales Team');
+    expect(parsed.tuning.hustles[9].name).toBe('Private Community');
     expect(parsed.summary.totalElapsedMs).toBe(3_000);
     expect(exportJson).not.toContain('emailAddress');
     expect(exportJson).not.toContain('ipAddress');
@@ -227,8 +228,8 @@ describe('GriftOS playtest session', () => {
     expect(summary).toContain('GriftOS Playtest Summary');
     expect(summary).toContain('Duration: 0m 12s');
     expect(summary).toContain('Final units:');
-    expect(summary).toContain('Troll Network: 1 Forum');
-    expect(summary).toContain('Podcast Network: 0 Shows');
-    expect(summary).toContain('Sovereign Network: 0 Jurisdictions');
+    expect(summary).toContain('Social Media Account: 1 Follower');
+    expect(summary).toContain('Paid Fan Club: 0 Members');
+    expect(summary).toContain('Private Community: 0 Towns');
   });
 });

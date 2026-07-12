@@ -78,6 +78,7 @@ export interface HustleDefinition {
   expansionActionLabel: string;
   manualActionLabel: string;
   automationName: string;
+  automationActivityLabel: string;
   automationDescription: string;
   automationCost: number;
   acquisitionCost: number;

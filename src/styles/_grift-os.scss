@@ -8,11 +8,12 @@
   --grift-border: rgba(16, 23, 24, 0.13);
   --grift-border-strong: rgba(16, 23, 24, 0.22);
   --grift-value: #111718;
-  --grift-info: #287b91;
+  --grift-accent-source: var(--primary-color, #287b91);
+  --grift-info: color-mix(in srgb, var(--grift-accent-source) 78%, black);
   --grift-automation: #557f35;
   --grift-warning: #9b6a2d;
   --grift-prestige: #805a46;
-  --grift-selection: #287b91;
+  --grift-selection: var(--grift-info);
   --grift-progress: #6d7b78;
   --grift-intensity-safe: clamp(0, var(--grift-intensity, 0), 1);
   --grift-glow-strength: calc(0.08 + var(--grift-intensity-safe) * 0.3);
@@ -41,11 +42,11 @@
   --grift-border: rgba(238, 235, 224, 0.12);
   --grift-border-strong: rgba(238, 235, 224, 0.20);
   --grift-value: #f1eee6;
-  --grift-info: #78aebf;
+  --grift-info: color-mix(in srgb, var(--grift-accent-source) 68%, white);
   --grift-automation: #9abf78;
   --grift-warning: #c89b5c;
   --grift-prestige: #9f7c63;
-  --grift-selection: #78aebf;
+  --grift-selection: var(--grift-info);
   --grift-progress: #a8b2ad;
 
   background: var(--grift-bg);
@@ -62,7 +63,7 @@
 
 .grift-hud {
   position: sticky;
-  top: 5.25rem;
+  top: var(--grift-nav-clearance, 4.6rem);
   z-index: 3;
   display: grid;
   grid-template-columns: minmax(12rem, 0.78fr) minmax(22rem, 1.5fr) minmax(12rem, 0.46fr);
@@ -147,6 +148,7 @@
   font-weight: 820;
   line-height: 0.84;
   letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .grift-valuation-flyout {
@@ -181,6 +183,7 @@
   color: var(--grift-info);
   font-size: clamp(1rem, 2vw, 1.35rem);
   font-weight: 650;
+  font-variant-numeric: tabular-nums;
 }
 
 .grift-meta-block {
@@ -201,6 +204,7 @@
   color: var(--grift-ink);
   font-size: 1.8rem;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .grift-net-worth span {
@@ -384,13 +388,13 @@
 
 .grift-offline-notice {
   position: fixed;
-  top: calc(clamp(4.75rem, 8vh, 7rem) + 1rem);
-  right: 1rem;
+  top: 50%;
+  left: 50%;
   z-index: 55;
   display: flex;
   gap: 0.78rem;
   width: min(34rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - clamp(4.75rem, 8vh, 7rem) - 2rem);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   align-items: flex-start;
   border: 1px solid var(--grift-border-strong);
@@ -398,6 +402,7 @@
   background: var(--grift-plane-raised);
   padding: clamp(1rem, 3vw, 1.45rem);
   box-shadow: 0 28px 85px rgba(0, 0, 0, 0.26);
+  transform: translate(-50%, -50%);
 }
 
 .grift-offline-notice > div {
@@ -427,12 +432,12 @@
 
 @media (max-width: 650px) {
   .grift-offline-notice {
-    top: 5.5rem;
-    right: 0.75rem;
+    top: 50%;
     left: 0.75rem;
     width: auto;
     max-height: calc(100dvh - 6.25rem);
     display: grid;
+    transform: translateY(-50%);
 
     .grift-quiet-button {
       justify-self: end;
@@ -961,11 +966,12 @@
 
 .grift-hustle-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(6.4rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.2rem;
   color: var(--grift-ink-soft);
   font-size: 0.76rem;
   font-weight: 560;
+  font-variant-numeric: tabular-nums;
 }
 
 .grift-modifier-inline {
@@ -1225,7 +1231,7 @@
   background: var(--grift-progress);
   transform: scaleX(var(--grift-progress-scale, 0));
   transform-origin: left center;
-  transition: transform 45ms linear;
+  transition: transform 90ms linear;
 }
 
 .grift-hustle-automated .grift-progress {
@@ -1239,7 +1245,7 @@
 }
 
 .grift-progress-reset {
-  animation: grift-cycle-complete 260ms ease-out;
+  animation: none;
 }
 
 .grift-inspector-panel,
@@ -1889,11 +1895,6 @@
 @keyframes grift-producing-icon {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-1px) scale(1.04); }
-}
-
-@keyframes grift-cycle-complete {
-  0% { background: color-mix(in srgb, var(--grift-progress), transparent 58%); }
-  100% { background: color-mix(in srgb, var(--grift-ink), transparent 92%); }
 }
 
 @media (max-width: 1200px) {

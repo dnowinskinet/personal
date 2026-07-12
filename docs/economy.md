@@ -6,24 +6,24 @@ This document records the current economy implementation and the balance decisio
 
 `Valuation` is the only spendable in-run value. `Net Worth` is persistent prestige value and is not spendable during the current run. Average Rate is a display metric, not a currency.
 
-The opening Creator Account intentionally earns fractions of a cent. Values remain JavaScript `number`s; the formatter preserves sub-cent values until they become too small to display meaningfully.
+The opening Social Media Account intentionally earns fractions of a cent. Values remain JavaScript `number`s; the formatter preserves sub-cent values until they become too small to display meaningfully.
 
 ## Hustle Ladder
 
-The internal IDs remain the original prototype IDs so existing local saves can be reconciled. Player-facing content follows the attention-to-power career arc:
+The internal IDs remain the original prototype IDs so existing local saves can be reconciled. This is the actual current game, not an alternate test configuration. Names, copy, and tuning remain subject to revision as development continues. Player-facing content follows the attention-to-power career arc:
 
 | # | Hustle | Unit | Manual action | Automation |
 | ---: | --- | --- | --- | --- |
-| 1 | Creator Account | Accounts | Post an Affiliate Link | Link-in-Bio Router |
-| 2 | Subscriber Club | Tiers | Sell a Subscription | Membership Platform |
-| 3 | Merch Operation | Drops | Launch a Merch Drop | Fulfillment Partner |
-| 4 | Personality Show | Shows | Sell a Sponsor Read | Ad Sales Desk |
-| 5 | Appearance Circuit | Dates | Sell VIP Access | Booking Agency |
-| 6 | Inner Circle | Chapters | Advance a Member | Advancement Council |
-| 7 | Fundraising Machine | Campaigns | Declare an Emergency | Crisis Calendar |
-| 8 | Community Coin | Issues | Open a Presale | Token Operations Desk |
-| 9 | Personality Network | Personalities | Sell a Network Campaign | Brand Partnerships Office |
-| 10 | Social Platform | Ad Markets | Auction Ad Inventory | Programmatic Exchange |
+| 1 | Social Media Account | Followers | Post an Affiliate Link | Auto-Poster |
+| 2 | Paid Fan Club | Members | Charge a Fee | Auto-Renewal |
+| 3 | Merch Store | Products | Sell Merch | Fulfillment Partner |
+| 4 | Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
+| 5 | VIP Events | Cities | Sell VIP Access | Ticketing Site |
+| 6 | Success University | Campuses | Enroll a Student | Admissions Office |
+| 7 | Brand Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
+| 8 | Coaching Company | Regions | Sell a Coaching Session | Booking Team |
+| 9 | Member Bank | Banks | Charge Fees | Collections Team |
+| 10 | Private Community | Towns | Charge HOA Fees | HOA Office |
 
 Every Hustle has a data-driven acquisition cost, geometric unit growth rate, per-unit payout, cadence, automation cost, unlock Net Worth, and milestone list.
 
@@ -104,16 +104,16 @@ These are intended to compete with unit purchases, milestones, new Hustles, auto
 
 | # | Hustle | Acquisition | Growth | Payout | Cadence | Automation cost | Unlock Net Worth |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | Creator Account | $0.025 | 1.18 | $0.0025 | 2s | $0.50 | $0 |
-| 2 | Subscriber Club | $2 | 1.20 | $0.20 | 5s | $12 | $0 |
-| 3 | Merch Operation | $50 | 1.22 | $8 | 10s | $300 | $0 |
-| 4 | Personality Show | $1,500 | 1.24 | $250 | 20s | $9,000 | $0 |
-| 5 | Appearance Circuit | $50,000 | 1.26 | $8,000 | 30s | $300,000 | $0 |
-| 6 | Inner Circle | $2M | 1.28 | $120,000 | 45s | $12M | $1M |
-| 7 | Fundraising Machine | $75M | 1.30 | $600,000 | 60s | $450M | $30M |
-| 8 | Community Coin | $3B | 1.32 | $30M | 90s | $18B | $1B |
-| 9 | Personality Network | $100B | 1.34 | $200M | 120s | $500B | $30B |
-| 10 | Social Platform | $2T | 1.36 | $2B | 180s | $6T | $30B |
+| 1 | Social Media Account | $0.025 | 1.18 | $0.0025 | 2s | $0.50 | $0 |
+| 2 | Paid Fan Club | $2 | 1.20 | $0.20 | 5s | $12 | $0 |
+| 3 | Merch Store | $50 | 1.22 | $8 | 10s | $300 | $0 |
+| 4 | Podcast | $1,500 | 1.24 | $250 | 20s | $9,000 | $0 |
+| 5 | VIP Events | $50,000 | 1.26 | $8,000 | 30s | $300,000 | $0 |
+| 6 | Success University | $2M | 1.28 | $120,000 | 45s | $12M | $1M |
+| 7 | Brand Ambassador Program | $75M | 1.30 | $600,000 | 60s | $450M | $30M |
+| 8 | Coaching Company | $3B | 1.32 | $30M | 90s | $18B | $1B |
+| 9 | Member Bank | $100B | 1.34 | $200M | 120s | $500B | $30B |
+| 10 | Private Community | $2T | 1.36 | $2B | 180s | $6T | $30B |
 
 These values are deliberately provisional. The first run uses microscopic output, while later Hustles bridge recognizable transaction scales to the prestige campaign without requiring quintillion-scale pre-victory Valuation.
 
@@ -155,7 +155,7 @@ Starting a stage spends Valuation immediately and diverts production while it ru
 The full wealth bonus is:
 
 ```text
-wealthBonus = 4 * (NetWorth / $1M)^0.2
+wealthBonus = 4 * (NetWorth / $1M)^0.3
 wealthMultiplier = 1 + wealthBonus
 ```
 

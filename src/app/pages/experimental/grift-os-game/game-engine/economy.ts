@@ -16,7 +16,6 @@ import {
   applyOutputModifiers,
   modifierBreakdownForHustle,
 } from './modifiers';
-import { isHustleUnlocked } from './progression';
 import {
   advanceFounderTakePreparation,
   founderTakePreparationRemainingMs,
@@ -162,15 +161,6 @@ export function buyHustle(
 ): PurchaseResult {
   const definition = getHustleDefinition(definitions, hustleId);
   const hustle = state.hustles[hustleId];
-
-  if (!isHustleUnlocked(state, definition)) {
-    return {
-      state,
-      quantityPurchased: 0,
-      totalCost: 0,
-      milestonesReached: [],
-    };
-  }
 
   const quantityToBuy = quantity === 'max'
     ? maxAffordableQuantity(definition, hustle.units, state.valuation, state, definitions)

@@ -46,10 +46,10 @@ Player-facing systems are **Hustles**, not Generators.
 
 Each Hustle separates:
 
-- durable enterprise: `Creator Account`;
-- expansion unit: `Accounts`;
+- durable enterprise: `Social Media Account`;
+- expansion unit: `Followers`;
 - manual action: `Post an Affiliate Link`;
-- automation: `Link-in-Bio Router`.
+- automation: `Auto-Poster`.
 
 Invalid grammar:
 
@@ -60,28 +60,28 @@ Owned: 17 Troll People Online
 Valid grammar:
 
 ```text
-Creator Account
-17 Accounts
+Social Media Account
+17 Followers
 Post an Affiliate Link
-Link-in-Bio Router online
+Auto-Poster online
 ```
 
 ## Current Ten-Hustle Ladder
 
 | # | Hustle | Expansion unit | Manual action | Automation |
 | ---: | --- | --- | --- | --- |
-| 1 | Creator Account | Accounts | Post an Affiliate Link | Link-in-Bio Router |
-| 2 | Subscriber Club | Tiers | Sell a Subscription | Membership Platform |
-| 3 | Merch Operation | Drops | Launch a Merch Drop | Fulfillment Partner |
-| 4 | Personality Show | Shows | Sell a Sponsor Read | Ad Sales Desk |
-| 5 | Appearance Circuit | Dates | Sell VIP Access | Booking Agency |
-| 6 | Inner Circle | Chapters | Advance a Member | Advancement Council |
-| 7 | Fundraising Machine | Campaigns | Declare an Emergency | Crisis Calendar |
-| 8 | Community Coin | Issues | Open a Presale | Token Operations Desk |
-| 9 | Personality Network | Personalities | Sell a Network Campaign | Brand Partnerships Office |
-| 10 | Social Platform | Ad Markets | Auction Ad Inventory | Programmatic Exchange |
+| 1 | Social Media Account | Followers | Post an Affiliate Link | Auto-Poster |
+| 2 | Paid Fan Club | Members | Charge a Fee | Auto-Renewal |
+| 3 | Merch Store | Products | Sell Merch | Fulfillment Partner |
+| 4 | Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
+| 5 | VIP Events | Cities | Sell VIP Access | Ticketing Site |
+| 6 | Success University | Campuses | Enroll a Student | Admissions Office |
+| 7 | Brand Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
+| 8 | Coaching Company | Regions | Sell a Coaching Session | Booking Team |
+| 9 | Member Bank | Banks | Charge Fees | Collections Team |
+| 10 | Private Community | Towns | Charge HOA Fees | HOA Office |
 
-These are hypotheses, not final canon.
+This is the current working Hustle ladder. The game is under active development, and names, copy, and tuning remain subject to revision.
 
 The full ladder should not necessarily be visible from a fresh save.
 

@@ -432,16 +432,10 @@
                                         [disabled]="!horizon.canBuy"
                                         (click)="buyOne(horizon.id)"
                                     >
-                                        @if (horizon.isUnlocked) {
-                                            Establish · {{ horizon.costLabel }}
-                                        } @else {
-                                            Locked · {{ horizon.unlockRequirementLabel }}
-                                        }
+                                        Establish · {{ horizon.costLabel }}
                                     </button>
-                                    @if (horizon.isUnlocked && !horizon.canBuy) {
+                                    @if (!horizon.canBuy) {
                                         <span class="grift-horizon-shortfall">Need {{ horizon.shortfallLabel }} more</span>
-                                    } @else if (!horizon.isUnlocked) {
-                                        <span class="grift-horizon-shortfall">Build Net Worth through Rug Pulls to reveal this stratum</span>
                                     }
                                 </article>
                             }
@@ -503,7 +497,7 @@
 
                     @if (selectedHustle.showAutomationState) {
                         <section class="grift-inspector-section grift-automation-section" [class.grift-automation-online]="selectedHustle.isAutomated">
-                            <p class="grift-label">{{ selectedHustle.automationStatusLabel }}</p>
+                            <p class="grift-label">{{ selectedHustle.automationContextLabel }}</p>
                             <h3>{{ selectedHustle.definition.automationName }}</h3>
                             <p>{{ selectedHustle.definition.automationDescription }}</p>
                             @if (selectedHustle.showAutomationOpportunity) {
@@ -601,7 +595,7 @@
                             <p>Persistent value received</p>
                             <strong>{{ rugPullResultingNetWorthLabel }}</strong>
                             <span>
-                                {{ rugPullWealthAdvantageLabel }} · {{ rugPullPreview.recoveryMultiplier.toFixed(1) }}x
+                                {{ rugPullWealthAdvantageLabel }} · {{ rugPullRecoveryMultiplierLabel }}
                                 opening acceleration versus this run
                             </span>
                         </div>
@@ -639,7 +633,7 @@
                                     <span>{{ stage.description }}</span>
                                     <small>
                                         {{ founderTakeDurationLabel }} commitment ·
-                                        {{ (stage.outputRetention * 100).toFixed(0) }}% output retained
+                                        {{ founderTakeNextOutputLabel }}
                                     </small>
                                 </div>
                                 <button
