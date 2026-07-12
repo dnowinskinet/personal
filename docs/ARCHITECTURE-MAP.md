@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 852135df836849cc6b6f99052c67583757d8d0a4
+Last verified against commit: ca7d8e36873ca1acece28cf0562697f7366c3119
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -22,11 +22,12 @@ grift-os-game/
       content/    CURRENT Influence player-facing language
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
+  runtime/        V1 persistence/reconciliation, simulation policy, semantic event history
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
   playtest/       Session logging and metrics
   grift-os-game.ts/html
-                  Runtime orchestration, persistence, semantic action dispatch,
+                  Angular scheduling, semantic action execution, UI effects,
                   interactions, fixtures, and all mode rendering
 
 src/styles/_grift-os.scss
@@ -37,17 +38,17 @@ Current dependency problems are known implementation evidence, not approved boun
 
 - compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
 - content-bearing compatibility types remain in `game-engine/types.ts` pending later type-ownership work;
-- the component owns simulation, persistence, action execution, overlays, fixtures, and rendering, while display derivation and gameplay action vocabulary are now presentation-owned;
+- the component owns platform scheduling, action execution, UI effects, overlays, fixtures, and rendering; pure presentation derivation and runtime policy/storage ownership have moved to their feature-local boundaries;
 - the global stylesheet uses source-order Phase 1/1.1 overrides as visual architecture.
 
 ## TARGET — approved destination, not yet implemented
 
-The following structure is the approved migration destination. The Influence `mechanics/` and `content/` paths and a current feature-local `presentation/` boundary now exist. The proposed top-level paths, runtime services, host, interaction layer, packs, and renderer below are not yet implemented:
+The following structure is the approved migration destination. Influence `mechanics/` and `content/` plus feature-local `presentation/` and `runtime/` boundaries now exist. The proposed top-level relocation, host, interaction layer, visual/audio packs, and renderer below are not yet implemented:
 
 ```text
 grift-os/
   host/           Route host and the single runtime-selected empire boundary
-  runtime/        Current-run orchestration, v1 persistence adapter, events, offline credit
+  runtime/        Current-run policy, v1 persistence adapter, events, offline credit; CURRENT locally
   engine/         Pure shared formulas and mechanical primitives
   presentation/   Rule-complete view models and semantic actions; CURRENT locally, final placement deferred
   formatting/     Shared formatting
@@ -110,9 +111,9 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
 | Icon or motion | ID unions, definitions, global SCSS | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |
-| Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (presentation ownership CURRENT; runtime extraction pending) |
+| Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (CURRENT ownership) |
 | Stage/Lane/Leverage/Rug Pull layout | Main template and global SCSS | Corresponding Influence renderer component |
-| Global Net Worth behavior | Prestige/modifier engine and component persistence | Shared mechanics/meta contract |
+| Global Net Worth behavior | Prestige/modifier engine and v1 runtime persistence | Shared mechanics/meta contract |
 | Mobile Context behavior | Component, template, and global breakpoints | Shared interaction contract + Influence Context |
 
 ## DEFERRED

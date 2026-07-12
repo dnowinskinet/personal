@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 852135df836849cc6b6f99052c67583757d8d0a4
+Last verified against commit: ca7d8e36873ca1acece28cf0562697f7366c3119
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -21,14 +21,16 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Leverage purchases require real prerequisites, spend Valuation, apply supported modifiers, and reset on Rug Pull. | `game-engine/economy.spec.ts`: Leverage and Rug Pull tests |
 | Founder Take preparation is timed, spends current Valuation, diverts output, and resets with the run. | `game-engine/economy.spec.ts`: Founder Take test |
 | Rug Pull is a stateful extraction action that resets run state and preserves/increases global Net Worth. | `game-engine/economy.spec.ts` and `grift-os-game.spec.ts` Rug Pull tests |
-| Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `grift-os-game.spec.ts`: local restore/offline production tests; current constants |
+| Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `runtime/run-runtime.spec.ts`; `grift-os-game.spec.ts` integration coverage |
 | Existing Influence Hustle IDs remain stable and reconcile against v1 saves. | `economy.spec.ts`: ordered ID test; `grift-os-game.spec.ts`: restore/reconciliation tests |
 | Influence mechanics and content catalogs remain complete and assemble into the unchanged compatibility definitions. | `empires/influence/influence-packs.spec.ts`: Hustle, milestone, and Leverage pack parity tests |
 | Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | The current renderer consumes rule-complete presentation models for display state and emits typed semantic gameplay actions rather than reconstructing costs, affordability, or mode reveal in the template. | `presentation/game-presentation.spec.ts`; component action-dispatch test; `npm run grift:arch` |
 | Presentation production sources import no Angular, browser storage/DOM, audio, renderer, playtest, or current component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
-| Storage keys and formats remain `grift-os-meta-v1` and `grift-os-run-v1` until an approved migration. | `grift-os-game.ts` constants and persistence tests |
+| Storage keys and formats remain `grift-os-meta-v1` and `grift-os-run-v1` until an approved migration. Corrupt or partial v1 data reconciles safely against current mechanics. | `runtime/run-persistence.spec.ts`; component persistence tests |
+| Runtime production sources import no Angular, browser globals, empire content/visual/audio, presentation, renderer, playtest, or component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
+| Semantic event history remains ordered, bounded to twelve records, and separate from audio consumption. | `runtime/game-event-log.spec.ts`; component event/audio integration |
 | Progressive mode/navigation reveal is derived from real state; unavailable modes are not decorative. | `grift-os-game.spec.ts`: progressive navigation and reveal tests |
 | Manual action is explicit; expansion is separate; automation changes action hierarchy. | `grift-os-game.spec.ts`: manual, automation, and disclosure tests |
 | Selected Context supports intentional opening, updates selection, closes with Escape, and restores interaction safely. | `grift-os-game.spec.ts`: Context interaction tests |
