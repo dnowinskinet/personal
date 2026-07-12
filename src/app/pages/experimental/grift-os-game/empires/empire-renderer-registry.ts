@@ -1,12 +1,13 @@
 import { InjectionToken } from '@angular/core';
 import { GRIFT_OS_COPY } from '../content/game-copy';
+import { DEFAULT_EMPIRE_ID, EmpireId } from '../empire-id';
 import { EmpireRendererRegistration } from '../host/empire-renderer-contract';
 import {
   InfluenceEmpireRendererComponent,
   InfluenceEmpireRendererView,
 } from './influence/renderer/influence-empire-renderer';
 
-export type EmpireId = 'influence';
+export type { EmpireId } from '../empire-id';
 
 const EMPIRE_RENDERERS: Readonly<Record<EmpireId, EmpireRendererRegistration>> = {
   influence: {
@@ -29,5 +30,5 @@ export function empireRendererFor(empireId: EmpireId): EmpireRendererRegistratio
 
 export const ACTIVE_EMPIRE_RENDERER = new InjectionToken<EmpireRendererRegistration>(
   'ACTIVE_EMPIRE_RENDERER',
-  { factory: () => empireRendererFor('influence') }
+  { factory: () => empireRendererFor(DEFAULT_EMPIRE_ID) }
 );

@@ -1,4 +1,5 @@
 import { Type } from '@angular/core';
+import { EmpireId } from '../empire-id';
 import { HustleId } from '../game-engine/types';
 import { GameAction } from '../presentation/game-action';
 import { GamePresentationSnapshot } from '../presentation/game-presentation';
@@ -40,7 +41,7 @@ export interface EmpireRendererRequest {
 export type EmpireActionDispatcher = (request: EmpireRendererRequest) => void;
 
 export interface EmpireRendererRegistration {
-  id: string;
+  id: EmpireId;
   component: Type<unknown>;
   createInputs(
     view: EmpireRendererHostView,

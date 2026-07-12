@@ -85,9 +85,9 @@ import {
   ValuationFlyoutView,
 } from './host/empire-renderer-contract';
 import {
-  GriftMetaSaveV1,
-  GriftRunSaveV1,
-  GriftV1Persistence,
+  GriftMetaSaveV2,
+  GriftPersistence,
+  GriftRunSaveV2,
 } from './runtime/run-persistence';
 import { GriftRunRuntime } from './runtime/run-runtime';
 
@@ -188,7 +188,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   readonly audioDirector = inject(AudioDirectorService);
   private readonly isBrowser: boolean;
-  private readonly persistence: GriftV1Persistence;
+  private readonly persistence: GriftPersistence;
   private simulationTimerId: number | null = null;
   private progressTransitionRestoreTimerId: number | null = null;
   private readonly progressTransitionResetIds = new Set<HustleId>();
@@ -215,7 +215,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    this.persistence = new GriftV1Persistence(this.getLocalStorage(), this.mechanics);
+    this.persistence = new GriftPersistence(
+      this.getLocalStorage(),
+      this.mechanics,
+      this.activeEmpireId
+    );
     this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
     this.initialRouteRunState = this.parseInitialRouteRunState(this.route.snapshot.queryParamMap.get('run'));
     this.initialRouteSurface = this.parseInitialRouteSurface(this.route.snapshot.queryParamMap.get('surface'));
@@ -232,7 +236,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = savedRun?.state ?? createInitialGameState(
       this.mechanics,
       savedMeta.netWorth,
-      savedMeta.rugPullCount
+      savedMeta.exitCountsByEmpire[this.activeEmpireId]
     );
     this.selectedHustleId = savedRun?.selectedHustleId ?? this.definitions[0].id;
     this.prepareOfflineReturn(savedRun);
@@ -1765,11 +1769,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadSavedRunState(savedMeta: GriftMetaSaveV1): GriftRunSaveV1 | null {
+  private loadSavedRunState(savedMeta: GriftMetaSaveV2): GriftRunSaveV2 | null {
     return this.persistence.loadRun(savedMeta);
   }
 
-  private prepareOfflineReturn(savedRun: GriftRunSaveV1 | null): void {
+  private prepareOfflineReturn(savedRun: GriftRunSaveV2 | null): void {
     if (!savedRun) {
       return;
     }
@@ -1797,7 +1801,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.persistence.saveRun(this.state, this.selectedHustleId, force);
   }
 
-  private loadSavedMeta(): GriftMetaSaveV1 {
+  private loadSavedMeta(): GriftMetaSaveV2 {
     return this.persistence.loadMeta();
   }
 

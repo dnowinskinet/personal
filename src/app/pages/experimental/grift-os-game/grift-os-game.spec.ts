@@ -38,7 +38,7 @@ class RendererReplacementProofComponent {
 }
 
 const RENDERER_REPLACEMENT_PROOF: EmpireRendererRegistration = {
-  id: 'replacement-proof',
+  id: 'influence',
   component: RendererReplacementProofComponent,
   createInputs: (view, dispatch) => ({ view, dispatch }),
 };
@@ -52,6 +52,8 @@ describe('GriftOsGameComponent', () => {
     window.localStorage.removeItem(PLAYTEST_STORAGE_KEY);
     window.localStorage.removeItem('grift-os-meta-v1');
     window.localStorage.removeItem('grift-os-run-v1');
+    window.localStorage.removeItem('grift-os-meta-v2');
+    window.localStorage.removeItem('grift-os-run-v2');
     window.localStorage.removeItem('grift-os-audio-settings-v1');
   });
 
@@ -96,7 +98,7 @@ describe('GriftOsGameComponent', () => {
       'app-renderer-replacement-proof'
     ) as HTMLElement | null;
 
-    expect(component.activeEmpireId).toBe('replacement-proof');
+    expect(component.activeEmpireId).toBe('influence');
     expect(replacement).not.toBeNull();
     expect(replacement?.textContent).toContain('$0');
     expect(fixture.nativeElement.querySelector('app-influence-empire-renderer')).toBeNull();
@@ -234,6 +236,8 @@ describe('GriftOsGameComponent', () => {
     detectStateChange(fixture);
 
     expect(window.localStorage.getItem('grift-os-run-v1')).toContain('podcast-network');
+    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('podcast-network');
+    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('"empireId":"influence"');
 
     fixture.destroy();
     fixture = await createFixture({});
@@ -291,6 +295,7 @@ describe('GriftOsGameComponent', () => {
     expect(component.offlineReturn).toBeNull();
     expect(component.state.valuation).toBe(creditedValuation);
     expect(window.localStorage.getItem('grift-os-run-v1')).toContain(String(component.state.valuation));
+    expect(window.localStorage.getItem('grift-os-run-v2')).toContain(String(component.state.valuation));
   });
 
   it('closes the playtest debug menu from inside the popover', async () => {
@@ -462,6 +467,8 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('x5 output');
     expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
     expect(window.localStorage.getItem('grift-os-run-v1')).toContain('"netWorth":100000');
+    expect(window.localStorage.getItem('grift-os-meta-v2')).toContain('"influence":1');
+    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('"empireId":"influence"');
   });
 
   it('shows the current Net Worth advantage in the HUD and reserves projected values for Rug Pull', async () => {
@@ -1089,6 +1096,7 @@ describe('GriftOsGameComponent', () => {
     expect(component.selectedHustle.modifierSummaryLabel).toContain('x5 output');
     expect(fixture.nativeElement.textContent).toContain('x5 output');
     expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
+    expect(window.localStorage.getItem('grift-os-meta-v2')).toContain('"influence":1');
 
     fixture.destroy();
     fixture = await createFixture({});
