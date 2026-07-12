@@ -3,7 +3,12 @@
   aria-label="GriftOS status"
   [attr.data-visual-condition]="view.visualCondition"
 >
-  <div class="grift-stage__atmosphere" aria-hidden="true"></div>
+  <div class="grift-stage__atmosphere" aria-hidden="true">
+    <span class="grift-stage__canopy"></span>
+    <span class="grift-stage__column grift-stage__column--left"></span>
+    <span class="grift-stage__column grift-stage__column--right"></span>
+    <span class="grift-stage__dais"></span>
+  </div>
   <div class="grift-stage__scrim" aria-hidden="true"></div>
 
   <div class="grift-stage__content">
@@ -15,12 +20,16 @@
     </div>
 
     <div class="grift-stage__valuation">
-      <div class="grift-valuation-object" aria-label="Current valuation">
-        <p>{{ view.copy.valuationLabel }}</p>
-        <div class="grift-valuation-amount">
-          <strong>{{ view.valuationLabel }}</strong>
+      <div class="grift-stage__chamber">
+        <div class="grift-stage__frame">
+          <div class="grift-valuation-object" aria-label="Current valuation">
+            <p>{{ view.copy.valuationLabel }}</p>
+            <div class="grift-valuation-amount">
+              <strong>{{ view.valuationLabel }}</strong>
+            </div>
+            <span>{{ view.valuationPerSecondLabel }}</span>
+          </div>
         </div>
-        <span>{{ view.valuationPerSecondLabel }}</span>
       </div>
     </div>
 
@@ -39,11 +48,11 @@
 
     <div class="grift-stage__owner">
       @if (view.showNetWorth) {
-        <div class="grift-net-worth">
+        <aside class="grift-net-worth grift-capital-panel" [attr.aria-label]="view.copy.netWorthLabel">
           <p>{{ view.copy.netWorthLabel }}</p>
           <strong>{{ view.netWorthLabel }}</strong>
           <span>{{ view.wealthAdvantageLabel }}</span>
-        </div>
+        </aside>
       }
     </div>
   </div>

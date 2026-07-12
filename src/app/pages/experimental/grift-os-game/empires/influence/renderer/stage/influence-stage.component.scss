@@ -1,18 +1,24 @@
-:host {
-  display: contents;
-}
+:host { display: contents; }
 
 .grift-stage {
+  --stage-metal: #8b641f;
+  --stage-metal-dim: #8b641f59;
+  --stage-depth: color-mix(in srgb, var(--grift-plane) 92%, #d5c49f);
   position: relative;
   display: grid;
   box-sizing: border-box;
-  min-block-size: clamp(11.5rem, 18vw, 15.5rem);
+  min-block-size: clamp(17rem, 27vw, 23rem);
   overflow: hidden;
-  border-bottom: 1px solid var(--grift-border-strong);
-  background:
-    linear-gradient(90deg, var(--grift-plane) 0 18%, transparent 18% 82%, var(--grift-plane) 82%),
-    var(--grift-plane);
-  padding: clamp(1rem, 2.2vw, 1.65rem) clamp(1rem, 2.8vw, 2.25rem);
+  border-block: 1px solid var(--stage-metal-dim);
+  background: var(--stage-depth);
+  padding: clamp(1.3rem, 2.8vw, 2.4rem) clamp(1rem, 3vw, 2.6rem);
+  isolation: isolate;
+}
+
+:host-context(.dark) .grift-stage {
+  --stage-metal: #caa461;
+  --stage-metal-dim: #caa46161;
+  --stage-depth: color-mix(in srgb, var(--grift-plane) 84%, #020508);
 }
 
 .grift-stage__atmosphere,
@@ -24,24 +30,45 @@
 
 .grift-stage__atmosphere {
   z-index: 0;
-  overflow: hidden;
   background:
-    linear-gradient(90deg, transparent 17.9%, var(--grift-institution-line-faint) 18%, transparent 18.1% 81.9%, var(--grift-institution-line-faint) 82%, transparent 82.1%),
-    linear-gradient(0deg, transparent 49.7%, var(--grift-institution-line-faint) 49.9%, transparent 50.1%);
-  opacity: calc(0.58 + var(--grift-intensity-safe) * 0.18);
+    linear-gradient(90deg, transparent 0 14%, var(--stage-metal-dim) 14.1%, transparent 14.3% 85.7%, var(--stage-metal-dim) 85.9%, transparent 86%),
+    linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 9%, transparent), transparent 42%);
+  opacity: calc(0.74 + var(--grift-intensity-safe) * 0.14);
 }
 
-.grift-stage__atmosphere::before,
-.grift-stage__atmosphere::after {
-  content: none;
-  animation: none;
+.grift-stage__canopy,
+.grift-stage__dais,
+.grift-stage__column { position: absolute; }
+
+.grift-stage__canopy {
+  inset: 0 12% auto;
+  height: 18%;
+  border-bottom: 1px solid var(--stage-metal-dim);
+}
+
+.grift-stage__column {
+  inset-block: 12% 7%;
+  width: clamp(1.4rem, 3.8vw, 3.8rem);
+  border-inline: 1px solid var(--stage-metal-dim);
+  background: repeating-linear-gradient(90deg, transparent 0 22%, var(--stage-metal-dim) 24% 26%, transparent 28% 48%);
+}
+
+.grift-stage__column--left { left: clamp(0.8rem, 4vw, 4.2rem); }
+.grift-stage__column--right { right: clamp(0.8rem, 4vw, 4.2rem); }
+
+.grift-stage__dais {
+  inset: auto 18% 4%;
+  height: 10%;
+  border-block: 1px solid var(--stage-metal-dim);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 8%, transparent), transparent);
+  transform: perspective(8rem) rotateX(42deg);
 }
 
 .grift-stage__scrim {
   z-index: 1;
   background:
-    linear-gradient(90deg, var(--grift-plane) 0%, transparent 26% 74%, var(--grift-plane) 100%),
-    linear-gradient(0deg, color-mix(in srgb, var(--grift-plane), transparent 12%), transparent 35% 70%, color-mix(in srgb, var(--grift-plane), transparent 34%));
+    linear-gradient(90deg, var(--stage-depth), transparent 23% 77%, var(--stage-depth)),
+    linear-gradient(180deg, color-mix(in srgb, var(--stage-depth), transparent 30%), transparent 35% 72%, var(--stage-depth));
 }
 
 .grift-stage__content {
@@ -49,228 +76,94 @@
   z-index: 2;
   display: grid;
   grid-template-areas: "identity valuation gains owner";
-  grid-template-columns: minmax(8rem, 0.62fr) minmax(19rem, 1.55fr) minmax(8rem, 0.58fr) minmax(9rem, 0.66fr);
-  gap: clamp(0.8rem, 2.2vw, 1.8rem);
+  grid-template-columns: minmax(8rem, 0.6fr) minmax(22rem, 1.55fr) minmax(4rem, 0.3fr) minmax(10rem, 0.68fr);
+  gap: clamp(0.8rem, 2vw, 1.7rem);
   width: 100%;
   min-width: 0;
   align-items: center;
-}
-
-.grift-stage__identity,
-.grift-stage__valuation,
-.grift-stage__owner {
-  min-width: 0;
 }
 
 .grift-stage__identity { grid-area: identity; }
 .grift-stage__valuation { grid-area: valuation; }
 .grift-stage__owner { grid-area: owner; }
 
-.grift-stage__gains {
-  position: relative;
-  grid-area: gains;
-  min-block-size: 5rem;
-  overflow: clip;
-  pointer-events: none;
-}
-
-.grift-stage .grift-title-block {
-  display: grid;
-  gap: 0.3rem;
-  min-width: 0;
-}
-
-.grift-stage .grift-title-block .grift-kicker {
-  font-size: 0.59rem;
-  letter-spacing: 0.14em;
-}
-
-.grift-stage .grift-title-block h1 {
+.grift-title-block { display: grid; }
+.grift-title-block .grift-kicker { color: var(--stage-metal); letter-spacing: 0.17em; }
+.grift-title-block h1 {
   margin: 0;
   color: var(--grift-ink);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 2vw, 1.72rem);
-  font-weight: 560;
-  line-height: 1;
+  font: 560 clamp(1.35rem, 2vw, 1.85rem)/1 Georgia, "Times New Roman", serif;
   letter-spacing: -0.02em;
 }
 
-.grift-stage .grift-valuation-object {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 0.12rem;
-  min-width: 0;
-  text-align: center;
+.grift-stage__chamber {
+  padding: clamp(0.42rem, 0.8vw, 0.65rem);
+  border: 1px solid var(--stage-metal-dim);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--stage-metal) 10%, transparent), transparent 28% 72%, color-mix(in srgb, var(--stage-metal) 7%, transparent));
+  clip-path: polygon(4% 0, 96% 0, 100% 12%, 100% 88%, 96% 100%, 4% 100%, 0 88%, 0 12%);
 }
 
-.grift-stage .grift-valuation-object::before,
-.grift-stage .grift-valuation-object::after {
-  position: absolute;
-  top: 50%;
-  width: clamp(2.4rem, 6vw, 6rem);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--grift-institution-line));
-  content: "";
+.grift-stage__frame {
+  border: 1px solid var(--stage-metal);
+  background: color-mix(in srgb, var(--stage-depth) 90%, transparent);
+  padding: clamp(1.15rem, 2vw, 1.8rem) 1rem;
+  clip-path: inherit;
 }
 
-.grift-stage .grift-valuation-object::before { right: calc(100% + 1rem); }
-.grift-stage .grift-valuation-object::after {
-  left: calc(100% + 1rem);
-  transform: rotate(180deg);
-}
-
-.grift-stage .grift-valuation-amount {
-  position: relative;
-  display: inline-grid;
-  justify-items: center;
-  min-width: min(100%, 12rem);
-}
-
-.grift-stage .grift-valuation-object strong {
+.grift-valuation-object { display: grid; justify-items: center; gap: 0.22rem; min-width: 0; text-align: center; }
+.grift-valuation-object p { color: var(--stage-metal); letter-spacing: 0.14em; }
+.grift-valuation-amount { display: inline-grid; justify-items: center; }
+.grift-valuation-object strong {
   color: var(--grift-value);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(4rem, 6.7vw, 6.4rem);
-  font-weight: 540;
-  line-height: 0.82;
+  font: 540 clamp(3.8rem, 6.4vw, 6.2rem)/0.84 Georgia, "Times New Roman", serif;
   letter-spacing: -0.055em;
-  font-variant-numeric: tabular-nums;
 }
+.grift-valuation-object span { color: var(--grift-info); font-size: clamp(0.84rem, 1.2vw, 1rem); font-weight: 650; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 
-.grift-stage .grift-valuation-object span {
-  margin-top: 0.15rem;
-  color: var(--grift-info);
-  font-size: clamp(0.84rem, 1.2vw, 1rem);
-  font-weight: 650;
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-}
+.grift-stage__gains { position: relative; grid-area: gains; min-block-size: 5rem; overflow: clip; pointer-events: none; }
+.grift-valuation-flyout { position: absolute; left: 0; max-width: 100%; overflow: hidden; font-size: 0.76rem; font-weight: 720; white-space: nowrap; }
+.grift-valuation-flyout--gain { top: 1rem; color: #9abf78; animation: grift-stage-value 620ms ease-out both; --flyout-end: -12px; }
+.grift-valuation-flyout--spend { bottom: 1rem; color: #d9877f; animation: grift-stage-value 620ms ease-out both; --flyout-end: 12px; }
 
-.grift-stage .grift-valuation-flyout {
-  position: absolute;
-  left: 0;
-  max-width: 100%;
-  overflow: hidden;
-  color: var(--grift-automation);
-  font-size: 0.78rem;
-  font-weight: 720;
-  line-height: 1;
-  letter-spacing: 0.03em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.grift-stage .grift-valuation-flyout--gain {
-  top: 1rem;
-  --grift-flyout-start-y: 3px;
-  --grift-flyout-end-y: -12px;
-  color: #9abf78;
-  animation: grift-stage-value 620ms ease-out both;
-}
-
-.grift-stage .grift-valuation-flyout--spend {
-  bottom: 1rem;
-  --grift-flyout-start-y: -3px;
-  --grift-flyout-end-y: 12px;
-  color: #d9877f;
-  animation: grift-stage-value 620ms ease-out both;
-}
-
-.grift-stage .grift-net-worth {
+.grift-capital-panel {
   width: 100%;
-  min-width: 0;
-  border-left: 1px solid var(--grift-border-strong);
-  padding-left: 1rem;
+  border: 1px solid var(--stage-metal-dim);
+  border-top-color: var(--stage-metal);
+  background: color-mix(in srgb, var(--stage-depth) 87%, transparent);
+  padding: 1rem;
 }
+.grift-capital-panel p { color: var(--stage-metal); letter-spacing: 0.12em; }
+.grift-capital-panel strong { display: block; color: var(--grift-ink); font: 560 clamp(1.45rem, 2.5vw, 2.1rem)/1 Georgia, "Times New Roman", serif; }
+.grift-capital-panel span { color: var(--grift-info); font-size: 0.7rem; font-weight: 650; }
 
-.grift-stage .grift-net-worth strong {
-  display: block;
-  color: var(--grift-ink);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
-  font-weight: 560;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.grift-stage .grift-net-worth span {
-  color: var(--grift-info);
-  font-size: 0.7rem;
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-@media (max-width: 71.999rem) {
-  .grift-stage__content {
-    grid-template-areas:
-      "identity owner"
-      "valuation gains";
-    grid-template-columns: minmax(0, 1fr) minmax(7rem, 0.4fr);
-  }
-
-  .grift-stage .grift-valuation-object {
-    justify-items: start;
-    text-align: left;
-  }
-
-  .grift-stage .grift-valuation-object::before,
-  .grift-stage .grift-valuation-object::after {
-    display: none;
-  }
+@media (max-width: 72rem) {
+  .grift-stage__content { grid-template-areas: "identity owner" "valuation valuation"; grid-template-columns: 1fr auto; }
+  .grift-stage__gains { display: none; }
 }
 
 @media (max-width: 44rem) {
-  .grift-stage {
-    min-block-size: 12.2rem;
-    background: var(--grift-plane);
-    padding: 0.9rem 0.85rem 1.05rem;
-  }
-
-  .grift-stage__atmosphere {
-    background: linear-gradient(0deg, transparent 58%, var(--grift-institution-line-faint) 58.3%, transparent 58.6%);
-  }
-
-  .grift-stage__scrim {
-    background: linear-gradient(90deg, var(--grift-plane) 0 26%, transparent 82%, var(--grift-plane));
-  }
-
-  .grift-stage__content {
-    grid-template-areas:
-      "identity owner"
-      "valuation valuation";
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1.1rem 0.7rem;
-    align-items: end;
-  }
-
-  .grift-stage__gains { display: none; }
-  .grift-stage .grift-title-block { gap: 0.14rem; }
-  .grift-stage .grift-title-block h1 { font-size: 1.2rem; }
-
-  .grift-stage .grift-valuation-object strong {
-    font-size: clamp(3.8rem, 17vw, 4.8rem);
-  }
-
-  .grift-stage .grift-net-worth {
-    width: auto;
-    max-width: 8.2rem;
-    padding-left: 0.65rem;
-  }
-
-  .grift-stage .grift-net-worth strong { font-size: 1.2rem; }
-  .grift-stage .grift-net-worth span { display: none; }
+  .grift-stage { min-block-size: 17.5rem; padding: 0.9rem 0.85rem 1.15rem; }
+  .grift-stage__atmosphere { background: linear-gradient(180deg, color-mix(in srgb, var(--stage-metal) 8%, transparent), transparent 45%); }
+  .grift-stage__column { width: 1rem; }
+  .grift-stage__column--left { left: 0.45rem; }
+  .grift-stage__column--right { right: 0.45rem; }
+  .grift-stage__dais { inset-inline: 8%; }
+  .grift-stage__content { grid-template-areas: "identity owner" "valuation valuation"; grid-template-columns: minmax(0, 1fr) auto; gap: 0.8rem 0.55rem; align-items: end; }
+  .grift-title-block h1 { font-size: 1.2rem; }
+  .grift-stage__chamber { padding: 0.3rem; }
+  .grift-stage__frame { padding: 1.2rem 0.55rem; }
+  .grift-valuation-object strong { font-size: clamp(3.55rem, 16vw, 4.55rem); }
+  .grift-capital-panel { width: auto; max-width: 8.5rem; padding: 0.65rem; }
+  .grift-capital-panel strong { font-size: 1.2rem; }
+  .grift-capital-panel span { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grift-stage .grift-valuation-flyout--gain,
-  .grift-stage .grift-valuation-flyout--spend {
-    animation: none;
-  }
+  .grift-valuation-flyout { animation: none; }
 }
 
 @keyframes grift-stage-value {
-  0% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * 0.64rem), var(--grift-flyout-start-y)); }
-  18% { opacity: 1; transform: translate(calc(var(--grift-flyout-lane, 0) * 0.64rem), 0); }
-  100% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * 0.64rem), var(--grift-flyout-end-y)); }
+  0% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * 0.64rem), 0); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(var(--grift-flyout-lane, 0) * 0.64rem), var(--flyout-end)); }
 }
