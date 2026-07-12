@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: fea65642a9a12bfbd403fd26b7fa3338c56e6f23
+Last verified against commit: 127d58564047686fc9021054f6fcbd63ae31e409
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -22,7 +22,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Founder Take preparation is timed, spends current Valuation, diverts output, and resets with the run. | `game-engine/economy.spec.ts`: Founder Take test |
 | Rug Pull is a stateful extraction action that resets run state and preserves/increases global Net Worth. | `game-engine/economy.spec.ts` and `grift-os-game.spec.ts` Rug Pull tests |
 | Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `runtime/run-runtime.spec.ts`; `grift-os-game.spec.ts` integration coverage |
-| Existing Influence Hustle IDs remain stable and reconcile against v1 saves. | `economy.spec.ts`: ordered ID test; `grift-os-game.spec.ts`: restore/reconciliation tests |
+| Existing Influence Hustle IDs remain stable and reconcile against v2 saves and migrated v1 saves. | `economy.spec.ts`: ordered ID test; persistence and component restore/reconciliation tests |
 | Influence mechanics and content catalogs remain complete and assemble into the unchanged compatibility definitions. | `empires/influence/influence-packs.spec.ts`: Hustle, milestone, and Leverage pack parity tests |
 | Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
@@ -31,7 +31,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | A replacement renderer can consume the neutral host view and dispatch semantic actions without the host importing a concrete empire renderer; replacement does not move shared utilities inside the renderer. | `grift-os-game.spec.ts`: replacement-renderer proof; `npm run grift:arch` |
 | Influence selectors remain under the renderer root; empire composition/keyframes do not return to the global GriftOS bridge; `::ng-deep`, append-only phase sections, and new unreviewed `!important` declarations are rejected. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Presentation production sources import no Angular, browser storage/DOM, audio, renderer, playtest, or current component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
-| Storage keys and formats remain `grift-os-meta-v1` and `grift-os-run-v1` until an approved migration. Corrupt or partial v1 data reconciles safely against current mechanics. | `runtime/run-persistence.spec.ts`; component persistence tests |
+| V2 persistence stores one active empire run, global Net Worth, explicit unlocked IDs, and per-empire exit counts. V1 migrates to Influence, remains undeleted, and is mirrored for rollback while Influence is the only production empire. Corrupt v2 falls back safely to valid v1. | `runtime/run-persistence.spec.ts`; component persistence tests |
 | Runtime production sources import no Angular, browser globals, empire content/visual/audio, presentation, renderer, playtest, or component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Semantic event history remains ordered, bounded to twelve records, and separate from audio consumption. | `runtime/game-event-log.spec.ts`; component event/audio integration |
 | Progressive mode/navigation reveal is derived from real state; unavailable modes are not decorative. | `grift-os-game.spec.ts`: progressive navigation and reveal tests |
@@ -47,7 +47,6 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 - Visual and audio pack extraction is not yet implemented.
 - The Influence renderer is internally composed from ordinary responsibility-owned Angular components with smaller region-owned sheets.
 - Catalog assembly validates IDs and cross-references before a run begins.
-- Multi-empire persistence contains one active run, preserves global Net Worth, stores explicit unlocks and per-empire exit counts, and never resumes or simulates an inactive empire run.
 - Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 
 These become CURRENT only after their implementation phase lands with executable checks.
@@ -56,7 +55,6 @@ These become CURRENT only after their implementation phase lands with executable
 
 - Exact empire unlock thresholds and transition presentation.
 - Any prestige accessibility retuning.
-- Executable evidence and final envelope details for the approved Phase J migration.
 
 ## HISTORICAL
 

@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: 4f6e808a1db296d52375ec844abd4d0bb69ef95b
+Last verified against commit: 127d58564047686fc9021054f6fcbd63ae31e409
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -95,7 +95,7 @@ No screenshot-testing dependency is currently installed. Capture and compare bro
 | Presentation/action availability | Focused tests across affected fixtures and semantic-event assertions |
 | Renderer/SCSS | Full visual matrix, accessibility interactions, production build |
 | Audio | Audio tests, gesture unlock, muted/missing-asset behavior, SSR build |
-| Save/persistence | Real versioned fixtures, corrupt/partial fallback, explicit migration approval |
+| Save/persistence | V2 fixtures, v1 migration and rollback mirrors, corrupt-v2 fallback, component reload, explicit migration approval |
 
 ## Scope audit before commit
 

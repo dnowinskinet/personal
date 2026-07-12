@@ -41,7 +41,7 @@ npm run grift:test
 ## GriftOS boundaries
 
 - Keep GriftOS under `/experimental/grift-os` unless a later decision moves it.
-- Preserve `grift-os-meta-v1`, `grift-os-run-v1`, and current Influence IDs unless an approved save migration explicitly changes them.
+- Preserve primary `grift-os-meta-v2` / `grift-os-run-v2`, the rollback-safe v1 migration/mirrors, and current Influence IDs unless a later approved migration explicitly changes them.
 - Keep formulas, tuning, content, presentation, visuals, audio, runtime, and development tooling as distinct owners; see [docs/ARCHITECTURE-MAP.md](docs/ARCHITECTURE-MAP.md).
 - The current architecture is transitional. Target paths and ownership documented as `TARGET` are not yet implemented.
 - Desktop and mobile are authored visual targets. Intermediate widths must remain functional but receive no dedicated art direction.

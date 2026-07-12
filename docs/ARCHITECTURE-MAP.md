@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: fea65642a9a12bfbd403fd26b7fa3338c56e6f23
+Last verified against commit: 127d58564047686fc9021054f6fcbd63ae31e409
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -15,6 +15,7 @@ The route lazy-loads `GriftOsGameComponent` from `src/app/pages/experimental/gri
 
 ```text
 grift-os-game/
+  empire-id.ts   Shared compile-time empire ID catalog and runtime validator
   content/        Compatibility assembly and label-enrichment adapters
   empires/
     empire-renderer-registry.ts
@@ -27,7 +28,8 @@ grift-os-game/
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
-  runtime/        V1 persistence/reconciliation, simulation policy, semantic event history
+  runtime/        V2 single-run persistence, v1 migration/mirroring, simulation policy,
+                  semantic event history
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
   playtest/       Session logging and metrics
@@ -58,7 +60,8 @@ The following structure is the approved migration destination. Feature-local mec
 ```text
 grift-os/
   host/           Route host and the single runtime-selected empire boundary; CURRENT locally
-  runtime/        Current-run policy, v1 persistence adapter, events, offline credit; CURRENT locally
+  runtime/        Current-run policy, v2 persistence plus v1 compatibility, events,
+                  offline credit; CURRENT locally
   engine/         Pure shared formulas and mechanical primitives
   presentation/   Rule-complete view models and semantic actions; CURRENT locally, final placement deferred
   formatting/     Shared formatting
@@ -124,17 +127,15 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Sound | Definitions, global manifest, director | Influence audio pack |
 | Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (CURRENT ownership) |
 | Stage/Lane/Leverage/Rug Pull layout | Influence renderer template and root-scoped renderer SCSS | Corresponding Influence renderer component |
-| Global Net Worth behavior | Prestige/modifier engine and v1 runtime persistence | Shared mechanics/meta contract |
+| Global Net Worth behavior | Prestige/modifier engine and v2 runtime meta | Shared mechanics/meta contract (CURRENT persistence ownership) |
 | Mobile Context behavior | Component, template, and global breakpoints | Shared interaction contract + Influence Context |
 
 ## DEFERRED
 
-- Implementation of a single-active-run envelope containing the active empire ID, its run state, explicit unlocked empire IDs, global Net Worth, and per-empire exit counts.
-- V1 migration that assigns `rugPullCount` to Influence without changing current keys or formats before Phase J approval.
 - Exact prestige-complete transition UI, final shared terminology, and empire unlock requirements.
 - Any later economy change that makes prestige easier for empire switching.
 
-The approved TARGET is not `runsByEmpire`: completed runs are replaced after a prestige-gated, player-chosen transition; inactive empires have no saved run and earn no offline progress.
+The CURRENT v2 envelope is not `runsByEmpire`: it stores one active `empireId` and run, global Net Worth, explicit unlocked IDs, and per-empire exit counts. Completed runs will be replaced after a prestige-gated, player-chosen transition; inactive empires have no saved run and earn no offline progress.
 
 ## HISTORICAL
 

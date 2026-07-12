@@ -90,7 +90,7 @@ Rug Pull preserves:
 - audio settings;
 - local playtest logs.
 
-For the approved multi-empire TARGET, v1 `rugPullCount` migrates to Influence's per-empire lifetime exit count. It is not a settled global lifetime-exit counter.
+Phase J migrates v1 `rugPullCount` to Influence's per-empire lifetime exit count in v2 meta. It is not a global lifetime-exit counter. The v1 field remains as a rollback mirror while Influence is the only production empire.
 
 ## Future Empire Transition — TARGET, Not Yet Implemented
 
