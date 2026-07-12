@@ -28,13 +28,7 @@ import {
   RUG_PULL_CONFIG,
 } from './content/rug-pull-preview';
 import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
-import type {
-  InfluenceEmpireRendererView,
-  InfluenceOfflineReturn,
-  InfluenceRugPullResolution,
-  InfluenceValuationFlyout,
-} from './empires/influence/renderer/influence-empire-renderer';
-import { EmpireId, empireRendererFor } from './empires/empire-renderer-registry';
+import { ACTIVE_EMPIRE_RENDERER } from './empires/empire-renderer-registry';
 import {
   activateHustle as activateHustleInState,
   buyAutomation,
@@ -83,7 +77,13 @@ import {
   VisualCondition,
 } from './presentation/game-presentation';
 import { GameEventLog } from './runtime/game-event-log';
-import { EmpireRendererRequest } from './host/empire-renderer-contract';
+import {
+  EmpireRendererHostView,
+  EmpireRendererRequest,
+  OfflineReturnView,
+  RugPullResolutionView,
+  ValuationFlyoutView,
+} from './host/empire-renderer-contract';
 import {
   GriftMetaSaveV1,
   GriftRunSaveV1,
@@ -100,7 +100,7 @@ interface PayoutFeedback {
   expiresAt: number;
 }
 
-type ValuationFlyoutDirection = InfluenceValuationFlyout['direction'];
+type ValuationFlyoutDirection = ValuationFlyoutView['direction'];
 
 type RunShortcutId =
   | 'fresh'
@@ -136,8 +136,9 @@ const ENDGAME_VALUATION = 1_000_000_000_000_000;
   styleUrl: './grift-os-game.scss',
 })
 export class GriftOsGameComponent implements OnInit, OnDestroy {
-  readonly activeEmpireId: EmpireId = 'influence';
-  readonly activeEmpireRenderer = empireRendererFor(this.activeEmpireId);
+  private readonly activeEmpireRegistration = inject(ACTIVE_EMPIRE_RENDERER);
+  readonly activeEmpireId = this.activeEmpireRegistration.id;
+  readonly activeEmpireRenderer = this.activeEmpireRegistration.component;
   readonly copy = GRIFT_OS_COPY;
   readonly definitions = HUSTLE_DEFINITIONS;
   readonly mechanics = INFLUENCE_ENGINE_MECHANICS;
@@ -170,15 +171,15 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   state: GriftOsGameState = createInitialGameState(this.mechanics);
   payoutFeedback: PayoutFeedback[] = [];
-  valuationFlyouts: InfluenceValuationFlyout[] = [];
-  rugPullResolution: InfluenceRugPullResolution | null = null;
+  valuationFlyouts: ValuationFlyoutView[] = [];
+  rugPullResolution: RugPullResolutionView | null = null;
   playtestSession: PlaytestSession | null = null;
   playtestStatusMessage = '';
   selectedHustleId: HustleId = this.definitions[0].id;
   selectedContextOpen = false;
   selectedTab: GameTabId = 'hustles';
   gameEvents: GameEventRecord[] = [];
-  offlineReturn: InfluenceOfflineReturn | null = null;
+  offlineReturn: OfflineReturnView | null = null;
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly documentRef = inject(DOCUMENT);
@@ -278,8 +279,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get activeEmpireRendererInputs(): Record<string, unknown> {
-    const view: InfluenceEmpireRendererView = {
-      copy: this.copy,
+    const view: EmpireRendererHostView = {
       presentation: this.presentationView,
       valuationFlyouts: this.valuationFlyouts,
       rugPullResolution: this.rugPullResolution,
@@ -288,10 +288,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       selectedContextOpen: this.selectedContextOpen,
     };
 
-    return {
+    return this.activeEmpireRegistration.createInputs(
       view,
-      dispatch: this.dispatchEmpireRendererRequest,
-    };
+      this.dispatchEmpireRendererRequest
+    );
   }
 
   private readonly dispatchEmpireRendererRequest = (request: EmpireRendererRequest): void => {
@@ -1260,7 +1260,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     netWorthGained: number,
     resultingNetWorth: number,
     peakValuation: number
-  ): InfluenceRugPullResolution {
+  ): RugPullResolutionView {
     const preview = createRugPullPreview(createInitialGameState(this.mechanics, resultingNetWorth));
 
     return {
@@ -1613,7 +1613,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.valuationFlyoutId += 1;
     const limit = direction === 'gain' ? VALUATION_GAIN_FLYOUT_LIMIT : VALUATION_SPEND_FLYOUT_LIMIT;
     const sameDirectionCount = this.valuationFlyouts.filter((flyout) => flyout.direction === direction).length;
-    const flyout: InfluenceValuationFlyout = {
+    const flyout: ValuationFlyoutView = {
       id: this.valuationFlyoutId,
       direction,
       label: `${direction === 'gain' ? '↑ +' : '↓ -'}${formatMoney(

@@ -35,6 +35,7 @@ await scanBoundary(
 );
 
 await checkStyleBoundaries();
+await checkHostRendererBoundary();
 
 async function scanBoundary(root, forbiddenImports, boundaryName, forbidBrowserGlobals = true) {
   for (const entry of await readdir(root, { withFileTypes: true })) {
@@ -113,9 +114,16 @@ async function checkStyleBoundaries() {
   }
 }
 
+async function checkHostRendererBoundary() {
+  const hostSource = await readFile(path.join(featureRoot, 'grift-os-game.ts'), 'utf8');
+  if (/from\s+['"][^'"]*\/empires\/[^'"]*\/renderer\//.test(hostSource)) {
+    violations.push('shared host: direct empire renderer import');
+  }
+}
+
 if (violations.length > 0) {
   console.error(['GriftOS architecture boundary violations:', ...violations.map((item) => `- ${item}`)].join('\n'));
   process.exitCode = 1;
 } else {
-  console.log('GriftOS engine, presentation, runtime, renderer, and style boundaries pass.');
+  console.log('GriftOS engine, presentation, runtime, host/renderer, and style boundaries pass.');
 }

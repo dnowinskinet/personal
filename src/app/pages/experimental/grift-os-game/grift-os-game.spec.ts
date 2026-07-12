@@ -1,10 +1,47 @@
+import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 import { GriftOsGameComponent } from './grift-os-game';
+import { ACTIVE_EMPIRE_RENDERER } from './empires/empire-renderer-registry';
 import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
 import { createInitialGameState } from './game-engine/economy';
+import {
+  EmpireActionDispatcher,
+  EmpireRendererHostView,
+  EmpireRendererRegistration,
+} from './host/empire-renderer-contract';
 import { PLAYTEST_STORAGE_KEY } from './playtest/playtest-session';
+
+@Component({
+  selector: 'app-renderer-replacement-proof',
+  standalone: true,
+  template: `
+    <section aria-label="Replacement renderer">
+      <span>{{ view.presentation.valuationLabel }}</span>
+      <button type="button" (click)="activateFirstHustle()">Activate through replacement</button>
+    </section>
+  `,
+})
+class RendererReplacementProofComponent {
+  @Input({ required: true }) view!: EmpireRendererHostView;
+  @Input({ required: true }) dispatch!: EmpireActionDispatcher;
+
+  activateFirstHustle(): void {
+    this.dispatch({
+      action: {
+        type: 'hustle.activate',
+        hustleId: this.view.presentation.hustleRows[0].id,
+      },
+    });
+  }
+}
+
+const RENDERER_REPLACEMENT_PROOF: EmpireRendererRegistration = {
+  id: 'replacement-proof',
+  component: RendererReplacementProofComponent,
+  createInputs: (view, dispatch) => ({ view, dispatch }),
+};
 
 describe('GriftOsGameComponent', () => {
   let fixture: ComponentFixture<GriftOsGameComponent> | null = null;
@@ -50,6 +87,28 @@ describe('GriftOsGameComponent', () => {
     expect(renderer?.querySelector('[aria-label="Hustles"]')).not.toBeNull();
     expect(renderer?.querySelector('[aria-label="Game utilities"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('.grift-os-app > [aria-label="Game utilities"]')).not.toBeNull();
+  });
+
+  it('mounts a replacement renderer that consumes the host view and dispatches semantic actions', async () => {
+    fixture = await createFixture({}, RENDERER_REPLACEMENT_PROOF);
+    const component = fixture.componentInstance;
+    const replacement = fixture.nativeElement.querySelector(
+      'app-renderer-replacement-proof'
+    ) as HTMLElement | null;
+
+    expect(component.activeEmpireId).toBe('replacement-proof');
+    expect(replacement).not.toBeNull();
+    expect(replacement?.textContent).toContain('$0');
+    expect(fixture.nativeElement.querySelector('app-influence-empire-renderer')).toBeNull();
+    expect(replacement?.querySelector('[aria-label="Game utilities"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.grift-os-app > [aria-label="Game utilities"]')).not.toBeNull();
+    expect(component.state.hustles['troll-network'].isActive).toBeFalse();
+
+    const activate = replacement?.querySelector('button') as HTMLButtonElement | null;
+    activate?.click();
+    fixture.detectChanges();
+
+    expect(component.state.hustles['troll-network'].isActive).toBeTrue();
   });
 
   it('dispatches semantic gameplay actions through the existing runtime entrypoints', async () => {
@@ -1043,7 +1102,10 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('x5 output');
   });
 
-  async function createFixture(queryParams: Record<string, string>): Promise<ComponentFixture<GriftOsGameComponent>> {
+  async function createFixture(
+    queryParams: Record<string, string>,
+    rendererRegistration?: EmpireRendererRegistration
+  ): Promise<ComponentFixture<GriftOsGameComponent>> {
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
@@ -1057,6 +1119,9 @@ describe('GriftOsGameComponent', () => {
             },
           },
         },
+        ...(rendererRegistration
+          ? [{ provide: ACTIVE_EMPIRE_RENDERER, useValue: rendererRegistration }]
+          : []),
       ],
     }).compileComponents();
 

@@ -11,41 +11,16 @@ import { HustleId } from '../../../game-engine/types';
 import {
   EmpireActionDispatcher,
   EmpireRendererRequest,
+  EmpireRendererHostView,
+  ValuationFlyoutView,
 } from '../../../host/empire-renderer-contract';
 import { GameAction } from '../../../presentation/game-action';
 import {
-  GamePresentationSnapshot,
   HustleViewModel,
 } from '../../../presentation/game-presentation';
 
-export interface InfluenceValuationFlyout {
-  id: number;
-  direction: 'gain' | 'spend';
-  label: string;
-  lane: number;
-}
-
-export interface InfluenceRugPullResolution {
-  netWorthGainLabel: string;
-  resultingNetWorthLabel: string;
-  wealthAdvantageLabel: string;
-  peakValuationLabel: string;
-}
-
-export interface InfluenceOfflineReturn {
-  elapsedLabel: string;
-  payoutLabel: string;
-  pendingPayout: number;
-}
-
-export interface InfluenceEmpireRendererView {
+export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
-  presentation: GamePresentationSnapshot;
-  valuationFlyouts: readonly InfluenceValuationFlyout[];
-  rugPullResolution: InfluenceRugPullResolution | null;
-  offlineReturn: InfluenceOfflineReturn | null;
-  selectedHustleId: HustleId;
-  selectedContextOpen: boolean;
 }
 
 @Component({
@@ -129,7 +104,7 @@ export class InfluenceEmpireRendererComponent {
     this.dispatch({ action: { type: 'rugPull.resolution.dismiss' } });
   }
 
-  trackValuationFlyout(_index: number, flyout: InfluenceValuationFlyout): number {
+  trackValuationFlyout(_index: number, flyout: ValuationFlyoutView): number {
     return flyout.id;
   }
 
