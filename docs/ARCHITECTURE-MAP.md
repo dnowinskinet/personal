@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: c88a3f06a3d79ffd41554be061dd507faf1177d9
+Last verified against commit: 4adf0575a5581ba4eaf293817513a7a4b548c013
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -27,6 +27,8 @@ grift-os-game/
                   `_circulating-institution.scss` is the active reviewable visual layer;
         stage/    CURRENT statically composed Stage view/template/style owner with
                   internal Backdrop, Chamber, Frame, and Capital Panel composition
+        ledger/   CURRENT statically composed Ledger/Lane templates; active visual
+                  rules remain compatibility-owned pending K.3.2
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
@@ -73,7 +75,8 @@ grift-os/
       mechanics/  Influence tuning and mechanical catalogs
       content/    Influence player-facing language
       audio/      Influence event mappings and assets
-      renderer/   Boundary and root-scoped styles CURRENT; Stage component CURRENT;
+      renderer/   Boundary and root-scoped styles CURRENT; Stage and Ledger/Lane
+                  components CURRENT;
                   remaining modular Angular composition pending
   playtest/       Deterministic fixtures and instrumentation
 ```
@@ -114,8 +117,8 @@ Target prohibitions:
 | Rail | Long connective spine or track language used in operating flows | Circulating Institution Ledger styling | Influence Ledger/Lane | Visual prototype only; module pending | Empire-specific composition | Connects operating lanes | Simplified in stacked lanes |
 | Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
 | Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
-| Ledger | Ordered Hustle operating field | Influence renderer template/root-scoped renderer SCSS | Influence Ledger | Styles contained; module pending | Empire-specific composition | Dominant operating surface | Full-width stack |
-| Lane | One Hustle's identity, production, and actions | Influence renderer loop/root-scoped renderer SCSS | Influence Lane | Styles contained; module pending | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
+| Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` template plus compatibility renderer SCSS | Influence Ledger | Template CURRENT; style migration pending K.3.2 | Empire-specific composition | Dominant operating surface | Full-width stack |
+| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row plus compatibility renderer SCSS | Influence Lane | Template CURRENT; style/icon migration pending K.3.2 | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
 | Context | Rich selected-Hustle explanation | Influence renderer/component/root-scoped renderer SCSS | Shared interaction contract + Influence Context | Styles contained; module pending | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
 | Horizon | Next meaningful Hustle establishment | Influence renderer template/root-scoped renderer SCSS | Influence Horizon | Styles contained; module pending | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
