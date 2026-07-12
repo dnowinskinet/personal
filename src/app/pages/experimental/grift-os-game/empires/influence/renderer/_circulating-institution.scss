@@ -35,41 +35,19 @@
     z-index: 0;
     overflow: hidden;
     background:
-      radial-gradient(circle at 50% 50%, transparent 0 12%, var(--grift-institution-line-faint) 12.2% 12.5%, transparent 12.7% 22%, var(--grift-institution-line-faint) 22.2% 22.45%, transparent 22.7%),
-      linear-gradient(90deg, transparent 49.9%, var(--grift-institution-line-faint) 50%, transparent 50.1%),
+      linear-gradient(90deg, transparent 17.9%, var(--grift-institution-line-faint) 18%, transparent 18.1% 81.9%, var(--grift-institution-line-faint) 82%, transparent 82.1%),
       linear-gradient(0deg, transparent 49.7%, var(--grift-institution-line-faint) 49.9%, transparent 50.1%);
     opacity: calc(0.58 + var(--grift-intensity-safe) * 0.18);
   }
 
   .grift-stage__atmosphere::before,
   .grift-stage__atmosphere::after {
-    position: absolute;
-    inset: 50% auto auto 50%;
-    border: 1px solid var(--grift-institution-line);
-    border-radius: 50%;
-    content: "";
-    opacity: calc(0.38 + var(--grift-intensity-safe) * 0.28);
-    transform: translate(-50%, -50%);
-    transform-origin: center;
-  }
-
-  .grift-stage__atmosphere::before {
-    width: min(54vw, 46rem);
-    aspect-ratio: 2.8 / 1;
-    box-shadow:
-      0 0 0 1.1rem color-mix(in srgb, var(--grift-info), transparent 96%),
-      0 0 0 3rem color-mix(in srgb, var(--grift-info), transparent 98%);
-  }
-
-  .grift-stage__atmosphere::after {
-    width: min(31vw, 25rem);
-    aspect-ratio: 2.2 / 1;
-    border-color: color-mix(in srgb, var(--grift-info), transparent 56%);
+    content: none;
   }
 
   .grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
   .grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
-    animation: grift-institution-circulate var(--grift-stage-motion-duration) linear infinite;
+    animation: none;
   }
 
   .grift-stage__scrim {
@@ -553,21 +531,7 @@
     }
 
     .grift-stage__atmosphere {
-      background:
-        radial-gradient(circle at 72% 58%, transparent 0 14%, var(--grift-institution-line-faint) 14.3% 14.7%, transparent 15% 26%, var(--grift-institution-line-faint) 26.3% 26.6%, transparent 27%),
-        linear-gradient(0deg, transparent 58%, var(--grift-institution-line-faint) 58.3%, transparent 58.6%);
-    }
-
-    .grift-stage__atmosphere::before {
-      left: 72%;
-      width: 19rem;
-      aspect-ratio: 1.45 / 1;
-    }
-
-    .grift-stage__atmosphere::after {
-      left: 72%;
-      width: 10rem;
-      aspect-ratio: 1.2 / 1;
+      background: linear-gradient(0deg, transparent 58%, var(--grift-institution-line-faint) 58.3%, transparent 58.6%);
     }
 
     .grift-stage__scrim {
@@ -684,17 +648,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
-    .grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after,
     .grift-hustle-automated::before {
       animation: none;
     }
   }
-}
-
-@keyframes grift-institution-circulate {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 @keyframes grift-institution-node {
