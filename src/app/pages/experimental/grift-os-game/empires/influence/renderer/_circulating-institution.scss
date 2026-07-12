@@ -7,7 +7,6 @@
  */
 .grift-influence-renderer {
   --grift-institution-line: color-mix(in srgb, var(--grift-info), transparent 72%);
-  --grift-institution-line-faint: color-mix(in srgb, var(--grift-info), transparent 88%);
   --grift-institution-paper: color-mix(in srgb, var(--grift-plane-raised), var(--grift-info) 1.5%);
   --grift-institution-channel: color-mix(in srgb, var(--grift-plane), var(--grift-info) 3%);
   --grift-institution-signal: var(--grift-info);
@@ -52,9 +51,7 @@
   .grift-work-surface--hustles {
     grid-template-columns: minmax(0, 2.35fr) minmax(18rem, 0.72fr);
     gap: clamp(1.2rem, 2.5vw, 2rem);
-    background:
-      linear-gradient(90deg, transparent 0 70%, var(--grift-institution-line-faint) 70% 70.08%, transparent 70.08%),
-      var(--grift-bg);
+    background: var(--grift-bg);
     padding: clamp(1.1rem, 2.5vw, 2rem) clamp(1rem, 2.8vw, 2.25rem);
   }
 

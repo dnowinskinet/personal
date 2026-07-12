@@ -1894,33 +1894,10 @@ button {
     clamp(0.85rem, 3vw, 1.25rem);
 }
 
-.grift-stage__atmosphere,
 .grift-stage__scrim {
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-.grift-stage__atmosphere {
-  z-index: 0;
-  background-image: var(--grift-stage-media);
-  background-position: center;
-  background-size: cover;
-  opacity: var(--grift-stage-atmosphere-opacity);
-}
-
-.grift-stage__atmosphere::before,
-.grift-stage__atmosphere::after {
-  position: absolute;
-  border: 1px solid var(--grift-stage-frame-color);
-  content: "";
-  opacity: var(--grift-stage-frame-opacity);
-  transform-origin: center;
-}
-
-.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
-.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
-  animation: grift-stage-breathe var(--grift-stage-motion-duration) ease-in-out infinite;
 }
 
 .grift-stage__scrim {
@@ -2111,14 +2088,6 @@ button {
     padding-block: 0.15rem;
   }
 
-  .grift-stage__atmosphere::before {
-    inset-inline: 8%;
-  }
-
-  .grift-stage__atmosphere::after {
-    inset-inline: 18%;
-  }
-
   .grift-stage__owner {
     max-width: 9.4rem;
   }
@@ -2143,62 +2112,10 @@ button {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .grift-stage__atmosphere::before,
-  .grift-stage__atmosphere::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-@keyframes grift-stage-breathe {
-  0%, 100% { transform: scaleX(0.98); }
-  50% { transform: scaleX(1.02); }
-}
-
 .grift-stage {
   min-block-size: clamp(9.65rem, 16vw, 12rem);
   overflow: visible;
   border-bottom-color: color-mix(in srgb, var(--grift-border-strong), transparent 20%);
-}
-
-.grift-stage__atmosphere {
-  overflow: hidden;
-}
-
-.grift-stage__atmosphere::before {
-  inset: 14% 6%;
-  border-inline-width: 0;
-  border-block-width: 1px;
-}
-
-.grift-stage__atmosphere::after {
-  inset: 28% 22%;
-  border-block-width: 0;
-  border-inline-width: 1px;
-}
-
-.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::before {
-  inset-inline: 4%;
-  opacity: calc(var(--grift-stage-frame-opacity) + 0.1);
-}
-
-.grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after {
-  inset-inline: 16%;
-  border-block-width: 1px;
-}
-
-.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::before {
-  inset: 8% 2.5%;
-  border-inline-width: 1px;
-  border-block-width: 1px;
-}
-
-.grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
-  inset: 19% 11%;
-  border-inline-width: 1px;
-  border-block-width: 1px;
-  opacity: calc(var(--grift-stage-frame-opacity) + 0.08);
 }
 
 .grift-stage__content {
@@ -2497,10 +2414,4 @@ button {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .grift-os-app[data-visual-condition="automated"] & .grift-stage__atmosphere::after,
-  .grift-os-app[data-visual-condition="structural"] & .grift-stage__atmosphere::after {
-    animation: none;
-  }
-}
 }

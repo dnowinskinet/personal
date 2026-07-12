@@ -198,31 +198,13 @@
 }
 
 .grift-os-app {
-  --grift-stage-media: none;
-  --grift-stage-atmosphere-opacity: 0.08;
   --grift-stage-scrim: rgba(248, 250, 249, 0.76);
-  --grift-stage-frame-color: var(--grift-info);
-  --grift-stage-frame-opacity: 0.12;
-  --grift-stage-motion-duration: 12s;
 
   overflow: visible;
 }
 
 :host-context(.dark) .grift-os-app {
   --grift-stage-scrim: rgba(11, 16, 19, 0.72);
-  --grift-stage-frame-opacity: 0.16;
-}
-
-.grift-os-app[data-visual-condition="automated"] {
-  --grift-stage-atmosphere-opacity: 0.16;
-  --grift-stage-frame-opacity: 0.2;
-  --grift-stage-motion-duration: 10s;
-}
-
-.grift-os-app[data-visual-condition="structural"] {
-  --grift-stage-atmosphere-opacity: 0.24;
-  --grift-stage-frame-opacity: 0.28;
-  --grift-stage-motion-duration: 14s;
 }
 
 .grift-support-tools {
