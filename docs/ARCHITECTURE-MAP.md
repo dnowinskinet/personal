@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 91d9643182cb69844382f08efe6e7f90c83e7b6e
+Last verified against commit: 852135df836849cc6b6f99052c67583757d8d0a4
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -21,12 +21,13 @@ grift-os-game/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
+  presentation/   Pure rule-complete view models and typed gameplay actions
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
   playtest/       Session logging and metrics
   grift-os-game.ts/html
-                  Runtime orchestration, persistence, view models, interactions,
-                  fixtures, and all mode rendering
+                  Runtime orchestration, persistence, semantic action dispatch,
+                  interactions, fixtures, and all mode rendering
 
 src/styles/_grift-os.scss
                   Global owner of current GriftOS visual composition and motion
@@ -35,20 +36,20 @@ src/styles/_grift-os.scss
 Current dependency problems are known implementation evidence, not approved boundaries:
 
 - compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
-- content-bearing compatibility types remain in `game-engine/types.ts` pending presentation/type ownership work;
-- the component owns simulation, persistence, presentation, overlays, fixtures, and rendering;
+- content-bearing compatibility types remain in `game-engine/types.ts` pending later type-ownership work;
+- the component owns simulation, persistence, action execution, overlays, fixtures, and rendering, while display derivation and gameplay action vocabulary are now presentation-owned;
 - the global stylesheet uses source-order Phase 1/1.1 overrides as visual architecture.
 
 ## TARGET — approved destination, not yet implemented
 
-The following structure is the approved migration destination. The Influence `mechanics/` and `content/` paths now exist under the current feature root; the other proposed paths and boundaries below are not yet implemented:
+The following structure is the approved migration destination. The Influence `mechanics/` and `content/` paths and a current feature-local `presentation/` boundary now exist. The proposed top-level paths, runtime services, host, interaction layer, packs, and renderer below are not yet implemented:
 
 ```text
 grift-os/
   host/           Route host and the single runtime-selected empire boundary
   runtime/        Current-run orchestration, v1 persistence adapter, events, offline credit
   engine/         Pure shared formulas and mechanical primitives
-  presentation/   Rule-complete view models and semantic action dispatch
+  presentation/   Rule-complete view models and semantic actions; CURRENT locally, final placement deferred
   formatting/     Shared formatting
   interaction/    Focus, overlay, Escape, touch, and reduced-motion contracts
   empires/
@@ -106,10 +107,10 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 |---|---|---|
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
 | Influence balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Influence mechanics/tuning pack (CURRENT ownership; direct engine consumption deferred) |
-| Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; some component string assembly remains | Influence content pack (CURRENT catalog ownership; presentation facade deferred) |
+| Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
 | Icon or motion | ID unions, definitions, global SCSS | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |
-| Action availability/mode reveal | Main component getters | Shared runtime/presentation facade |
+| Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (presentation ownership CURRENT; runtime extraction pending) |
 | Stage/Lane/Leverage/Rug Pull layout | Main template and global SCSS | Corresponding Influence renderer component |
 | Global Net Worth behavior | Prestige/modifier engine and component persistence | Shared mechanics/meta contract |
 | Mobile Context behavior | Component, template, and global breakpoints | Shared interaction contract + Influence Context |
