@@ -1,1 +1,18 @@
 :host { display: contents; }
+
+.influence-lane-icon {
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--grift-info), transparent 42%);
+  background: color-mix(in srgb, var(--grift-info), transparent 91%);
+  color: var(--grift-info);
+  font: 720 0.58rem/1 ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+}
+
+.grift-hustle-entry { position: relative; }
+.grift-hustle-selected .influence-lane-icon { border-color: var(--grift-selection); color: var(--grift-selection); }
+.grift-hustle-automated .influence-lane-icon { border-color: var(--grift-automation); color: var(--grift-automation); }

@@ -19,4 +19,8 @@ export class InfluenceLaneComponent {
   emit(action: GameAction, sourceEvent?: Event): void {
     this.request.emit({ action, sourceEvent });
   }
+
+  get iconMonogram(): string {
+    return this.row.definition.name.split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
+  }
 }

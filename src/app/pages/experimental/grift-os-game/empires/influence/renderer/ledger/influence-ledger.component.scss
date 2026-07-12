@@ -1,1 +1,8 @@
 :host { display: block; min-width: 0; }
+
+.grift-hustle-plane { position: relative; }
+.grift-hustle-list { position: relative; display: grid; gap: 0.5rem; overflow: visible; padding-left: 1.25rem; }
+
+@media (max-width: 44rem) {
+  .grift-hustle-list { gap: 0.72rem; padding-left: 0; }
+}

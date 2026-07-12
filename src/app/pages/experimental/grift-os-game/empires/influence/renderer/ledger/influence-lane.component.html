@@ -19,7 +19,7 @@
       [attr.aria-label]="row.definition.manualActionLabel + ' for ' + row.definition.name"
       [title]="row.definition.manualActionLabel"
       (click)="emit({ type: 'hustle.activate', hustleId: row.id })">
-      <span class="grift-hustle-icon" [attr.data-icon-kind]="row.definition.iconKind" aria-hidden="true"></span>
+      <span class="influence-lane-icon" aria-hidden="true">{{ iconMonogram }}</span>
     </button>
 
     <button type="button" class="grift-hustle-select" [attr.data-grift-hustle-select]="row.id"
