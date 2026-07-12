@@ -97,6 +97,7 @@
 
 .grift-valuation-object { display: grid; justify-items: center; gap: 0.2rem; min-width: 0; text-align: center; }
 .grift-valuation-object p { color: var(--stage-metal); }
+.grift-valuation-amount { position: relative; }
 .grift-valuation-object strong {
   color: var(--grift-value);
   font: 540 clamp(3.2rem, 5.2vw, 5rem)/0.86 Georgia, "Times New Roman", serif;
@@ -125,7 +126,7 @@
 .grift-capital-panel span { color: var(--grift-ink-soft); font-size: 0.7rem; font-weight: 650; }
 .grift-capital-panel--established span { color: var(--grift-info); }
 
-.grift-stage__feedback { position: absolute; top: 50%; left: calc(50% + min(25rem, 30vw)); width: min(9rem, 10vw); min-block-size: 5rem; overflow: clip; pointer-events: none; transform: translateY(-50%); }
+.grift-stage__feedback { position: absolute; top: 50%; left: calc(100% + clamp(0.65rem, 1.2vw, 1rem)); width: clamp(5.5rem, 7vw, 7.5rem); min-block-size: 4rem; overflow: clip; pointer-events: none; transform: translateY(-50%); }
 .grift-valuation-flyout { position: absolute; left: 0; max-width: 100%; overflow: hidden; font-size: 0.76rem; font-weight: 720; white-space: nowrap; }
 .grift-valuation-flyout--gain { top: 1rem; color: #9abf78; animation: grift-stage-value 620ms ease-out both; --flyout-end: -12px; }
 .grift-valuation-flyout--spend { bottom: 1rem; color: #d9877f; animation: grift-stage-value 620ms ease-out both; --flyout-end: 12px; }

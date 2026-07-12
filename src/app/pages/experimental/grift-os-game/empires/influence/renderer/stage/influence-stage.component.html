@@ -18,25 +18,24 @@
             <p>{{ view.copy.valuationLabel }}</p>
             <div class="grift-valuation-amount">
               <strong>{{ view.valuationLabel }}</strong>
+              <div class="grift-stage__feedback" aria-hidden="true">
+                @for (flyout of view.valuationFlyouts; track trackValuationFlyout($index, flyout)) {
+                  <span
+                    class="grift-valuation-flyout"
+                    [class.grift-valuation-flyout--gain]="flyout.direction === 'gain'"
+                    [class.grift-valuation-flyout--spend]="flyout.direction === 'spend'"
+                    [style.--grift-flyout-lane]="flyout.lane"
+                  >
+                    {{ flyout.label }}
+                  </span>
+                }
+              </div>
             </div>
             <span>{{ view.valuationPerSecondLabel }}</span>
           </div>
         </div>
         <span class="grift-stage__plinth" aria-hidden="true"></span>
       </div>
-    </div>
-
-    <div class="grift-stage__feedback" aria-hidden="true">
-      @for (flyout of view.valuationFlyouts; track trackValuationFlyout($index, flyout)) {
-        <span
-          class="grift-valuation-flyout"
-          [class.grift-valuation-flyout--gain]="flyout.direction === 'gain'"
-          [class.grift-valuation-flyout--spend]="flyout.direction === 'spend'"
-          [style.--grift-flyout-lane]="flyout.lane"
-        >
-          {{ flyout.label }}
-        </span>
-      }
     </div>
 
     <div class="grift-stage__capital">
