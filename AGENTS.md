@@ -1,76 +1,56 @@
 # Agent Guide
 
-This is the first stop for Codex or any AI collaborator working in this repo.
+Start here for Codex or any AI collaborator working in this repository.
 
-Before non-trivial changes, read:
+## Source precedence
 
-- [docs/architecture.md](docs/architecture.md)
-- [package.json](package.json) scripts
-- [angular.json](angular.json)
+Use this authority order:
 
-## Project Posture
+1. CURRENT STATE
+2. DECISION LOG (`docs/decision-log.md`)
+3. Latest dated canonical design, economy, and architecture documents
+4. Current code and tests as implementation evidence
+5. Research references
+6. Historical task contracts and project chats
 
-- Angular 21 personal site with SSR and prerendering enabled.
-- Hybrid Angular structure: classic `AppModule` plus standalone components. Do not do a full standalone migration unless explicitly requested.
-- Tailwind is intentionally on v3. Treat Tailwind 4 as a separate migration.
-- Font Awesome Pro packages are installed through the configured npm registry.
-- Keep changes scoped. This project has hobby-history layers; avoid broad rewrites unless the task is explicitly a migration.
+Code and tests prove current behavior; they do not silently overrule newer product decisions. Orient GriftOS work with [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md), then use [docs/ARCHITECTURE-MAP.md](docs/ARCHITECTURE-MAP.md) to find the responsible layer.
+
+## Project posture
+
+- Angular 21 personal site with SSR and prerendering.
+- Tested toolchain: Node 22, npm 10, Angular 21.2, TypeScript 5.9.
+- Hybrid Angular structure: classic `AppModule` plus standalone components. Do not perform a broad standalone migration unless explicitly requested.
+- Tailwind remains on v3; treat Tailwind 4 as a separate migration.
+- Font Awesome Pro resolves through the configured npm registry.
+- Keep changes scoped and add no dependency without explicit approval.
 
 ## Verification
 
-Use this before considering implementation work complete:
+Use the workflow in [docs/VERIFICATION.md](docs/VERIFICATION.md). At minimum, implementation work must pass:
 
 ```bash
 npm run verify
 ```
 
-Useful focused commands:
+GriftOS work normally also requires:
 
 ```bash
-npm run build
-npm run lint
-npm run audit:prod
-npm run deps:outdated
+npm run grift:test
 ```
 
-## Dependency Notes
+## GriftOS boundaries
 
-- TypeScript should stay within Angular's supported range. For Angular 21, do not jump to TypeScript 6 until Angular supports it.
-- The remaining `npm audit` moderate findings are currently in Angular dev-server tooling with no direct app-level fix available.
-- Do not force dependency overrides for Angular build tooling unless there is a specific failing issue or advisory path.
+- Keep GriftOS under `/experimental/grift-os` unless a later decision moves it.
+- Preserve `grift-os-meta-v1`, `grift-os-run-v1`, and current Influence IDs unless an approved save migration explicitly changes them.
+- Keep formulas, tuning, content, presentation, visuals, audio, runtime, and development tooling as distinct owners; see [docs/ARCHITECTURE-MAP.md](docs/ARCHITECTURE-MAP.md).
+- The current architecture is transitional. Target paths and ownership documented as `TARGET` are not yet implemented.
+- Desktop and mobile are authored visual targets. Intermediate widths must remain functional but receive no dedicated art direction.
+- Support authored light/dark expressions and safe site-accent inheritance.
+- Use semantic game events; components must not call audio playback directly.
+- Audio remains SSR-safe, gesture-unlocked, and optional when assets are absent.
+- Enterprise Intensity/Stage is compatibility state, not the required future player-facing visual model.
+- Preserve the documented eight-hour offline-credit cap unless an approved mechanics decision changes it.
+- Do not add currencies, random events, bosses, backend systems, major mechanic trees, or broad dependency upgrades without an explicit decision.
+- Preserve the fictional composite target; do not imitate or allege wrongdoing by real people.
 
-## GriftOS Game Work
-
-The GriftOS game concept is governed by the project brief in `Project Brief- Satirical Tech-Elite Idle Tycoon.docx` and the maintained repo docs:
-
-- [docs/game-design.md](docs/game-design.md)
-- [docs/economy.md](docs/economy.md)
-- [docs/decision-log.md](docs/decision-log.md)
-- [docs/content-guide.md](docs/content-guide.md)
-- [docs/playtest-plan.md](docs/playtest-plan.md)
-- [docs/mechanics-experiments.md](docs/mechanics-experiments.md)
-- [docs/interface-architecture.md](docs/interface-architecture.md)
-- [docs/prestige.md](docs/prestige.md)
-- [docs/audio-architecture.md](docs/audio-architecture.md)
-
-Rules for game work:
-
-- Keep the game under the Experimental route unless a later architecture decision moves it.
-- Keep core economy logic independent from Angular presentation.
-- Player-facing systems are Hustles, not Generators. Internal compatibility aliases may exist temporarily, but UI copy should use Hustle grammar.
-- Keep Hustle/content copy data-driven and editable without changing simulation math.
-- Preserve economy, UI, content, and local playtest instrumentation as separate concerns.
-- Keep title and major player-facing copy centralized. Do not add hardcoded title strings across templates.
-- Do not reintroduce Receipts as an assumed V1 roadmap item. It is abandoned for current V1 planning and only revisitable as a later experiment.
-- Valuation is the current in-run value. Net Worth is the current persistent prestige hypothesis. Do not add another thematic currency without an explicit documented decision.
-- Rug Pull is a state machine, not a bare reset helper.
-- Do not add random events, bosses, extra currencies, offline progress, APIs, backend systems, or major dependency upgrades before their documented phase.
-- Do not turn thematic nouns such as Aura, Hype, Narrative, or Founder Myth into currencies without an explicit documented decision.
-- Do not implement Clicker Heroes-like mechanics unless a scoped experiment has been explicitly selected.
-- Do not invent large mechanic trees without explicit approval. Economy values are simulation-backed hypotheses.
-- Use semantic game events first. Do not call audio playback directly from components.
-- Audio must be SSR-safe and gesture-unlocked. It must degrade cleanly when assets are absent.
-- Visual and audio progression share Enterprise Intensity. Do not create unrelated visual/audio intensity formulas without a documented decision.
-- UI must support the host site's light and dark themes.
-- Preserve the fictional composite target. Do not name, depict, closely imitate, or imply factual wrongdoing by real tech leaders.
-- Add tests for economy-critical logic and run tests plus production build after each implementation phase.
+Durable constraints and their tests are indexed in [docs/INVARIANTS.md](docs/INVARIANTS.md). Historical task briefs are not current authority unless a newer canonical source explicitly adopts them.

@@ -1,10 +1,11 @@
 ---
 title: "GriftOS Hustles UX Architecture Reset"
-status: "TASK SPEC — IMPLEMENTATION CONTRACT"
+status: "HISTORICAL — IMPLEMENTED TASK CONTRACT"
 date: "2026-07-05"
 scope: "Hustles UX, progressive disclosure, responsive selected-Hustle context, interaction semantics, semantic visual progression hooks"
 authority: "Task-specific implementation brief; subordinate to CURRENT STATE, DECISION LOG, and newer canonical project sources"
 source_precedence: "CURRENT STATE > DECISION LOG > latest canonical domain docs > experiment/playtest docs > research reports > project chats > this task spec where conflicts exist"
+historical_note: "Retained to explain the July 2026 UX reset. It is not current-state or target-architecture authority."
 ---
 
 # GriftOS Hustles UX Architecture Reset
