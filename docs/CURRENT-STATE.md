@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 127d58564047686fc9021054f6fcbd63ae31e409
+Last verified against commit: dbafc0194865f6985b98a3395f76ff5806783997
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -13,8 +13,9 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 - Active route: `/experimental/grift-os`.
 - Active implementation: Influence / Attention empire under `src/app/pages/experimental/grift-os-game/`.
-- Accepted visual baseline: `3bb5884` plus `ec59e9b`; transitional, not final art direction.
-- Selected future Influence direction: Circulating Institution; prototype remains paused.
+- Prior accepted visual/runtime baseline: `3bb5884` plus `ec59e9b`; retained as the pre-Phase-K rollback reference.
+- Current Influence visual baseline: the first Circulating Institution prototype at `dbafc01`; active for review, transitional, and not final art direction.
+- The prototype authors the Valuation Stage, mode rail, Hustle ledger/lanes, and selected Context in light/dark desktop/mobile expressions. Leverage and Rug Pull retain their existing meaning and composition.
 - Primary save formats and keys: `grift-os-meta-v2` and `grift-os-run-v2`. Legacy `grift-os-meta-v1` and `grift-os-run-v1` records are retained and mirrored for rollback while Influence is the only production empire.
 - Global Net Worth is stored in v2 meta. The migrated v1 `rugPullCount` is Influence's per-empire lifetime exit count; no global lifetime-exit counter is persisted.
 - Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for component and tooling consumers.
@@ -36,8 +37,8 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 ## DEFERRED
 
 - Exact unlock requirements, shared transition UI/terminology, and whether later balance work should make prestige easier for empire switching.
-- Circulating Institution implementation and its transition UI.
+- Final Circulating Institution art, asset, motion, and transition UI decisions.
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase J's single-active-run v2 persistence and rollback-safe v1 migration are complete at `127d585`. Prestige mechanics and visible transition behavior did not change. Phase K Circulating Institution work has not begun and requires separate authorization. Static Stage/Lane/Context component decomposition remains TARGET.
+Phase K's first Circulating Institution prototype is complete at `dbafc01`. The existing live renderer style scope is now protected by a component assertion, and every renderer-local visual sheet is included in architecture checks. Mechanics, tuning, content, actions, routes, saves, Leverage, and Rug Pull behavior did not change. Prototype acceptance/revision and static Stage/Lane/Context component decomposition remain future work.

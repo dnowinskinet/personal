@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 127d58564047686fc9021054f6fcbd63ae31e409
+Last verified against commit: dbafc0194865f6985b98a3395f76ff5806783997
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -24,6 +24,7 @@ grift-os-game/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
       renderer/   CURRENT Influence renderer boundary and explicitly scoped visual owner;
+                  `_circulating-institution.scss` is the active reviewable visual layer;
                   internal Angular composition pending
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
@@ -51,7 +52,7 @@ Current dependency problems are known implementation evidence, not approved boun
 - the host imports no Influence renderer type. The composition registry adapts the neutral host view with Influence content and supplies the production renderer registration;
 - the replacement renderer exists only in the component test and proves the boundary; it is not a second production empire or a runtime switching feature;
 - the Influence renderer template remains at the feature root and is not yet decomposed into Stage/Lane/Context modules;
-- renderer rules are co-located and root-scoped but remain one large transitional stylesheet compiled through the Sass entrypoint until region components own smaller sheets.
+- renderer rules are co-located and root-scoped. The active Circulating Institution prototype is isolated in a reviewable renderer-local sheet, while the earlier transitional renderer sheet remains pending region ownership and consolidation.
 
 ## TARGET — approved destination, not yet implemented
 
