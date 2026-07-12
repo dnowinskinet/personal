@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: dbafc0194865f6985b98a3395f76ff5806783997
+Last verified against commit: 4a013e75c76796ef2e725c58cd10dc78b3b3b080
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -28,6 +28,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | The current renderer consumes rule-complete presentation models for display state and emits typed semantic gameplay actions rather than reconstructing costs, affordability, or mode reveal in the template. | `presentation/game-presentation.spec.ts`; component action-dispatch test; `npm run grift:arch` |
 | Exactly one runtime-selected empire renderer is mounted, its live DOM contains the Influence style root, shared utilities remain outside it in the host, and the Influence renderer does not import economy, runtime, audio, or playtest code. | `grift-os-game.spec.ts`: renderer/style-root/utility ownership test; `npm run grift:arch` |
+| The Influence Stage is statically composed inside the one empire renderer, consumes presentation-only data, owns no gameplay actions, and keeps active Circulating Institution Stage rules out of the prototype-level stylesheet. | `stage/influence-stage.component.spec.ts`; `grift-os-game.spec.ts`; `npm run grift:arch` |
 | A replacement renderer can consume the neutral host view and dispatch semantic actions without the host importing a concrete empire renderer; replacement does not move shared utilities inside the renderer. | `grift-os-game.spec.ts`: replacement-renderer proof; `npm run grift:arch` |
 | Influence selectors remain under the renderer root; empire composition/keyframes do not return to the global GriftOS bridge; `::ng-deep`, append-only phase sections, and new unreviewed `!important` declarations are rejected. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Presentation production sources import no Angular, browser storage/DOM, audio, renderer, playtest, or current component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
@@ -45,7 +46,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 ## TARGET — approved constraints not yet enforceable
 
 - Visual and audio pack extraction is not yet implemented.
-- The Influence renderer is internally composed from ordinary responsibility-owned Angular components with smaller region-owned sheets.
+- Influence renderer regions beyond the CURRENT Stage are internally composed from ordinary responsibility-owned Angular components with smaller region-owned sheets.
 - Catalog assembly validates IDs and cross-references before a run begins.
 - Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 
