@@ -2635,3 +2635,383 @@
   0%, 100% { transform: scaleX(0.98); }
   50% { transform: scaleX(1.02); }
 }
+
+/* Phase 1.1: editorial calibration and responsive repair */
+.grift-stage {
+  min-block-size: clamp(9.65rem, 16vw, 12rem);
+  overflow: visible;
+  border-bottom-color: color-mix(in srgb, var(--grift-border-strong), transparent 20%);
+}
+
+.grift-stage__atmosphere {
+  overflow: hidden;
+}
+
+.grift-stage__atmosphere::before {
+  inset: 14% 6%;
+  border-inline-width: 0;
+  border-block-width: 1px;
+}
+
+.grift-stage__atmosphere::after {
+  inset: 28% 22%;
+  border-block-width: 0;
+  border-inline-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="automated"] .grift-stage__atmosphere::before {
+  inset-inline: 4%;
+  opacity: calc(var(--grift-stage-frame-opacity) + 0.1);
+}
+
+.grift-os-app[data-visual-condition="automated"] .grift-stage__atmosphere::after {
+  inset-inline: 16%;
+  border-block-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="structural"] .grift-stage__atmosphere::before {
+  inset: 8% 2.5%;
+  border-inline-width: 1px;
+  border-block-width: 1px;
+}
+
+.grift-os-app[data-visual-condition="structural"] .grift-stage__atmosphere::after {
+  inset: 19% 11%;
+  border-inline-width: 1px;
+  border-block-width: 1px;
+  opacity: calc(var(--grift-stage-frame-opacity) + 0.08);
+}
+
+.grift-stage__content {
+  grid-template-areas:
+    "identity owner"
+    "valuation gains";
+  grid-template-columns: minmax(0, 1fr) minmax(6.75rem, 0.42fr);
+  gap: 0.28rem clamp(0.6rem, 2vw, 1rem);
+  align-items: center;
+}
+
+.grift-stage__identity {
+  align-self: end;
+}
+
+.grift-stage__owner {
+  align-self: end;
+}
+
+.grift-stage__valuation {
+  overflow: visible;
+}
+
+.grift-stage__gains {
+  position: relative;
+  grid-area: gains;
+  align-self: center;
+  min-block-size: 3.4rem;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.grift-stage__gains .grift-valuation-flyout {
+  left: 0;
+  max-width: 100%;
+  font-size: clamp(0.7rem, 1.1vw, 0.88rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grift-stage__gains .grift-valuation-flyout--gain {
+  top: 0.5rem;
+}
+
+.grift-stage__gains .grift-valuation-flyout--spend {
+  bottom: 0.5rem;
+}
+
+.grift-stage .grift-title-block {
+  display: flex;
+  gap: 0.36rem;
+  align-items: baseline;
+}
+
+.grift-stage .grift-title-block .grift-kicker {
+  margin: 0;
+  color: var(--grift-ink-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.grift-stage .grift-title-block h1 {
+  font-size: 0.98rem;
+  font-weight: 680;
+}
+
+.grift-stage .grift-valuation-object {
+  justify-items: start;
+  text-align: left;
+}
+
+.grift-stage .grift-valuation-object strong {
+  font-size: clamp(2.75rem, 8vw, 4.6rem);
+  line-height: 0.88;
+}
+
+.grift-stage .grift-valuation-object span {
+  margin-top: 0.15rem;
+  font-size: clamp(0.82rem, 1.25vw, 1rem);
+}
+
+.grift-stage .grift-net-worth {
+  min-width: 0;
+  padding-left: 0.7rem;
+  border-left: 1px solid var(--grift-border-strong);
+}
+
+.grift-stage .grift-net-worth strong {
+  font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+}
+
+.grift-mode-tabs {
+  z-index: 3;
+  isolation: isolate;
+  border-bottom-color: var(--grift-border-strong);
+  background: var(--grift-plane);
+  box-shadow: 0 0.5rem 0.8rem color-mix(in srgb, var(--grift-plane), transparent 25%);
+}
+
+.grift-work-surface {
+  position: relative;
+  z-index: 0;
+}
+
+.grift-hustle-grid {
+  grid-template-columns: 2.7rem minmax(8.5rem, 0.82fr) minmax(8.25rem, 0.74fr) minmax(15rem, 1.18fr);
+  align-items: stretch;
+}
+
+.grift-hustle-actions {
+  align-content: center;
+}
+
+.grift-hustle-actions--manual {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(5.8rem, 0.58fr);
+}
+
+.grift-hustle-actions .grift-action-button {
+  min-height: 2.55rem;
+  overflow: visible;
+  padding: 0.44rem 0.6rem;
+  line-height: 1.18;
+  text-align: left;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.grift-hustle-actions--manual .grift-action-primary {
+  min-height: 2.7rem;
+}
+
+.grift-support-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid var(--grift-border);
+  background: var(--grift-plane);
+  padding: 0.46rem clamp(0.85rem, 2.4vw, 2rem);
+}
+
+.grift-support-tools .grift-audio-controls {
+  border-color: color-mix(in srgb, var(--grift-border), transparent 20%);
+  padding: 0.1rem;
+}
+
+.grift-support-tools .grift-audio-controls button,
+.grift-support-tools .grift-playtest-menu summary {
+  min-height: 1.85rem;
+  padding: 0.28rem 0.48rem;
+  font-size: 0.65rem;
+}
+
+.grift-support-tools .grift-playtest-menu summary {
+  color: var(--grift-ink-faint);
+}
+
+.grift-rug-stage {
+  gap: clamp(1rem, 2.2vw, 1.5rem);
+  width: min(64rem, 100%);
+  border-color: color-mix(in srgb, var(--grift-warning), transparent 78%);
+  background: color-mix(in srgb, var(--grift-plane-raised), #000 4%);
+}
+
+.grift-rug-intro {
+  grid-template-columns: minmax(13rem, 0.78fr) minmax(0, 1.22fr);
+  gap: 0.65rem clamp(1rem, 4vw, 2.8rem);
+  align-items: end;
+  justify-items: start;
+  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
+  padding-bottom: clamp(0.9rem, 2.2vw, 1.35rem);
+  text-align: left;
+}
+
+.grift-rug-intro > p:first-child,
+.grift-rug-intro-value {
+  grid-column: 1;
+}
+
+.grift-rug-intro-value {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.grift-rug-intro h2 {
+  margin: 0;
+  font-size: clamp(1.12rem, 2vw, 1.45rem);
+}
+
+.grift-rug-intro strong {
+  font-size: clamp(2.85rem, 5.4vw, 4.85rem);
+  line-height: 0.9;
+}
+
+.grift-rug-intro span {
+  font-size: 0.96rem;
+}
+
+.grift-rug-intro .grift-rug-thesis {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  max-width: 34rem;
+  margin: 0;
+  font-size: clamp(0.88rem, 1.45vw, 1.04rem);
+  text-align: left;
+}
+
+.grift-rug-ledger,
+.grift-rug-consequence-grid {
+  gap: clamp(0.85rem, 3vw, 2rem);
+}
+
+.grift-rug-ledger strong {
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+}
+
+@media (min-width: 44rem) {
+  .grift-stage {
+    min-block-size: clamp(10rem, 13vw, 11.5rem);
+  }
+
+  .grift-stage__content {
+    grid-template-areas: "identity valuation gains owner";
+    grid-template-columns: minmax(6.5rem, 0.42fr) minmax(17rem, 1.42fr) minmax(8.5rem, 0.52fr) minmax(8rem, 0.45fr);
+    gap: clamp(0.7rem, 1.7vw, 1.3rem);
+  }
+
+  .grift-stage__identity,
+  .grift-stage__owner {
+    align-self: center;
+  }
+
+  .grift-stage__gains {
+    min-block-size: 4.5rem;
+  }
+
+  .grift-stage .grift-valuation-object {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+@media (min-width: 72rem) {
+  .grift-stage {
+    min-block-size: clamp(10.75rem, calc(5vw + 6.4rem), 13.25rem);
+  }
+
+  .grift-stage__content {
+    grid-template-columns: minmax(7rem, 0.46fr) minmax(21rem, 1.45fr) minmax(10.5rem, 0.52fr) minmax(9rem, 0.48fr);
+  }
+
+  .grift-stage .grift-valuation-object strong {
+    font-size: clamp(3.8rem, 5vw, 5.05rem);
+  }
+}
+
+@media (max-width: 71.999rem) {
+  .grift-mode-tabs {
+    position: relative;
+    top: auto;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 2.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr);
+  }
+
+  .grift-hustle-actions {
+    grid-column: 2 / -1 !important;
+  }
+
+  .grift-hustle-actions--manual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 44rem) {
+  .grift-stage {
+    min-block-size: 9.4rem;
+  }
+
+  .grift-stage__gains {
+    display: block;
+    min-block-size: 3.2rem;
+  }
+
+  .grift-stage .grift-net-worth span {
+    display: none;
+  }
+
+  .grift-hustle-grid {
+    grid-template-columns: 2.7rem minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .grift-hustle-metrics,
+  .grift-hustle-actions {
+    grid-column: 2;
+  }
+
+  .grift-hustle-actions--manual,
+  .grift-hustle-actions--automated {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grift-hustle-actions--manual .grift-action-primary {
+    grid-column: auto;
+  }
+
+  .grift-support-tools {
+    justify-content: space-between;
+  }
+
+  .grift-rug-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .grift-rug-intro .grift-rug-thesis {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-os-app[data-visual-condition="automated"] .grift-stage__atmosphere::after,
+  .grift-os-app[data-visual-condition="structural"] .grift-stage__atmosphere::after {
+    animation: none;
+  }
+}
