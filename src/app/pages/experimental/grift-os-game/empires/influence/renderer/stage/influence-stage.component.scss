@@ -19,7 +19,10 @@
   --stage-metal: #d0aa64;
   --stage-metal-dim: #d0aa646b;
   --stage-depth: color-mix(in srgb, var(--grift-plane) 82%, #020506);
-  --stage-backdrop: var(--influence-stage-backdrop-dark-desktop, none);
+  --stage-backdrop: var(
+    --influence-stage-backdrop-dark-desktop,
+    url('/assets/image/grift-os/influence/influence-stage-desktop-dark.png')
+  );
 }
 
 .grift-stage__atmosphere,
