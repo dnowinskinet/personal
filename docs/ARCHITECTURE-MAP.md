@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 4a013e75c76796ef2e725c58cd10dc78b3b3b080
+Last verified against commit: 5d3b4f7db87e6158f99afa4a3f225bbf0ccf1092
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -25,8 +25,8 @@ grift-os-game/
       content/    CURRENT Influence player-facing language
       renderer/   CURRENT Influence renderer boundary and explicitly scoped visual owner;
                   `_circulating-institution.scss` is the active reviewable visual layer;
-        stage/    CURRENT statically composed Stage view/template/style owner;
-                  remaining internal Angular composition pending
+        stage/    CURRENT statically composed Stage view/template/style owner with
+                  internal Backdrop, Chamber, Frame, and Capital Panel composition
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
@@ -103,14 +103,14 @@ Target prohibitions:
 |---|---|---|---|---|---|---|---|
 | Navbar | Nowinski site navigation above the game | Site layout | Site layout | Stable | Shared site shell | Global navigation | Global compact navigation |
 | Shell | Boundary of the game below Navbar | Shared host plus global shell/theme bridge | Shared GriftOS host | CURRENT; replacement proven | Shared | Contains one registered renderer | Contains one registered renderer |
-| Stage | Primary Valuation and identity composition | `InfluenceStageComponent` with a presentation-only view and local styles | Influence Stage | CURRENT | Empire-specific | Rich authored composition | Compact authored composition |
-| Backdrop | Non-semantic atmospheric layer behind Stage content | Internal element of `InfluenceStageComponent` | Influence Backdrop or Stage-internal element as complexity warrants | Component-owned; independent extraction deferred | Empire-specific | May carry depth/motion | Simplified or omitted |
-| Chamber | Bounded focal area around Valuation | Internal Stage composition; no independent behavior | Influence Chamber or Stage-internal element as complexity warrants | Stage-owned; independent extraction deferred | Empire-specific | Anchors major value | Compact focal area |
-| Frame | Structural visual boundary around a region | Stage Frame is component-local; other frames remain renderer-level | Owning Influence component | Stage CURRENT; other regions pending | Empire-specific | Supports hierarchy | Reduced framing |
+| Stage | Primary Valuation and identity composition | `InfluenceStageComponent` with a presentation-only view and local styles | Influence Stage | CURRENT; K.2 identity authored | Empire-specific | Architectural focal composition | Compact authored composition |
+| Backdrop | Non-semantic atmospheric layer behind Stage content | Internal rectilinear element of `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Empire-specific | Canopy, columns, and dais establish depth | Simplified canopy/columns/dais |
+| Chamber | Bounded focal area around Valuation | Internal Stage composition; no independent behavior | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Empire-specific | Anchors the dominant value | Compact focal area |
+| Frame | Structural visual boundary around a region | Stage Frame is component-local; other frames remain renderer-level | Owning Influence component | Stage CURRENT; other regions pending | Empire-specific | Authored valuation boundary | Reduced but preserved framing |
 | Valuation | Current spendable in-run value presentation | Shared facade data consumed by `InfluenceStageComponent` | Shared facade data; Influence Stage presentation | CURRENT | Shared mechanic, empire expression | Dominant value | Preserved dominant value |
 | Pulse | Gain/spend and production feedback tied to real events | Host feedback state + root-scoped Influence motion | Shared semantic feedback; Influence motion | Renderer ownership CURRENT | Shared event, empire expression | Directional feedback | Reduced non-obscuring feedback |
 | Rail | Long connective spine or track language used in operating flows | Circulating Institution Ledger styling | Influence Ledger/Lane | Visual prototype only; module pending | Empire-specific composition | Connects operating lanes | Simplified in stacked lanes |
-| Capital Panel | Stable owner/Net Worth/status presentation | Owner block internal to `InfluenceStageComponent` | Influence Capital Panel, initially Stage-internal | Stage-owned; independent extraction deferred | Shared meta data, empire-specific expression | Secondary stable panel | Compact/conditional |
+| Capital Panel | Stable owner/Net Worth presentation using only real facade data | Conditional panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Secondary stable panel when Net Worth exists | Compact and conditional |
 | Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | Influence renderer template/root-scoped renderer SCSS | Influence Ledger | Styles contained; module pending | Empire-specific composition | Dominant operating surface | Full-width stack |
 | Lane | One Hustle's identity, production, and actions | Influence renderer loop/root-scoped renderer SCSS | Influence Lane | Styles contained; module pending | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |

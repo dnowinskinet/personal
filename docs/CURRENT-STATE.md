@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 4a013e75c76796ef2e725c58cd10dc78b3b3b080
+Last verified against commit: 5d3b4f7db87e6158f99afa4a3f225bbf0ccf1092
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -14,7 +14,7 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Active route: `/experimental/grift-os`.
 - Active implementation: Influence / Attention empire under `src/app/pages/experimental/grift-os-game/`.
 - Prior accepted visual/runtime baseline: `3bb5884` plus `ec59e9b`; retained as the pre-Phase-K rollback reference.
-- Current Influence visual baseline: the first Circulating Institution prototype at `dbafc01`, with the rejected Stage-circle motif removed at `05969a6`; active for review, transitional, and not final art direction.
+- Current Influence visual baseline: the K.2 Stage identity pass at `5d3b4f7`, building on the first Circulating Institution prototype at `dbafc01` and Stage-circle removal at `05969a6`; active for review, transitional, and not final art direction.
 - The prototype authors the Valuation Stage, mode rail, Hustle ledger/lanes, and selected Context in light/dark desktop/mobile expressions. Leverage and Rug Pull retain their existing meaning and composition.
 - Primary save formats and keys: `grift-os-meta-v2` and `grift-os-run-v2`. Legacy `grift-os-meta-v1` and `grift-os-run-v1` records are retained and mirrored for rollback while Influence is the only production empire.
 - Global Net Worth is stored in v2 meta. The migrated v1 `rugPullCount` is Influence's per-empire lifetime exit count; no global lifetime-exit counter is persisted.
@@ -24,10 +24,10 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Presentation sources do not import Angular, browser storage/DOM, audio, renderer, playtest, or the current component.
 - Plain runtime modules own the single-active-run v2 envelope, v1 migration/mirroring, reconciliation/throttling, foreground/offline simulation policy, and semantic event history. Storage and clocks are explicit inputs; runtime sources do not access browser globals.
 - The shared host selects one Influence renderer through an empire registry. The renderer receives an immutable rule-complete view and emits typed semantic requests; shared audio/playtest/run utilities remain host-owned.
-- The Influence Stage is now an ordinary statically composed Angular child with a presentation-only view contract, local template, local styles, and internal Backdrop/Frame/owner-capital elements. Ledger, Lane, Context, Modes, Leverage, and Rug Pull remain in the transitional root renderer template.
+- The Influence Stage is an ordinary statically composed Angular child with a presentation-only view contract and component-local Backdrop, Chamber, Frame, and conditional Capital Panel. The Capital Panel renders only existing Net Worth data. Ledger, Lane, Context, Modes, Leverage, and Rug Pull remain in the transitional root renderer template.
 - Renderer selection is an injectable registration. The host depends only on a renderer-neutral view envelope and semantic dispatcher; Influence content adaptation happens in the registry. A test-only replacement proves view delivery, semantic action dispatch, and host-utility separation without shipping a second empire.
 - Shared shell/theme tokens and the mobile Context/site-scroll bridge remain intentionally global. Host utilities use host-local styles, while Influence composition and motion live beside the renderer under an enforced `.grift-influence-renderer` scope. The prior 3,017-line global implementation-history cascade no longer owns empire presentation.
-- Current verification baseline: 104 focused GriftOS tests and 132 full-repository tests, lint, and production build pass.
+- Current verification baseline: 105 focused GriftOS tests and 133 full-repository tests, lint, and production build pass.
 
 ## TARGET — NOT YET IMPLEMENTED
 
@@ -42,4 +42,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase K.1 Stage ownership extraction is complete at `4a013e7`. The post-circle-removal Stage now has a component-local template and primary style owner; older renderer-level Stage rules remain transitional compatibility CSS pending later consolidation, while active Phase K-specific Stage rules have moved out of the prototype sheet. Recursive renderer checks cover nested Angular sources and the Stage stylesheet. Mechanics, tuning, content, actions, routes, saves, Ledger/Lane visuals, Leverage, and Rug Pull behavior did not change. K.2 Ledger/Lane ownership and replacement of the placeholder Hustle icons have not begun.
+Phase K.2 Stage identity is complete at `5d3b4f7`. The component-local Backdrop, Chamber, Frame, and real-data-only Capital Panel now provide the authored Influence Stage hierarchy in desktop/mobile and light/dark expressions. The rejected circle motif, fake telemetry, fake tiers, and invented owner metrics remain excluded. Older renderer-level Stage rules remain transitional compatibility CSS pending later consolidation. Mechanics, tuning, content, actions, routes, saves, Ledger/Lane visuals, Leverage, and Rug Pull behavior did not change. K.3 Ledger/Lane ownership and replacement of the placeholder Hustle icons have not begun.
