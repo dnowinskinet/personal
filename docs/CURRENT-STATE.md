@@ -1,8 +1,8 @@
 ---
 Status: CURRENT — CANONICAL ORIENTATION
-Authority: Canonical current-state orientation; subordinate only to newly settled decision-log entries
+Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: ec59e9b274c3451fb4133aa98ba8136decf8d1d1
+Last verified against commit: 5bb1401eca74481d572c0e37d3e429c50f62c052
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
