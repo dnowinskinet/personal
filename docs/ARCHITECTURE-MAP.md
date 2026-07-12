@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 61617f8cbdf298ef561713fc3af0b56f03aeb534
+Last verified against commit: 91d9643182cb69844382f08efe6e7f90c83e7b6e
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -15,12 +15,12 @@ The route lazy-loads `GriftOsGameComponent` from `src/app/pages/experimental/gri
 
 ```text
 grift-os-game/
-  content/        Compatibility assembly exports for current consumers
+  content/        Compatibility assembly and label-enrichment adapters
   empires/
     influence/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
-  game-engine/    Economy formulas, state, modifiers, prestige, simulation
+  game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
   playtest/       Session logging and metrics
@@ -34,8 +34,8 @@ src/styles/_grift-os.scss
 
 Current dependency problems are known implementation evidence, not approved boundaries:
 
-- engine modules still import compatibility catalogs and tuning assembled from the Influence packs;
-- `HustleDefinition` mixes mechanics, content, icons, and audio references;
+- compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
+- content-bearing compatibility types remain in `game-engine/types.ts` pending presentation/type ownership work;
 - the component owns simulation, persistence, presentation, overlays, fixtures, and rendering;
 - the global stylesheet uses source-order Phase 1/1.1 overrides as visual architecture.
 
@@ -104,7 +104,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 
 | Change | CURRENT owner(s) | TARGET owner — not yet implemented |
 |---|---|---|
-| Formula | Engine formulas consuming compatibility exports assembled from the Influence mechanics pack | Shared engine formula |
+| Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
 | Influence balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Influence mechanics/tuning pack (CURRENT ownership; direct engine consumption deferred) |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; some component string assembly remains | Influence content pack (CURRENT catalog ownership; presentation facade deferred) |
 | Icon or motion | ID unions, definitions, global SCSS | Influence visual pack/component |

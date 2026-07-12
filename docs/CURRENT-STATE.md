@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 61617f8cbdf298ef561713fc3af0b56f03aeb534
+Last verified against commit: 91d9643182cb69844382f08efe6e7f90c83e7b6e
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -17,12 +17,13 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Selected future Influence direction: Circulating Institution; prototype remains paused.
 - Save formats and keys: `grift-os-meta-v1` and `grift-os-run-v1`.
 - Global Net Worth is settled. The current `rugPullCount` field is compatibility state with unresolved future ownership.
-- Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for current engine and component imports.
+- Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for component and tooling consumers.
+- Shared engine functions now receive an explicit mechanics-only catalog. Engine sources do not import Angular, browser storage/DOM, or empire content, visual, audio, renderer, or playtest layers.
 - Current verification baseline: 117 tests, lint, and production build pass.
 
 ## TARGET — NOT YET IMPLEMENTED
 
-- Shared mechanics/runtime/presentation contracts with one active empire-renderer boundary.
+- Shared runtime/presentation contracts with one active empire-renderer boundary; the mechanics contract is CURRENT.
 - Separable visual and audio packs; mechanics and content separation is CURRENT.
 - Modular Influence renderer with component-local visual ownership.
 
@@ -34,4 +35,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase B Influence mechanics/content/tuning ownership is complete at `61617f8`. Phase C engine dependency inversion has not begun and requires separate review and authorization.
+Phase C engine dependency inversion is complete at `91d9643`. Phase D presentation facade and semantic actions have not begun and require separate review and authorization.

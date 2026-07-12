@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 61617f8cbdf298ef561713fc3af0b56f03aeb534
+Last verified against commit: 91d9643182cb69844382f08efe6e7f90c83e7b6e
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -24,6 +24,8 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `grift-os-game.spec.ts`: local restore/offline production tests; current constants |
 | Existing Influence Hustle IDs remain stable and reconcile against v1 saves. | `economy.spec.ts`: ordered ID test; `grift-os-game.spec.ts`: restore/reconciliation tests |
 | Influence mechanics and content catalogs remain complete and assemble into the unchanged compatibility definitions. | `empires/influence/influence-packs.spec.ts`: Hustle, milestone, and Leverage pack parity tests |
+| Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
+| Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | Storage keys and formats remain `grift-os-meta-v1` and `grift-os-run-v1` until an approved migration. | `grift-os-game.ts` constants and persistence tests |
 | Progressive mode/navigation reveal is derived from real state; unavailable modes are not decorative. | `grift-os-game.spec.ts`: progressive navigation and reveal tests |
 | Manual action is explicit; expansion is separate; automation changes action hierarchy. | `grift-os-game.spec.ts`: manual, automation, and disclosure tests |
@@ -35,9 +37,8 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 
 ## TARGET — approved constraints not yet enforceable
 
-- Shared engine code has no Angular, DOM, storage, content, visual, audio, or renderer dependency.
 - Empire renderers consume rule-complete presentation models and semantic actions.
-- Influence mechanics and content packs remain separable; visual and audio pack extraction is not yet implemented.
+- Visual and audio pack extraction is not yet implemented.
 - One dynamic empire-renderer boundary contains ordinary statically composed Angular components.
 - Empire styles and keyframes do not leak globally or across empires.
 - Catalog assembly validates IDs and cross-references before a run begins.
