@@ -754,7 +754,7 @@ button {
 
 .grift-hustle-actions {
   display: grid;
-  grid-column: auto !important;
+  grid-column: auto;
   grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
   gap: 0.45rem;
 }
@@ -1628,7 +1628,7 @@ button {
   }
 
   .grift-hustle-actions {
-    grid-column: 2 / -1 !important;
+    grid-column: 2 / -1;
   }
 
   .grift-hustle-actions--manual {
@@ -1811,7 +1811,7 @@ button {
 
   .grift-hustle-metrics,
   .grift-hustle-actions {
-    grid-column: 1 / -1 !important;
+    grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2441,7 +2441,7 @@ button {
   }
 
   .grift-hustle-actions {
-    grid-column: 2 / -1 !important;
+    grid-column: 2 / -1;
   }
 
   .grift-hustle-actions--manual {

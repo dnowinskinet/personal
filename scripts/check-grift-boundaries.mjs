@@ -78,6 +78,11 @@ async function checkStyleBoundaries() {
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'influence-empire-renderer.scss'),
       importantBaseline: 11,
     },
+    {
+      name: 'Influence Circulating Institution styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', '_circulating-institution.scss'),
+      importantBaseline: 0,
+    },
   ];
 
   for (const styleFile of styleFiles) {
@@ -107,7 +112,7 @@ async function checkStyleBoundaries() {
       }
     }
 
-    if (styleFile.name === 'Influence renderer styles' &&
+    if (styleFile.name.startsWith('Influence ') &&
         (!source.includes('.grift-influence-renderer {') || source.includes(':host-context'))) {
       violations.push(`${styleFile.name}: renderer styles must remain explicitly root-scoped`);
     }

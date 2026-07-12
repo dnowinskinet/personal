@@ -86,6 +86,7 @@ describe('GriftOsGameComponent', () => {
     const renderer = renderers.item(0) as HTMLElement | null;
 
     expect(renderers.length).toBe(1);
+    expect(renderer?.classList).toContain('grift-influence-renderer');
     expect(renderer?.querySelector('[aria-label="Hustles"]')).not.toBeNull();
     expect(renderer?.querySelector('[aria-label="Game utilities"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('.grift-os-app > [aria-label="Game utilities"]')).not.toBeNull();
