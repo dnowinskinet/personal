@@ -91,7 +91,7 @@
                     type="button"
                     [class.grift-tab-active]="selectedVisibleTab === tab.id"
                     [attr.aria-pressed]="selectedVisibleTab === tab.id"
-                    (click)="setGameTab(tab.id)"
+                    (click)="dispatchGameAction({ type: 'mode.select', modeId: tab.id })"
                 >
                     {{ tab.label }}
                 </button>
@@ -152,7 +152,7 @@
                                         class="grift-row-select-hitbox"
                                         tabindex="-1"
                                         aria-hidden="true"
-                                        (click)="openSelectedContext(row.id, $event)"
+                                        (click)="dispatchGameAction({ type: 'context.open', hustleId: row.id }, $event)"
                                     ></button>
 
                                     <button
@@ -164,7 +164,7 @@
                                         [disabled]="!row.canManualAction"
                                         [attr.aria-label]="row.definition.manualActionLabel + ' for ' + row.definition.name"
                                         [title]="row.definition.manualActionLabel"
-                                        (click)="activate(row.id)"
+                                        (click)="dispatchGameAction({ type: 'hustle.activate', hustleId: row.id })"
                                     >
                                         <span
                                             class="grift-hustle-icon"
@@ -177,7 +177,7 @@
                                         type="button"
                                         class="grift-hustle-select"
                                         [attr.data-grift-hustle-select]="row.id"
-                                        (click)="openSelectedContext(row.id, $event)"
+                                        (click)="dispatchGameAction({ type: 'context.open', hustleId: row.id }, $event)"
                                     >
                                         <span class="grift-hustle-name">{{ row.definition.name }}</span>
                                         <span class="grift-hustle-unit">{{ row.unitCountLabel }}</span>
@@ -211,7 +211,7 @@
                                                 type="button"
                                                 class="grift-action-button grift-action-primary grift-action-expand"
                                                 [disabled]="!row.canBuyOne"
-                                                (click)="buyOne(row.id)"
+                                                (click)="dispatchGameAction({ type: 'hustle.expand', hustleId: row.id, quantity: 1 })"
                                             >
                                                 {{ row.expansionButtonLabel }}
                                             </button>
@@ -220,7 +220,7 @@
                                                     type="button"
                                                     class="grift-action-button grift-action-secondary grift-action-compact grift-action-max"
                                                     [disabled]="!row.canBuyMax"
-                                                    (click)="buyMax(row.id)"
+                                                    (click)="dispatchGameAction({ type: 'hustle.expand', hustleId: row.id, quantity: 'max' })"
                                                 >
                                                     {{ row.buyMaxLabel }}
                                                 </button>
@@ -232,7 +232,7 @@
                                                 type="button"
                                                 class="grift-action-button grift-action-primary grift-action-perform"
                                                 [disabled]="!row.canManualAction"
-                                                (click)="activate(row.id)"
+                                                (click)="dispatchGameAction({ type: 'hustle.activate', hustleId: row.id })"
                                             >
                                                 @if (row.isActive) {
                                                     {{ row.manualActiveLabel }}
@@ -244,7 +244,7 @@
                                                 type="button"
                                                 class="grift-action-button grift-action-secondary grift-action-expand"
                                                 [disabled]="!row.canBuyOne"
-                                                (click)="buyOne(row.id)"
+                                                (click)="dispatchGameAction({ type: 'hustle.expand', hustleId: row.id, quantity: 1 })"
                                             >
                                                 {{ row.expansionButtonLabel }}
                                             </button>
@@ -253,7 +253,7 @@
                                                     type="button"
                                                     class="grift-action-button grift-action-secondary grift-action-compact grift-action-max"
                                                     [disabled]="!row.canBuyMax"
-                                                    (click)="buyMax(row.id)"
+                                                    (click)="dispatchGameAction({ type: 'hustle.expand', hustleId: row.id, quantity: 'max' })"
                                                 >
                                                     {{ row.buyMaxLabel }}
                                                 </button>
@@ -272,7 +272,7 @@
                                             type="button"
                                             class="grift-action-button grift-action-automate"
                                             [disabled]="!row.canBuyAutomation"
-                                            (click)="automate(row.id)"
+                                            (click)="dispatchGameAction({ type: 'hustle.automate', hustleId: row.id })"
                                         >
                                             Automate · {{ row.automationCostLabel }}
                                         </button>
@@ -307,7 +307,7 @@
                                         type="button"
                                         class="grift-action-button grift-action-establish"
                                         [disabled]="!horizon.canBuy"
-                                        (click)="buyOne(horizon.id)"
+                                        (click)="dispatchGameAction({ type: 'hustle.expand', hustleId: horizon.id, quantity: 1 })"
                                     >
                                         Establish · {{ horizon.costLabel }}
                                     </button>
@@ -326,7 +326,7 @@
                         class="grift-context-backdrop"
                         [class.grift-context-backdrop--open]="selectedContextOpen"
                         aria-label="Close selected Hustle context"
-                        (click)="closeSelectedContext()"
+                        (click)="dispatchGameAction({ type: 'context.close' })"
                     ></button>
 
                     <aside
@@ -347,7 +347,7 @@
                             type="button"
                             class="grift-context-close"
                             aria-label="Close selected Hustle context"
-                            (click)="closeSelectedContext()"
+                            (click)="dispatchGameAction({ type: 'context.close' })"
                         >
                             Close
                         </button>
@@ -382,7 +382,7 @@
                                     type="button"
                                     class="grift-action-button grift-action-automate"
                                     [disabled]="!selectedHustle.canBuyAutomation"
-                                    (click)="automate(selectedHustle.id)"
+                                    (click)="dispatchGameAction({ type: 'hustle.automate', hustleId: selectedHustle.id })"
                                 >
                                     Automate · {{ selectedHustle.automationCostLabel }}
                                 </button>
@@ -435,7 +435,7 @@
                                         type="button"
                                         class="grift-action-button grift-action-leverage"
                                         [disabled]="!deal.canBuy"
-                                        (click)="purchaseLeverage(deal.id)"
+                                        (click)="dispatchGameAction({ type: 'leverage.purchase', leverageId: deal.id })"
                                     >
                                         {{ deal.isPurchased ? 'Secured' : 'Acquire · ' + deal.costLabel }}
                                     </button>
@@ -518,7 +518,7 @@
                                     type="button"
                                     class="grift-action-button grift-action-founder-take"
                                     [disabled]="!founderTake.canStartNextStage"
-                                    (click)="prepareFounderTake()"
+                                    (click)="dispatchGameAction({ type: 'rugPull.prepare' })"
                                 >
                                     Prepare · {{ founderTakeNextCostLabel }}
                                 </button>
@@ -558,11 +558,11 @@
                             class="grift-rug-button"
                             [disabled]="!rugPullPreview.isAvailable"
                             [attr.aria-label]="'Pull the Rug and gain ' + rugPullNetWorthGainLabel + ' Net Worth'"
-                            (click)="commitRugPull()"
+                            (click)="dispatchGameAction({ type: 'rugPull.commit' })"
                         >
                             Pull the Rug
                         </button>
-                        <button type="button" class="grift-quiet-button" (click)="setGameTab('hustles')">
+                        <button type="button" class="grift-quiet-button" (click)="dispatchGameAction({ type: 'mode.select', modeId: 'hustles' })">
                             Return to Hustles
                         </button>
                     </div>

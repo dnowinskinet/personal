@@ -19,7 +19,6 @@ import { GRIFT_OS_COPY } from './content/game-copy';
 import { GRIFT_OS_FOUNDER_TAKE_TUNING } from './content/economy-tuning';
 import {
   FounderTakeStatus,
-  founderTakeStatus,
   startFounderTakePreparation,
 } from './content/founder-take';
 import { HUSTLE_DEFINITIONS } from './content/hustle-definitions';
@@ -35,40 +34,23 @@ import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influe
 import {
   activateHustle as activateHustleInState,
   advanceGame,
-  automationCost,
   buyAutomation,
   buyHustle,
-  canBuyAutomation,
   createInitialGameState,
-  effectiveCadenceSeconds,
-  hustleCostForQuantity,
-  hustlePayout,
-  maxAffordableQuantity,
-  nextHustleCost,
-  valuationPerSecond,
 } from './game-engine/economy';
 import { GameEvent, GameEventRecord, GameTabId, createGameEventRecord } from './game-engine/game-events';
-import { buyLeverage, canBuyLeverage, isLeverageUnlocked, leverageRequirements } from './game-engine/leverage';
-import {
-  combinedMultiplier,
-  modifierBreakdownForHustle,
-  wealthAdvantageMultiplier,
-} from './game-engine/modifiers';
-import { deriveEnterprisePresentation, EnterprisePresentation, EnterpriseStage } from './game-engine/presentation';
+import { buyLeverage } from './game-engine/leverage';
+import { deriveEnterprisePresentation, EnterprisePresentation } from './game-engine/presentation';
 import { elapsedForegroundSimulationMs } from './game-engine/simulation-clock';
 import {
   GriftOsGameState,
   HustleDefinition,
   HustleId,
-  LeverageDefinition,
   LeverageId,
   ProductionEvent,
 } from './game-engine/types';
 import {
-  formatCount,
   formatMoney,
-  formatMoneyRate,
-  formatMultiplier,
   formatPercentage,
 } from './formatting/number-format';
 import {
@@ -89,70 +71,15 @@ import {
   recordSnapshotIfDue,
   savePlaytestSession,
 } from './playtest/playtest-session';
-
-interface HustleViewModel {
-  definition: HustleDefinition;
-  id: HustleId;
-  units: number;
-  unitCountLabel: string;
-  isActive: boolean;
-  isAutomated: boolean;
-  isProgressResetting: boolean;
-  progressPercent: number;
-  progressScale: string;
-  progressAnimationDuration: string;
-  progressLabel: string;
-  payoutLabel: string;
-  averageRateLabel: string;
-  cadenceLabel: string;
-  productionLabel: string;
-  nextCostLabel: string;
-  automationCostLabel: string;
-  automationStatusLabel: string;
-  automationContextLabel: string;
-  expansionButtonLabel: string;
-  manualButtonLabel: string;
-  manualActiveLabel: string;
-  buyMaxLabel: string;
-  buyMaxCount: number;
-  canManualAction: boolean;
-  canBuyOne: boolean;
-  canBuyMax: boolean;
-  canBuyAutomation: boolean;
-  automationEligible: boolean;
-  isPlayerDependent: boolean;
-  isSettledAutomated: boolean;
-  hasContextualAttention: boolean;
-  showAutomationState: boolean;
-  showAutomationOpportunity: boolean;
-  showNextMilestone: boolean;
-  showBuyMax: boolean;
-  showModifierSummary: boolean;
-  nextMilestoneLabel: string;
-  nextMilestoneCompactLabel: string;
-  nextMilestoneDescription: string;
-  milestoneProgressScale: string;
-  modifierSummaryLabel: string;
-}
-
-interface HustleHorizonView {
-  definition: HustleDefinition;
-  id: HustleId;
-  costLabel: string;
-  shortfallLabel: string;
-  canBuy: boolean;
-}
-
-interface LeverageDealView {
-  definition: LeverageDefinition;
-  id: LeverageId;
-  costLabel: string;
-  isPurchased: boolean;
-  isUnlocked: boolean;
-  canBuy: boolean;
-  statusLabel: string;
-  effectLabels: readonly string[];
-}
+import { GameAction } from './presentation/game-action';
+import {
+  GamePresentationFacade,
+  GamePresentationSnapshot,
+  HustleHorizonView,
+  HustleViewModel,
+  LeverageDealView,
+  VisualCondition,
+} from './presentation/game-presentation';
 
 interface PayoutFeedback {
   id: number;
@@ -164,7 +91,6 @@ interface PayoutFeedback {
 }
 
 type ValuationFlyoutDirection = 'gain' | 'spend';
-type VisualCondition = 'manual' | 'automated' | 'structural';
 
 interface ValuationFlyout {
   id: number;
@@ -216,7 +142,6 @@ const RUN_STORAGE_KEY = 'grift-os-run-v1';
 const SIMULATION_TICK_MS = 50;
 const UI_RENDER_INTERVAL_MS = 100;
 const PROGRESS_RESET_RESTORE_MS = 24;
-const PROGRESS_VISUAL_LEAD_MS = 40;
 const VALUATION_GAIN_FLYOUT_LIMIT = 3;
 const VALUATION_SPEND_FLYOUT_LIMIT = 2;
 const VALUATION_FLYOUT_LIFETIME_MS = 680;
@@ -228,33 +153,6 @@ const DEFAULT_SFX_VOLUME = 0.7;
 const ENDGAME_NET_WORTH = 1_000_000_000_000;
 const ENDGAME_RUG_PULL_COUNT = 8;
 const ENDGAME_VALUATION = 1_000_000_000_000_000;
-
-const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = {
-  scrappy: {
-    label: 'Scrappy cover story',
-    summary: 'One working Hustle and almost no institutional camouflage.',
-  },
-  traction: {
-    label: 'Traction theater',
-    summary: 'The stack starts to look repeatable, even if it is still mostly personal labor.',
-  },
-  legitimate: {
-    label: 'Legibility threshold',
-    summary: 'Milestones and owned surfaces start reading like a business instead of a stunt.',
-  },
-  institutional: {
-    label: 'Institutional polish',
-    summary: 'Automation, belief products, and ownership layers begin reinforcing each other.',
-  },
-  power: {
-    label: 'Power consolidation',
-    summary: 'The network starts manufacturing inevitability across channels at once.',
-  },
-  'pre-rug': {
-    label: 'Extraction window',
-    summary: 'The machine is large enough to convert paper status into persistent personal gravity.',
-  },
-};
 
 @Component({
   selector: 'app-grift-os-game',
@@ -286,6 +184,12 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     { id: 'leverage', label: GRIFT_OS_COPY.tabs.leverage },
     { id: 'rugPull', label: GRIFT_OS_COPY.tabs.rugPull },
   ];
+  private readonly gamePresentation = new GamePresentationFacade(
+    this.definitions,
+    LEVERAGE_DEFINITIONS,
+    this.mechanics,
+    this.tabs
+  );
 
   @ViewChild('selectedContextPanel') private selectedContextPanel?: ElementRef<HTMLElement>;
   @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
@@ -320,8 +224,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private lastRunSaveAt = 0;
   private selectedContextReturnTarget: HTMLElement | null = null;
   private selectedContextReturnHustleId: HustleId | null = null;
-  private cachedHustleRowsState: GriftOsGameState | null = null;
-  private cachedHustleRows: HustleViewModel[] = [];
   private lastUiRenderTime = 0;
   private readonly initialRouteRunState: InitialRouteRunState | null;
   private readonly initialRouteSurface: GameTabId | null;
@@ -391,137 +293,114 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
   }
 
+  get presentationView(): GamePresentationSnapshot {
+    return this.gamePresentation.derive({
+      state: this.state,
+      selectedHustleId: this.selectedHustleId,
+      selectedTab: this.selectedTab,
+      selectedContextOpen: this.selectedContextOpen,
+      progressResetIds: this.progressTransitionResetIds,
+    });
+  }
+
   get valuationLabel(): string {
-    return formatMoney(this.state.valuation, 'headline');
+    return this.presentationView.valuationLabel;
   }
 
   get peakValuationLabel(): string {
-    return formatMoney(this.state.peakValuation, 'headline');
+    return this.presentationView.peakValuationLabel;
   }
 
   get valuationPerSecondLabel(): string {
-    return formatMoneyRate(valuationPerSecond(this.state, this.mechanics));
+    return this.presentationView.valuationPerSecondLabel;
   }
 
   get netWorthLabel(): string {
-    return formatMoney(this.state.netWorth, 'net-worth');
+    return this.presentationView.netWorthLabel;
   }
 
   get wealthAdvantageLabel(): string {
-    const outputAdvantagePercent = (
-      wealthAdvantageMultiplier(this.state.netWorth, this.mechanics) - 1
-    ) * 100;
-
-    return `Up to +${formatPercentage(outputAdvantagePercent)} established output`;
+    return this.presentationView.wealthAdvantageLabel;
   }
 
   get rugPullNetWorthGainLabel(): string {
-    return `+${formatMoney(this.rugPullPreview.projectedNetWorthGain, 'payout')}`;
+    return this.presentationView.rugPullNetWorthGainLabel;
   }
 
   get rugPullResultingNetWorthLabel(): string {
-    return formatMoney(this.rugPullPreview.resultingNetWorth, 'net-worth');
+    return this.presentationView.rugPullResultingNetWorthLabel;
   }
 
   get rugPullTargetLabel(): string {
-    return formatMoney(this.rugPullPreview.requiredPeakValuation, 'headline');
+    return this.presentationView.rugPullTargetLabel;
   }
 
   get rugPullWealthAdvantageLabel(): string {
-    return `Up to +${formatPercentage(this.rugPullPreview.wealthAdvantagePercent)} established next-run output`;
+    return this.presentationView.rugPullWealthAdvantageLabel;
   }
 
   get rugPullRecoveryMultiplierLabel(): string {
-    return formatMultiplier(this.rugPullPreview.recoveryMultiplier);
+    return this.presentationView.rugPullRecoveryMultiplierLabel;
   }
 
   get presentation(): EnterprisePresentation {
-    return deriveEnterprisePresentation(this.state, this.mechanics);
+    return this.presentationView.enterprise;
   }
 
   get enterpriseIntensityPercent(): number {
-    return Math.round(this.presentation.enterpriseIntensity * 100);
+    return this.presentationView.enterpriseIntensityPercent;
   }
 
   get stageLabel(): string {
-    return STAGE_COPY[this.presentation.enterpriseStage].label;
+    return this.presentationView.stageLabel;
   }
 
   get stageSummary(): string {
-    return STAGE_COPY[this.presentation.enterpriseStage].summary;
+    return this.presentationView.stageSummary;
   }
 
   get resetHustleCount(): number {
-    return this.definitions.filter((definition) => this.state.hustles[definition.id].units > 0).length;
+    return this.presentationView.resetHustleCount;
   }
 
   get resetAutomationCount(): number {
-    return this.definitions.filter((definition) => this.state.hustles[definition.id].isAutomated).length;
+    return this.presentationView.resetAutomationCount;
   }
 
   get resetMilestoneCount(): number {
-    return this.definitions.reduce(
-      (count, definition) => count + this.state.hustles[definition.id].reachedMilestones.length,
-      0
-    );
+    return this.presentationView.resetMilestoneCount;
   }
 
   get selectedHustle(): HustleViewModel {
-    return this.hustleRows.find((row) => row.id === this.selectedHustleId) ?? this.hustleRows[0];
+    return this.presentationView.selectedHustle;
   }
 
   get visibleHustleRows(): HustleViewModel[] {
-    return this.hustleRows.filter((row) => row.units > 0);
+    return [...this.presentationView.visibleHustleRows];
   }
 
   get ownedHustleCount(): number {
-    return this.definitions.filter((definition) => this.state.hustles[definition.id].units > 0).length;
+    return this.presentationView.ownedHustleCount;
   }
 
   get hasExpandedBeyondInitialState(): boolean {
-    return this.definitions.some((definition) =>
-      this.state.hustles[definition.id].units > definition.initialUnits
-    );
+    return this.presentationView.hasExpandedBeyondInitialState;
   }
 
   get showNextHustleHorizon(): boolean {
-    return this.ownedHustleCount > 1 || this.hasExpandedBeyondInitialState;
+    return this.presentationView.showNextHustleHorizon;
   }
 
   get nextHustleHorizon(): HustleHorizonView | null {
-    const definition = this.definitions
-      .slice()
-      .sort((first, second) => first.order - second.order)
-      .find((candidate) => this.state.hustles[candidate.id].units <= 0);
-
-    if (!definition) {
-      return null;
-    }
-
-    const cost = nextHustleCost(
-      definition,
-      this.state.hustles[definition.id].units,
-      this.state,
-      this.mechanics
-    );
-    return {
-      definition,
-      id: definition.id,
-      costLabel: formatMoney(cost, 'transaction'),
-      shortfallLabel: formatMoney(Math.max(0, cost - this.state.valuation), 'transaction'),
-      canBuy: this.state.valuation >= cost,
-    };
+    return this.presentationView.nextHustleHorizon;
   }
 
   get visibleHustleCountLabel(): string {
-    const count = this.ownedHustleCount;
-    const unit = count === 1 ? 'Hustle active' : 'Hustles active';
-
-    return `${count} ${unit}`;
+    return this.presentationView.visibleHustleCountLabel;
   }
 
   get hasAnyAutomation(): boolean {
-    return this.definitions.some((definition) => this.state.hustles[definition.id].isAutomated);
+    return this.presentationView.hustleRows.some((row) => row.isAutomated);
   }
 
   get hasAnyMilestone(): boolean {
@@ -529,121 +408,75 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get visualCondition(): VisualCondition {
-    if (this.state.leveragePurchases.length > 0) {
-      return 'structural';
-    }
-
-    return this.hasAnyAutomation ? 'automated' : 'manual';
+    return this.presentationView.visualCondition;
   }
 
   get showPinnedSelectedContext(): boolean {
-    return this.ownedHustleCount >= 2;
+    return this.presentationView.showPinnedSelectedContext;
   }
 
   get showSelectedContextSurface(): boolean {
-    return this.showPinnedSelectedContext || this.selectedContextOpen;
+    return this.presentationView.showSelectedContextSurface;
   }
 
   get showNetWorth(): boolean {
-    return this.state.netWorth > 0;
+    return this.presentationView.showNetWorth;
   }
 
   get availableTabs(): readonly { id: GameTabId; label: string }[] {
-    return this.tabs.filter((tab) => this.isTabAvailable(tab.id));
+    return this.presentationView.availableTabs;
   }
 
   get showModeTabs(): boolean {
-    return this.availableTabs.length > 1;
+    return this.presentationView.showModeTabs;
   }
 
   get selectedVisibleTab(): GameTabId {
-    return this.isTabAvailable(this.selectedTab) ? this.selectedTab : 'hustles';
+    return this.presentationView.selectedVisibleTab;
   }
 
   get rugPullPreview(): RugPullPreview {
-    return createRugPullPreview(this.state);
+    return this.presentationView.rugPullPreview;
   }
 
   get founderTake(): FounderTakeStatus {
-    return founderTakeStatus(this.state);
+    return this.presentationView.founderTake;
   }
 
   get founderTakeRateLabel(): string {
-    return formatPercentage(this.founderTake.takeRate * 100);
+    return this.presentationView.founderTakeRateLabel;
   }
 
   get founderTakeNextCostLabel(): string {
-    return formatMoney(this.founderTake.nextStageCost, 'transaction');
+    return this.presentationView.founderTakeNextCostLabel;
   }
 
   get founderTakeDurationLabel(): string {
-    return this.founderTake.nextStage
-      ? this.formatElapsed(this.founderTake.nextStage.durationMs)
-      : '';
+    return this.presentationView.founderTakeDurationLabel;
   }
 
   get founderTakeRemainingLabel(): string {
-    return this.formatElapsed(this.founderTake.remainingMs);
+    return this.presentationView.founderTakeRemainingLabel;
   }
 
   get founderTakeOutputLabel(): string {
-    return `${formatPercentage(this.founderTake.outputRetention * 100)} output retained`;
+    return this.presentationView.founderTakeOutputLabel;
   }
 
   get founderTakeNextOutputLabel(): string {
-    const nextStage = this.founderTake.nextStage;
-
-    return nextStage
-      ? `${formatPercentage(nextStage.outputRetention * 100)} output retained`
-      : '';
+    return this.presentationView.founderTakeNextOutputLabel;
   }
 
   get founderTakeProgressScale(): string {
-    const stage = this.founderTake.activeStage;
-
-    if (!stage || stage.durationMs <= 0) {
-      return '0';
-    }
-
-    return Math.min(1, this.founderTake.progressMs / stage.durationMs).toFixed(4);
+    return this.presentationView.founderTakeProgressScale;
   }
 
   get leverageDeals(): readonly LeverageDealView[] {
-    return LEVERAGE_DEFINITIONS
-      .filter((definition) => this.state.netWorth >= definition.unlockNetWorth)
-      .map((definition) => {
-        const isPurchased = this.state.leveragePurchases.includes(definition.id);
-        const isUnlocked = isLeverageUnlocked(this.state, definition);
-        const affordable = this.state.valuation >= definition.cost;
-        const requirements = leverageRequirements(this.state, definition);
-        const missingOwnedCount = requirements.missingOwnedHustles.length;
-        const missingAutomationCount = requirements.missingAutomatedHustles.length;
-
-        return {
-          definition,
-          id: definition.id,
-          costLabel: formatMoney(definition.cost, 'transaction'),
-          isPurchased,
-          isUnlocked,
-          canBuy: canBuyLeverage(this.state, definition.id, this.mechanics),
-          statusLabel: isPurchased
-            ? 'Operating for this run'
-            : requirements.netWorthRequired > 0
-              ? `Requires ${formatMoney(definition.unlockNetWorth, 'net-worth')} Net Worth`
-              : missingOwnedCount > 0
-                ? `Establish ${missingOwnedCount} linked Hustle${missingOwnedCount === 1 ? '' : 's'}`
-                : missingAutomationCount > 0
-                  ? `Automate ${missingAutomationCount} linked Hustle${missingAutomationCount === 1 ? '' : 's'}`
-            : isUnlocked && !affordable
-                ? `Need ${formatMoney(definition.cost - this.state.valuation, 'transaction')} more`
-              : `Invest ${formatMoney(definition.cost, 'transaction')} Valuation`,
-          effectLabels: definition.modifiers.map((modifier) => modifier.label),
-        };
-      });
+    return this.presentationView.leverageDeals;
   }
 
   get leveragePurchaseCount(): number {
-    return this.state.leveragePurchases.length;
+    return this.presentationView.leveragePurchaseCount;
   }
 
   get audioSettings(): AudioSettings {
@@ -667,125 +500,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   get hustleRows(): HustleViewModel[] {
-    if (this.cachedHustleRowsState === this.state) {
-      return this.cachedHustleRows;
-    }
-
-    const hasAnyAutomation = this.hasAnyAutomation;
-    const hasAnyMilestone = this.hasAnyMilestone;
-
-    const rows = this.definitions.map((definition) => {
-      const hustle = this.state.hustles[definition.id];
-      const cadenceSeconds = effectiveCadenceSeconds(this.state, this.mechanics, definition.id);
-      const cadenceMs = cadenceSeconds * 1000;
-      const progressPercent = hustle.isActive
-        ? Math.min(100, (hustle.progressMs / cadenceMs) * 100)
-        : 0;
-      const nextCost = nextHustleCost(definition, hustle.units, this.state, this.mechanics);
-      const buyMaxCount = maxAffordableQuantity(
-        definition,
-        hustle.units,
-        this.state.valuation,
-        this.state,
-        this.mechanics
-      );
-      const payout = hustlePayout(this.state, this.mechanics, definition.id);
-      const nextMilestone = definition.milestones.find((milestone) =>
-        !hustle.reachedMilestones.includes(milestone.id)
-      );
-      const remainingUnitsForMilestone = nextMilestone ? nextMilestone.requiredUnits - hustle.units : Infinity;
-      const isNearMilestone = nextMilestone
-        ? remainingUnitsForMilestone <= Math.max(2, Math.ceil(nextMilestone.requiredUnits * 0.2))
-        : false;
-      const automationEligible = hustle.units > 0 && !hustle.isAutomated;
-      const canBuyAutomationForHustle = canBuyAutomation(this.state, this.mechanics, definition.id);
-      const modifierSummaryLabel = this.modifierSummaryLabel(definition.id);
-      const isPlayerDependent = hustle.units > 0 && !hustle.isAutomated;
-      const showNextMilestone = hustle.units > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone);
-
-      return {
-        definition,
-        id: definition.id,
-        units: hustle.units,
-        unitCountLabel: `${formatCount(hustle.units)} ${this.unitLabel(definition, hustle.units)}`,
-        isActive: hustle.isActive,
-        isAutomated: hustle.isAutomated,
-        isProgressResetting: this.progressTransitionResetIds.has(definition.id),
-        progressPercent,
-        progressScale: (progressPercent / 100).toFixed(4),
-        progressAnimationDuration: `${Math.max(1, cadenceMs - PROGRESS_VISUAL_LEAD_MS)}ms`,
-        progressLabel: hustle.isActive
-          ? `${Math.floor(progressPercent)}%`
-          : hustle.isAutomated
-            ? 'Cycling'
-            : 'Ready',
-        payoutLabel: formatMoney(payout, 'payout'),
-        averageRateLabel: formatMoneyRate(payout / cadenceSeconds),
-        cadenceLabel: `Every ${this.formatSeconds(cadenceSeconds)}`,
-        productionLabel: `${formatMoney(payout, 'payout')} every ${this.formatSeconds(cadenceSeconds)}`,
-        nextCostLabel: formatMoney(nextCost, 'transaction'),
-        automationCostLabel: formatMoney(
-          automationCost(this.state, this.mechanics, definition.id),
-          'transaction'
-        ),
-        automationStatusLabel: hustle.isAutomated
-          ? `${definition.automationName} · ${definition.automationActivityLabel}`
-          : canBuyAutomationForHustle
-            ? `${definition.automationName} ready`
-            : automationEligible && hasAnyAutomation
-              ? `${definition.automationName} ahead`
-              : 'Acquire this Hustle to automate',
-        automationContextLabel: hustle.isAutomated
-          ? 'Automation active'
-          : canBuyAutomationForHustle
-            ? `${definition.automationName} ready`
-            : `${definition.automationName} ahead`,
-        expansionButtonLabel: `${definition.expansionActionLabel} · ${formatMoney(nextCost, 'transaction')}`,
-        manualButtonLabel: `${definition.manualActionLabel} · ${formatMoney(payout, 'payout')}`,
-        manualActiveLabel: `${definition.manualActionLabel}...`,
-        buyMaxLabel: buyMaxCount > 0
-          ? `Buy +${formatCount(buyMaxCount)}`
-          : 'Buy Max',
-        buyMaxCount,
-        canManualAction: hustle.units > 0 && !hustle.isActive && !hustle.isAutomated,
-        canBuyOne: this.state.valuation >= hustleCostForQuantity(
-          definition,
-          hustle.units,
-          1,
-          this.state,
-          this.mechanics
-        ),
-        canBuyMax: buyMaxCount > 0,
-        canBuyAutomation: canBuyAutomationForHustle,
-        automationEligible,
-        isPlayerDependent,
-        isSettledAutomated: hustle.isAutomated && !canBuyAutomationForHustle,
-        hasContextualAttention: definition.id === this.selectedHustleId || isNearMilestone,
-        showAutomationState: hustle.isAutomated || (automationEligible && (hasAnyAutomation || canBuyAutomationForHustle)),
-        showAutomationOpportunity: automationEligible && canBuyAutomationForHustle,
-        showNextMilestone,
-        showBuyMax: buyMaxCount >= 2,
-        showModifierSummary: modifierSummaryLabel.length > 0,
-        nextMilestoneLabel: nextMilestone
-          ? `${formatCount(nextMilestone.requiredUnits)} ${this.unitLabel(definition, nextMilestone.requiredUnits)}`
-          : 'All current milestones reached',
-        nextMilestoneCompactLabel: nextMilestone
-          ? `Next ${formatCount(nextMilestone.requiredUnits)}`
-          : 'Complete',
-        nextMilestoneDescription: nextMilestone
-          ? `${nextMilestone.reward.label} · ${nextMilestone.description ?? 'Milestone effect'}`
-          : 'Future milestone tuning can extend this track.',
-        milestoneProgressScale: nextMilestone
-          ? Math.min(1, Math.max(0, hustle.units / nextMilestone.requiredUnits)).toFixed(4)
-          : '1',
-        modifierSummaryLabel,
-      };
-    });
-
-    this.cachedHustleRowsState = this.state;
-    this.cachedHustleRows = rows;
-
-    return rows;
+    return [...this.presentationView.hustleRows];
   }
 
   get latestNotificationMessage(): string {
@@ -808,6 +523,41 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   get playtestSessionIdLabel(): string {
     return this.playtestSession?.sessionId ?? 'not started';
+  }
+
+  dispatchGameAction(action: GameAction, sourceEvent?: Event): void {
+    switch (action.type) {
+      case 'mode.select':
+        this.setGameTab(action.modeId);
+        return;
+      case 'context.open':
+        this.openSelectedContext(action.hustleId, sourceEvent);
+        return;
+      case 'context.close':
+        this.closeSelectedContext(action.restoreFocus ?? true);
+        return;
+      case 'hustle.activate':
+        this.activate(action.hustleId);
+        return;
+      case 'hustle.expand':
+        if (action.quantity === 'max') {
+          this.buyMax(action.hustleId);
+        } else {
+          this.buyOne(action.hustleId);
+        }
+        return;
+      case 'hustle.automate':
+        this.automate(action.hustleId);
+        return;
+      case 'leverage.purchase':
+        this.purchaseLeverage(action.leverageId);
+        return;
+      case 'rugPull.prepare':
+        this.prepareFounderTake();
+        return;
+      case 'rugPull.commit':
+        this.commitRugPull();
+    }
   }
 
   setGameTab(tabId: GameTabId): void {
@@ -1947,23 +1697,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.documentRef.body.classList.toggle('grift-context-overlay-open', isOpen);
   }
 
-  private modifierSummaryLabel(hustleId: HustleId): string {
-    const breakdown = modifierBreakdownForHustle(this.state, this.mechanics, hustleId);
-    const outputMultiplier = combinedMultiplier(breakdown.output);
-    const cadenceMultiplier = combinedMultiplier(breakdown.cadence);
-    const parts: string[] = [];
-
-    if (outputMultiplier !== 1) {
-      parts.push(`${formatMultiplier(outputMultiplier)} output`);
-    }
-
-    if (cadenceMultiplier !== 1) {
-      parts.push(`${formatMultiplier(cadenceMultiplier)} speed`);
-    }
-
-    return parts.join(' · ');
-  }
-
   private recordPlaytestCycle(
     event: ProductionEvent,
     previousState: GriftOsGameState,
@@ -2326,14 +2059,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private getDefinition(hustleId: HustleId): HustleDefinition | undefined {
     return this.definitions.find((candidate) => candidate.id === hustleId);
-  }
-
-  private unitLabel(definition: HustleDefinition, units: number): string {
-    return units === 1 ? definition.unitSingular : definition.unitPlural;
-  }
-
-  private formatSeconds(value: number): string {
-    return Number.isInteger(value) ? `${value}s` : `${value.toFixed(1)}s`;
   }
 
   private formatElapsed(valueMs: number): string {

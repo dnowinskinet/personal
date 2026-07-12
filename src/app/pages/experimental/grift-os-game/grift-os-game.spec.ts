@@ -41,6 +41,26 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="grift-reset-run"]')).not.toBeNull();
   });
 
+  it('dispatches semantic gameplay actions through the existing runtime entrypoints', async () => {
+    fixture = await createFixture({});
+    const component = fixture.componentInstance;
+    const buyOne = spyOn(component, 'buyOne');
+    const setGameTab = spyOn(component, 'setGameTab');
+    const closeContext = spyOn(component, 'closeSelectedContext');
+
+    component.dispatchGameAction({
+      type: 'hustle.expand',
+      hustleId: 'troll-network',
+      quantity: 1,
+    });
+    component.dispatchGameAction({ type: 'mode.select', modeId: 'hustles' });
+    component.dispatchGameAction({ type: 'context.close', restoreFocus: false });
+
+    expect(buyOne).toHaveBeenCalledOnceWith('troll-network');
+    expect(setGameTab).toHaveBeenCalledOnceWith('hustles');
+    expect(closeContext).toHaveBeenCalledOnceWith(false);
+  });
+
   it('shows compact playtest controls only through the playtest query parameter', async () => {
     fixture = await createFixture({ playtest: '1' });
     const component = fixture.componentInstance;
