@@ -1,8 +1,53 @@
-import { HustleDefinition, HustleId, ModifierDefinition } from '../game-engine/types';
+import { INFLUENCE_CONTENT_PACK } from '../empires/influence/content/influence-content';
+import { INFLUENCE_MECHANICS_PACK } from '../empires/influence/mechanics/influence-mechanics';
 import {
-  GRIFT_OS_HUSTLE_TUNING,
-  GRIFT_OS_MILESTONE_TUNING,
-} from './economy-tuning';
+  HustleDefinition,
+  HustleIconKind,
+  HustleId,
+  ModifierDefinition,
+} from '../game-engine/types';
+import { GRIFT_OS_HUSTLE_TUNING, GRIFT_OS_MILESTONE_TUNING } from './economy-tuning';
+
+interface LegacyHustlePresentation {
+  iconKind: HustleIconKind;
+  audio: NonNullable<HustleDefinition['audio']>;
+}
+
+// Visual/audio ownership is intentionally unchanged until its approved migration phase.
+const LEGACY_HUSTLE_PRESENTATION: Readonly<Record<HustleId, LegacyHustlePresentation>> = {
+  'troll-network': appearance('signal', 'creator-scroll'),
+  'podcast-network': appearance('broadcast', 'member-chime'),
+  'culture-war-media': appearance('outrage', 'fulfillment-line'),
+  'masterclass-business': appearance('funnel', 'studio-clock'),
+  'manifesto-imprint': appearance('manifesto', 'venue-crowd'),
+  'founder-retreat-circuit': appearance('summit', 'inner-circle'),
+  'ai-venture': appearance('ai', 'donation-counter'),
+  'venture-portfolio': appearance('fund', 'token-ticks'),
+  'media-holdings': appearance('media', 'network-bed'),
+  'sovereign-network': appearance('sovereignty', 'platform-exchange'),
+};
+
+export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] =
+  INFLUENCE_MECHANICS_PACK.hustleOrder.map((hustleId, index) => ({
+    id: hustleId,
+    ...GRIFT_OS_HUSTLE_TUNING[hustleId],
+    ...INFLUENCE_CONTENT_PACK.hustles[hustleId],
+    order: index + 1,
+    ...LEGACY_HUSTLE_PRESENTATION[hustleId],
+    milestones: milestoneSet(hustleId),
+  }));
+
+function milestoneSet(hustleId: HustleId): HustleDefinition['milestones'] {
+  const unitPlural = INFLUENCE_CONTENT_PACK.hustles[hustleId].unitPlural;
+
+  return GRIFT_OS_MILESTONE_TUNING[hustleId].map((milestone) => ({
+    id: milestone.id,
+    requiredUnits: milestone.requiredUnits,
+    name: `${milestone.requiredUnits} ${unitPlural}`,
+    description: milestone.description,
+    reward: milestoneReward(hustleId, milestone),
+  }));
+}
 
 function milestoneReward(
   hustleId: HustleId,
@@ -20,228 +65,13 @@ function milestoneReward(
   };
 }
 
-function milestoneSet(
-  hustleId: HustleId,
-  unitPlural: string
-): HustleDefinition['milestones'] {
-  return GRIFT_OS_MILESTONE_TUNING[hustleId].map((milestone) => ({
-    id: `${hustleId}-${milestone.requiredUnits}`,
-    requiredUnits: milestone.requiredUnits,
-    name: `${milestone.requiredUnits} ${unitPlural}`,
-    description: milestone.description,
-    reward: milestoneReward(hustleId, milestone),
-  }));
+function appearance(iconKind: HustleIconKind, ambientSignature: string): LegacyHustlePresentation {
+  return {
+    iconKind,
+    audio: {
+      manualActionCue: 'manual-click',
+      automationCue: 'automation-online',
+      ambientSignature,
+    },
+  };
 }
-
-export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] = [
-  {
-    id: 'troll-network',
-    ...GRIFT_OS_HUSTLE_TUNING['troll-network'],
-    name: 'Social Media Account',
-    description: 'Build an audience, then monetize its attention one recommendation at a time.',
-    unitSingular: 'Follower',
-    unitPlural: 'Followers',
-    expansionActionLabel: 'Add Follower',
-    manualActionLabel: 'Post an Affiliate Link',
-    automationName: 'Auto-Poster',
-    automationActivityLabel: 'posting links',
-    automationDescription: 'Keep affiliate links posting without needing the Founder online.',
-    order: 1,
-    iconKind: 'signal',
-    milestones: milestoneSet('troll-network', 'Followers'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'creator-scroll',
-    },
-  },
-  {
-    id: 'podcast-network',
-    ...GRIFT_OS_HUSTLE_TUNING['podcast-network'],
-    name: 'Paid Fan Club',
-    description: 'Charge lonely followers for belonging, status, and the feeling of access.',
-    unitSingular: 'Member',
-    unitPlural: 'Members',
-    expansionActionLabel: 'Add Member',
-    manualActionLabel: 'Charge a Fee',
-    automationName: 'Auto-Renewal',
-    automationActivityLabel: 'renewing memberships',
-    automationDescription: 'Renew memberships and collect fees without making the Founder available.',
-    order: 2,
-    iconKind: 'broadcast',
-    milestones: milestoneSet('podcast-network', 'Members'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'member-chime',
-    },
-  },
-  {
-    id: 'culture-war-media',
-    ...GRIFT_OS_HUSTLE_TUNING['culture-war-media'],
-    name: 'Merch Store',
-    description: 'Sell physical proof that fans belong to the Founder’s world.',
-    unitSingular: 'Product',
-    unitPlural: 'Products',
-    expansionActionLabel: 'Add Product',
-    manualActionLabel: 'Sell Merch',
-    automationName: 'Fulfillment Partner',
-    automationActivityLabel: 'processing orders',
-    automationDescription: 'Pack and ship products without the Founder touching an order.',
-    order: 3,
-    iconKind: 'outrage',
-    milestones: milestoneSet('culture-war-media', 'Products'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'fulfillment-line',
-    },
-  },
-  {
-    id: 'masterclass-business',
-    ...GRIFT_OS_HUSTLE_TUNING['masterclass-business'],
-    name: 'Podcast',
-    description: 'Turn parasocial trust into sponsorship inventory, one episode at a time.',
-    unitSingular: 'Episode',
-    unitPlural: 'Episodes',
-    expansionActionLabel: 'Add Episode',
-    manualActionLabel: 'Sell a Sponsor Spot',
-    automationName: 'Ad Sales Team',
-    automationActivityLabel: 'booking sponsors',
-    automationDescription: 'Sell sponsor spots and keep the show booked.',
-    order: 4,
-    iconKind: 'funnel',
-    milestones: milestoneSet('masterclass-business', 'Episodes'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'studio-clock',
-    },
-  },
-  {
-    id: 'manifesto-imprint',
-    ...GRIFT_OS_HUSTLE_TUNING['manifesto-imprint'],
-    name: 'VIP Events',
-    description: 'Charge followers to feel briefly closer to the Founder in person.',
-    unitSingular: 'City',
-    unitPlural: 'Cities',
-    expansionActionLabel: 'Add City',
-    manualActionLabel: 'Sell VIP Access',
-    automationName: 'Ticketing Site',
-    automationActivityLabel: 'selling access',
-    automationDescription: 'Sell tickets, upgrades, and cities without a personal reply.',
-    order: 5,
-    iconKind: 'manifesto',
-    milestones: milestoneSet('manifesto-imprint', 'Cities'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'venue-crowd',
-    },
-  },
-  {
-    id: 'founder-retreat-circuit',
-    ...GRIFT_OS_HUSTLE_TUNING['founder-retreat-circuit'],
-    name: 'Success University',
-    description: 'Sell students the promise they can recreate the Founder’s success.',
-    unitSingular: 'Campus',
-    unitPlural: 'Campuses',
-    expansionActionLabel: 'Open Campus',
-    manualActionLabel: 'Enroll a Student',
-    automationName: 'Admissions Office',
-    automationActivityLabel: 'enrolling students',
-    automationDescription: 'Process enrollments and keep the promise moving at scale.',
-    order: 6,
-    iconKind: 'summit',
-    milestones: milestoneSet('founder-retreat-circuit', 'Campuses'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'inner-circle',
-    },
-  },
-  {
-    id: 'ai-venture',
-    ...GRIFT_OS_HUSTLE_TUNING['ai-venture'],
-    name: 'Brand Ambassador Program',
-    description: 'Charge supporters to join the brand, promote its products, and recruit the next wave.',
-    unitSingular: 'Branch',
-    unitPlural: 'Branches',
-    expansionActionLabel: 'Open Branch',
-    manualActionLabel: 'Charge a Sign-Up Fee',
-    automationName: 'Recruiting Team',
-    automationActivityLabel: 'signing up ambassadors',
-    automationDescription: 'Sign up new ambassadors and keep the pitch moving.',
-    order: 7,
-    iconKind: 'ai',
-    milestones: milestoneSet('ai-venture', 'Branches'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'donation-counter',
-    },
-  },
-  {
-    id: 'venture-portfolio',
-    ...GRIFT_OS_HUSTLE_TUNING['venture-portfolio'],
-    name: 'Coaching Company',
-    description: 'Sell the Founder’s method through coaches operating throughout each region.',
-    unitSingular: 'Region',
-    unitPlural: 'Regions',
-    expansionActionLabel: 'Enter Region',
-    manualActionLabel: 'Sell a Coaching Session',
-    automationName: 'Booking Team',
-    automationActivityLabel: 'booking sessions',
-    automationDescription: 'Book sessions and route clients to the next available coach.',
-    order: 8,
-    iconKind: 'fund',
-    milestones: milestoneSet('venture-portfolio', 'Regions'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'token-ticks',
-    },
-  },
-  {
-    id: 'media-holdings',
-    ...GRIFT_OS_HUSTLE_TUNING['media-holdings'],
-    name: 'Member Bank',
-    description: 'Acquire the institutions holding members’ debt, then profit from every fee.',
-    unitSingular: 'Bank',
-    unitPlural: 'Banks',
-    expansionActionLabel: 'Acquire Bank',
-    manualActionLabel: 'Charge Fees',
-    automationName: 'Collections Team',
-    automationActivityLabel: 'charging fees',
-    automationDescription: 'Collect fees and chase balances after the excitement is gone.',
-    order: 9,
-    iconKind: 'media',
-    milestones: milestoneSet('media-holdings', 'Banks'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'network-bed',
-    },
-  },
-  {
-    id: 'sovereign-network',
-    ...GRIFT_OS_HUSTLE_TUNING['sovereign-network'],
-    name: 'Private Community',
-    description: 'Sell homes inside branded towns, then charge for the rules.',
-    unitSingular: 'Town',
-    unitPlural: 'Towns',
-    expansionActionLabel: 'Build Town',
-    manualActionLabel: 'Charge HOA Fees',
-    automationName: 'HOA Office',
-    automationActivityLabel: 'collecting HOA fees',
-    automationDescription: 'Collect HOA fees and enforce conformity without a personal visit.',
-    order: 10,
-    iconKind: 'sovereignty',
-    milestones: milestoneSet('sovereign-network', 'Towns'),
-    audio: {
-      manualActionCue: 'manual-click',
-      automationCue: 'automation-online',
-      ambientSignature: 'platform-exchange',
-    },
-  },
-];

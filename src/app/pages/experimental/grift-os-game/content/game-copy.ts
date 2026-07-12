@@ -1,17 +1,4 @@
-export const GRIFT_OS_COPY = {
-  title: 'GriftOS',
-  tagline: 'Farm aura. Build the unicorn.',
-  eyebrow: 'Valuation engine',
-  status: 'Modernization playtest',
-  valuationLabel: 'Valuation',
-  rateLabel: 'Average Rate',
-  netWorthLabel: 'Net Worth',
-  wealthAdvantageLabel: 'Wealth Advantage',
-  founderLabel: 'The Founder',
-  founderStatus: 'Pre-revenue, post-accountability.',
-  tabs: {
-    hustles: 'Hustles',
-    leverage: 'Leverage',
-    rugPull: 'Rug Pull',
-  },
-};
+import { INFLUENCE_CONTENT_PACK } from '../empires/influence/content/influence-content';
+
+// Compatibility export preserves current component imports until the presentation facade exists.
+export const GRIFT_OS_COPY = INFLUENCE_CONTENT_PACK.game;
