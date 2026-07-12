@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 4adf0575a5581ba4eaf293817513a7a4b548c013
+Last verified against commit: df842b8f1f144eaa05ea01003f89d92ec1e3bb87
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -43,4 +43,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase K.3.1 Ledger/Lane extraction is complete at `4adf057`. The root renderer supplies rule-complete Hustle rows and receives the same typed semantic requests; Ledger owns the list/Horizon template and Lane owns one Hustle's actions, disclosure, and progress markup. Existing compatibility styles and placeholder icon construction remain unchanged pending K.3.2. Mechanics, tuning, actions, routes, saves, visible layout, Leverage, and Rug Pull behavior did not change.
+Phase K.3 is complete through `df842b8`. Ledger owns the list/Horizon template, Lane owns one Hustle's actions, disclosure, progress markup, and local icon expression, and the root renderer supplies rule-complete rows through typed semantic requests. The former CSS-drawn pseudo-icons are no longer rendered; Influence Lanes use replaceable empire-local monograms. Broader compatibility layout rules remain intentionally in the renderer sheet until their later deletion can preserve the established responsive layout. Mechanics, tuning, actions, routes, saves, Leverage, and Rug Pull behavior did not change.

@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 4adf0575a5581ba4eaf293817513a7a4b548c013
+Last verified against commit: df842b8f1f144eaa05ea01003f89d92ec1e3bb87
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -118,7 +118,7 @@ Target prohibitions:
 | Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
 | Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` template plus compatibility renderer SCSS | Influence Ledger | Template CURRENT; style migration pending K.3.2 | Empire-specific composition | Dominant operating surface | Full-width stack |
-| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row plus compatibility renderer SCSS | Influence Lane | Template CURRENT; style/icon migration pending K.3.2 | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
+| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row, local icon expression, plus compatibility layout SCSS | Influence Lane | K.3 component ownership CURRENT; compatibility layout consolidation later | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
 | Context | Rich selected-Hustle explanation | Influence renderer/component/root-scoped renderer SCSS | Shared interaction contract + Influence Context | Styles contained; module pending | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
 | Horizon | Next meaningful Hustle establishment | Influence renderer template/root-scoped renderer SCSS | Influence Horizon | Styles contained; module pending | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
