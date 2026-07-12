@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 9a6eb593b742cd7bbd34846e6dc3e0db61e9fa8f
+Last verified against commit: 4f6e808a1db296d52375ec844abd4d0bb69ef95b
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -18,13 +18,13 @@ grift-os-game/
   content/        Compatibility assembly and label-enrichment adapters
   empires/
     empire-renderer-registry.ts
-                  CURRENT single runtime-selected renderer registry
+                  CURRENT injectable renderer registration; production default is Influence
     influence/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
       renderer/   CURRENT Influence renderer boundary and explicitly scoped visual owner;
                   internal Angular composition pending
-  host/           Typed semantic renderer request contract
+  host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
   runtime/        V1 persistence/reconciliation, simulation policy, semantic event history
@@ -46,6 +46,8 @@ Current dependency problems are known implementation evidence, not approved boun
 - compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
 - content-bearing compatibility types remain in `game-engine/types.ts` pending later type-ownership work;
 - the host owns platform scheduling, action execution, shared UI effects, fixtures, and utilities; the Influence renderer owns game-world rendering and Context focus behavior through a semantic request boundary;
+- the host imports no Influence renderer type. The composition registry adapts the neutral host view with Influence content and supplies the production renderer registration;
+- the replacement renderer exists only in the component test and proves the boundary; it is not a second production empire or a runtime switching feature;
 - the Influence renderer template remains at the feature root and is not yet decomposed into Stage/Lane/Context modules;
 - renderer rules are co-located and root-scoped but remain one large transitional stylesheet compiled through the Sass entrypoint until region components own smaller sheets.
 
@@ -74,7 +76,7 @@ Target dependency direction:
 
 ```text
 Composition root associates mechanics/content/visual/audio packs
-  -> host selects one empire renderer
+  -> host receives one renderer registration and supplies a neutral view + dispatcher
   -> runtime invokes shared engine with mechanics only
   -> presentation combines state + mechanics + content + formatting
   -> renderer consumes view models and dispatches semantic actions
@@ -85,6 +87,7 @@ Target prohibitions:
 
 - engine must not depend on Angular, DOM/storage, content, visuals, audio, or renderers;
 - renderers must not call economy functions, access saves, own timers, or infer affordability/reveal rules;
+- the shared host must not import a concrete empire renderer;
 - shared presentation must not depend on an empire renderer;
 - empire visuals must not style another empire or leak global selectors.
 
@@ -93,7 +96,7 @@ Target prohibitions:
 | Region | Definition | Current owner | Target owner | Migration status | Shared or empire-specific | Desktop behavior | Mobile behavior |
 |---|---|---|---|---|---|---|---|
 | Navbar | Nowinski site navigation above the game | Site layout | Site layout | Stable | Shared site shell | Global navigation | Global compact navigation |
-| Shell | Boundary of the game below Navbar | Shared host plus global shell/theme bridge | Shared GriftOS host | CURRENT | Shared | Contains active renderer | Contains active renderer |
+| Shell | Boundary of the game below Navbar | Shared host plus global shell/theme bridge | Shared GriftOS host | CURRENT; replacement proven | Shared | Contains one registered renderer | Contains one registered renderer |
 | Stage | Primary Valuation and identity composition | Influence renderer template/root-scoped renderer SCSS | Influence Stage | Styles contained; module pending | Empire-specific | Rich authored composition | Compact authored composition |
 | Backdrop | Non-semantic atmospheric layer behind Stage content | Stage atmosphere selectors | Influence Backdrop | Transitional | Empire-specific | May carry depth/motion | Simplified or omitted |
 | Chamber | Bounded focal area around Valuation | Not independently owned | Influence Chamber | Deferred extraction | Empire-specific | Anchors major value | Compact focal area |
