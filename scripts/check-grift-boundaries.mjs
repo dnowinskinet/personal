@@ -18,6 +18,11 @@ await scanBoundary(
   'engine'
 );
 await scanBoundary(
+  path.join(featureRoot, 'economic-slots'),
+  ['@angular/', '/content/', '/empires/', '/audio/', '/presentation/', '/runtime/', '/renderer/', '/playtest/'],
+  'economic-slots'
+);
+await scanBoundary(
   path.join(featureRoot, 'presentation'),
   ['@angular/', '/audio/', '/renderer/', '/playtest/', '../grift-os-game'],
   'presentation'
