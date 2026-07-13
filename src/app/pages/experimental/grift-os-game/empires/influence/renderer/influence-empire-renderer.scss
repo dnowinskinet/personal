@@ -8,11 +8,9 @@ button {
   color: inherit;
   font: inherit;
 }
-
 .grift-title-block,
 .grift-valuation-object,
-.grift-hustle-plane,
-.grift-rug-stage {
+.grift-hustle-plane {
   min-width: 0;
 }
 
@@ -127,8 +125,7 @@ button {
 }
 
 .grift-quiet-button,
-.grift-action-button,
-.grift-rug-button {
+.grift-action-button {
   min-height: 2.4rem;
   border: 1px solid var(--grift-border);
   border-radius: 6px;
@@ -884,8 +881,7 @@ button {
   padding-block: 0.78rem;
 }
 
-.grift-action-button:disabled,
-.grift-rug-button:disabled {
+.grift-action-button:disabled {
   cursor: default;
   opacity: 0.42;
 }
@@ -977,307 +973,6 @@ button {
 
 .grift-progress-reset {
   animation: none;
-}
-
-.grift-work-surface--rug {
-  display: block;
-  padding-block: clamp(1.2rem, 3vw, 2.4rem);
-}
-
-.grift-rug-stage {
-  display: grid;
-  margin-inline: auto;
-  border: 1px solid color-mix(in srgb, var(--grift-warning), transparent 72%);
-  border-radius: 8px;
-  padding: clamp(1.15rem, 3.8vw, 2.8rem);
-}
-
-.grift-rug-intro {
-  display: grid;
-}
-
-.grift-rug-intro p,
-.grift-rug-ledger p,
-.grift-rug-consequence-grid p,
-.grift-rug-resolution p {
-  margin: 0;
-  color: var(--grift-warning);
-  font-size: 0.74rem;
-  font-weight: 680;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.grift-rug-intro h2 {
-  color: var(--grift-ink);
-  line-height: 1.05;
-}
-
-.grift-rug-intro strong {
-  display: block;
-  color: var(--grift-value);
-  font-weight: 850;
-}
-
-.grift-rug-intro span {
-  color: var(--grift-ink);
-  font-weight: 700;
-}
-
-.grift-rug-thesis {
-  max-width: 42rem;
-  margin: 0 auto;
-  color: var(--grift-ink-soft);
-  font-size: clamp(0.98rem, 1.8vw, 1.18rem);
-  line-height: 1.45;
-  text-align: center;
-}
-
-.grift-rug-ledger {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(1rem, 4vw, 2.4rem);
-}
-
-.grift-rug-resolution {
-  border: 1px solid var(--grift-border);
-  border-radius: 7px;
-  background: var(--grift-plane);
-  padding: clamp(0.9rem, 2vw, 1.2rem);
-}
-
-.grift-rug-ledger > div,
-.grift-rug-consequence-grid section {
-  min-width: 0;
-  border-top: 1px solid color-mix(in srgb, var(--grift-warning), transparent 72%);
-  padding-top: clamp(0.78rem, 1.8vw, 1rem);
-}
-
-.grift-rug-ledger strong {
-  display: block;
-  margin-top: 0.42rem;
-  color: var(--grift-ink);
-  line-height: 1;
-}
-
-.grift-rug-persistent-value strong {
-  color: var(--grift-value);
-}
-
-.grift-rug-ledger span {
-  display: block;
-  margin-top: 0.55rem;
-  color: var(--grift-ink-soft);
-  font-size: 0.88rem;
-  line-height: 1.35;
-}
-
-.grift-rug-target-note {
-  border-block: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
-  padding-block: 0.8rem;
-  text-align: center;
-}
-
-.grift-rug-target-note span,
-.grift-rug-target-note strong,
-.grift-rug-target-note p {
-  display: block;
-  margin: 0;
-}
-
-.grift-rug-target-note span {
-  color: var(--grift-warning);
-  font-size: 0.68rem;
-  font-weight: 650;
-  text-transform: uppercase;
-}
-
-.grift-rug-target-note strong {
-  margin-top: 0.24rem;
-  color: var(--grift-ink);
-  font-size: 0.9rem;
-  font-weight: 650;
-}
-
-.grift-rug-target-note p {
-  margin-top: 0.28rem;
-  color: var(--grift-ink-faint);
-  font-size: 0.78rem;
-}
-
-.grift-founder-take {
-  display: grid;
-  gap: 0.9rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
-  padding-bottom: 1rem;
-}
-
-.grift-founder-take-summary,
-.grift-founder-take-opportunity,
-.grift-founder-take-preparation {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.grift-founder-take-summary > div {
-  flex: 0 0 auto;
-}
-
-.grift-founder-take-summary p,
-.grift-founder-take-opportunity p,
-.grift-founder-take-preparation p,
-.grift-founder-take-complete {
-  margin: 0;
-}
-
-.grift-founder-take-summary p,
-.grift-founder-take-opportunity p,
-.grift-founder-take-preparation p {
-  color: var(--grift-warning);
-  font-size: 0.72rem;
-  font-weight: 680;
-  text-transform: uppercase;
-}
-
-.grift-founder-take-summary strong {
-  display: block;
-  margin-top: 0.18rem;
-  color: var(--grift-value);
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  line-height: 1;
-}
-
-.grift-founder-take-summary > span,
-.grift-founder-take-opportunity span,
-.grift-founder-take-preparation span,
-.grift-founder-take-complete {
-  color: var(--grift-ink-soft);
-  font-size: 0.84rem;
-  line-height: 1.4;
-}
-
-.grift-founder-take-summary > span {
-  max-width: 32rem;
-  text-align: right;
-}
-
-.grift-founder-take-opportunity > div,
-.grift-founder-take-preparation > div:first-child {
-  min-width: 0;
-}
-
-.grift-founder-take-opportunity span,
-.grift-founder-take-opportunity small,
-.grift-founder-take-preparation span {
-  display: block;
-  margin-top: 0.25rem;
-}
-
-.grift-founder-take-opportunity small {
-  color: var(--grift-ink-faint);
-  font-size: 0.75rem;
-}
-
-.grift-action-founder-take {
-  flex: 0 0 min(15rem, 42%);
-  min-height: 2.75rem;
-  border-color: color-mix(in srgb, var(--grift-warning), transparent 58%);
-}
-
-.grift-founder-take-preparation {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
-}
-
-.grift-founder-take-progress {
-  height: 3px;
-  overflow: hidden;
-  background: var(--grift-border);
-}
-
-.grift-founder-take-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: var(--grift-warning);
-  transform-origin: left center;
-}
-
-.grift-rug-consequence-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(1rem, 4vw, 2.4rem);
-}
-
-.grift-rug-consequence-grid ul {
-  display: grid;
-  gap: 0.42rem;
-  margin: 0.75rem 0 0;
-  padding: 0;
-  color: var(--grift-ink-soft);
-  font-size: 0.86rem;
-  line-height: 1.35;
-  list-style: none;
-}
-
-.grift-rug-consequence-grid li::before {
-  color: var(--grift-warning);
-  content: "- ";
-}
-
-.grift-rug-action-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  align-items: center;
-  justify-content: center;
-}
-
-.grift-rug-button {
-  display: block;
-  width: min(24rem, 100%);
-  min-height: 3.45rem;
-  border-color: color-mix(in srgb, var(--grift-warning), transparent 34%);
-  border-radius: 5px;
-  background: color-mix(in srgb, var(--grift-warning), transparent 91%);
-  color: var(--grift-value);
-  font-size: 1rem;
-  font-weight: 760;
-  text-transform: uppercase;
-}
-
-.grift-rug-button:not(:disabled):hover,
-.grift-rug-button:not(:disabled):focus-visible {
-  border-color: color-mix(in srgb, var(--grift-warning), transparent 18%);
-  background: color-mix(in srgb, var(--grift-warning), transparent 86%);
-}
-
-.grift-rug-resolution {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 0.9rem;
-  border-color: color-mix(in srgb, var(--grift-warning), transparent 62%);
-}
-
-.grift-rug-resolution h2 {
-  margin: 0.18rem 0 0;
-  color: var(--grift-value);
-  font-size: clamp(1.15rem, 2.6vw, 1.65rem);
-  line-height: 1.08;
-}
-
-.grift-rug-resolution span {
-  display: block;
-  margin-top: 0.4rem;
-  color: var(--grift-ink-soft);
-  font-size: 0.88rem;
-  line-height: 1.4;
 }
 
 .grift-os-app & button:focus-visible,
@@ -1445,33 +1140,7 @@ button {
 }
 
 @media (max-width: 64rem) {
-  .grift-work-surface--hustles,
-  .grift-work-surface--rug {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .grift-rug-ledger,
-  .grift-rug-consequence-grid,
-  .grift-founder-take-preparation {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .grift-founder-take-summary,
-  .grift-founder-take-opportunity {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .grift-founder-take-summary > span {
-    text-align: left;
-  }
-
-  .grift-action-founder-take {
-    flex-basis: auto;
-    width: 100%;
-  }
-
-  .grift-rug-resolution {
+  .grift-work-surface--hustles {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -1737,11 +1406,9 @@ button {
 }
 
 @media (max-width: 71.999rem) {
-  .grift-work-surface--hustles,
-  .grift-work-surface--rug {
+  .grift-work-surface--hustles {
     grid-template-columns: minmax(0, 1fr);
   }
-
 }
 
 @media (max-width: 44rem) {
@@ -1886,66 +1553,6 @@ button {
   min-height: 2.7rem;
 }
 
-.grift-rug-stage {
-  gap: clamp(1rem, 2.2vw, 1.5rem);
-  width: min(64rem, 100%);
-  border-color: color-mix(in srgb, var(--grift-warning), transparent 78%);
-  background: color-mix(in srgb, var(--grift-plane-raised), #000 4%);
-}
-
-.grift-rug-intro {
-  grid-template-columns: minmax(13rem, 0.78fr) minmax(0, 1.22fr);
-  gap: 0.65rem clamp(1rem, 4vw, 2.8rem);
-  align-items: end;
-  justify-items: start;
-  border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
-  padding-bottom: clamp(0.9rem, 2.2vw, 1.35rem);
-  text-align: left;
-}
-
-.grift-rug-intro > p:first-child,
-.grift-rug-intro-value {
-  grid-column: 1;
-}
-
-.grift-rug-intro-value {
-  display: grid;
-  gap: 0.16rem;
-}
-
-.grift-rug-intro h2 {
-  margin: 0;
-  font-size: clamp(1.12rem, 2vw, 1.45rem);
-}
-
-.grift-rug-intro strong {
-  font-size: clamp(2.85rem, 5.4vw, 4.85rem);
-  line-height: 0.9;
-}
-
-.grift-rug-intro span {
-  font-size: 0.96rem;
-}
-
-.grift-rug-intro .grift-rug-thesis {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: end;
-  max-width: 34rem;
-  margin: 0;
-  font-size: clamp(0.88rem, 1.45vw, 1.04rem);
-  text-align: left;
-}
-
-.grift-rug-ledger,
-.grift-rug-consequence-grid {
-  gap: clamp(0.85rem, 3vw, 2rem);
-}
-
-.grift-rug-ledger strong {
-  font-size: clamp(1.35rem, 3vw, 2.25rem);
-}
-
 @media (min-width: 44rem) {
   .grift-stage {
     min-block-size: clamp(10rem, 13vw, 11.5rem);
@@ -2037,15 +1644,6 @@ button {
     grid-column: auto;
   }
 
-  .grift-rug-intro {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.65rem;
-  }
-
-  .grift-rug-intro .grift-rug-thesis {
-    grid-column: 1;
-    grid-row: auto;
-  }
 }
 
 }

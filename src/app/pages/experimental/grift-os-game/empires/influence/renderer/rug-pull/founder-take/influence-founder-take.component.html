@@ -1,0 +1,41 @@
+<section class="grift-founder-take" aria-labelledby="grift-founder-take-title">
+  <div class="grift-founder-take-summary">
+    <div>
+      <p id="grift-founder-take-title">Founder Take</p>
+      <strong>{{ view.founderTakeRateLabel }}</strong>
+    </div>
+    <span>Peak Valuation × Founder Take × extraction shaping becomes personal Net Worth.</span>
+  </div>
+
+  @if (view.founderTake.isPreparing && view.founderTake.activeStage; as stage) {
+    <div class="grift-founder-take-preparation" aria-live="polite">
+      <div>
+        <p>{{ stage.name }} in progress</p>
+        <span>{{ view.founderTakeRemainingLabel }} remaining · {{ view.founderTakeOutputLabel }}</span>
+      </div>
+      <div class="grift-founder-take-progress" aria-hidden="true">
+        <span [style.transform]="'scaleX(' + view.founderTakeProgressScale + ')'" ></span>
+      </div>
+    </div>
+  } @else if (view.founderTake.nextStage; as stage) {
+    <div class="grift-founder-take-opportunity">
+      <div>
+        <p>{{ stage.name }}</p>
+        <span>{{ stage.description }}</span>
+        <small>
+          {{ view.founderTakeDurationLabel }} commitment · {{ view.founderTakeNextOutputLabel }}
+        </small>
+      </div>
+      <button
+        type="button"
+        class="grift-action-button grift-action-founder-take"
+        [disabled]="!view.founderTake.canStartNextStage"
+        (click)="request.emit({ action: { type: 'rugPull.prepare' } })"
+      >
+        Prepare · {{ view.founderTakeNextCostLabel }}
+      </button>
+    </div>
+  } @else {
+    <p class="grift-founder-take-complete">Control preparations complete for this run.</p>
+  }
+</section>

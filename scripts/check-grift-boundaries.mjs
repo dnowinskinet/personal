@@ -110,6 +110,16 @@ async function checkStyleBoundaries() {
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'leverage', 'influence-leverage.component.scss'),
       importantBaseline: 0,
     },
+    {
+      name: 'Influence Rug Pull component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'rug-pull', 'influence-rug-pull.component.scss'),
+      importantBaseline: 0,
+    },
+    {
+      name: 'Influence Founder Take component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'rug-pull', 'founder-take', 'influence-founder-take.component.scss'),
+      importantBaseline: 0,
+    },
   ];
 
   for (const styleFile of styleFiles) {

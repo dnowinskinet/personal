@@ -1,0 +1,86 @@
+<div class="grift-work-surface grift-work-surface--rug">
+  <section class="grift-rug-stage" aria-labelledby="grift-rug-title">
+    <div class="grift-rug-intro">
+      <p>Extraction statement</p>
+      <div class="grift-rug-intro-value">
+        <h2 id="grift-rug-title">Walk away with</h2>
+        <strong>{{ view.rugPullNetWorthGainLabel }}</strong>
+        <span>Net Worth</span>
+      </div>
+      <p class="grift-rug-thesis">
+        The enterprise has achieved sufficient cultural importance to become someone else's problem.
+      </p>
+    </div>
+
+    <div class="grift-rug-ledger" aria-label="Rug Pull preview">
+      <div class="grift-rug-run-value">
+        <p>Run value sacrificed</p>
+        <strong>{{ view.valuationLabel }}</strong>
+        <span>Current Valuation resets. Peak was {{ view.peakValuationLabel }}.</span>
+      </div>
+
+      <div class="grift-rug-persistent-value">
+        <p>Persistent value received</p>
+        <strong>{{ view.rugPullResultingNetWorthLabel }}</strong>
+        <span>
+          {{ view.rugPullWealthAdvantageLabel }} · {{ view.rugPullRecoveryMultiplierLabel }}
+          opening acceleration versus this run
+        </span>
+      </div>
+    </div>
+
+    <div class="grift-rug-target-note">
+      <span>{{ view.rugPullPreview.campaignStratumLabel }}</span>
+      <strong>{{ view.peakValuationLabel }} peak against a {{ view.rugPullTargetLabel }} target</strong>
+      <p>Waiting for a higher peak increases the Net Worth extracted from this run.</p>
+    </div>
+
+    <app-influence-founder-take
+      [view]="view"
+      (request)="request.emit($event)"
+    ></app-influence-founder-take>
+
+    <div class="grift-rug-consequence-grid">
+      <section>
+        <p>This run ends</p>
+        <ul>
+          <li>Current Valuation resets</li>
+          <li>{{ view.resetHustleCount }} active Hustles reset</li>
+          <li>{{ view.resetAutomationCount }} automations reset</li>
+          <li>{{ view.resetMilestoneCount }} milestones reset</li>
+          <li>{{ view.leveragePurchaseCount }} Leverage deals reset</li>
+        </ul>
+      </section>
+
+      <section>
+        <p>You keep</p>
+        <ul>
+          <li>Net Worth</li>
+          <li>Wealth Advantage on future Hustles</li>
+          @for (unlock of view.rugPullPreview.newlyUnlocked; track unlock) {
+            <li>{{ unlock }} unlocked</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <div class="grift-rug-action-strip">
+      <button
+        type="button"
+        class="grift-rug-button"
+        [disabled]="!view.rugPullPreview.isAvailable"
+        [attr.aria-label]="'Pull the Rug and gain ' + view.rugPullNetWorthGainLabel + ' Net Worth'"
+        (click)="request.emit({ action: { type: 'rugPull.commit' } })"
+      >
+        Pull the Rug
+      </button>
+      <button
+        type="button"
+        class="grift-quiet-button"
+        (click)="request.emit({ action: { type: 'mode.select', modeId: 'hustles' } })"
+      >
+        Return to Hustles
+      </button>
+    </div>
+  </section>
+</div>

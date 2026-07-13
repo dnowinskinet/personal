@@ -977,6 +977,7 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.selectedTab).toBe('rugPull');
+    expect(fixture.nativeElement.querySelector('app-influence-rug-pull')).not.toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Walk away with');
     expect(fixture.nativeElement.textContent).toContain('+$1M');
     expect(fixture.nativeElement.textContent).toContain('Net Worth');

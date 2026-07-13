@@ -24,6 +24,7 @@ import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
 import { InfluenceContextComponent } from './context/influence-context.component';
 import { InfluenceModesComponent } from './modes/influence-modes.component';
 import { InfluenceLeverageComponent } from './leverage/influence-leverage.component';
+import { InfluenceRugPullComponent, InfluenceRugPullView } from './rug-pull/influence-rug-pull.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -32,7 +33,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent, InfluenceLeverageComponent],
+  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent, InfluenceLeverageComponent, InfluenceRugPullComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -101,6 +102,32 @@ export class InfluenceEmpireRendererComponent {
       netWorthLabel: this.netWorthLabel,
       wealthAdvantageLabel: this.wealthAdvantageLabel,
       visualCondition: this.visualCondition,
+    };
+  }
+
+  get rugPullView(): InfluenceRugPullView {
+    const presentation = this.view.presentation;
+    return {
+      valuationLabel: presentation.valuationLabel,
+      peakValuationLabel: presentation.peakValuationLabel,
+      leveragePurchaseCount: presentation.leveragePurchaseCount,
+      rugPullPreview: presentation.rugPullPreview,
+      rugPullNetWorthGainLabel: presentation.rugPullNetWorthGainLabel,
+      rugPullResultingNetWorthLabel: presentation.rugPullResultingNetWorthLabel,
+      rugPullTargetLabel: presentation.rugPullTargetLabel,
+      rugPullWealthAdvantageLabel: presentation.rugPullWealthAdvantageLabel,
+      rugPullRecoveryMultiplierLabel: presentation.rugPullRecoveryMultiplierLabel,
+      founderTake: presentation.founderTake,
+      founderTakeRateLabel: presentation.founderTakeRateLabel,
+      founderTakeNextCostLabel: presentation.founderTakeNextCostLabel,
+      founderTakeDurationLabel: presentation.founderTakeDurationLabel,
+      founderTakeRemainingLabel: presentation.founderTakeRemainingLabel,
+      founderTakeOutputLabel: presentation.founderTakeOutputLabel,
+      founderTakeNextOutputLabel: presentation.founderTakeNextOutputLabel,
+      founderTakeProgressScale: presentation.founderTakeProgressScale,
+      resetHustleCount: presentation.resetHustleCount,
+      resetAutomationCount: presentation.resetAutomationCount,
+      resetMilestoneCount: presentation.resetMilestoneCount,
     };
   }
 
