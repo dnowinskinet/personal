@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
+Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -51,6 +51,8 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 ## TARGET — approved constraints not yet enforceable
 
 - Visual and audio pack extraction is not yet implemented.
+- Hustle imagery uses related small-Lane and richer selected-Context renditions. Each empire owns assets, frames, crops, materials, and restrained effects; shared code owns only placement, identity/state semantics, accessibility, and reduced-motion requirements.
+- The placeholder initials must not become a universal flat-icon or generic SVG-glyph system, and the future viewport family must not collapse into one heavily configurable cross-empire widget.
 - Catalog assembly validates IDs and cross-references before a run begins.
 - Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 

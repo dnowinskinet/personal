@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
+Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -121,7 +121,7 @@ Target prohibitions:
 | Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
 | Modes | Navigation among shared mechanical capabilities | `InfluenceModesComponent` consuming shared availability | Influence Modes | CURRENT | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` with local template/styles | Influence Ledger | CURRENT | Empire-specific composition | Dominant operating surface | Full-width stack |
-| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row with local visual/progress rules | Influence Lane | CURRENT | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
+| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row with local visual/progress rules; 3.42rem placeholder action footprint is CURRENT | Influence Lane with an empire-authored small Hustle viewport | Viewport artwork TARGET | Empire-specific composition over shared VM | Horizontal machine/row with recognizable enterprise image | Stacked touch-safe unit with preserved viewport presence |
 | Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row with component-local Context styles | Shared interaction contract + Influence Context | K.4 component and style ownership CURRENT | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
 | Horizon | Next meaningful Hustle establishment | `InfluenceLedgerComponent` template/styles | Influence Horizon | CURRENT inside Ledger | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
@@ -135,7 +135,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
 | Hustle-ladder balance | `economic-slots/economic-slot-catalog.ts`; Influence maps stable IDs in its mechanics pack and `content/economy-tuning.ts` remains a compatibility adapter | Shared economic-slot tuning with an independently validated mapping for every production empire |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
-| Icon or motion | Influence component styles and current definition metadata | Influence visual pack/component |
+| Hustle viewport or motion | Current initials and legacy definition metadata are placeholders | Influence visual pack plus Lane/Context components; the shared contract supplies identity and semantic state only |
 | Sound | Definitions, global manifest, director | Influence audio pack |
 | Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (CURRENT ownership) |
 | Stage layout | `InfluenceStageComponent` and its local stylesheet | Influence Stage (CURRENT) |

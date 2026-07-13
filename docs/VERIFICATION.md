@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
+Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---

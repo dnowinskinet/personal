@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
+Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -16,6 +16,7 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Prior accepted visual/runtime baseline: `3bb5884` plus `ec59e9b`; retained as the pre-Phase-K rollback reference.
 - Current Influence visual baseline: the revised K.2 Stage composition at `c88a3f0`, with the temporary dark-desktop backdrop at `2c2396d`, obsolete atmosphere removal at `79aa4c0`, and Chamber-owned flyouts at `7f0fd06`; active for review, with final authored artwork still pending.
 - The prototype authors the Valuation Stage, mode rail, Hustle ledger/lanes, and selected Context in light/dark desktop/mobile expressions. Leverage and Rug Pull retain their existing meaning and composition.
+- Lane manual-action controls reserve a 3.42rem visual footprint while retaining their current behavior. The initials inside them remain temporary placeholder debris, not an approved icon system or final Hustle presentation.
 - Primary save formats and keys: `grift-os-meta-v2` and `grift-os-run-v2`. Legacy `grift-os-meta-v1` and `grift-os-run-v1` records are retained and mirrored for rollback while Influence is the only production empire.
 - Global Net Worth is stored in v2 meta. The migrated v1 `rugPullCount` is Influence's per-empire lifetime exit count; no global lifetime-exit counter is persisted.
 - Shared `economic-slots/economic-slot-catalog.ts` owns the ten-position Hustle ladder's costs, payouts, cadence, growth, automation, unlocks, initial units, and milestone effects. Influence maps its stable Hustle IDs one-to-one onto those slots; runtime validation rejects incomplete, unknown, or duplicate slot mappings before play.
@@ -34,6 +35,7 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 ## TARGET — NOT YET IMPLEMENTED
 
 - Separable visual and audio packs; mechanics and content separation is CURRENT.
+- Empire-authored Hustle viewport pairs: a small Lane image and a related richer selected-Context rendition, sharing identity/state/accessibility contracts without sharing one universal visual widget. Artwork is not yet implemented.
 - Changing empires requires completing the active empire's prestige, then explicitly choosing an unlocked empire; the transition UI and second production empire are not yet implemented.
 
 ## DEFERRED
