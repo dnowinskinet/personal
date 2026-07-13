@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
+Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -18,7 +18,8 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - The prototype authors the Valuation Stage, mode rail, Hustle ledger/lanes, and selected Context in light/dark desktop/mobile expressions. Leverage and Rug Pull retain their existing meaning and composition.
 - Primary save formats and keys: `grift-os-meta-v2` and `grift-os-run-v2`. Legacy `grift-os-meta-v1` and `grift-os-run-v1` records are retained and mirrored for rollback while Influence is the only production empire.
 - Global Net Worth is stored in v2 meta. The migrated v1 `rugPullCount` is Influence's per-empire lifetime exit count; no global lifetime-exit counter is persisted.
-- Influence mechanics/tuning and player-facing content now have separate empire-local packs. Existing `content/` exports remain compatibility assembly points for component and tooling consumers.
+- Shared `economic-slots/economic-slot-catalog.ts` owns the ten-position Hustle ladder's costs, payouts, cadence, growth, automation, unlocks, initial units, and milestone effects. Influence maps its stable Hustle IDs one-to-one onto those slots; runtime validation rejects incomplete, unknown, or duplicate slot mappings before play.
+- Influence player-facing content remains empire-local. Existing `content/` exports remain compatibility assembly points for component and tooling consumers.
 - Shared engine functions now receive an explicit mechanics-only catalog. Engine sources do not import Angular, browser storage/DOM, or empire content, visual, audio, renderer, or playtest layers.
 - A pure presentation facade now derives rule-complete display state, action availability, affordability, progress, mode reveal, and selected Context data. The current template emits a minimal typed gameplay-action vocabulary through the component dispatcher.
 - Presentation sources do not import Angular, browser storage/DOM, audio, renderer, playtest, or the current component.
@@ -28,12 +29,11 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Renderer selection is an injectable registration. The host depends only on a renderer-neutral view envelope and semantic dispatcher; Influence content adaptation happens in the registry. A test-only replacement proves view delivery, semantic action dispatch, and host-utility separation without shipping a second empire.
 - Shared shell/theme tokens and the mobile Context/site-scroll bridge remain intentionally global. Host utilities use host-local styles. Region-specific Influence styles live beside their components; the renderer sheet retains only renderer-wide surface/action compatibility rules under an enforced `.grift-influence-renderer` scope. The separate Circulating Institution prototype sheet and obsolete icon/Stage cascades are gone.
 - Lane progress uses one renderer-owned CSS cycle synchronized from the engine's cadence and current phase. The former reset-ID set, 24 ms reset timer, per-render transform scale, visual lead, and chasing transition are removed; engine payout and progress state remain authoritative.
-- Current verification baseline: 105 focused GriftOS tests and 133 full-repository tests, lint, and production build pass.
+- Current verification baseline: 106 focused GriftOS tests and 134 full-repository tests, lint, and production build pass.
 
 ## TARGET — NOT YET IMPLEMENTED
 
 - Separable visual and audio packs; mechanics and content separation is CURRENT.
-- A shared economic-slot catalog will own equivalent cross-empire Hustle costs, payouts, cadence, growth, automation, and milestone effects; current Influence tuning remains unchanged until that extraction is approved.
 - Changing empires requires completing the active empire's prestige, then explicitly choosing an unlocked empire; the transition UI and second production empire are not yet implemented.
 
 ## DEFERRED
@@ -43,4 +43,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase K is complete through `84b4eb5`. The single Influence renderer dynamically selected by the host now statically composes Stage, Modes, Ledger/Lane, Context, Leverage, Rug Pull, and Founder Take modules with local templates and guarded component styles. The prototype stylesheet was removed, the renderer template moved beside its owner, obsolete Stage/icon cascades were deleted, and Lane progress rendering was simplified without changing engine timing, tuning, actions, routes, fixtures, saves, or audio behavior. Final authored Stage artwork remains deferred.
+Phase K is complete through `84b4eb5`. The post-K economic-parity foundation is complete through `993725d`: Influence now consumes the shared ten-slot economic catalog through a validated empire-local ID mapping without changing any numeric tuning, behavior, saves, content, or presentation. Final authored Stage artwork and the first production use of that catalog by a second empire remain deferred.

@@ -1,6 +1,6 @@
 # GriftOS Economy Tuning Brief
 
-This is the copy-friendly handoff for revising GriftOS economy constants. A tuning proposal should edit the inputs in `src/app/pages/experimental/grift-os-game/content/economy-tuning.ts`, run the balance simulator, and return the changed block plus the intended player experience. Do not change formulas accidentally while changing numbers.
+This is the copy-friendly handoff for revising GriftOS economy constants. A Hustle-ladder tuning proposal should edit the inputs in `src/app/pages/experimental/grift-os-game/economic-slots/economic-slot-catalog.ts`, run the balance simulator, and return the changed block plus the intended player experience. `content/economy-tuning.ts` is a compatibility adapter, not the editable numeric authority. Do not change formulas accidentally while changing numbers.
 
 ## Rules That Should Stay Stable During A Tuning Pass
 

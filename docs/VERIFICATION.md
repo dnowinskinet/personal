@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
+Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -94,6 +94,7 @@ No screenshot-testing dependency is currently installed. Capture and compare bro
 |---|---|
 | Formula or modifier | Engine tests, full tests, balance simulation, production build |
 | Influence tuning | Content/tuning tests and before/after balance report |
+| Economic-slot mapping | Focused pack parity test, architecture boundary check, full tests, production build |
 | Content only | Focused tests, affected fixtures, light/dark copy fit |
 | Presentation/action availability | Focused tests across affected fixtures and semantic-event assertions |
 | Renderer/SCSS | Full visual matrix, accessibility interactions, production build |

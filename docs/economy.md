@@ -1,6 +1,6 @@
 # GriftOS Economy
 
-This document records the current economy implementation and the balance decisions behind it. The constants are simulation-backed hypotheses, not final doctrine. The editable source of truth is `src/app/pages/experimental/grift-os-game/content/economy-tuning.ts`.
+This document records the current economy implementation and the balance decisions behind it. The constants are simulation-backed hypotheses, not final doctrine. The editable Hustle-ladder source of truth is `src/app/pages/experimental/grift-os-game/economic-slots/economic-slot-catalog.ts`; `content/economy-tuning.ts` remains the compatibility and content-enrichment adapter for current consumers.
 
 ## Value Model
 

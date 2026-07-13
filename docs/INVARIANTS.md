@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
+Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -24,6 +24,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `runtime/run-runtime.spec.ts`; `grift-os-game.spec.ts` integration coverage |
 | Existing Influence Hustle IDs remain stable and reconcile against v2 saves and migrated v1 saves. | `economy.spec.ts`: ordered ID test; persistence and component restore/reconciliation tests |
 | Influence mechanics and content catalogs remain complete and assemble into the unchanged compatibility definitions. | `empires/influence/influence-packs.spec.ts`: Hustle, milestone, and Leverage pack parity tests |
+| Equivalent Hustle positions use the shared ten-slot costs, payouts, cadence, growth, automation, unlocks, initial units, and milestone effects; an empire must map exactly one local Hustle to every slot. | `empires/influence/influence-packs.spec.ts`; `economic-slots/economic-slot-catalog.ts`; `npm run grift:arch` |
 | Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | The current renderer consumes rule-complete presentation models for display state and emits typed semantic gameplay actions rather than reconstructing costs, affordability, or mode reveal in the template. | `presentation/game-presentation.spec.ts`; component action-dispatch test; `npm run grift:arch` |
@@ -50,7 +51,6 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 ## TARGET — approved constraints not yet enforceable
 
 - Visual and audio pack extraction is not yet implemented.
-- Equivalent Hustle positions across empires use identical shared economic-slot tuning; extraction and cross-empire validation are not yet implemented.
 - Catalog assembly validates IDs and cross-references before a run begins.
 - Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 

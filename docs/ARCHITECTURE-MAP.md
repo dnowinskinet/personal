@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
+Last verified against commit: 993725d2427b7efcd94d04fa0d84dc61446eb2e2
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -16,6 +16,8 @@ The route lazy-loads `GriftOsGameComponent` from `src/app/pages/experimental/gri
 ```text
 grift-os-game/
   empire-id.ts   Shared compile-time empire ID catalog and runtime validator
+  economic-slots/ CURRENT shared ten-position Hustle tuning, milestone mechanics,
+                  scoped slot IDs, and empire-mapping validator
   content/        Compatibility assembly and label-enrichment adapters
   empires/
     empire-renderer-registry.ts
@@ -51,6 +53,7 @@ src/styles/_grift-os.scss
 Current dependency problems are known implementation evidence, not approved boundaries:
 
 - compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
+- Influence's stable Hustle IDs map one-to-one onto the shared economic-slot catalog; the pack validator rejects missing, extra, unknown, or duplicate slot ownership before the mechanics pack is consumed;
 - content-bearing compatibility types remain in `game-engine/types.ts` pending later type-ownership work;
 - the host owns platform scheduling, action execution, shared UI effects, fixtures, and utilities; the Influence renderer owns game-world rendering and Context focus behavior through a semantic request boundary;
 - the host imports no Influence renderer type. The composition registry adapts the neutral host view with Influence content and supplies the production renderer registration;
@@ -92,7 +95,7 @@ Composition root associates mechanics/content/visual/audio packs
   -> audio director consumes semantic events + audio pack
 ```
 
-Equivalent Hustles across empires target one shared economic-slot catalog for costs, payout, cadence, growth, automation, and milestone effects. Each empire maps its local Hustle identity and expression onto those slots. This target is not implemented; CURRENT Influence mechanics remain the unchanged executable baseline.
+A second production empire will map its local Hustle identities onto the CURRENT shared economic-slot catalog. Its names, nouns, verbs, descriptions, icons, audio, motion, and renderer remain empire-owned and are not implied by the shared tuning seam.
 
 Target prohibitions:
 
@@ -130,7 +133,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Change | CURRENT owner(s) | TARGET owner — not yet implemented |
 |---|---|---|
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
-| Hustle-ladder balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Shared economic-slot tuning with empire-local identity mapping; not yet implemented |
+| Hustle-ladder balance | `economic-slots/economic-slot-catalog.ts`; Influence maps stable IDs in its mechanics pack and `content/economy-tuning.ts` remains a compatibility adapter | Shared economic-slot tuning with an independently validated mapping for every production empire |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
 | Icon or motion | Influence component styles and current definition metadata | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |
