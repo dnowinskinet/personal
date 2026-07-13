@@ -117,6 +117,12 @@
   color: var(--grift-plane);
 }
 
+.grift-action-primary.grift-action-perform:not(:disabled):hover {
+  border-color: var(--grift-value);
+  background: color-mix(in srgb, var(--grift-value), var(--grift-plane) 10%);
+  color: var(--grift-plane);
+}
+
 .grift-hustle-active .grift-action-primary.grift-action-perform:disabled {
   border-color: color-mix(in srgb, var(--grift-value), transparent 35%);
   background: color-mix(in srgb, var(--grift-value), transparent 12%);
