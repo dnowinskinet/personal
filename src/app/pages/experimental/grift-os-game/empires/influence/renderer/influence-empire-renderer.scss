@@ -129,8 +129,7 @@ button {
 
 .grift-quiet-button,
 .grift-action-button,
-.grift-rug-button,
-.grift-mode-tabs button {
+.grift-rug-button {
   min-height: 2.4rem;
   border: 1px solid var(--grift-border);
   border-radius: 6px;
@@ -141,26 +140,6 @@ button {
 
 .grift-quiet-button {
   color: var(--grift-ink-soft);
-}
-
-.grift-mode-tabs {
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.45rem clamp(1rem, 2.4vw, 2rem);
-  border-bottom: 1px solid var(--grift-border);
-}
-
-.grift-mode-tabs button {
-  border-radius: 6px;
-  color: var(--grift-ink-soft);
-  text-transform: uppercase;
-}
-
-.grift-mode-tabs button:hover,
-.grift-tab-active {
-  border-color: var(--grift-selection) !important;
-  background: color-mix(in srgb, var(--grift-selection), transparent 88%) !important;
-  color: var(--grift-ink) !important;
 }
 
 .grift-offline-notice {
@@ -1586,11 +1565,6 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .grift-mode-tabs {
-    position: relative;
-    top: auto;
-  }
-
   .grift-leverage-deal {
     grid-template-columns: minmax(0, 1fr) minmax(12rem, auto);
   }
@@ -1679,17 +1653,6 @@ button {
 
   .grift-valuation-flyout {
     display: none;
-  }
-
-  .grift-mode-tabs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    padding-inline: 0.85rem;
-  }
-
-  .grift-mode-tabs button {
-    min-height: 2.42rem;
-    padding-inline: 0.35rem;
-    font-size: 0.72rem;
   }
 
   .grift-hustle-grid {
@@ -1838,14 +1801,6 @@ button {
   line-height: 1.18;
 }
 
-.grift-mode-tabs {
-  position: sticky;
-  top: var(--grift-nav-clearance, 4.6rem);
-  grid-template-columns: repeat(var(--grift-mode-count, 1), minmax(0, 1fr));
-  min-block-size: 2.75rem;
-  padding-block: 0.25rem;
-}
-
 @media (min-width: 44rem) {
   .grift-stage {
     min-block-size: clamp(10.5rem, 12vw, 11rem);
@@ -1886,9 +1841,6 @@ button {
     font-size: clamp(3.5rem, 7vw, 4.65rem);
   }
 
-  .grift-mode-tabs {
-    min-block-size: 3rem;
-  }
 }
 
 @media (min-width: 72rem) {
@@ -1939,10 +1891,6 @@ button {
 }
 
 @media (max-width: 44rem) {
-  .grift-mode-tabs {
-    padding-block: 0.15rem;
-  }
-
   .grift-stage__owner {
     max-width: 9.4rem;
   }
@@ -2050,14 +1998,6 @@ button {
 
 .grift-stage .grift-net-worth strong {
   font-size: clamp(1.05rem, 2.5vw, 1.45rem);
-}
-
-.grift-mode-tabs {
-  z-index: 3;
-  isolation: isolate;
-  border-bottom-color: var(--grift-border-strong);
-  background: var(--grift-plane);
-  box-shadow: 0 0.5rem 0.8rem color-mix(in srgb, var(--grift-plane), transparent 25%);
 }
 
 .grift-work-surface {
@@ -2193,11 +2133,6 @@ button {
 }
 
 @media (max-width: 71.999rem) {
-  .grift-mode-tabs {
-    position: relative;
-    top: auto;
-  }
-
   .grift-hustle-grid {
     grid-template-columns: 2.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr);
   }

@@ -100,6 +100,11 @@ async function checkStyleBoundaries() {
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'context', 'influence-context.component.scss'),
       importantBaseline: 0,
     },
+    {
+      name: 'Influence Modes component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'modes', 'influence-modes.component.scss'),
+      importantBaseline: 0,
+    },
   ];
 
   for (const styleFile of styleFiles) {

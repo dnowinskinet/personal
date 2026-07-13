@@ -27,22 +27,11 @@
     }
 
     @if (showModeTabs) {
-        <nav
-            class="grift-mode-tabs"
-            aria-label="GriftOS game surfaces"
-            [style.--grift-mode-count]="availableTabs.length"
-        >
-            @for (tab of availableTabs; track trackTab($index, tab)) {
-                <button
-                    type="button"
-                    [class.grift-tab-active]="selectedVisibleTab === tab.id"
-                    [attr.aria-pressed]="selectedVisibleTab === tab.id"
-                    (click)="dispatchGameAction({ type: 'mode.select', modeId: tab.id })"
-                >
-                    {{ tab.label }}
-                </button>
-            }
-        </nav>
+        <app-influence-modes
+            [modes]="availableTabs"
+            [selectedModeId]="selectedVisibleTab"
+            (request)="dispatchRendererRequest($event)"
+        ></app-influence-modes>
     }
 
     @switch (selectedVisibleTab) {

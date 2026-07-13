@@ -6,7 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { GRIFT_OS_COPY } from '../../../content/game-copy';
-import { GameTabId } from '../../../game-engine/game-events';
 import { HustleId } from '../../../game-engine/types';
 import {
   EmpireActionDispatcher,
@@ -23,6 +22,7 @@ import {
 } from './stage/influence-stage.component';
 import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
 import { InfluenceContextComponent } from './context/influence-context.component';
+import { InfluenceModesComponent } from './modes/influence-modes.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -31,7 +31,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent, InfluenceLedgerComponent, InfluenceContextComponent],
+  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -124,10 +124,6 @@ export class InfluenceEmpireRendererComponent {
 
   dismissRugPullResolution(): void {
     this.dispatch({ action: { type: 'rugPull.resolution.dismiss' } });
-  }
-
-  trackTab(_index: number, tab: { id: GameTabId; label: string }): GameTabId {
-    return tab.id;
   }
 
   trackHustle(_index: number, row: HustleViewModel): HustleId {

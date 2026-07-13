@@ -206,6 +206,7 @@ describe('GriftOsGameComponent', () => {
 
     const modeNavigation = fixture.nativeElement.querySelector('.grift-mode-tabs') as HTMLElement | null;
 
+    expect(fixture.nativeElement.querySelector('app-influence-modes')).not.toBeNull();
     expect(modeNavigation).not.toBeNull();
     expect(modeNavigation?.style.getPropertyValue('--grift-mode-count')).toBe(String(component.availableTabs.length));
   });

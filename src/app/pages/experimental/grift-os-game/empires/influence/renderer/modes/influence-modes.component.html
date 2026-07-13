@@ -1,0 +1,16 @@
+<nav
+  class="grift-mode-tabs"
+  aria-label="GriftOS game surfaces"
+  [style.--grift-mode-count]="modes.length"
+>
+  @for (mode of modes; track trackMode($index, mode)) {
+    <button
+      type="button"
+      [class.grift-tab-active]="selectedModeId === mode.id"
+      [attr.aria-pressed]="selectedModeId === mode.id"
+      (click)="request.emit({ action: { type: 'mode.select', modeId: mode.id } })"
+    >
+      {{ mode.label }}
+    </button>
+  }
+</nav>

@@ -1,0 +1,59 @@
+:host { display: contents; }
+
+.grift-mode-tabs {
+  position: sticky;
+  top: var(--grift-nav-clearance, 4.6rem);
+  z-index: 3;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(var(--grift-mode-count, 1), minmax(0, 1fr));
+  gap: 0;
+  min-block-size: 3.1rem;
+  border-bottom: 1px solid var(--grift-border-strong);
+  background: color-mix(in srgb, var(--grift-plane), transparent 4%);
+  padding: 0 clamp(1rem, 2.8vw, 2.25rem);
+  box-shadow: 0 0.55rem 1rem color-mix(in srgb, var(--grift-bg), transparent 28%);
+  backdrop-filter: blur(12px);
+}
+
+.grift-mode-tabs button {
+  min-height: 3.1rem;
+  border: 0;
+  border-right: 1px solid var(--grift-border);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.65rem 0.9rem;
+  color: var(--grift-ink-faint);
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.grift-mode-tabs button:first-child { border-left: 1px solid var(--grift-border); }
+
+.grift-mode-tabs button:hover,
+.grift-tab-active {
+  border-color: var(--grift-selection);
+  background: color-mix(in srgb, var(--grift-selection), transparent 88%);
+  color: var(--grift-ink);
+}
+
+@media (max-width: 71.999rem) {
+  .grift-mode-tabs { position: relative; top: auto; }
+}
+
+@media (max-width: 44rem) {
+  .grift-mode-tabs {
+    min-block-size: 2.85rem;
+    padding-inline: 0.85rem;
+  }
+
+  .grift-mode-tabs button {
+    min-height: 2.85rem;
+    padding-inline: 0.3rem;
+    font-size: 0.61rem;
+    letter-spacing: 0.06em;
+  }
+}
