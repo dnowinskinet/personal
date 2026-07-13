@@ -1,0 +1,84 @@
+:host { display: contents; }
+
+.grift-work-surface--leverage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(0.8rem, 1.7vw, 1.35rem);
+  background: var(--grift-bg);
+  padding: clamp(0.85rem, 1.9vw, 1.45rem) clamp(1rem, 2.4vw, 2rem);
+}
+
+.grift-leverage-plane { width: min(72rem, 100%); min-width: 0; margin-inline: auto; }
+
+.grift-leverage-intro {
+  display: flex;
+  gap: 0.5rem 1.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: 0.8rem 1rem;
+}
+
+.grift-leverage-intro p,
+.grift-leverage-intro span {
+  margin: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.grift-leverage-intro span { color: var(--grift-ink-faint); text-align: right; }
+.grift-leverage-deals { display: grid; }
+
+.grift-leverage-deal {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.1fr) minmax(12rem, 0.9fr) minmax(12rem, 0.6fr);
+  gap: clamp(0.9rem, 2.4vw, 1.6rem);
+  align-items: center;
+  border-top: 1px solid var(--grift-border);
+  padding-block: clamp(1rem, 2.3vw, 1.4rem);
+}
+
+.grift-leverage-deal--ready { border-top-color: color-mix(in srgb, var(--grift-info), transparent 42%); }
+.grift-leverage-deal--purchased { border-top-color: color-mix(in srgb, var(--grift-automation), transparent 38%); }
+
+.grift-leverage-deal-copy p {
+  margin: 0 0 0.24rem;
+  color: var(--grift-info);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+}
+
+.grift-leverage-deal-copy h3 { margin: 0; color: var(--grift-ink); font-size: 1.05rem; font-weight: 700; }
+.grift-leverage-deal-copy span { display: block; margin-top: 0.35rem; color: var(--grift-ink-soft); font-size: 0.82rem; line-height: 1.4; }
+
+.grift-leverage-effects {
+  display: grid;
+  gap: 0.38rem;
+  margin: 0;
+  padding: 0;
+  color: var(--grift-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.grift-leverage-effects li::before { margin-right: 0.4rem; color: var(--grift-info); content: "+"; }
+.grift-leverage-deal--purchased .grift-leverage-effects li::before { color: var(--grift-automation); }
+.grift-leverage-deal-action { display: grid; gap: 0.45rem; justify-items: stretch; }
+.grift-leverage-deal-action > span { color: var(--grift-ink-faint); font-size: 0.72rem; font-weight: 560; text-align: right; }
+.grift-action-leverage { border-color: color-mix(in srgb, var(--grift-info), transparent 48%); color: var(--grift-info); }
+
+@media (max-width: 64rem) {
+  .grift-leverage-deal { grid-template-columns: minmax(0, 1fr) minmax(12rem, auto); }
+  .grift-leverage-effects { grid-column: 1 / -1; grid-row: 2; }
+}
+
+@media (max-width: 44rem) {
+  .grift-work-surface--leverage { padding-inline: 0.85rem; }
+  .grift-leverage-intro { display: grid; }
+  .grift-leverage-intro span { text-align: left; }
+  .grift-leverage-deal { grid-template-columns: minmax(0, 1fr); }
+  .grift-leverage-effects { grid-column: auto; grid-row: auto; }
+  .grift-leverage-deal-action > span { text-align: left; }
+}

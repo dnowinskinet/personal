@@ -23,6 +23,7 @@ import {
 import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
 import { InfluenceContextComponent } from './context/influence-context.component';
 import { InfluenceModesComponent } from './modes/influence-modes.component';
+import { InfluenceLeverageComponent } from './leverage/influence-leverage.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -31,7 +32,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent],
+  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent, InfluenceLeverageComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

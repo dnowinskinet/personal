@@ -1,0 +1,50 @@
+<div class="grift-work-surface grift-work-surface--leverage">
+  <section class="grift-leverage-plane">
+    <div class="grift-section-line">
+      <div>
+        <p>Leverage</p>
+        <h2>Structural deals</h2>
+      </div>
+      <span>{{ purchaseCount }} operating this run</span>
+    </div>
+
+    <div class="grift-leverage-intro">
+      <p>Expensive portfolio relationships that compete with unit growth.</p>
+      <span>Deals reset on Rug Pull. Net Worth determines which strata can appear.</span>
+    </div>
+
+    <div class="grift-leverage-deals">
+      @for (deal of deals; track deal.id) {
+        <article
+          class="grift-leverage-deal"
+          [class.grift-leverage-deal--purchased]="deal.isPurchased"
+          [class.grift-leverage-deal--ready]="deal.canBuy"
+        >
+          <div class="grift-leverage-deal-copy">
+            <p>{{ deal.definition.domain }}</p>
+            <h3>{{ deal.definition.name }}</h3>
+            <span>{{ deal.definition.description }}</span>
+          </div>
+
+          <ul class="grift-leverage-effects">
+            @for (effect of deal.effectLabels; track effect) {
+              <li>{{ effect }}</li>
+            }
+          </ul>
+
+          <div class="grift-leverage-deal-action">
+            <span>{{ deal.statusLabel }}</span>
+            <button
+              type="button"
+              class="grift-action-button grift-action-leverage"
+              [disabled]="!deal.canBuy"
+              (click)="request.emit({ action: { type: 'leverage.purchase', leverageId: deal.id } })"
+            >
+              {{ deal.isPurchased ? 'Secured' : 'Acquire · ' + deal.costLabel }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</div>

@@ -105,6 +105,11 @@ async function checkStyleBoundaries() {
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'modes', 'influence-modes.component.scss'),
       importantBaseline: 0,
     },
+    {
+      name: 'Influence Leverage component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'leverage', 'influence-leverage.component.scss'),
+      importantBaseline: 0,
+    },
   ];
 
   for (const styleFile of styleFiles) {

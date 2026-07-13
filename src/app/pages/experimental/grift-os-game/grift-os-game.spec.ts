@@ -408,6 +408,11 @@ describe('GriftOsGameComponent', () => {
     ]);
     expect(rows[0].classList).toContain('grift-hustle-settled');
     expect(rows[7].classList).toContain('grift-hustle-contextual');
+
+    component.setGameTab('leverage');
+    detectStateChange(fixture);
+    expect(fixture.nativeElement.querySelector('app-influence-leverage')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Structural deals');
   });
 
   it('provides an Endgame shortcut with all Hustles and prestige state established', async () => {
