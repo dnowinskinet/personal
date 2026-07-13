@@ -1,5 +1,15 @@
 :host { display: contents; }
 
+.grift-stage p { margin: 0; }
+
+.grift-stage .grift-kicker,
+.grift-stage .grift-valuation-object p,
+.grift-stage .grift-capital-panel p {
+  font-size: 0.72rem;
+  font-weight: 680;
+  text-transform: uppercase;
+}
+
 .grift-stage {
   --stage-metal: #8b641f;
   --stage-metal-dim: #8b641f66;

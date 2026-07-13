@@ -6,16 +6,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import { GRIFT_OS_COPY } from '../../../content/game-copy';
-import { HustleId } from '../../../game-engine/types';
 import {
   EmpireActionDispatcher,
   EmpireRendererRequest,
   EmpireRendererHostView,
 } from '../../../host/empire-renderer-contract';
 import { GameAction } from '../../../presentation/game-action';
-import {
-  HustleViewModel,
-} from '../../../presentation/game-presentation';
 import {
   InfluenceStageComponent,
   InfluenceStageView,
@@ -34,7 +30,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   selector: 'app-influence-empire-renderer',
   standalone: true,
   imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent, InfluenceLeverageComponent, InfluenceRugPullComponent],
-  templateUrl: '../../../grift-os-game.html',
+  templateUrl: './influence-empire-renderer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'grift-influence-renderer',
@@ -49,7 +45,6 @@ export class InfluenceEmpireRendererComponent {
   @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
 
   get copy(): typeof GRIFT_OS_COPY { return this.view.copy; }
-  get presentation() { return this.view.presentation.enterprise; }
   get visualCondition() { return this.view.presentation.visualCondition; }
   get valuationFlyouts() { return this.view.valuationFlyouts; }
   get valuationLabel() { return this.view.presentation.valuationLabel; }
@@ -73,24 +68,6 @@ export class InfluenceEmpireRendererComponent {
   get selectedHustle() { return this.view.presentation.selectedHustle; }
   get leverageDeals() { return this.view.presentation.leverageDeals; }
   get leveragePurchaseCount() { return this.view.presentation.leveragePurchaseCount; }
-  get rugPullPreview() { return this.view.presentation.rugPullPreview; }
-  get rugPullNetWorthGainLabel() { return this.view.presentation.rugPullNetWorthGainLabel; }
-  get rugPullResultingNetWorthLabel() { return this.view.presentation.rugPullResultingNetWorthLabel; }
-  get rugPullTargetLabel() { return this.view.presentation.rugPullTargetLabel; }
-  get rugPullWealthAdvantageLabel() { return this.view.presentation.rugPullWealthAdvantageLabel; }
-  get rugPullRecoveryMultiplierLabel() { return this.view.presentation.rugPullRecoveryMultiplierLabel; }
-  get peakValuationLabel() { return this.view.presentation.peakValuationLabel; }
-  get founderTake() { return this.view.presentation.founderTake; }
-  get founderTakeRateLabel() { return this.view.presentation.founderTakeRateLabel; }
-  get founderTakeNextCostLabel() { return this.view.presentation.founderTakeNextCostLabel; }
-  get founderTakeDurationLabel() { return this.view.presentation.founderTakeDurationLabel; }
-  get founderTakeRemainingLabel() { return this.view.presentation.founderTakeRemainingLabel; }
-  get founderTakeOutputLabel() { return this.view.presentation.founderTakeOutputLabel; }
-  get founderTakeNextOutputLabel() { return this.view.presentation.founderTakeNextOutputLabel; }
-  get founderTakeProgressScale() { return this.view.presentation.founderTakeProgressScale; }
-  get resetHustleCount() { return this.view.presentation.resetHustleCount; }
-  get resetAutomationCount() { return this.view.presentation.resetAutomationCount; }
-  get resetMilestoneCount() { return this.view.presentation.resetMilestoneCount; }
 
   get stageView(): InfluenceStageView {
     return {
@@ -154,7 +131,4 @@ export class InfluenceEmpireRendererComponent {
     this.dispatch({ action: { type: 'rugPull.resolution.dismiss' } });
   }
 
-  trackHustle(_index: number, row: HustleViewModel): HustleId {
-    return row.id;
-  }
 }
