@@ -1,6 +1,12 @@
 /* Influence renderer styles. Keep selectors within this Angular ownership boundary. */
 .grift-influence-renderer {
 
+--grift-institution-line: color-mix(in srgb, var(--grift-info), transparent 72%);
+--grift-institution-paper: color-mix(in srgb, var(--grift-plane-raised), var(--grift-info) 1.5%);
+--grift-institution-channel: color-mix(in srgb, var(--grift-plane), var(--grift-info) 3%);
+--grift-institution-signal: var(--grift-info);
+--grift-institution-status: var(--grift-automation);
+
 
 button {
   border: 0;
@@ -198,6 +204,8 @@ button {
 }
 
 .grift-work-surface {
+  position: relative;
+  z-index: 0;
   display: grid;
   gap: clamp(0.8rem, 1.7vw, 1.35rem);
   padding: clamp(0.85rem, 1.9vw, 1.45rem) clamp(1rem, 2.4vw, 2rem);
@@ -205,8 +213,11 @@ button {
 }
 
 .grift-work-surface--hustles {
-  grid-template-columns: minmax(0, 2.2fr) minmax(18rem, 0.66fr);
+  grid-template-columns: minmax(0, 2.35fr) minmax(18rem, 0.72fr);
+  gap: clamp(1.2rem, 2.5vw, 2rem);
   align-items: start;
+  background: var(--grift-bg);
+  padding: clamp(1.1rem, 2.5vw, 2rem) clamp(1rem, 2.8vw, 2.25rem);
 }
 
 .grift-work-surface--ledger-only {
@@ -375,15 +386,6 @@ button {
   transform: translateY(-1px);
 }
 
-.grift-icon-active .grift-hustle-icon {
-  animation: grift-producing-icon var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon::before,
-.grift-icon-active .grift-hustle-icon::after {
-  animation: grift-icon-pulse var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
-}
-
 .grift-icon-automated {
   border-color: color-mix(in srgb, var(--grift-automation), transparent 26%);
   box-shadow: 0 0 calc(10px * var(--grift-glow-strength)) color-mix(in srgb, var(--grift-automation), transparent 78%);
@@ -400,245 +402,6 @@ button {
   content: "";
   opacity: 0.55;
   animation: grift-automation-marker var(--grift-cycle-duration, 2000ms) linear infinite;
-}
-
-.grift-hustle-icon {
-  position: relative;
-  display: block;
-  width: 1.56rem;
-  height: 1.56rem;
-  color: var(--grift-info);
-}
-
-.grift-hustle-icon::before,
-.grift-hustle-icon::after {
-  position: absolute;
-  content: "";
-}
-
-.grift-hustle-icon::before {
-  inset: 0.25rem;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-}
-
-.grift-hustle-icon::after {
-  inset: 0.75rem 0.1rem auto;
-  height: 2px;
-  border-radius: 999px;
-  background: var(--grift-value);
-}
-
-.grift-hustle-icon[data-icon-kind="signal"]::before {
-  inset: 0.18rem 0.28rem;
-  border-radius: 0.32rem;
-}
-
-.grift-hustle-icon[data-icon-kind="signal"]::after {
-  inset: 0.4rem 0.48rem auto;
-  height: 0.22rem;
-  box-shadow:
-    0 0.38rem 0 currentColor,
-    0 0.76rem 0 currentColor;
-}
-
-.grift-hustle-icon[data-icon-kind="broadcast"]::before {
-  inset: 0.2rem 0.48rem 0.28rem;
-  border-radius: 0.24rem 0.24rem 0.75rem 0.75rem;
-}
-
-.grift-hustle-icon[data-icon-kind="broadcast"]::after {
-  inset: 0.28rem 0.08rem auto;
-  height: 1rem;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-left-color: transparent;
-  background: transparent;
-}
-
-.grift-hustle-icon[data-icon-kind="outrage"]::before {
-  inset: 0.2rem 0.38rem 0.52rem;
-  border-radius: 0.16rem;
-  transform: skew(-12deg);
-}
-
-.grift-hustle-icon[data-icon-kind="outrage"]::after {
-  inset: auto 0.38rem 0.22rem;
-  height: 0.4rem;
-  clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%);
-  background: currentColor;
-}
-
-.grift-hustle-icon[data-icon-kind="funnel"]::before {
-  inset: 0.16rem 0.16rem auto;
-  height: 0.98rem;
-  border: 0;
-  clip-path: polygon(0 0, 100% 0, 62% 100%, 38% 100%);
-  background: currentColor;
-}
-
-.grift-hustle-icon[data-icon-kind="funnel"]::after {
-  inset: auto 0.64rem 0.18rem;
-  height: 0.5rem;
-  background: currentColor;
-}
-
-.grift-hustle-icon[data-icon-kind="manifesto"]::before {
-  inset: 0.12rem 0.36rem;
-  border-radius: 0.1rem;
-}
-
-.grift-hustle-icon[data-icon-kind="manifesto"]::after {
-  inset: 0.42rem 0.58rem auto;
-  height: 0.15rem;
-  box-shadow:
-    0 0.34rem 0 var(--grift-value),
-    0 0.68rem 0 var(--grift-value);
-}
-
-.grift-hustle-icon[data-icon-kind="summit"]::before {
-  inset: 0.18rem 0.12rem 0.2rem;
-  border: 0;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  background: currentColor;
-  opacity: 0.82;
-}
-
-.grift-hustle-icon[data-icon-kind="summit"]::after {
-  inset: auto 0.38rem 0.24rem;
-  height: 0.28rem;
-  background: var(--grift-bg);
-}
-
-.grift-hustle-icon[data-icon-kind="ai"]::before {
-  inset: 0.22rem;
-  border-radius: 0.36rem;
-  box-shadow: inset 0 0 0 0.34rem color-mix(in srgb, var(--grift-info), transparent 70%);
-}
-
-.grift-hustle-icon[data-icon-kind="ai"]::after {
-  inset: 0.56rem;
-  height: auto;
-  border-radius: 999px;
-  background: currentColor;
-  box-shadow:
-    -0.46rem 0 0 -0.09rem currentColor,
-    0.46rem 0 0 -0.09rem currentColor,
-    0 -0.46rem 0 -0.09rem currentColor,
-    0 0.46rem 0 -0.09rem currentColor;
-}
-
-.grift-hustle-icon[data-icon-kind="fund"]::before {
-  inset: 0.2rem 0.34rem;
-  border-radius: 0.12rem;
-  transform: rotate(12deg);
-}
-
-.grift-hustle-icon[data-icon-kind="fund"]::after {
-  inset: 0.42rem 0.52rem auto;
-  height: 0.18rem;
-  box-shadow:
-    0 0.34rem 0 var(--grift-value),
-    0 0.68rem 0 var(--grift-value);
-}
-
-.grift-hustle-icon[data-icon-kind="media"]::before {
-  inset: 0.36rem 0.06rem;
-  border-radius: 999px;
-}
-
-.grift-hustle-icon[data-icon-kind="media"]::after {
-  inset: 0.3rem 0.48rem auto;
-  height: 0.96rem;
-  border-radius: 999px;
-  background: transparent;
-  box-shadow:
-    -0.42rem 0.18rem 0 -0.13rem currentColor,
-    0.42rem 0.18rem 0 -0.13rem currentColor,
-    0 0.54rem 0 -0.1rem var(--grift-value);
-}
-
-.grift-hustle-icon[data-icon-kind="sovereignty"]::before {
-  inset: 0.24rem;
-  border-radius: 0.08rem;
-  transform: rotate(45deg);
-}
-
-.grift-hustle-icon[data-icon-kind="sovereignty"]::after {
-  inset: 0.56rem;
-  height: auto;
-  border-radius: 0.08rem;
-  background: var(--grift-value);
-  transform: rotate(45deg);
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="signal"]::after {
-  animation: grift-packet 1.6s linear infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="signal"]::before {
-  animation: grift-terminal-blink 1.6s steps(2, end) infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="broadcast"]::after {
-  animation: grift-wave 1.4s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="broadcast"]::before {
-  animation: grift-broadcast-bob var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="outrage"]::before {
-  animation: grift-outrage-shake 520ms steps(2, end) infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="outrage"]::after {
-  animation: grift-outrage-stamp 820ms ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="funnel"]::before {
-  animation: grift-funnel-squeeze 1.35s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="funnel"]::after {
-  animation: grift-funnel-drop 1.35s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="manifesto"]::before {
-  animation: grift-page-flutter 1.55s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="manifesto"]::after {
-  animation: grift-ledger-scan 1.55s linear infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="ai"]::after,
-.grift-icon-active .grift-hustle-icon[data-icon-kind="media"]::after {
-  animation: grift-orbit 1.6s linear infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="fund"]::before {
-  animation: grift-card-count 1.35s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="fund"]::after {
-  animation: grift-ledger-scan 1.35s linear infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="media"]::before {
-  animation: grift-media-tune 1.7s ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="summit"]::before {
-  animation: grift-signal-rise var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="sovereignty"]::before {
-  animation: grift-sovereign-rise var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
-}
-
-.grift-icon-active .grift-hustle-icon[data-icon-kind="sovereignty"]::after {
-  animation: grift-sovereign-core var(--grift-cycle-duration, 2000ms) ease-in-out infinite;
 }
 
 .grift-hustle-select {
@@ -946,143 +709,11 @@ button {
   text-align: right;
 }
 
-.grift-progress-track {
-  height: 0.18rem;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--grift-ink), transparent 92%);
-}
-
-.grift-progress {
-  width: 100%;
-  height: 100%;
-  background: var(--grift-progress);
-  transform: scaleX(var(--grift-progress-scale, 0));
-  transform-origin: left center;
-  transition: transform 90ms linear;
-}
-
-.grift-hustle-automated .grift-progress {
-  background: var(--grift-progress);
-}
-
-.grift-progress-reset .grift-progress {
-  animation: none;
-  transform: scaleX(0);
-  transition: none;
-}
-
-.grift-progress-reset {
-  animation: none;
-}
-
 .grift-os-app & button:focus-visible,
 .grift-os-app & summary:focus-visible,
 .grift-os-app & input:focus-visible {
   outline: 2px solid var(--grift-selection);
   outline-offset: 3px;
-}
-
-@keyframes grift-packet {
-  0% { transform: translateX(-0.35rem); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translateX(0.35rem); opacity: 0; }
-}
-
-@keyframes grift-wave {
-  0%, 100% { transform: scaleX(0.72); opacity: 0.58; }
-  50% { transform: scaleX(1.05); opacity: 1; }
-}
-
-@keyframes grift-terminal-blink {
-  0%, 100% { box-shadow: inset 0 0 0 0 color-mix(in srgb, currentColor, transparent 100%); }
-  50% { box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor, transparent 40%); }
-}
-
-@keyframes grift-broadcast-bob {
-  0%, 100% { transform: translateY(0); }
-  45% { transform: translateY(-1px); }
-  70% { transform: translateY(1px); }
-}
-
-@keyframes grift-outrage-shake {
-  0%, 100% { transform: translateX(0) skew(-12deg); }
-  25% { transform: translateX(-1px) skew(-16deg); }
-  50% { transform: translateX(1px) skew(-8deg); }
-  75% { transform: translateX(-0.5px) skew(-14deg); }
-}
-
-@keyframes grift-outrage-stamp {
-  0%, 100% { transform: translateY(0) scaleY(1); opacity: 0.78; }
-  42% { transform: translateY(-2px) scaleY(0.82); opacity: 0.62; }
-  58% { transform: translateY(1px) scaleY(1.12); opacity: 1; }
-}
-
-@keyframes grift-funnel-squeeze {
-  0%, 100% { transform: scaleX(1); opacity: 0.88; }
-  45% { transform: scaleX(0.72); opacity: 1; }
-  72% { transform: scaleX(1.08); opacity: 0.92; }
-}
-
-@keyframes grift-funnel-drop {
-  0% { transform: translateY(-3px) scaleY(0.55); opacity: 0; }
-  34% { opacity: 0.95; }
-  68%, 100% { transform: translateY(3px) scaleY(1.12); opacity: 0; }
-}
-
-@keyframes grift-page-flutter {
-  0%, 100% { transform: rotate(0deg) translateX(0); }
-  45% { transform: rotate(-3deg) translateX(-1px); }
-  72% { transform: rotate(2deg) translateX(1px); }
-}
-
-@keyframes grift-ledger-scan {
-  0% {
-    opacity: 0.55;
-    transform: translateY(-0.18rem);
-  }
-  45% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.55;
-    transform: translateY(0.18rem);
-  }
-}
-
-@keyframes grift-icon-pulse {
-  0%, 100% { opacity: 0.78; }
-  50% { opacity: 1; }
-}
-
-@keyframes grift-orbit {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes grift-signal-rise {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-1px) scale(1.05); }
-}
-
-@keyframes grift-card-count {
-  0%, 100% { transform: rotate(12deg) translateY(0); }
-  38% { transform: rotate(18deg) translateY(-1px); }
-  72% { transform: rotate(7deg) translateY(1px); }
-}
-
-@keyframes grift-media-tune {
-  0%, 100% { transform: scaleX(1); opacity: 0.82; }
-  50% { transform: scaleX(0.84); opacity: 1; }
-}
-
-@keyframes grift-sovereign-rise {
-  0%, 100% { transform: rotate(45deg) translateY(0) scale(1); }
-  50% { transform: rotate(45deg) translateY(-1px) scale(1.06); }
-}
-
-@keyframes grift-sovereign-core {
-  0%, 100% { transform: rotate(45deg) scale(1); opacity: 0.82; }
-  50% { transform: rotate(45deg) scale(0.72); opacity: 1; }
 }
 
 @keyframes grift-valuation-gain {
@@ -1101,11 +732,6 @@ button {
   0%, 100% { opacity: 0.35; transform: scale(0.82); }
   82% { opacity: 0.35; transform: scale(0.82); }
   92% { opacity: 0.85; transform: scale(1); }
-}
-
-@keyframes grift-producing-icon {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-1px) scale(1.04); }
 }
 
 @media (max-width: 1200px) {
@@ -1234,13 +860,7 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grift-hustle-automated .grift-hustle-icon::after,
-  .grift-icon-active .grift-hustle-icon,
-  .grift-icon-active .grift-hustle-icon::before,
-  .grift-icon-active .grift-hustle-icon::after,
-  .grift-icon-automated::after,
-  .grift-progress,
-  .grift-progress-reset {
+  .grift-icon-automated::after {
     animation: none !important;
     transition: none !important;
   }

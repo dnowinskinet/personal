@@ -7,7 +7,8 @@
   [class.grift-hustle-attention-opportunity]="row.showAutomationOpportunity"
   [class.grift-hustle-settled]="row.isSettledAutomated"
   [class.grift-hustle-contextual]="row.hasContextualAttention"
-  [style.--grift-cycle-duration]="row.progressAnimationDuration"
+  [style.--grift-cycle-duration]="visualProgressDuration"
+  [style.--grift-cycle-delay]="visualProgressDelay"
 >
   <div class="grift-hustle-grid">
     <button type="button" class="grift-row-select-hitbox" tabindex="-1" aria-hidden="true"
@@ -71,8 +72,7 @@
     </section>
   }
 
-  <div class="grift-progress-track" [class.grift-progress-reset]="row.isProgressResetting"
-    [style.--grift-progress-scale]="row.progressScale" [style.--grift-cycle-duration]="row.progressAnimationDuration"
+  <div class="grift-progress-track"
     role="progressbar" [attr.aria-label]="row.definition.name + ' production progress'"
     [attr.aria-valuenow]="row.progressPercent" aria-valuemin="0" aria-valuemax="100">
     <div class="grift-progress"></div>

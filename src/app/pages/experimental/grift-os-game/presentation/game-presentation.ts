@@ -45,10 +45,9 @@ export interface HustleViewModel {
   unitCountLabel: string;
   isActive: boolean;
   isAutomated: boolean;
-  isProgressResetting: boolean;
   progressPercent: number;
-  progressScale: string;
   progressAnimationDuration: string;
+  progressAnimationDelay: string;
   progressLabel: string;
   payoutLabel: string;
   averageRateLabel: string;
@@ -155,10 +154,8 @@ export interface GamePresentationInput {
   selectedHustleId: HustleId;
   selectedTab: GameTabId;
   selectedContextOpen: boolean;
-  progressResetIds: ReadonlySet<HustleId>;
 }
 
-const PROGRESS_VISUAL_LEAD_MS = 40;
 const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = {
   scrappy: { label: 'Scrappy cover story', summary: 'One working Hustle and almost no institutional camouflage.' },
   traction: { label: 'Traction theater', summary: 'The stack starts to look repeatable, even if it is still mostly personal labor.' },
@@ -170,7 +167,6 @@ const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = 
 
 export class GamePresentationFacade {
   private lastInput: GamePresentationInput | null = null;
-  private lastResetKey = '';
   private lastSnapshot: GamePresentationSnapshot | null = null;
 
   constructor(
@@ -181,22 +177,18 @@ export class GamePresentationFacade {
   ) {}
 
   derive(input: GamePresentationInput): GamePresentationSnapshot {
-    const resetKey = [...input.progressResetIds].sort().join('|');
-
     if (
       this.lastSnapshot &&
       this.lastInput?.state === input.state &&
       this.lastInput.selectedHustleId === input.selectedHustleId &&
       this.lastInput.selectedTab === input.selectedTab &&
-      this.lastInput.selectedContextOpen === input.selectedContextOpen &&
-      this.lastResetKey === resetKey
+      this.lastInput.selectedContextOpen === input.selectedContextOpen
     ) {
       return this.lastSnapshot;
     }
 
     const snapshot = this.createSnapshot(input);
     this.lastInput = input;
-    this.lastResetKey = resetKey;
     this.lastSnapshot = snapshot;
     return snapshot;
   }
@@ -363,10 +355,9 @@ export class GamePresentationFacade {
         unitCountLabel: `${formatCount(hustle.units)} ${unitLabel(definition, hustle.units)}`,
         isActive: hustle.isActive,
         isAutomated: hustle.isAutomated,
-        isProgressResetting: input.progressResetIds.has(definition.id),
         progressPercent,
-        progressScale: (progressPercent / 100).toFixed(4),
-        progressAnimationDuration: `${Math.max(1, cadenceMs - PROGRESS_VISUAL_LEAD_MS)}ms`,
+        progressAnimationDuration: `${Math.max(1, cadenceMs)}ms`,
+        progressAnimationDelay: `${-Math.max(0, hustle.progressMs)}ms`,
         progressLabel: hustle.isActive ? `${Math.floor(progressPercent)}%` : hustle.isAutomated ? 'Cycling' : 'Ready',
         payoutLabel: formatMoney(payout, 'payout'),
         averageRateLabel: formatMoneyRate(payout / cadenceSeconds),

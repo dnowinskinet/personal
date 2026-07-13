@@ -22,7 +22,6 @@ describe('GamePresentationFacade', () => {
       selectedHustleId: 'troll-network',
       selectedTab: 'rugPull',
       selectedContextOpen: false,
-      progressResetIds: new Set(),
     });
 
     expect(snapshot.valuationLabel).toBe('$0');
@@ -58,14 +57,14 @@ describe('GamePresentationFacade', () => {
       selectedHustleId: 'podcast-network',
       selectedTab: 'hustles',
       selectedContextOpen: true,
-      progressResetIds: new Set(['troll-network']),
     });
 
     expect(snapshot.ownedHustleCount).toBe(2);
     expect(snapshot.showSelectedContextSurface).toBeTrue();
     expect(snapshot.selectedHustle.id).toBe('podcast-network');
     expect(snapshot.hustleRows[0].progressPercent).toBe(50);
-    expect(snapshot.hustleRows[0].isProgressResetting).toBeTrue();
+    expect(snapshot.hustleRows[0].progressAnimationDuration).toBe('2000ms');
+    expect(snapshot.hustleRows[0].progressAnimationDelay).toBe('-1000ms');
     expect(snapshot.hustleRows[0].canBuyOne).toBeTrue();
     expect(snapshot.hustleRows[0].expansionButtonLabel).toContain('Add Follower');
   });
@@ -77,7 +76,6 @@ describe('GamePresentationFacade', () => {
       selectedHustleId: 'troll-network' as const,
       selectedTab: 'hustles' as const,
       selectedContextOpen: false,
-      progressResetIds: new Set<typeof HUSTLE_DEFINITIONS[number]['id']>(),
     };
 
     expect(facade.derive(input)).toBe(facade.derive(input));

@@ -850,13 +850,15 @@ describe('GriftOsGameComponent', () => {
     spyOn(performance, 'now').and.returnValue(1_500);
 
     component['tick']();
+    fixture.detectChanges();
 
-    const progressTrack = fixture.nativeElement.querySelector(
-      '.grift-progress-track'
+    const progressLane = fixture.nativeElement.querySelector(
+      '.grift-hustle-entry'
     ) as HTMLElement | null;
 
     expect(component.state.hustles['troll-network'].progressMs).toBe(500);
-    expect(progressTrack?.style.getPropertyValue('--grift-progress-scale')).toBe('0.2500');
+    expect(progressLane?.style.getPropertyValue('--grift-cycle-duration')).toBe('2000ms');
+    expect(progressLane?.style.getPropertyValue('--grift-cycle-delay')).toBe('-500ms');
   });
 
   it('suppresses baseline modifier fields independently', async () => {

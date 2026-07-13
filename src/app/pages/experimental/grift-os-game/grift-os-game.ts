@@ -117,7 +117,6 @@ type InitialRouteRunState = RunShortcutId;
 
 const SIMULATION_TICK_MS = 50;
 const UI_RENDER_INTERVAL_MS = 100;
-const PROGRESS_RESET_RESTORE_MS = 24;
 const VALUATION_GAIN_FLYOUT_LIMIT = 3;
 const VALUATION_SPEND_FLYOUT_LIMIT = 2;
 const VALUATION_FLYOUT_LIFETIME_MS = 680;
@@ -190,8 +189,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private readonly isBrowser: boolean;
   private readonly persistence: GriftPersistence;
   private simulationTimerId: number | null = null;
-  private progressTransitionRestoreTimerId: number | null = null;
-  private readonly progressTransitionResetIds = new Set<HustleId>();
   private lastTickTime = 0;
   private feedbackId = 0;
   private valuationFlyoutId = 0;
@@ -255,10 +252,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       window.clearInterval(this.simulationTimerId);
     }
 
-    if (this.progressTransitionRestoreTimerId !== null) {
-      window.clearTimeout(this.progressTransitionRestoreTimerId);
-    }
-
     for (const timerId of this.valuationFlyoutTimerIds.values()) {
       window.clearTimeout(timerId);
     }
@@ -278,7 +271,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       selectedHustleId: this.selectedHustleId,
       selectedTab: this.selectedTab,
       selectedContextOpen: this.selectedContextOpen,
-      progressResetIds: this.progressTransitionResetIds,
     });
   }
 
@@ -845,7 +837,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         nowMs
       )
     );
-    this.progressTransitionResetIds.clear();
     this.updateAudioPresentation();
     this.changeDetectorRef.markForCheck();
   }
@@ -898,7 +889,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.setContextOverlayBodyState(false);
     this.selectedContextReturnTarget = null;
     this.selectedContextReturnHustleId = null;
-    this.progressTransitionResetIds.clear();
     this.payoutFeedback = [];
     this.clearValuationFlyouts();
     this.rugPullResolution = shortcutId === 'post-rug'
@@ -1101,13 +1091,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         const previousPresentation = deriveEnterprisePresentation(previousState, this.mechanics);
 
         for (const event of result.events) {
-          this.progressTransitionResetIds.add(event.hustleId);
           this.addPayoutFeedback(event, timestamp);
           this.recordPlaytestCycle(event, previousState, nowMs);
           this.emitGameEvent({ type: 'hustle.manualActionCompleted', hustleId: event.hustleId });
         }
 
-        this.scheduleProgressTransitionRestore();
         this.capturePlaytestDiscoveries(nowMs);
         this.emitStageChangeIfNeeded(previousPresentation, this.presentation);
         this.updateAudioPresentation();
@@ -1290,7 +1278,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.payoutFeedback = [];
     this.clearValuationFlyouts();
     this.rugPullResolution = null;
-    this.progressTransitionResetIds.clear();
     this.feedbackId = 0;
     this.lastTickTime = performance.now();
     this.persistNetWorth();
@@ -1589,24 +1576,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private runShortcutLabel(shortcutId: RunShortcutId): string {
     return this.runShortcuts.find((shortcut) => shortcut.id === shortcutId)?.label ?? 'shortcut';
-  }
-
-  private scheduleProgressTransitionRestore(): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
-    if (this.progressTransitionRestoreTimerId !== null) {
-      window.clearTimeout(this.progressTransitionRestoreTimerId);
-    }
-
-    this.progressTransitionRestoreTimerId = window.setTimeout(() => {
-      this.ngZone.run(() => {
-        this.progressTransitionResetIds.clear();
-        this.progressTransitionRestoreTimerId = null;
-        this.changeDetectorRef.markForCheck();
-      });
-    }, PROGRESS_RESET_RESTORE_MS);
   }
 
   private addValuationFlyout(direction: ValuationFlyoutDirection, amount: number): void {

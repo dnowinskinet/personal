@@ -13,6 +13,183 @@
   clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
 }
 
-.grift-hustle-entry { position: relative; }
+.grift-hustle-entry {
+  position: relative;
+  overflow: visible;
+  border: 1px solid var(--grift-border);
+  border-left-color: var(--grift-border-strong);
+  border-radius: 2px;
+  background: var(--grift-institution-paper);
+  box-shadow: 0 0.35rem 1rem color-mix(in srgb, #000, transparent 96%);
+}
+
+.grift-hustle-entry::before {
+  position: absolute;
+  top: 50%;
+  left: -1.18rem;
+  width: 0.58rem;
+  height: 0.58rem;
+  border: 1px solid var(--grift-institution-line);
+  border-radius: 50%;
+  background: var(--grift-bg);
+  box-shadow: 0 0 0 0.24rem var(--grift-bg);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.grift-hustle-entry::after { inset: 0 auto 0 0; width: 2px; }
+
+.grift-hustle-entry:hover,
+.grift-hustle-selected {
+  border-color: color-mix(in srgb, var(--grift-selection), transparent 42%);
+  background: color-mix(in srgb, var(--grift-institution-paper), var(--grift-selection) 3%);
+}
+
+.grift-hustle-active::before,
+.grift-hustle-attention-opportunity::before,
+.grift-hustle-selected::before {
+  border-color: var(--grift-selection);
+  background: var(--grift-selection);
+}
+
+.grift-hustle-automated {
+  border-color: color-mix(in srgb, var(--grift-automation), transparent 72%);
+  background: color-mix(in srgb, var(--grift-institution-paper), var(--grift-automation) 3%);
+}
+
+.grift-hustle-automated::before {
+  border-color: var(--grift-automation);
+  background: var(--grift-automation);
+  animation: influence-institution-node var(--grift-cycle-duration, 2000ms) ease-out infinite;
+}
+
+.grift-hustle-grid {
+  grid-template-columns: 2.85rem minmax(9rem, 0.88fr) minmax(8.5rem, 0.72fr) minmax(15rem, 1.18fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.62rem 0.7rem;
+}
+
+.grift-hustle-player-dependent .grift-hustle-grid { padding-block: 0.72rem; }
+.grift-hustle-settled .grift-hustle-grid { padding-block: 0.48rem; }
+
+.grift-icon-button {
+  width: 2.42rem;
+  height: 2.42rem;
+  border-radius: 50%;
+  background: var(--grift-institution-channel);
+  box-shadow: inset 0 0 0 0.25rem var(--grift-institution-paper);
+}
+
+.grift-icon-automated {
+  box-shadow:
+    inset 0 0 0 0.25rem var(--grift-institution-paper),
+    0 0 calc(12px * var(--grift-glow-strength)) color-mix(in srgb, var(--grift-automation), transparent 70%);
+}
+
+.grift-hustle-name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.98rem;
+  font-weight: 570;
+  letter-spacing: -0.01em;
+}
+
+.grift-hustle-unit,
+.grift-hustle-metrics { font-size: 0.72rem; }
+
+.grift-hustle-actions { align-content: center; }
+.grift-hustle-actions--manual { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(5.8rem, 0.58fr); }
+
+.grift-hustle-actions .grift-action-button {
+  min-height: 2.5rem;
+  overflow: visible;
+  border-radius: 2px;
+  padding: 0.42rem 0.62rem;
+  line-height: 1.18;
+  text-align: left;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.grift-action-primary.grift-action-perform {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 20%);
+  background: var(--grift-value);
+  color: var(--grift-plane);
+}
+
+.grift-hustle-active .grift-action-primary.grift-action-perform:disabled {
+  border-color: color-mix(in srgb, var(--grift-value), transparent 35%);
+  background: color-mix(in srgb, var(--grift-value), transparent 12%);
+  color: var(--grift-plane);
+}
+
+.grift-row-reveal {
+  border-top: 1px solid var(--grift-border);
+  background: var(--grift-institution-channel);
+  padding: 0.75rem;
+}
 .grift-hustle-selected .influence-lane-icon { border-color: var(--grift-selection); color: var(--grift-selection); }
 .grift-hustle-automated .influence-lane-icon { border-color: var(--grift-automation); color: var(--grift-automation); }
+
+.grift-progress-track {
+  height: 2px;
+  overflow: hidden;
+  background: var(--grift-border);
+}
+
+.grift-progress {
+  width: 100%;
+  height: 100%;
+  background: var(--grift-progress);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.grift-hustle-active .grift-progress,
+.grift-hustle-automated .grift-progress {
+  animation: influence-lane-progress var(--grift-cycle-duration) linear var(--grift-cycle-delay) infinite;
+}
+
+.grift-hustle-automated .grift-progress-track {
+  background: color-mix(in srgb, var(--grift-automation), transparent 90%);
+}
+
+.grift-hustle-automated .grift-progress {
+  background: linear-gradient(90deg, var(--grift-automation), color-mix(in srgb, var(--grift-automation), var(--grift-info) 45%));
+}
+
+.grift-hustle-active:not(.grift-hustle-automated) .grift-progress {
+  animation-iteration-count: 1;
+}
+
+@keyframes influence-lane-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes influence-institution-node {
+  0%, 68%, 100% { box-shadow: 0 0 0 0 var(--grift-bg); }
+  82% { box-shadow: 0 0 0 0.32rem color-mix(in srgb, var(--grift-automation), transparent 78%); }
+}
+
+@media (max-width: 71.999rem) {
+  .grift-hustle-grid { grid-template-columns: 2.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr); }
+  .grift-hustle-actions { grid-column: 2 / -1; }
+  .grift-hustle-actions--manual { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grift-hustle-actions--manual .grift-action-primary { grid-column: 1 / -1; }
+}
+
+@media (max-width: 44rem) {
+  .grift-hustle-entry::before { display: none; }
+  .grift-hustle-grid { grid-template-columns: 2.7rem minmax(0, 1fr); gap: 0.5rem; padding: 0.72rem 0.65rem; }
+  .grift-hustle-metrics,
+  .grift-hustle-actions { grid-column: 2; }
+  .grift-hustle-actions--manual,
+  .grift-hustle-actions--automated { grid-template-columns: minmax(0, 1fr); }
+  .grift-hustle-actions--manual .grift-action-primary { grid-column: auto; }
+  .grift-hustle-actions .grift-action-button { min-height: 2.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-hustle-automated::before { animation: none; }
+}

@@ -85,12 +85,6 @@ async function checkStyleBoundaries() {
       rootScoped: true,
     },
     {
-      name: 'Influence Circulating Institution styles',
-      path: path.join(featureRoot, 'empires', 'influence', 'renderer', '_circulating-institution.scss'),
-      importantBaseline: 0,
-      rootScoped: true,
-    },
-    {
       name: 'Influence Stage component styles',
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'stage', 'influence-stage.component.scss'),
       importantBaseline: 0,
@@ -98,6 +92,16 @@ async function checkStyleBoundaries() {
     {
       name: 'Influence Context component styles',
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'context', 'influence-context.component.scss'),
+      importantBaseline: 0,
+    },
+    {
+      name: 'Influence Ledger component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'ledger', 'influence-ledger.component.scss'),
+      importantBaseline: 0,
+    },
+    {
+      name: 'Influence Lane component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'ledger', 'influence-lane.component.scss'),
       importantBaseline: 0,
     },
     {
