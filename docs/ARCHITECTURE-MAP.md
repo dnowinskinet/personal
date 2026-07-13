@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 68dc965b17e6ed876b824e4343abca5e9ea50ffc
+Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -29,8 +29,8 @@ grift-os-game/
                   internal Backdrop, Chamber, Frame, and Capital Panel composition
         ledger/   CURRENT statically composed Ledger/Lane templates; broader layout
                   rules remain compatibility-owned pending later consolidation
-        context/  CURRENT statically composed selected-Hustle Context template;
-                  interaction styling remains compatibility-owned
+        context/  CURRENT selected-Hustle Context template and component-local
+                  interaction/visual styles
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
@@ -121,7 +121,7 @@ Target prohibitions:
 | Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` template plus compatibility renderer SCSS | Influence Ledger | Component ownership CURRENT; broader style consolidation pending | Empire-specific composition | Dominant operating surface | Full-width stack |
 | Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row, local icon expression, plus compatibility layout SCSS | Influence Lane | K.3 component ownership CURRENT; compatibility layout consolidation later | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
-| Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row plus compatibility renderer SCSS | Shared interaction contract + Influence Context | K.4.1 template ownership CURRENT; style migration pending | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
+| Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row with component-local Context styles | Shared interaction contract + Influence Context | K.4 component and style ownership CURRENT | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
 | Horizon | Next meaningful Hustle establishment | Influence renderer template/root-scoped renderer SCSS | Influence Horizon | Styles contained; module pending | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
 
@@ -140,7 +140,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Stage layout | `InfluenceStageComponent` and its local stylesheet | Influence Stage (CURRENT) |
 | Lane/Leverage/Rug Pull layout | Influence renderer template and root-scoped renderer SCSS | Corresponding Influence renderer component |
 | Global Net Worth behavior | Prestige/modifier engine and v2 runtime meta | Shared mechanics/meta contract (CURRENT persistence ownership) |
-| Mobile Context behavior | Shared host interaction/focus policy, `InfluenceContextComponent`, renderer breakpoints, and global scroll bridge | Shared interaction contract + Influence Context |
+| Mobile Context behavior | Shared host interaction/focus policy, `InfluenceContextComponent` breakpoints, and global scroll bridge | Shared interaction contract + Influence Context |
 
 ## DEFERRED
 

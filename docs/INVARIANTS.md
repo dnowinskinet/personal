@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: 68dc965b17e6ed876b824e4343abca5e9ea50ffc
+Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -30,7 +30,7 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Exactly one runtime-selected empire renderer is mounted, its live DOM contains the Influence style root, shared utilities remain outside it in the host, and the Influence renderer does not import economy, runtime, audio, or playtest code. | `grift-os-game.spec.ts`: renderer/style-root/utility ownership test; `npm run grift:arch` |
 | The Influence Stage is statically composed inside the one empire renderer, consumes presentation-only data, owns no gameplay actions, and keeps active Circulating Institution Stage rules out of the prototype-level stylesheet. | `stage/influence-stage.component.spec.ts`; `grift-os-game.spec.ts`; `npm run grift:arch` |
 | Influence Ledger and Lane are ordinary static children inside the single renderer, consume rule-complete presentation rows, and emit typed semantic requests without importing economy/runtime/audio/playtest code. | Full component interaction suite; `npm run grift:arch` |
-| Influence Context is an ordinary static child that consumes the selected rule-complete row and emits semantic requests while preserving wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. | `grift-os-game.spec.ts`: selected-Context open/update/Escape tests; `npm run grift:arch` |
+| Influence Context is an ordinary static child that owns its Context-specific styles, consumes the selected rule-complete row, and emits semantic requests while preserving wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. | `grift-os-game.spec.ts`: selected-Context open/update/Escape tests; `npm run grift:arch` |
 | The Influence Capital Panel remains structurally present and shows real Net Worth, including `$0` before the first exit; the Stage does not invent owner metrics, tiers, telemetry, or graph data. | `stage/influence-stage.component.spec.ts`; normal-route component characterization; deterministic `fresh` and `post-rug` review |
 | A replacement renderer can consume the neutral host view and dispatch semantic actions without the host importing a concrete empire renderer; replacement does not move shared utilities inside the renderer. | `grift-os-game.spec.ts`: replacement-renderer proof; `npm run grift:arch` |
 | Influence selectors remain under the renderer root; empire composition/keyframes do not return to the global GriftOS bridge; `::ng-deep`, append-only phase sections, and new unreviewed `!important` declarations are rejected. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |

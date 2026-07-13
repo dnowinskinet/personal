@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 68dc965b17e6ed876b824e4343abca5e9ea50ffc
+Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -43,4 +43,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase K.4.1 Context extraction is complete at `68dc965`. `InfluenceContextComponent` owns the selected-Hustle template, consumes one rule-complete row, emits typed semantic requests, and preserves wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. Compatibility Context styles remain renderer-owned pending a later visual-ownership pass. Mechanics, tuning, actions, routes, saves, visible layout, Leverage, and Rug Pull behavior did not change.
+Phase K.4 is complete through `3b0c638`. `InfluenceContextComponent` owns the selected-Hustle template and Context-specific styles, consumes one rule-complete row, emits typed semantic requests, and preserves wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. Context selectors were removed from the renderer and prototype stylesheets, and the component stylesheet is covered by the architecture guard. Mechanics, tuning, actions, routes, saves, visible layout, Leverage, and Rug Pull behavior did not change.
