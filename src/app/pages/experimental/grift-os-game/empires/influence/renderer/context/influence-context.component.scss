@@ -1,0 +1,119 @@
+:host { display: contents; }
+
+.grift-inspector-panel {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--grift-border);
+  border-top: 2px solid color-mix(in srgb, var(--grift-info), transparent 24%);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--grift-plane), var(--grift-info) 1.5%);
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.grift-inspector-panel::before {
+  position: absolute;
+  top: 0.58rem;
+  right: 0.58rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-top: 1px solid var(--grift-institution-line);
+  border-right: 1px solid var(--grift-institution-line);
+  content: "";
+}
+
+.grift-inspector-panel--overlay-only:not(.grift-inspector-panel--open),
+.grift-context-backdrop,
+.grift-context-close {
+  display: none;
+}
+
+.grift-context-close {
+  border: 1px solid var(--grift-border);
+  border-radius: 999px;
+  color: var(--grift-ink-soft);
+  padding: 0.42rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.grift-inspector-panel--overlay-only.grift-inspector-panel--open .grift-context-close {
+  display: inline-flex;
+  align-items: center;
+}
+
+.grift-copy {
+  margin: 0 0 1rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.grift-inspector-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.grift-inspector-facts span {
+  border: 1px solid var(--grift-border);
+  border-radius: 2px;
+  background: var(--grift-plane-raised);
+  color: var(--grift-ink-soft);
+  padding: 0.38rem 0.62rem;
+  font-size: 0.8rem;
+  font-weight: 560;
+}
+
+.grift-inspector-section {
+  border-top: 1px solid var(--grift-border);
+  padding: 0.85rem 0;
+}
+
+.grift-inspector-section h3 {
+  margin: 0.1rem 0 0.25rem;
+  color: var(--grift-ink);
+  font-size: 1.05rem;
+  font-weight: 720;
+}
+
+.grift-inspector-section p { color: var(--grift-ink-soft); }
+.grift-automation-online { border-color: color-mix(in srgb, var(--grift-automation), transparent 38%); }
+
+@media (max-width: 71.999rem) {
+  .grift-inspector-panel {
+    position: fixed;
+    top: calc(var(--grift-nav-clearance, 4.6rem) + 0.75rem);
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 8;
+    display: none;
+    width: min(28rem, calc(100vw - 2rem));
+    overflow: auto;
+    background: var(--grift-plane-raised);
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+  }
+
+  .grift-inspector-panel--open { display: block; }
+  .grift-context-close { display: inline-flex; align-items: center; }
+
+  .grift-context-backdrop--open {
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    display: block;
+    background: rgba(0, 0, 0, 0.34);
+  }
+}
+
+@media (max-width: 44rem) {
+  .grift-inspector-panel {
+    top: auto;
+    right: 0.65rem;
+    bottom: 0.65rem;
+    left: 0.65rem;
+    width: auto;
+    max-height: min(76vh, 42rem);
+    border-radius: 8px 8px 2px 2px;
+  }
+}

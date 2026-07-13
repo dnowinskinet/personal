@@ -95,6 +95,11 @@ async function checkStyleBoundaries() {
       path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'stage', 'influence-stage.component.scss'),
       importantBaseline: 0,
     },
+    {
+      name: 'Influence Context component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'context', 'influence-context.component.scss'),
+      importantBaseline: 0,
+    },
   ];
 
   for (const styleFile of styleFiles) {

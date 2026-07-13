@@ -15,6 +15,7 @@ import { HustleViewModel } from '../../../../presentation/game-presentation';
   selector: 'app-influence-context',
   standalone: true,
   templateUrl: './influence-context.component.html',
+  styleUrl: './influence-context.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
 })

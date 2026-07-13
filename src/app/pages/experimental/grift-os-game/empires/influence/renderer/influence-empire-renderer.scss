@@ -12,7 +12,6 @@ button {
 .grift-title-block,
 .grift-valuation-object,
 .grift-hustle-plane,
-.grift-inspector-panel,
 .grift-leverage-plane,
 .grift-rug-stage {
   min-width: 0;
@@ -45,9 +44,7 @@ button {
   line-height: 1.25;
 }
 
-.grift-title-block p:last-child,
-.grift-copy,
-.grift-inspector-section p {
+.grift-title-block p:last-child {
   color: var(--grift-ink-soft);
 }
 
@@ -1004,72 +1001,6 @@ button {
   animation: none;
 }
 
-.grift-inspector-panel {
-  border-left: 1px solid var(--grift-border);
-  padding-left: clamp(1rem, 2vw, 1.4rem);
-}
-
-.grift-inspector-panel--overlay-only:not(.grift-inspector-panel--open) {
-  display: none;
-}
-
-.grift-context-backdrop {
-  display: none;
-}
-
-.grift-context-close {
-  display: none;
-  border: 1px solid var(--grift-border);
-  border-radius: 999px;
-  color: var(--grift-ink-soft);
-  padding: 0.42rem 0.65rem;
-  font-size: 0.72rem;
-  font-weight: 650;
-}
-
-.grift-inspector-panel--overlay-only.grift-inspector-panel--open .grift-context-close {
-  display: inline-flex;
-  align-items: center;
-}
-
-.grift-copy {
-  margin: 0 0 1rem;
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.grift-inspector-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 1rem;
-}
-
-.grift-inspector-facts span {
-  border: 1px solid var(--grift-border);
-  border-radius: 999px;
-  color: var(--grift-ink-soft);
-  padding: 0.38rem 0.62rem;
-  font-size: 0.8rem;
-  font-weight: 560;
-}
-
-.grift-inspector-section {
-  border-top: 1px solid var(--grift-border);
-  padding: 0.85rem 0;
-}
-
-.grift-inspector-section h3 {
-  margin: 0.1rem 0 0.25rem;
-  color: var(--grift-ink);
-  font-size: 1.05rem;
-  font-weight: 720;
-}
-
-.grift-automation-online {
-  border-color: color-mix(in srgb, var(--grift-automation), transparent 38%);
-}
-
 .grift-work-surface--leverage {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -1669,39 +1600,6 @@ button {
     grid-row: 2;
   }
 
-  .grift-inspector-panel {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 8;
-    display: none;
-    width: min(28rem, calc(100vw - 2rem));
-    overflow: auto;
-    border: 1px solid var(--grift-border-strong);
-    border-radius: 10px;
-    background: var(--grift-plane-raised);
-    padding: 1rem;
-    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
-  }
-
-  .grift-inspector-panel--open {
-    display: block;
-  }
-
-  .grift-context-close {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .grift-context-backdrop--open {
-    position: fixed;
-    inset: 0;
-    z-index: 7;
-    display: block;
-    background: rgba(0, 0, 0, 0.34);
-  }
-
   .grift-rug-ledger,
   .grift-rug-consequence-grid,
   .grift-founder-take-preparation {
@@ -1792,17 +1690,6 @@ button {
     min-height: 2.42rem;
     padding-inline: 0.35rem;
     font-size: 0.72rem;
-  }
-
-  .grift-inspector-panel {
-    top: auto;
-    right: 0.65rem;
-    bottom: 0.65rem;
-    left: 0.65rem;
-    width: auto;
-    max-height: min(76vh, 42rem);
-    border-radius: 14px 14px 10px 10px;
-    padding: 0.95rem;
   }
 
   .grift-hustle-grid {
@@ -2049,38 +1936,6 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .grift-inspector-panel {
-    position: fixed;
-    top: calc(var(--grift-nav-clearance, 4.6rem) + 0.75rem);
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 8;
-    display: none;
-    width: min(28rem, calc(100vw - 2rem));
-    overflow: auto;
-    border: 1px solid var(--grift-border-strong);
-    border-radius: 10px;
-    background: var(--grift-plane-raised);
-    padding: 1rem;
-    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
-  }
-
-  .grift-inspector-panel--open {
-    display: block;
-  }
-
-  .grift-context-close {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .grift-context-backdrop--open {
-    position: fixed;
-    inset: 0;
-    z-index: 7;
-    display: block;
-    background: rgba(0, 0, 0, 0.34);
-  }
 }
 
 @media (max-width: 44rem) {
@@ -2100,16 +1955,6 @@ button {
     display: none;
   }
 
-  .grift-inspector-panel {
-    top: auto;
-    right: 0.65rem;
-    bottom: 0.65rem;
-    left: 0.65rem;
-    width: auto;
-    max-height: min(76vh, 42rem);
-    border-radius: 14px 14px 10px 10px;
-    padding: 0.95rem;
-  }
 }
 
 .grift-stage {

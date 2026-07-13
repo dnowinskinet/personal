@@ -258,31 +258,6 @@
     padding: 0.85rem;
   }
 
-  .grift-inspector-panel {
-    position: relative;
-    border: 1px solid var(--grift-border);
-    border-top: 2px solid color-mix(in srgb, var(--grift-info), transparent 24%);
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--grift-plane), var(--grift-info) 1.5%);
-    padding: clamp(1rem, 2vw, 1.35rem);
-  }
-
-  .grift-inspector-panel::before {
-    position: absolute;
-    top: 0.58rem;
-    right: 0.58rem;
-    width: 1.4rem;
-    height: 1.4rem;
-    border-top: 1px solid var(--grift-institution-line);
-    border-right: 1px solid var(--grift-institution-line);
-    content: "";
-  }
-
-  .grift-inspector-facts span {
-    border-radius: 2px;
-    background: var(--grift-plane-raised);
-  }
-
   @media (max-width: 71.999rem) {
 
     .grift-mode-tabs {
@@ -311,22 +286,6 @@
       grid-column: 1 / -1;
     }
 
-    .grift-inspector-panel {
-      position: fixed;
-      top: calc(var(--grift-nav-clearance, 4.6rem) + 0.75rem);
-      right: 1rem;
-      bottom: 1rem;
-      z-index: 8;
-      display: none;
-      width: min(28rem, calc(100vw - 2rem));
-      overflow: auto;
-      background: var(--grift-plane-raised);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
-    }
-
-    .grift-inspector-panel--open {
-      display: block;
-    }
   }
 
   @media (max-width: 44rem) {
@@ -385,15 +344,6 @@
       min-height: 2.6rem;
     }
 
-    .grift-inspector-panel {
-      top: auto;
-      right: 0.65rem;
-      bottom: 0.65rem;
-      left: 0.65rem;
-      width: auto;
-      max-height: min(76vh, 42rem);
-      border-radius: 8px 8px 2px 2px;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
