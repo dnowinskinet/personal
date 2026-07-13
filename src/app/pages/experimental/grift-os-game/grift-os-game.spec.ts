@@ -591,6 +591,7 @@ describe('GriftOsGameComponent', () => {
     const panel = fixture.nativeElement.querySelector('.grift-inspector-panel') as HTMLElement;
     expect(component.selectedContextOpen).toBeTrue();
     expect(component.showPinnedSelectedContext).toBeFalse();
+    expect(fixture.nativeElement.querySelector('app-influence-context')).not.toBeNull();
     expect(panel).not.toBeNull();
     expect(panel.classList).toContain('grift-inspector-panel--overlay-only');
 

@@ -80,75 +80,12 @@
                 ></app-influence-ledger>
 
                 @if (showSelectedContextSurface) {
-                    <button
-                        type="button"
-                        class="grift-context-backdrop"
-                        [class.grift-context-backdrop--open]="selectedContextOpen"
-                        aria-label="Close selected Hustle context"
-                        (click)="dispatchGameAction({ type: 'context.close' })"
-                    ></button>
-
-                    <aside
-                        #selectedContextPanel
-                        class="grift-inspector-panel"
-                        [class.grift-inspector-panel--open]="selectedContextOpen"
-                        [class.grift-inspector-panel--pinned]="showPinnedSelectedContext"
-                        [class.grift-inspector-panel--overlay-only]="!showPinnedSelectedContext"
-                        aria-label="Selected Hustle"
-                        tabindex="-1"
-                    >
-                    <div class="grift-section-line">
-                        <div>
-                            <p>Selected Hustle</p>
-                            <h2>{{ selectedHustle.definition.name }}</h2>
-                        </div>
-                        <button
-                            type="button"
-                            class="grift-context-close"
-                            aria-label="Close selected Hustle context"
-                            (click)="dispatchGameAction({ type: 'context.close' })"
-                        >
-                            Close
-                        </button>
-                    </div>
-
-                    <p class="grift-copy">{{ selectedHustle.definition.description }}</p>
-
-                    <div class="grift-inspector-facts">
-                        <span>{{ selectedHustle.unitCountLabel }}</span>
-                        <span>{{ selectedHustle.payoutLabel }} payout</span>
-                        <span>{{ selectedHustle.averageRateLabel }}</span>
-                        @if (selectedHustle.showModifierSummary) {
-                            <span>{{ selectedHustle.modifierSummaryLabel }}</span>
-                        }
-                    </div>
-
-                    @if (selectedHustle.showNextMilestone) {
-                        <section class="grift-inspector-section">
-                            <p class="grift-label">Next Milestone</p>
-                            <h3>{{ selectedHustle.nextMilestoneLabel }}</h3>
-                            <p>{{ selectedHustle.nextMilestoneDescription }}</p>
-                        </section>
-                    }
-
-                    @if (selectedHustle.showAutomationState) {
-                        <section class="grift-inspector-section grift-automation-section" [class.grift-automation-online]="selectedHustle.isAutomated">
-                            <p class="grift-label">{{ selectedHustle.automationContextLabel }}</p>
-                            <h3>{{ selectedHustle.definition.automationName }}</h3>
-                            <p>{{ selectedHustle.definition.automationDescription }}</p>
-                            @if (selectedHustle.showAutomationOpportunity) {
-                                <button
-                                    type="button"
-                                    class="grift-action-button grift-action-automate"
-                                    [disabled]="!selectedHustle.canBuyAutomation"
-                                    (click)="dispatchGameAction({ type: 'hustle.automate', hustleId: selectedHustle.id })"
-                                >
-                                    Automate · {{ selectedHustle.automationCostLabel }}
-                                </button>
-                            }
-                        </section>
-                    }
-                    </aside>
+                    <app-influence-context
+                        [row]="selectedHustle"
+                        [open]="selectedContextOpen"
+                        [pinned]="showPinnedSelectedContext"
+                        (request)="dispatchRendererRequest($event)"
+                    ></app-influence-context>
                 }
             </div>
         }

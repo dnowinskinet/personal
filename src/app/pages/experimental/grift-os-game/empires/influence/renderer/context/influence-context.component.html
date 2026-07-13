@@ -1,0 +1,69 @@
+<button
+  type="button"
+  class="grift-context-backdrop"
+  [class.grift-context-backdrop--open]="open"
+  aria-label="Close selected Hustle context"
+  (click)="emit({ type: 'context.close' })"
+></button>
+
+<aside
+  #panel
+  class="grift-inspector-panel"
+  [class.grift-inspector-panel--open]="open"
+  [class.grift-inspector-panel--pinned]="pinned"
+  [class.grift-inspector-panel--overlay-only]="!pinned"
+  aria-label="Selected Hustle"
+  tabindex="-1"
+>
+  <div class="grift-section-line">
+    <div>
+      <p>Selected Hustle</p>
+      <h2>{{ row.definition.name }}</h2>
+    </div>
+    <button
+      type="button"
+      class="grift-context-close"
+      aria-label="Close selected Hustle context"
+      (click)="emit({ type: 'context.close' })"
+    >
+      Close
+    </button>
+  </div>
+
+  <p class="grift-copy">{{ row.definition.description }}</p>
+
+  <div class="grift-inspector-facts">
+    <span>{{ row.unitCountLabel }}</span>
+    <span>{{ row.payoutLabel }} payout</span>
+    <span>{{ row.averageRateLabel }}</span>
+    @if (row.showModifierSummary) {
+      <span>{{ row.modifierSummaryLabel }}</span>
+    }
+  </div>
+
+  @if (row.showNextMilestone) {
+    <section class="grift-inspector-section">
+      <p class="grift-label">Next Milestone</p>
+      <h3>{{ row.nextMilestoneLabel }}</h3>
+      <p>{{ row.nextMilestoneDescription }}</p>
+    </section>
+  }
+
+  @if (row.showAutomationState) {
+    <section class="grift-inspector-section grift-automation-section" [class.grift-automation-online]="row.isAutomated">
+      <p class="grift-label">{{ row.automationContextLabel }}</p>
+      <h3>{{ row.definition.automationName }}</h3>
+      <p>{{ row.definition.automationDescription }}</p>
+      @if (row.showAutomationOpportunity) {
+        <button
+          type="button"
+          class="grift-action-button grift-action-automate"
+          [disabled]="!row.canBuyAutomation"
+          (click)="emit({ type: 'hustle.automate', hustleId: row.id })"
+        >
+          Automate · {{ row.automationCostLabel }}
+        </button>
+      }
+    </section>
+  }
+</aside>

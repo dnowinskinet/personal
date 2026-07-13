@@ -22,6 +22,7 @@ import {
   InfluenceStageView,
 } from './stage/influence-stage.component';
 import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
+import { InfluenceContextComponent } from './context/influence-context.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -30,7 +31,7 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent, InfluenceLedgerComponent],
+  imports: [InfluenceStageComponent, InfluenceLedgerComponent, InfluenceContextComponent],
   templateUrl: '../../../grift-os-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -42,7 +43,7 @@ export class InfluenceEmpireRendererComponent {
   @Input({ required: true }) view!: InfluenceEmpireRendererView;
   @Input({ required: true }) dispatch!: EmpireActionDispatcher;
 
-  @ViewChild('selectedContextPanel') private selectedContextPanel?: ElementRef<HTMLElement>;
+  @ViewChild(InfluenceContextComponent) private selectedContext?: InfluenceContextComponent;
   @ViewChild('hustlesSurface') private hustlesSurface?: ElementRef<HTMLElement>;
 
   get copy(): typeof GRIFT_OS_COPY { return this.view.copy; }
@@ -110,8 +111,8 @@ export class InfluenceEmpireRendererComponent {
     this.dispatch(request);
 
     if (request.action.type === 'context.open') {
-      window.setTimeout(() => this.selectedContextPanel?.nativeElement.focus(), 0);
-      window.setTimeout(() => this.selectedContextPanel?.nativeElement.focus(), 80);
+      window.setTimeout(() => this.selectedContext?.focusPanel(), 0);
+      window.setTimeout(() => this.selectedContext?.focusPanel(), 80);
     } else if (request.action.type === 'rugPull.commit') {
       window.setTimeout(() => this.hustlesSurface?.nativeElement.focus(), 0);
     }
