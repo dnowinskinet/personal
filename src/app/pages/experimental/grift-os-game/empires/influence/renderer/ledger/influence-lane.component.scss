@@ -64,7 +64,7 @@
 }
 
 .grift-hustle-grid {
-  grid-template-columns: 2.85rem minmax(9rem, 0.88fr) minmax(8.5rem, 0.72fr) minmax(15rem, 1.18fr);
+  grid-template-columns: 3.85rem minmax(9rem, 0.88fr) minmax(8.5rem, 0.72fr) minmax(15rem, 1.18fr);
   gap: 0.7rem;
   align-items: center;
   padding: 0.62rem 0.7rem;
@@ -74,8 +74,8 @@
 .grift-hustle-settled .grift-hustle-grid { padding-block: 0.48rem; }
 
 .grift-icon-button {
-  width: 2.42rem;
-  height: 2.42rem;
+  width: 3.42rem;
+  height: 3.42rem;
   border-radius: 50%;
   background: var(--grift-institution-channel);
   box-shadow: inset 0 0 0 0.25rem var(--grift-institution-paper);
@@ -179,7 +179,7 @@
 }
 
 @media (max-width: 71.999rem) {
-  .grift-hustle-grid { grid-template-columns: 2.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr); }
+  .grift-hustle-grid { grid-template-columns: 3.7rem minmax(0, 1fr) minmax(8.5rem, 0.7fr); }
   .grift-hustle-actions { grid-column: 2 / -1; }
   .grift-hustle-actions--manual { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grift-hustle-actions--manual .grift-action-primary { grid-column: 1 / -1; }
@@ -187,7 +187,7 @@
 
 @media (max-width: 44rem) {
   .grift-hustle-entry::before { display: none; }
-  .grift-hustle-grid { grid-template-columns: 2.7rem minmax(0, 1fr); gap: 0.5rem; padding: 0.72rem 0.65rem; }
+  .grift-hustle-grid { grid-template-columns: 3.7rem minmax(0, 1fr); gap: 0.5rem; padding: 0.72rem 0.65rem; }
   .grift-hustle-metrics,
   .grift-hustle-actions { grid-column: 2; }
   .grift-hustle-actions--manual,

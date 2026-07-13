@@ -195,6 +195,17 @@ Do not rename or replace them merely to fill space.
 - Treat equivalent Hustle positions across empires as expressions of one shared economic ladder. Base cost, payout, cadence, growth, automation, and milestone effects remain equal for the equivalent slot while names, nouns, verbs, descriptions, icons, audio, motion, and visual treatment may differ.
 - This decision does not rebalance the current Influence empire. Extracting the shared economic-slot ownership is deferred to a separately approved implementation phase.
 
+## 2026-07-13 Hustle Viewport Direction
+
+- Treat the current initials inside `.grift-icon-button` as temporary placeholder debris, not the foundation of a flat-icon system.
+- Give each Hustle two related image-based renditions: a small enterprise viewport in its Ledger Lane and a richer rendition in selected Hustle Context. They depict the same subject but need not use the same crop or composition.
+- Share only viewport placement, Hustle identity mapping, semantic operating state, accessibility, and reduced-motion requirements across empires.
+- Let each empire own viewport assets, shape/frame, crop/composition, material treatment, and restrained effect language.
+- Influence/Outrage may use television, broadcast-feed, newsroom, or media-screen imagery with restrained flicker, scanlines, refresh variation, or signal interference.
+- Religion/Cult may use stained-glass devotional imagery with restrained illumination, glow, and candle-like flicker. Future empires may use unrelated visual materials.
+- Do not build a universal flat-icon family, generic SVG-glyph system, or one heavily configurable cross-empire viewport widget. The shared contract supplies the slot and state; the active empire renderer owns the visual body.
+- Defer sourcing and implementing viewport artwork. Preserve room for the direction without investing in the current initials or their aesthetic.
+
 ## Temporary Decisions
 
 - Internal compatibility aliases such as `GeneratorDefinition` may remain temporarily during migration, but player-facing UI should use Hustle vocabulary.
