@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL ORIENTATION
 Authority: Canonical current-state orientation. A newly settled Decision Log entry must trigger an immediate Current State update; unresolved conflicts must be flagged.
 Scope: Active GriftOS baseline, migration phase, and immediate approved work
-Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
+Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
 Update trigger: Any accepted implementation phase, save-version change, authority change, or newly settled product decision
 Supersedes: Ad hoc current-state summaries in historical task briefs and project chats
 ---
@@ -24,16 +24,16 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 - Presentation sources do not import Angular, browser storage/DOM, audio, renderer, playtest, or the current component.
 - Plain runtime modules own the single-active-run v2 envelope, v1 migration/mirroring, reconciliation/throttling, foreground/offline simulation policy, and semantic event history. Storage and clocks are explicit inputs; runtime sources do not access browser globals.
 - The shared host selects one Influence renderer through an empire registry. The renderer receives an immutable rule-complete view and emits typed semantic requests; shared audio/playtest/run utilities remain host-owned.
-- The Influence Stage is an ordinary statically composed Angular child with a presentation-only view contract, replaceable desktop/mobile and light/dark backdrop hooks, a centered Chamber/Frame, and a stable real-data Capital Panel. Fresh runs show real `$0` Net Worth. Ledger, Lane, and selected-Hustle Context are statically composed presentation-only children; Modes, Leverage, and Rug Pull remain in the transitional root renderer template.
+- The Influence renderer is one runtime-selected boundary composed from ordinary Stage, Modes, Ledger/Lane, Context, Leverage, Rug Pull, and Founder Take Angular children. Its template is renderer-local; each region consumes presentation data and emits typed semantic requests without owning mechanics or persistence.
 - Renderer selection is an injectable registration. The host depends only on a renderer-neutral view envelope and semantic dispatcher; Influence content adaptation happens in the registry. A test-only replacement proves view delivery, semantic action dispatch, and host-utility separation without shipping a second empire.
-- Shared shell/theme tokens and the mobile Context/site-scroll bridge remain intentionally global. Host utilities use host-local styles, while Influence composition and motion live beside the renderer under an enforced `.grift-influence-renderer` scope. The prior 3,017-line global implementation-history cascade no longer owns empire presentation.
+- Shared shell/theme tokens and the mobile Context/site-scroll bridge remain intentionally global. Host utilities use host-local styles. Region-specific Influence styles live beside their components; the renderer sheet retains only renderer-wide surface/action compatibility rules under an enforced `.grift-influence-renderer` scope. The separate Circulating Institution prototype sheet and obsolete icon/Stage cascades are gone.
+- Lane progress uses one renderer-owned CSS cycle synchronized from the engine's cadence and current phase. The former reset-ID set, 24 ms reset timer, per-render transform scale, visual lead, and chasing transition are removed; engine payout and progress state remain authoritative.
 - Current verification baseline: 105 focused GriftOS tests and 133 full-repository tests, lint, and production build pass.
 
 ## TARGET — NOT YET IMPLEMENTED
 
 - Separable visual and audio packs; mechanics and content separation is CURRENT.
 - A shared economic-slot catalog will own equivalent cross-empire Hustle costs, payouts, cadence, growth, automation, and milestone effects; current Influence tuning remains unchanged until that extraction is approved.
-- Modular Influence renderer internals beyond the Stage and region-level component style ownership for Ledger/Lane/Context/Modes/Leverage/Rug Pull; Stage ownership, renderer-level containment, and the single dynamic renderer boundary are CURRENT.
 - Changing empires requires completing the active empire's prestige, then explicitly choosing an unlocked empire; the transition UI and second production empire are not yet implemented.
 
 ## DEFERRED
@@ -43,4 +43,4 @@ Supersedes: Ad hoc current-state summaries in historical task briefs and project
 
 ## CURRENT ARCHITECTURE PHASE
 
-Phase K.4 is complete through `3b0c638`. `InfluenceContextComponent` owns the selected-Hustle template and Context-specific styles, consumes one rule-complete row, emits typed semantic requests, and preserves wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. Context selectors were removed from the renderer and prototype stylesheets, and the component stylesheet is covered by the architecture guard. Mechanics, tuning, actions, routes, saves, visible layout, Leverage, and Rug Pull behavior did not change.
+Phase K is complete through `84b4eb5`. The single Influence renderer dynamically selected by the host now statically composes Stage, Modes, Ledger/Lane, Context, Leverage, Rug Pull, and Founder Take modules with local templates and guarded component styles. The prototype stylesheet was removed, the renderer template moved beside its owner, obsolete Stage/icon cascades were deleted, and Lane progress rendering was simplified without changing engine timing, tuning, actions, routes, fixtures, saves, or audio behavior. Final authored Stage artwork remains deferred.

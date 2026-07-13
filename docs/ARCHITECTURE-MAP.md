@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
+Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -23,14 +23,16 @@ grift-os-game/
     influence/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
-      renderer/   CURRENT Influence renderer boundary and explicitly scoped visual owner;
-                  `_circulating-institution.scss` is the active reviewable visual layer;
+      renderer/   CURRENT Influence renderer boundary, local root template, and scoped
+                  renderer-wide surface/action compatibility styles
         stage/    CURRENT statically composed Stage view/template/style owner with
                   internal Backdrop, Chamber, Frame, and Capital Panel composition
-        ledger/   CURRENT statically composed Ledger/Lane templates; broader layout
-                  rules remain compatibility-owned pending later consolidation
+        modes/    CURRENT capability navigation component
+        ledger/   CURRENT statically composed Ledger/Lane templates and local visual rules
         context/  CURRENT selected-Hustle Context template and component-local
                   interaction/visual styles
+        leverage/ CURRENT Leverage presentation component
+        rug-pull/ CURRENT Rug Pull component with an internal Founder Take child
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
   game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
@@ -42,9 +44,6 @@ grift-os-game/
   grift-os-game.ts / grift-os-host.html / grift-os-game.scss
                   Shared host, Angular scheduling, action execution, UI effects,
                   fixtures, and shared utilities
-  grift-os-game.html
-                  Transitional Influence renderer template pending region-module extraction
-
 src/styles/_grift-os.scss
                   Shared shell/theme tokens and mobile Context/site-scroll bridge only
 ```
@@ -56,8 +55,8 @@ Current dependency problems are known implementation evidence, not approved boun
 - the host owns platform scheduling, action execution, shared UI effects, fixtures, and utilities; the Influence renderer owns game-world rendering and Context focus behavior through a semantic request boundary;
 - the host imports no Influence renderer type. The composition registry adapts the neutral host view with Influence content and supplies the production renderer registration;
 - the replacement renderer exists only in the component test and proves the boundary; it is not a second production empire or a runtime switching feature;
-- the transitional Influence renderer template remains at the feature root for Modes, Leverage, and Rug Pull; Stage, Ledger/Lanes, and Context are statically composed children;
-- Stage's active Circulating Institution rules are component-local. The earlier renderer stylesheet retains compatibility Stage selectors and all not-yet-extracted region rules pending later consolidation.
+- the Influence renderer template is local to its renderer and statically composes every current visual region;
+- the renderer stylesheet contains no Stage, Context, Modes, Leverage, or Rug Pull selectors. Ledger/Lane components own their final Circulating Institution overrides while the renderer sheet retains shared surface/action compatibility rules.
 
 ## TARGET — approved destination, not yet implemented
 
@@ -77,9 +76,8 @@ grift-os/
       mechanics/  Influence tuning and mechanical catalogs
       content/    Influence player-facing language
       audio/      Influence event mappings and assets
-      renderer/   Boundary and root-scoped styles CURRENT; Stage and Ledger/Lane
-                  components CURRENT;
-                  remaining modular Angular composition pending
+      renderer/   Boundary and modular static Angular composition CURRENT; visual/audio
+                  pack extraction remains TARGET
   playtest/       Deterministic fixtures and instrumentation
 ```
 
@@ -115,14 +113,14 @@ Target prohibitions:
 | Chamber | Bounded focal area around Valuation | Internal Stage composition; no independent behavior | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Empire-specific | Anchors the dominant value | Compact focal area |
 | Frame | Structural visual boundary around a region | Stage Frame is component-local; other frames remain renderer-level | Owning Influence component | Stage CURRENT; other regions pending | Empire-specific | Authored valuation boundary | Reduced but preserved framing |
 | Valuation | Current spendable in-run value presentation | Shared facade data consumed by `InfluenceStageComponent` | Shared facade data; Influence Stage presentation | CURRENT | Shared mechanic, empire expression | Dominant value | Preserved dominant value |
-| Pulse | Gain/spend and production feedback tied to real events | Host feedback state + root-scoped Influence motion | Shared semantic feedback; Influence motion | Renderer ownership CURRENT | Shared event, empire expression | Directional feedback | Reduced non-obscuring feedback |
-| Rail | Long connective spine or track language used in operating flows | Circulating Institution Ledger styling | Influence Ledger/Lane | Visual prototype only; module pending | Empire-specific composition | Connects operating lanes | Simplified in stacked lanes |
+| Pulse | Gain/spend and production feedback tied to real events | Host feedback state + Stage/Lane-local Influence motion | Shared semantic feedback; Influence motion | Component ownership CURRENT | Shared event, empire expression | Directional feedback | Reduced non-obscuring feedback |
+| Rail | Long connective spine or track language used in operating flows | `InfluenceLedgerComponent` and `InfluenceLaneComponent` styles | Influence Ledger/Lane | CURRENT | Empire-specific composition | Connects operating lanes | Simplified in stacked lanes |
 | Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
-| Modes | Navigation among shared mechanical capabilities | Influence renderer template | Influence Modes consuming shared availability | Boundary CURRENT; module pending | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
-| Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` template plus compatibility renderer SCSS | Influence Ledger | Component ownership CURRENT; broader style consolidation pending | Empire-specific composition | Dominant operating surface | Full-width stack |
-| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row, local icon expression, plus compatibility layout SCSS | Influence Lane | K.3 component ownership CURRENT; compatibility layout consolidation later | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
+| Modes | Navigation among shared mechanical capabilities | `InfluenceModesComponent` consuming shared availability | Influence Modes | CURRENT | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
+| Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` with local template/styles | Influence Ledger | CURRENT | Empire-specific composition | Dominant operating surface | Full-width stack |
+| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row with local visual/progress rules | Influence Lane | CURRENT | Empire-specific composition over shared VM | Horizontal machine/row | Stacked touch-safe unit |
 | Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row with component-local Context styles | Shared interaction contract + Influence Context | K.4 component and style ownership CURRENT | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
-| Horizon | Next meaningful Hustle establishment | Influence renderer template/root-scoped renderer SCSS | Influence Horizon | Styles contained; module pending | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
+| Horizon | Next meaningful Hustle establishment | `InfluenceLedgerComponent` template/styles | Influence Horizon | CURRENT inside Ledger | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
 
 Intermediate widths have no dedicated art direction. They must keep the Ledger usable, actions readable, navigation functional, and Context available through an overlay/drawer.
@@ -134,11 +132,11 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
 | Hustle-ladder balance | Influence mechanics pack, assembled through `content/economy-tuning.ts` for current consumers | Shared economic-slot tuning with empire-local identity mapping; not yet implemented |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
-| Icon or motion | ID unions, definitions, root-scoped Influence renderer SCSS | Influence visual pack/component |
+| Icon or motion | Influence component styles and current definition metadata | Influence visual pack/component |
 | Sound | Definitions, global manifest, director | Influence audio pack |
 | Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (CURRENT ownership) |
 | Stage layout | `InfluenceStageComponent` and its local stylesheet | Influence Stage (CURRENT) |
-| Lane/Leverage/Rug Pull layout | Influence renderer template and root-scoped renderer SCSS | Corresponding Influence renderer component |
+| Lane/Leverage/Rug Pull layout | Corresponding Influence renderer component | Corresponding Influence renderer component (CURRENT) |
 | Global Net Worth behavior | Prestige/modifier engine and v2 runtime meta | Shared mechanics/meta contract (CURRENT persistence ownership) |
 | Mobile Context behavior | Shared host interaction/focus policy, `InfluenceContextComponent` breakpoints, and global scroll bridge | Shared interaction contract + Influence Context |
 

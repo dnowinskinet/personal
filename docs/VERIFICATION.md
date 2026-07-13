@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: 3b0c6383e1b7f333163c6c2847dd049ee90d5e38
+Last verified against commit: 84b4eb588e725ef84b6cdd79a327dfe57329bd02
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -66,6 +66,8 @@ These routes and fixture behavior are CURRENT development contracts. Architectur
 
 Required after renderer or style work:
 
+- Desktop checks use an explicit `1728 × 1080` viewport unless the task specifies another desktop target.
+- Mobile checks use an explicit `393 × 852` CSS viewport (iPhone 15 Pro), not a manually squashed desktop window.
 - Desktop dark: fresh, portfolio-mid, portfolio-scale, Rug Pull ready.
 - Desktop light: fresh and portfolio-scale.
 - Mobile dark: portfolio-mid with selected Context open.
