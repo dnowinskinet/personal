@@ -1,0 +1,350 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.sudoku-page {
+  --sudoku-border: #a1a1aa;
+  --sudoku-heavy: #27272a;
+  --sudoku-surface: #ffffff;
+  --sudoku-muted: #f4f4f5;
+  --sudoku-peer: color-mix(in srgb, var(--primary-color), transparent 91%);
+  --sudoku-match: color-mix(in srgb, var(--primary-color), transparent 78%);
+  --sudoku-selected: color-mix(in srgb, var(--primary-color), transparent 62%);
+
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  color: #18181b;
+}
+
+:host-context(.dark) .sudoku-page {
+  --sudoku-border: #52525b;
+  --sudoku-heavy: #d4d4d8;
+  --sudoku-surface: #18181b;
+  --sudoku-muted: #27272a;
+  --sudoku-peer: color-mix(in srgb, var(--primary-color), transparent 86%);
+  --sudoku-match: color-mix(in srgb, var(--primary-color), transparent 70%);
+  --sudoku-selected: color-mix(in srgb, var(--primary-color), transparent 52%);
+
+  color: #f4f4f5;
+}
+
+button {
+  touch-action: manipulation;
+  user-select: none;
+}
+
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
+}
+
+.sudoku-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sudoku-header > div:first-child {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #71717a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+:host-context(.dark) .eyebrow,
+:host-context(.dark) .subtitle {
+  color: #a1a1aa;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.2rem;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 850;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.subtitle {
+  max-width: 34rem;
+  margin-bottom: 0;
+  color: #52525b;
+}
+
+.mode-group,
+.difficulty-bar {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.85rem;
+  background: var(--sudoku-muted);
+}
+
+.mode-group {
+  flex: 0 1 12rem;
+  grid-template-columns: repeat(2, minmax(5rem, 1fr));
+  min-width: 0;
+}
+
+.difficulty-bar {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 1rem;
+}
+
+:host-context(.dark) .mode-group,
+:host-context(.dark) .difficulty-bar {
+  border-color: #3f3f46;
+}
+
+.mode-group button,
+.difficulty-bar button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+}
+
+.difficulty-bar button {
+  min-width: 0;
+  padding-inline: 0.4rem;
+}
+
+.mode-group button[aria-pressed='true'],
+.difficulty-bar button[aria-pressed='true'] {
+  background: var(--sudoku-surface);
+  color: var(--primary-color);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+}
+
+.sudoku-layout {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.board-column,
+.control-panel {
+  min-width: 0;
+}
+
+.game-status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.game-status div {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.65rem;
+  background: var(--sudoku-surface);
+}
+
+:host-context(.dark) .game-status div {
+  border-color: #3f3f46;
+}
+
+.game-status span,
+.game-status strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-status span {
+  color: #71717a;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+:host-context(.dark) .game-status span {
+  color: #a1a1aa;
+}
+
+.game-status strong {
+  margin-top: 0.12rem;
+  font-size: clamp(0.78rem, 2.4vw, 1rem);
+}
+
+.board-frame {
+  position: relative;
+  width: min(100%, 38rem);
+  margin-inline: auto;
+}
+
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 3px solid var(--sudoku-heavy);
+  border-radius: 0.45rem;
+  background: var(--sudoku-surface);
+  box-shadow: 0 18px 45px rgb(24 24 27 / 0.12);
+}
+
+.sudoku-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--sudoku-border);
+  border-bottom: 1px solid var(--sudoku-border);
+  border-radius: 0;
+  background: var(--sudoku-surface);
+  color: var(--primary-color);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sudoku-cell:nth-child(9n) {
+  border-right: 0;
+}
+
+.sudoku-cell:nth-last-child(-n + 9) {
+  border-bottom: 0;
+}
+
+.sudoku-cell.box-right {
+  border-right: 3px solid var(--sudoku-heavy);
+}
+
+.sudoku-cell.box-bottom {
+  border-bottom: 3px solid var(--sudoku-heavy);
+}
+
+.sudoku-cell.is-peer {
+  background: var(--sudoku-peer);
+}
+
+.sudoku-cell.is-matching {
+  background: var(--sudoku-match);
+}
+
+.sudoku-cell.is-selected {
+  z-index: 1;
+  background: var(--sudoku-selected);
+  box-shadow: inset 0 0 0 3px var(--primary-color);
+}
+
+.sudoku-cell.is-given {
+  color: #18181b;
+}
+
+:host-context(.dark) .sudoku-cell.is-given {
+  color: #fafafa;
+}
+
+.sudoku-cell.is-conflict {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+:host-context(.dark) .sudoku-cell.is-conflict {
+  background: #450a0a;
+  color: #fecaca;
+}
+
+.sudoku-cell:focus-visible {
+  z-index: 2;
+  outline: 3px solid var(--primary-color);
+  outline-offset: -3px;
+}
+
+.cell-value {
+  font-size: clamp(1rem, 6vw, 2.25rem);
+  font-weight: 650;
+  line-height: 1;
+}
+
+.is-given .cell-value {
+  font-weight: 850;
+}
+
+.cell-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 7%;
+  color: #52525b;
+  font-size: clamp(0.38rem, 1.8vw, 0.72rem);
+  line-height: 1;
+}
+
+:host-context(.dark) .cell-notes {
+  color: #d4d4d8;
+}
+
+.cell-notes span {
+  display: grid;
+  place-items: center;
+}
+
+.pause-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  border-radius: 0.45rem;
+  background: rgb(244 244 245 / 0.96);
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+:host-context(.dark) .pause-cover {
+  background: rgb(24 24 27 / 0.96);
+}
+
+.pause-cover span {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.pause-cover button,
+.primary-action {
+  border: 1px solid var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+}
+
+.pause-cover button {
+  min-height: 2.75rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.65rem;
+  font-weight: 800;
+}

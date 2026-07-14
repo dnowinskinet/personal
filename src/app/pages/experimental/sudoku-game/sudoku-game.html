@@ -1,0 +1,171 @@
+<article class="sudoku-page" aria-labelledby="sudoku-title">
+  <header class="sudoku-header">
+    <div>
+      <p class="eyebrow">Daily puzzle & unlimited play</p>
+      <h1 id="sudoku-title">Sudoku</h1>
+      <p class="subtitle">Four difficulties, local records, and a full set of solving tools.</p>
+    </div>
+
+    <div class="mode-group" aria-label="Game type">
+      <button type="button" [attr.aria-pressed]="activeKind() === 'daily'" (click)="activateKind('daily')">Daily</button>
+      <button type="button" [attr.aria-pressed]="activeKind() === 'random'" (click)="activateKind('random')">Random</button>
+    </div>
+  </header>
+
+  <section class="difficulty-bar" aria-label="Difficulty">
+    @for (difficulty of difficulties; track difficulty) {
+      <button
+        type="button"
+        [attr.aria-pressed]="activeDifficulty() === difficulty"
+        (click)="activateDifficulty(difficulty)"
+      >
+        {{ difficultyLabel(difficulty) }}
+      </button>
+    }
+  </section>
+
+  @if (session(); as game) {
+    <section class="sudoku-layout" [attr.data-kind]="game.kind" [attr.data-difficulty]="game.difficulty">
+      <div class="board-column">
+        <div class="game-status" aria-label="Game status">
+          <div>
+            <span>Time</span>
+            <strong>{{ formatTime(elapsedMs()) }}</strong>
+          </div>
+          <div>
+            <span>Local best</span>
+            <strong>{{ formatTime(bestTime()) }}</strong>
+          </div>
+          <div>
+            <span>{{ kindLabel(game.kind) }}</span>
+            <strong>{{ game.kind === 'daily' ? dailyDisplay() : difficultyLabel(game.difficulty) }}</strong>
+          </div>
+        </div>
+
+        <div class="board-frame">
+          <div
+            class="sudoku-board"
+            role="grid"
+            aria-label="Sudoku board"
+            [attr.aria-readonly]="game.paused || game.completed"
+          >
+            @for (index of cells; track index) {
+              <button
+                [id]="'sudoku-cell-' + index"
+                type="button"
+                class="sudoku-cell"
+                role="gridcell"
+                [ngClass]="cellClasses(index)"
+                [attr.aria-label]="cellAriaLabel(index)"
+                [attr.aria-selected]="game.selectedIndex === index"
+                [attr.tabindex]="game.selectedIndex === index ? 0 : -1"
+                (click)="selectCell(index)"
+              >
+                @if (cellValue(index); as value) {
+                  <span class="cell-value">{{ value }}</span>
+                } @else {
+                  <span class="cell-notes" aria-hidden="true">
+                    @for (digit of digits; track digit) {
+                      <span>{{ cellNotes(index).includes(digit) ? digit : '' }}</span>
+                    }
+                  </span>
+                }
+              </button>
+            }
+          </div>
+
+          @if (game.paused && !game.completed) {
+            <div class="pause-cover" role="status">
+              <span>Game paused</span>
+              <button type="button" (click)="togglePause()">Resume</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <aside class="control-panel" aria-label="Sudoku controls">
+        @if (game.completed) {
+          <section class="completion-card" aria-live="polite">
+            <p class="eyebrow">Puzzle complete</p>
+            <h2>{{ formatTime(game.elapsedMs) }}</h2>
+            @if (game.usedHint) {
+              <p>Assisted solve — local best unchanged.</p>
+            } @else if (isNewRecord()) {
+              <p>New local best!</p>
+            } @else {
+              <p>Clean solve recorded.</p>
+            }
+          </section>
+        } @else {
+          <div class="play-state">
+            <span>{{ game.notesMode ? 'Notes mode' : 'Value mode' }}</span>
+            @if (game.usedHint) {
+              <span class="assisted-badge">Assisted</span>
+            }
+          </div>
+        }
+
+        <div class="number-pad" aria-label="Number pad">
+          @for (digit of digits; track digit) {
+            <button
+              type="button"
+              [class.is-complete]="isCompletedDigit(digit)"
+              [disabled]="game.paused || game.completed"
+              [attr.aria-label]="isCompletedDigit(digit) ? digit + ' complete' : 'Enter ' + digit"
+              (click)="enterDigit(digit)"
+            >
+              <span>{{ digit }}</span>
+              @if (isCompletedDigit(digit)) { <small aria-hidden="true">✓</small> }
+            </button>
+          }
+        </div>
+
+        <div class="tool-grid">
+          <button type="button" [disabled]="game.paused || game.completed" [class.is-active]="game.notesMode" [attr.aria-pressed]="game.notesMode" (click)="toggleNotesMode()">
+            Notes <kbd>N</kbd>
+          </button>
+          <button type="button" [disabled]="!canUndo()" (click)="undoMove()">Undo</button>
+          <button type="button" [disabled]="!canRedo()" (click)="redoMove()">Redo</button>
+          <button type="button" [disabled]="game.paused || game.completed" (click)="useHint()">Hint <kbd>H</kbd></button>
+          <button type="button" [disabled]="game.completed" (click)="togglePause()">{{ game.paused ? 'Resume' : 'Pause' }} <kbd>P</kbd></button>
+          <button type="button" [disabled]="game.paused || game.completed" (click)="clearCell()">Clear</button>
+        </div>
+
+        <div class="game-actions">
+          <button type="button" class="secondary-action" (click)="requestRestart()">Restart puzzle</button>
+          @if (activeKind() === 'random') {
+            <button type="button" class="primary-action" (click)="requestNewRandom()">New random game</button>
+          }
+        </div>
+
+        <details class="keyboard-help">
+          <summary>Keyboard controls</summary>
+          <p>Arrow keys move. 1–9 enters a value or note. Delete clears. N toggles notes, H gives a hint, P pauses, and Ctrl/Cmd+Z undoes.</p>
+        </details>
+      </aside>
+    </section>
+  } @else {
+    <div class="loading-card" role="status">Preparing today’s puzzle…</div>
+  }
+
+  <p class="sr-only" aria-live="polite">{{ announcement() }}</p>
+</article>
+
+@if (confirmation()) {
+  <div class="confirm-backdrop" (click)="cancelConfirmation()">
+    <section
+      class="confirm-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sudoku-confirm-title"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="sudoku-confirm-title">{{ confirmationTitle() }}</h2>
+      <p>{{ confirmationDescription() }}</p>
+      <div>
+        <button id="sudoku-confirm-cancel" type="button" class="secondary-action" (click)="cancelConfirmation()">Keep playing</button>
+        <button type="button" class="primary-action" (click)="confirmAction()">Replace game</button>
+      </div>
+    </section>
+  </div>
+}

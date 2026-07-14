@@ -522,8 +522,10 @@ describe('GriftOsGameComponent', () => {
     expect(text).not.toContain('10 visible');
     expect(text).not.toContain('x1 output');
     expect(text).not.toContain('Post an Affiliate LinkPost an Affiliate Link');
-    expect(fixture.nativeElement.querySelectorAll('.influence-lane-icon').length).toBe(1);
-    expect(fixture.nativeElement.querySelector('.influence-lane-icon')?.textContent.trim()).toBe('SM');
+    const viewport = fixture.nativeElement.querySelector('.influence-lane-viewport') as HTMLImageElement;
+    expect(fixture.nativeElement.querySelectorAll('.influence-lane-viewport').length).toBe(1);
+    expect(viewport.getAttribute('src')).toBe('/assets/image/grift-os/influence/hustles/troll-network/viewport.jpg');
+    expect(viewport.getAttribute('alt')).toBe('');
   });
 
   it('reveals the next-enterprise horizon after the first expansion', async () => {
@@ -579,7 +581,7 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Valuation pressure');
     expect(fixture.nativeElement.textContent).not.toContain('Automation spread');
     expect(fixture.nativeElement.textContent).not.toContain('Milestone density');
-    expect(fixture.nativeElement.querySelectorAll('.influence-lane-icon').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('.influence-lane-viewport').length).toBe(2);
   });
 
   it('opens the selected-Hustle context intentionally without pinning one-Hustle wide state', async () => {
@@ -600,6 +602,8 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.querySelector('app-influence-context')).not.toBeNull();
     expect(panel).not.toBeNull();
     expect(panel.classList).toContain('grift-inspector-panel--overlay-only');
+    expect((panel.querySelector('.influence-context-viewport img') as HTMLImageElement).getAttribute('src'))
+      .toBe('/assets/image/grift-os/influence/hustles/troll-network/viewport.jpg');
 
     const closeButton = fixture.nativeElement.querySelector('.grift-context-close') as HTMLButtonElement;
     closeButton.click();

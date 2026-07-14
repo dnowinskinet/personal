@@ -105,6 +105,10 @@ export class Navbar {
       path: '/experimental/settlement',
     },
     {
+      name: 'Sudoku',
+      path: '/experimental/sudoku',
+    },
+    {
       name: 'GriftOS',
       path: '/experimental/grift-os',
     },

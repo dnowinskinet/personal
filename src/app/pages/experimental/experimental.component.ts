@@ -19,6 +19,11 @@ export class ExperimentalComponent {
       description: 'A compact systems prototype about civic pressure, resources, and settlement survival.',
     },
     {
+      label: 'Sudoku',
+      path: '/experimental/sudoku',
+      description: 'Daily seeded Sudoku and unlimited puzzles with four difficulties and local records.',
+    },
+    {
       label: 'GriftOS',
       path: '/experimental/grift-os',
       description: 'A satirical idle tycoon about paper valuation, Hustles, Leverage, and the exit.',
@@ -38,13 +43,14 @@ export class ExperimentalComponent {
 
     this.metaService.setMetaTags(
       `Experimental - ${profileData.name}`,
-      'Play experimental browser game prototypes like AI Settlement and GriftOS.',
+      'Play experimental browser game prototypes.',
       [
         'daniel thomas nowinski',
         'experimental',
         'games',
         'ai settlement',
         'griftos',
+        'sudoku',
         'browser game',
         'strategy game',
         'simulation game',

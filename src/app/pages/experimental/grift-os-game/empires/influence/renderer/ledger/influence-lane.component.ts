@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { EmpireRendererRequest } from '../../../../host/empire-renderer-contract';
 import { GameAction } from '../../../../presentation/game-action';
 import { HustleViewModel } from '../../../../presentation/game-presentation';
+import { INFLUENCE_HUSTLE_VISUALS } from '../../visuals/influence-hustle-visuals';
 
 @Component({
   selector: 'app-influence-lane',
@@ -33,7 +34,7 @@ export class InfluenceLaneComponent implements OnChanges {
     this.request.emit({ action, sourceEvent });
   }
 
-  get iconMonogram(): string {
-    return this.row.definition.name.split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
+  get viewportImage(): string {
+    return INFLUENCE_HUSTLE_VISUALS[this.row.id].viewportImage;
   }
 }

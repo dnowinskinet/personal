@@ -1,18 +1,5 @@
 :host { display: contents; }
 
-.influence-lane-icon {
-  display: grid;
-  width: 1.7rem;
-  height: 1.7rem;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--grift-info), transparent 42%);
-  background: color-mix(in srgb, var(--grift-info), transparent 91%);
-  color: var(--grift-info);
-  font: 720 0.58rem/1 ui-monospace, monospace;
-  letter-spacing: 0.04em;
-  clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
-}
-
 .grift-hustle-entry {
   position: relative;
   overflow: visible;
@@ -74,16 +61,35 @@
 .grift-hustle-settled .grift-hustle-grid { padding-block: 0.48rem; }
 
 .grift-icon-button {
+  position: relative;
+  overflow: hidden;
   width: 3.42rem;
   height: 3.42rem;
-  border-radius: 50%;
+  border-radius: 3px;
   background: var(--grift-institution-channel);
-  box-shadow: inset 0 0 0 0.25rem var(--grift-institution-paper);
+  padding: 0.14rem;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--grift-info), transparent 42%);
+}
+
+.grift-icon-button::after {
+  position: absolute;
+  inset: 0.14rem;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(0 0 0 / 10%) 3px 4px);
+  content: "";
+  pointer-events: none;
+}
+
+.influence-lane-viewport {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 1px;
+  object-fit: cover;
 }
 
 .grift-icon-automated {
   box-shadow:
-    inset 0 0 0 0.25rem var(--grift-institution-paper),
+    inset 0 0 0 1px var(--grift-automation),
     0 0 calc(12px * var(--grift-glow-strength)) color-mix(in srgb, var(--grift-automation), transparent 70%);
 }
 
@@ -134,8 +140,8 @@
   background: var(--grift-institution-channel);
   padding: 0.75rem;
 }
-.grift-hustle-selected .influence-lane-icon { border-color: var(--grift-selection); color: var(--grift-selection); }
-.grift-hustle-automated .influence-lane-icon { border-color: var(--grift-automation); color: var(--grift-automation); }
+.grift-hustle-selected .grift-icon-button { border-color: var(--grift-selection); }
+.grift-hustle-automated .grift-icon-button { border-color: var(--grift-automation); }
 
 .grift-progress-track {
   height: 2px;

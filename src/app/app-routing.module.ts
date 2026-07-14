@@ -20,6 +20,11 @@ export const routes: Routes = [
           .then((m) => m.AiSettlementGameComponent),
       },
       {
+        path: 'sudoku',
+        loadComponent: () => import('./pages/experimental/sudoku-game/sudoku-game')
+          .then((m) => m.SudokuGameComponent),
+      },
+      {
         path: 'grift-os',
         loadComponent: () => import('./pages/experimental/grift-os-game/grift-os-game')
           .then((m) => m.GriftOsGameComponent),

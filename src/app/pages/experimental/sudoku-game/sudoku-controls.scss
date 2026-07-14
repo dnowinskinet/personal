@@ -1,0 +1,282 @@
+.control-panel {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.play-state,
+.completion-card {
+  padding: 0.8rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.8rem;
+  background: var(--sudoku-surface);
+}
+
+:host-context(.dark) .play-state,
+:host-context(.dark) .completion-card {
+  border-color: #3f3f46;
+}
+
+.play-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 750;
+}
+
+.assisted-badge {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.72rem;
+}
+
+.completion-card h2 {
+  margin-bottom: 0.3rem;
+  color: var(--primary-color);
+  font-size: 2rem;
+}
+
+.completion-card p:last-child {
+  margin-bottom: 0;
+}
+
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.number-pad button {
+  position: relative;
+  grid-column: span 2;
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0.3rem 0;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.55rem;
+  background: var(--sudoku-surface);
+  color: inherit;
+  font-size: clamp(0.9rem, 4vw, 1.25rem);
+  font-weight: 800;
+}
+
+.number-pad button:nth-child(6) {
+  grid-column: 2 / span 2;
+}
+
+:host-context(.dark) .number-pad button {
+  border-color: #52525b;
+}
+
+.number-pad button.is-complete {
+  color: #71717a;
+  opacity: 0.62;
+}
+
+.number-pad button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.number-pad small {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.18rem;
+  color: var(--primary-color);
+  font-size: 0.55rem;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+
+.tool-grid button,
+.game-actions button,
+.confirm-dialog button {
+  min-height: 2.8rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.65rem;
+  font-weight: 750;
+}
+
+.tool-grid button,
+.secondary-action {
+  border: 1px solid #d4d4d8;
+  background: var(--sudoku-surface);
+  color: inherit;
+}
+
+:host-context(.dark) .tool-grid button,
+:host-context(.dark) .secondary-action {
+  border-color: #52525b;
+}
+
+.tool-grid button.is-active {
+  border-color: var(--primary-color);
+  background: var(--sudoku-match);
+  color: var(--primary-color);
+}
+
+.tool-grid button:disabled,
+.game-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+kbd {
+  color: #71717a;
+  font-family: inherit;
+  font-size: 0.65rem;
+}
+
+.game-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+}
+
+.game-actions .primary-action:only-child,
+.game-actions .secondary-action:only-child {
+  grid-column: 1 / -1;
+}
+
+.keyboard-help {
+  color: #52525b;
+  font-size: 0.78rem;
+}
+
+:host-context(.dark) .keyboard-help {
+  color: #a1a1aa;
+}
+
+.keyboard-help summary {
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.keyboard-help p {
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
+}
+
+.loading-card {
+  display: grid;
+  min-height: 24rem;
+  place-items: center;
+  border: 1px solid #e4e4e7;
+  border-radius: 1rem;
+  background: var(--sudoku-muted);
+  font-weight: 750;
+}
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(9 9 11 / 0.66);
+  backdrop-filter: blur(4px);
+}
+
+.confirm-dialog {
+  width: min(100%, 28rem);
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: white;
+  color: #18181b;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 0.35);
+}
+
+:host-context(.dark) .confirm-dialog {
+  background: #18181b;
+  color: #f4f4f5;
+}
+
+.confirm-dialog h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.35rem;
+}
+
+.confirm-dialog p {
+  color: #52525b;
+}
+
+:host-context(.dark) .confirm-dialog p {
+  color: #a1a1aa;
+}
+
+.confirm-dialog > div {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 60rem) {
+  .sudoku-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
+  }
+
+  .control-panel {
+    position: sticky;
+    top: 6.5rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .sudoku-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mode-group {
+    width: 100%;
+  }
+
+  .difficulty-bar button {
+    min-width: 0;
+    padding-inline: 0.25rem;
+    font-size: 0.78rem;
+  }
+
+  .game-status div {
+    padding-inline: 0.45rem;
+  }
+}
+
+@media (max-width: 22rem) {
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .number-pad {
+    gap: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
