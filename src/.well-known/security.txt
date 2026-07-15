@@ -1,0 +1,5 @@
+Contact: mailto:security@dnowinski.com
+Expires: 2027-06-15T00:00:00Z
+Preferred-Languages: en
+Canonical: https://dnowinski.com/.well-known/security.txt
+Policy: https://github.com/dnowinskinet/personal/security/policy

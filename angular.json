@@ -39,6 +39,13 @@
               "src/favicon.ico",
               "src/assets",
               "src/robots.txt",
+              "src/sitemap.xml",
+              "src/llms.txt",
+              {
+                "glob": "security.txt",
+                "input": "src/.well-known",
+                "output": "/.well-known"
+              },
               "src/DNowinski-Resume.pdf"
             ],
             "styles": [
@@ -113,6 +120,13 @@
               "src/favicon.ico",
               "src/assets",
               "src/robots.txt",
+              "src/sitemap.xml",
+              "src/llms.txt",
+              {
+                "glob": "security.txt",
+                "input": "src/.well-known",
+                "output": "/.well-known"
+              },
               "src/DNowinski-Resume.pdf"
             ],
             "styles": [

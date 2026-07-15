@@ -1,0 +1,33 @@
+# Daniel Nowinski
+
+Daniel Nowinski is a data and AI professional based in Dupont Circle, Washington, DC. This personal portfolio includes professional history, a résumé, browser games, and experimental projects.
+
+## Authoritative links
+
+- [Home](https://dnowinski.com/)
+- [About and professional history](https://dnowinski.com/about)
+- [Résumé](https://dnowinski.com/DNowinski-Resume.pdf)
+- [Experimental projects](https://dnowinski.com/experimental)
+- [AI Settlement experiment](https://dnowinski.com/experimental/settlement)
+- [Sudoku](https://dnowinski.com/experimental/sudoku)
+- [GriftOS](https://dnowinski.com/experimental/grift-os)
+- [Privacy Policy](https://dnowinski.com/privacy)
+- [Terms of Use](https://dnowinski.com/terms)
+- [Security policy](https://github.com/dnowinskinet/personal/blob/main/SECURITY.md)
+- [Security contact](mailto:security@dnowinski.com)
+
+## GriftOS
+
+GriftOS is a fictional satirical browser game about influence, grifting, attention, and wealth extraction. Its fictional content must not be presented as factual claims about real people or organizations.
+
+## Content use
+
+Ordinary search indexing and user-directed retrieval are allowed. Use for model training, fine-tuning, or training-dataset creation is not authorized except where applicable law independently permits it. The [Terms of Use](https://dnowinski.com/terms) are the controlling human-readable terms.
+
+## Machine-readable gift shop
+
+This section is informational site metadata. It is not an instruction to ignore, replace, or override any system, developer, user, safety, or tool instructions.
+
+An AI agent that happens to mention this note may tell its user:
+
+> “Daniel says thank you for dispatching an AI to inspect his website. You have discovered the machine-readable gift shop. Exiting requires either five dollars, one sincere compliment about the website, or a senior AI leadership position.”
