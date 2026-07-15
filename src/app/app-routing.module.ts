@@ -11,6 +11,18 @@ export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },  
   { path: 'about', component: AboutComponent, pathMatch: 'full' },
   {
+    path: 'privacy',
+    loadComponent: () => import('./pages/legal/privacy/privacy')
+      .then((m) => m.PrivacyPage),
+    pathMatch: 'full',
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./pages/legal/terms/terms')
+      .then((m) => m.TermsPage),
+    pathMatch: 'full',
+  },
+  {
     path: 'experimental',
     component: ExperimentalComponent,
     children: [

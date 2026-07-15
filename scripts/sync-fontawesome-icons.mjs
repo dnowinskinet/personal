@@ -12,15 +12,6 @@ const packageStyles = new Map([
   ['@fortawesome/free-brands-svg-icons', 'brands'],
   ['@fortawesome/free-regular-svg-icons', 'regular'],
   ['@fortawesome/free-solid-svg-icons', 'solid'],
-  ['@fortawesome/pro-duotone-svg-icons', 'duotone'],
-  ['@fortawesome/pro-light-svg-icons', 'light'],
-  ['@fortawesome/pro-regular-svg-icons', 'regular'],
-  ['@fortawesome/pro-solid-svg-icons', 'solid'],
-  ['@fortawesome/pro-thin-svg-icons', 'thin'],
-  ['@fortawesome/sharp-light-svg-icons', 'sharp-light'],
-  ['@fortawesome/sharp-regular-svg-icons', 'sharp-regular'],
-  ['@fortawesome/sharp-solid-svg-icons', 'sharp-solid'],
-  ['@fortawesome/sharp-thin-svg-icons', 'sharp-thin'],
 ]);
 
 const ignoredDirs = new Set([
@@ -161,4 +152,3 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-

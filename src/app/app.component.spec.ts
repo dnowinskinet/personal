@@ -33,5 +33,6 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('main')).toBeTruthy();
+    expect(compiled.querySelector('foot-note')).toBeTruthy();
   });
 });

@@ -1,6 +1,7 @@
 @use './styles/grift-os';
 @use './app/pages/experimental/grift-os-game/empires/influence/renderer/influence-empire-renderer';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');// importing core styling file
+@use '@fontsource-variable/inter/wght.css';
+@use '@fontsource-variable/inter/wght-italic.css';
 
 @tailwind base;
 @tailwind components;
