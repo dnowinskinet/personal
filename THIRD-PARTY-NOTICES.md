@@ -1,14 +1,21 @@
 # Third-party notices
 
+This file identifies third-party materials included in or displayed by this
+project. These notices apply only to the identified materials. The remainder
+of the repository is governed by `LICENSE.md` unless otherwise stated.
+
 ## Inter
 
-This project bundles the Inter variable font from `@fontsource-variable/inter`.
+This project bundles the Inter variable font from
+`@fontsource-variable/inter@5.2.8`.
 
 Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
 Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
 
 The Inter font software is licensed under the SIL Open Font License, Version 1.1.
 The full license text is reproduced below. The rest of this website and its source code are not licensed under the OFL by this notice.
+The OFL applies only to the bundled Inter font files. It does not apply to the
+website, source code, text, images, games, or other assets.
 
 ### SIL Open Font License, Version 1.1
 
@@ -103,3 +110,128 @@ The full license text is reproduced below. The rest of this website and its sour
     DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
     FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
     OTHER DEALINGS IN THE FONT SOFTWARE.
+
+## Font Awesome Free
+
+The application currently retains the following Font Awesome packages. The
+versions below are the installed versions recorded in `package-lock.json`:
+
+- Software and integration: `@fortawesome/angular-fontawesome@4.0.0` and
+  `@fortawesome/fontawesome-svg-core@7.3.1`, licensed under the MIT License.
+- Icon artwork packages: `@fortawesome/free-brands-svg-icons@7.3.1`,
+  `@fortawesome/free-regular-svg-icons@7.3.1`, and
+  `@fortawesome/free-solid-svg-icons@7.3.1`.
+
+Font Awesome Free icon artwork is licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0). Font Awesome software is
+licensed under the MIT License. Font Awesome font files use the SIL Open Font
+License, Version 1.1; no Font Awesome font files are distributed in this
+project's local asset tree.
+
+The applicable license and attribution materials identify Fonticons, Inc.:
+
+- [Font Awesome Free license](https://fontawesome.com/license/free)
+- [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- [MIT License](https://opensource.org/license/mit)
+- [SIL Open Font License](https://scripts.sil.org/OFL)
+
+The locally bundled Font Awesome SVG assets are:
+
+- `src/assets/fontawesome/icons/brands/instagram.svg`
+- `src/assets/fontawesome/icons/brands/linkedin.svg`
+- `src/assets/fontawesome/icons/brands/steam.svg`
+- `src/assets/fontawesome/icons/solid/coffee.svg`
+- `src/assets/fontawesome/icons/solid/envelope.svg`
+
+The regular icon package is installed, but no regular-family SVG is currently
+retained in the local asset tree. No Font Awesome webfont or desktop font files
+are distributed by this project. These Font Awesome licenses apply only to the
+corresponding Font Awesome materials and not to the rest of the project.
+
+The five bundled SVG files currently retain embedded comments identifying
+Font Awesome Pro 7.2.0 and the Commercial License. The active package
+dependencies and icon-sync configuration are Font Awesome Free; the embedded
+comments are retained asset metadata and are not treated here as active Pro
+packages.
+
+## Alternate United States Senate emblem
+
+The About page currently displays `src/assets/image/biography/Senate.png`
+beside the United States Senate employment entry. The image is an unofficial
+alternate United States Senate emblem based on the Great Seal of the United
+States, rather than the official liberty-cap Senate seal.
+
+- Source: Wikimedia Commons.
+- Source page: [File:US-Senate-UnofficialAltGreatSeal.svg](https://commons.wikimedia.org/wiki/File:US-Senate-UnofficialAltGreatSeal.svg)
+- Author or originating source: United States Government, as identified by
+  the source page.
+- Copyright status: the source page identifies the image as public domain as a
+  work of the United States federal government.
+
+This emblem is used solely for truthful historical and biographical
+identification of Daniel Nowinski's prior work in the United States Senate.
+Its inclusion does not imply sponsorship, endorsement, operation, or current
+affiliation by the United States Senate or any Senate office. It is not
+described here as the official Senate seal. Public-domain copyright status does
+not remove possible restrictions involving government names, emblems, or
+insignia.
+
+## Organization names, emblems, and logos
+
+The Site displays names, trademarks, emblems, or logos associated with former
+employers, educational institutions, government bodies, nonprofit
+organizations, community organizations, and other third parties.
+
+Those names, trademarks, emblems, and logos remain the property of their
+respective owners. They are displayed solely for truthful identification,
+professional or biographical context, and links to the applicable
+organization. Their inclusion does not imply sponsorship, endorsement,
+operation, partnership, or current affiliation with the Site.
+
+Nothing in this notice claims permission, a trademark license, or endorsement
+unless documentary evidence exists in the repository. Daniel Nowinski does not
+claim ownership of third-party marks merely because they appear on the Site.
+
+## Higgsfield-assisted GriftOS imagery
+
+The following 16 image files under
+`src/assets/image/grift-os/influence/` were generated by Daniel Nowinski using
+his paid Higgsfield account for use as GriftOS game artwork:
+
+- `src/assets/image/grift-os/influence/hustles/ai-venture/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/autograph-factory/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/culture-war-media/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/founder-retreat-circuit/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/get-rich-books/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/manifesto-imprint/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/masterclass-business/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/media-holdings/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/paid-endorsement-racket/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/paid-friend-club/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/paid-shoutout-studio/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/podcast-network/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/sovereign-network/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/troll-network/viewport.jpg`
+- `src/assets/image/grift-os/influence/hustles/venture-portfolio/viewport.jpg`
+- `src/assets/image/grift-os/influence/influence-stage-desktop-dark.png`
+
+These images are used subject to the Higgsfield service terms applicable when
+they were generated. This notice does not claim that Higgsfield owns the
+images, that Higgsfield transferred an unconditional or exclusive copyright,
+or that every generated image is independently copyrightable. Copyrightability
+and other rights depend on applicable law and the relevant service terms.
+
+## GriftOS music and audio
+
+The current distributed GriftOS music asset is:
+
+- `src/assets/audio/grift-os/music/prototype-background.opus`
+
+The current GriftOS music was created by Daniel Nowinski using Stable Audio 3
+and is incorporated into GriftOS as original game music. It is used subject to
+the Stable Audio service terms applicable when it was generated. This generated
+music file is distinct from third-party software used merely to load, decode,
+play, or bundle it.
+
+No additional distributed GriftOS audio files were found. Runtime-generated
+debug tones are not separate distributed audio assets.
