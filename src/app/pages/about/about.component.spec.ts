@@ -22,4 +22,10 @@ describe('AboutComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('does not create a page-local vertical overflow boundary', () => {
+    const pageSection = fixture.nativeElement.querySelector('section') as HTMLElement;
+
+    expect(pageSection.classList).not.toContain('overflow-y-hidden');
+  });
 });

@@ -18,7 +18,7 @@ export interface MechanicalModifierDefinition {
 
 export interface HustleMilestoneMechanics {
   id: string;
-  requiredUnits: number;
+  requiredScaleCount: number;
   reward: MechanicalModifierDefinition;
 }
 
@@ -29,7 +29,7 @@ export interface HustleMechanicsDefinition {
   growthRate: number;
   basePayout: number;
   cadenceSeconds: number;
-  initialUnits: number;
+  initialScaleCount: number;
   unlockNetWorth: number;
   milestones: readonly HustleMilestoneMechanics[];
 }
@@ -63,7 +63,7 @@ export interface PrestigeMechanics {
   curatedValuationEnvelope: number;
 }
 
-export interface FounderTakeStageMechanics {
+export interface ExtractionStageMechanics {
   id: string;
   takeBonus: number;
   costTargetRatio: number;
@@ -71,16 +71,16 @@ export interface FounderTakeStageMechanics {
   outputRetention: number;
 }
 
-export interface FounderTakeMechanics {
+export interface ExtractionMechanics {
   baseTake: number;
-  stages: readonly FounderTakeStageMechanics[];
+  stages: readonly ExtractionStageMechanics[];
 }
 
 export interface GameMechanics extends ReadonlyArray<HustleMechanicsDefinition> {
   readonly leverage: readonly LeverageMechanicsDefinition[];
   readonly campaignStrata: readonly CampaignStratumMechanics[];
   readonly prestige: PrestigeMechanics;
-  readonly founderTake: FounderTakeMechanics;
+  readonly extraction: ExtractionMechanics;
 }
 
 export type GameUnlock =

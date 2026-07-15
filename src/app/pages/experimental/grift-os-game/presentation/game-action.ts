@@ -10,6 +10,6 @@ export type GameAction =
   | { type: 'hustle.automate'; hustleId: HustleId }
   | { type: 'leverage.purchase'; leverageId: LeverageId }
   | { type: 'offline.dismiss' }
-  | { type: 'rugPull.prepare' }
+  | { type: 'extraction.prepare' }
   | { type: 'rugPull.commit' }
   | { type: 'rugPull.resolution.dismiss' };

@@ -206,11 +206,35 @@ Do not rename or replace them merely to fill space.
 - Do not build a universal flat-icon family, generic SVG-glyph system, or one heavily configurable cross-empire viewport widget. The shared contract supplies the slot and state; the active empire renderer owns the visual body.
 - Defer sourcing and implementing viewport artwork. Preserve room for the direction without investing in the current initials or their aesthetic.
 
+## 2026-07-14 Influence Hustle Viewport Prototypes
+
+- Implement the first Influence viewport pass with one optimized 960×720 image per stable Hustle ID, reused as a center-cropped Lane image and a 4:3 selected-Context image.
+- Treat this single-source reuse as a prototype production choice, not a reversal of the approved option for a richer related Context rendition during final art production.
+- Keep asset mapping, crop, frame, and restrained screen treatment inside Influence visual/renderer ownership. Do not add viewport paths to engine mechanics or shared presentation contracts.
+- Remove the placeholder initials. Preserve the existing manual-action semantics, accessible label, Lane alignment, and mobile non-overflow behavior.
+- Do not interpret these prototype images as final light/dark variants or as a universal viewport implementation for future empires.
+
+This entry supersedes only the implementation deferral in the final bullet of **2026-07-13 Hustle Viewport Direction**. The ownership and visual-direction decisions in that entry remain active.
+
+## 2026-07-14 Twelve-Hustle Shared-Mechanics Migration
+
+- Replace the ten historical Influence Hustles and IDs with twelve semantic enterprises in this exact order: Online Rage Farm, Paid Friend Club, Autograph Factory, Paid Shoutout Studio, Outrage Podcast, Get-Rich Books, Paid Endorsement Racket, VIP Experience Tour, Success University, MLM Ambassador Program, Debt Club, and Subscriber Towns.
+- Treat owned quantity as durable productive scale. Shared mechanics, state, simulation, milestones, events, and persistence use `scaleCount`, `initialScaleCount`, and `requiredScaleCount`; empire content separately supplies scale nouns, expansion actions, manual transactions, automations, activity phrases, and optional display multipliers.
+- Keep the engine neutral and the economic ladder shared. Influence owns the authored catalog, copy, Leverage definitions, and temporary mapping from its new semantic IDs to the existing prototype viewport assets.
+- Replace the shared Founder Take assumption with neutral extraction mechanics and extraction preparation. Influence presents the same mechanic as `Your Take`.
+- Make Influence Leverage run-scoped and funded by current Net Worth. Spent Net Worth is permanently removed, purchased Leverage clears on Rug Pull or empire replacement, and ordinary simulator strategies do not purchase it automatically.
+- Add nondecreasing peak Net Worth. Current Net Worth remains visible, spendable, and used by Wealth Advantage and the `$1T` objective; peak Net Worth selects campaign strata, Rug Pull targets, and unlock eligibility so spending cannot regress or relock progression.
+- Move primary local persistence to v3. Migrate v1/v2 persistent Net Worth and Influence exit history, initialize peak Net Worth from migrated wealth, and reset the incompatible ten-ID current run rather than mapping it positionally. Preserve older records untouched as rollback evidence.
+- Rebuild the shared ladder as twelve economic slots within approximately the prior campaign envelope. The values remain provisional and simulation-backed; the later giant-milestone, cross-Hustle, and old-Hustle resurgence layer remains explicitly deferred.
+- Keep internal Enterprise Intensity/Stage compatibility functional with a twelve-Hustle denominator. `leverageProgress` measures purchased Leverage rather than milestone density; the presentation model remains provisional and non-player-facing.
+
+This entry supersedes the ten-Hustle, non-spendable-Net-Worth, historical-ID, and Founder-specific portions of **2026-07-11 Economy Scale And Extraction Revision**. It also supplies the explicit approved migration allowed by the persistence and ID safeguards in repository guidance.
+
 ## Temporary Decisions
 
 - Internal compatibility aliases such as `GeneratorDefinition` may remain temporarily during migration, but player-facing UI should use Hustle vocabulary.
 - The current six-stratum Rug Pull targets and reward formula are simulation-backed hypotheses, not final canon.
-- The ten-Hustle constants are hand-tuned and data-driven. They are not generated from a single tier formula.
+- The twelve-Hustle constants are hand-tuned and data-driven. They are not generated from a single tier formula.
 - Milestone thresholds and rewards are Hustle-specific and may mix output, cadence, expansion cost, and automation cost.
 - Net Worth power uses a power-law wealth advantage with frontier and prior-stratum attenuation.
 - Audio assets are absent by design. The runtime must function without them.
@@ -220,7 +244,6 @@ Do not rename or replace them merely to fill space.
 ## Open Questions
 
 - Final game title.
-- Final Hustle names and title casing.
 - Final light and dark palette.
 - Exact responsive breakpoints.
 - Exact next-Hustle horizon affordability treatment.
@@ -231,10 +254,10 @@ Do not rename or replace them merely to fill space.
 - Final milestone thresholds and reward strengths.
 - Whether the current six-stratum Rug Pull targets should stay after human playtesting.
 - Whether late-Hustle constants should be adjusted to keep the curated pre-victory envelope below `$1Q`.
-- Final prestige formula and Founder Take values after playtesting.
-- Whether Net Worth becomes spendable.
+- Final prestige formula and extraction-preparation values after playtesting.
 - Final global evolution artifact form, meaning, name, and behavior.
 - Whether any future global evolution artifact becomes clickable.
 - Whether internal Enterprise Intensity / Enterprise Stage compatibility remains useful after the UX reset.
 - Final music layers and audio assets.
-- Final Leverage interaction model.
+- Final Influence Leverage catalog, labels, prerequisites, and modifier magnitudes.
+- Final old-Hustle resurgence layer and cross-Hustle portfolio thresholds.

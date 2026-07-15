@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL VERIFICATION WORKFLOW
 Authority: Canonical commands and evidence required to consider GriftOS work complete
 Scope: Automated tests, balance evidence, deterministic fixtures, responsive/theme review, and scope auditing
-Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
+Last verified against commit: e4a8fa9aa717155e2f3f83c2071fb12cb0f2e8e4
 Update trigger: Scripts, fixture routes, verification tooling, supported targets, or required evidence changes
 Supersedes: GriftOS verification commands scattered across task briefs and project chats
 ---
@@ -56,7 +56,7 @@ Start the development server with `npm start`, then use:
 | Milestone near | `/experimental/grift-os?playtest=1&run=milestone-near` | Milestone progressive disclosure |
 | Portfolio mid | `/experimental/grift-os?playtest=1&run=portfolio-mid` | Mixed manual/automated portfolio and Leverage reveal |
 | Portfolio scale | `/experimental/grift-os?playtest=1&run=portfolio-scale` | Mature portfolio, wide pinned Context, mode hierarchy |
-| Rug Pull ready | `/experimental/grift-os?playtest=1&run=rug-pull-ready&surface=rugPull` | Extraction availability and Founder Take/Rug Pull composition |
+| Rug Pull ready | `/experimental/grift-os?playtest=1&run=rug-pull-ready&surface=rugPull` | Extraction availability and Your Take/Rug Pull composition |
 | Post-Rug | `/experimental/grift-os?playtest=1&run=post-rug` | Persistent Net Worth applied to a fresh run |
 | Endgame | `/experimental/grift-os?playtest=1&run=endgame` | Large values, full catalog, and late-state density |
 
@@ -84,6 +84,7 @@ For every visual check also confirm:
 - reduced motion preserves state clarity;
 - no browser console errors;
 - utilities remain subordinate.
+- every visible Hustle viewport loads the asset mapped to that Hustle ID; selected Context shows the matching subject and decorative images do not duplicate the control's accessible name;
 - after every CSS/template edit, explicitly reload or navigate the fixture and wait for the settled render before evaluating or capturing evidence; do not treat an HMR frame as final evidence.
 
 No screenshot-testing dependency is currently installed. Capture and compare browser evidence during review rather than adding tooling implicitly.
@@ -95,10 +96,14 @@ No screenshot-testing dependency is currently installed. Capture and compare bro
 | Formula or modifier | Engine tests, full tests, balance simulation, production build |
 | Influence tuning | Content/tuning tests and before/after balance report |
 | Economic-slot mapping | Focused pack parity test, architecture boundary check, full tests, production build |
+| Save-schema or semantic-ID migration | V3/v2/v1 persistence tests, fresh and restored fixture checks, old records preserved |
+| Net-Worth-funded Leverage | Current/peak Net Worth tests, Rug target high-water assertion, reset test, explicit-strategy balance run |
+| Twelve-slot economy | Before/after campaign report, intermittent-profile runs, final-Hustle acquisition/automation before Rug assertion |
+| Hustle viewport assets/mapping | Focused Lane/Context mapping assertions, asset-load check, desktop and iPhone 15 Pro crop review, no-overflow check |
 | Content only | Focused tests, affected fixtures, light/dark copy fit |
 | Presentation/action availability | Focused tests across affected fixtures and semantic-event assertions |
 | Renderer/SCSS | Full visual matrix, accessibility interactions, production build |
-| Audio | Audio tests, gesture unlock, muted/missing-asset behavior, SSR build |
+| Audio | Audio tests, gesture unlock, muted/missing-asset behavior, SPA navigation away from GriftOS with playback active, SSR build |
 | Save/persistence | V2 fixtures, v1 migration and rollback mirrors, corrupt-v2 fallback, component reload, explicit migration approval |
 
 ## Scope audit before commit

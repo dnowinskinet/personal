@@ -2,43 +2,43 @@
   display: contents;
 }
 
-.grift-founder-take {
+.grift-extraction {
   display: grid;
   gap: 0.9rem;
   border-bottom: 1px solid color-mix(in srgb, var(--grift-warning), transparent 78%);
   padding-bottom: 1rem;
 }
 
-.grift-founder-take-summary,
-.grift-founder-take-opportunity,
-.grift-founder-take-preparation {
+.grift-extraction-summary,
+.grift-extraction-opportunity,
+.grift-extraction-preparation {
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
 }
 
-.grift-founder-take-summary > div {
+.grift-extraction-summary > div {
   flex: 0 0 auto;
 }
 
-.grift-founder-take-summary p,
-.grift-founder-take-opportunity p,
-.grift-founder-take-preparation p,
-.grift-founder-take-complete {
+.grift-extraction-summary p,
+.grift-extraction-opportunity p,
+.grift-extraction-preparation p,
+.grift-extraction-complete {
   margin: 0;
 }
 
-.grift-founder-take-summary p,
-.grift-founder-take-opportunity p,
-.grift-founder-take-preparation p {
+.grift-extraction-summary p,
+.grift-extraction-opportunity p,
+.grift-extraction-preparation p {
   color: var(--grift-warning);
   font-size: 0.72rem;
   font-weight: 680;
   text-transform: uppercase;
 }
 
-.grift-founder-take-summary strong {
+.grift-extraction-summary strong {
   display: block;
   margin-top: 0.18rem;
   color: var(--grift-value);
@@ -46,55 +46,55 @@
   line-height: 1;
 }
 
-.grift-founder-take-summary > span,
-.grift-founder-take-opportunity span,
-.grift-founder-take-preparation span,
-.grift-founder-take-complete {
+.grift-extraction-summary > span,
+.grift-extraction-opportunity span,
+.grift-extraction-preparation span,
+.grift-extraction-complete {
   color: var(--grift-ink-soft);
   font-size: 0.84rem;
   line-height: 1.4;
 }
 
-.grift-founder-take-summary > span {
+.grift-extraction-summary > span {
   max-width: 32rem;
   text-align: right;
 }
 
-.grift-founder-take-opportunity > div,
-.grift-founder-take-preparation > div:first-child {
+.grift-extraction-opportunity > div,
+.grift-extraction-preparation > div:first-child {
   min-width: 0;
 }
 
-.grift-founder-take-opportunity span,
-.grift-founder-take-opportunity small,
-.grift-founder-take-preparation span {
+.grift-extraction-opportunity span,
+.grift-extraction-opportunity small,
+.grift-extraction-preparation span {
   display: block;
   margin-top: 0.25rem;
 }
 
-.grift-founder-take-opportunity small {
+.grift-extraction-opportunity small {
   color: var(--grift-ink-faint);
   font-size: 0.75rem;
 }
 
-.grift-action-founder-take {
+.grift-action-extraction {
   flex: 0 0 min(15rem, 42%);
   min-height: 2.75rem;
   border-color: color-mix(in srgb, var(--grift-warning), transparent 58%);
 }
 
-.grift-founder-take-preparation {
+.grift-extraction-preparation {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
 }
 
-.grift-founder-take-progress {
+.grift-extraction-progress {
   height: 3px;
   overflow: hidden;
   background: var(--grift-border);
 }
 
-.grift-founder-take-progress span {
+.grift-extraction-progress span {
   display: block;
   width: 100%;
   height: 100%;
@@ -104,21 +104,21 @@
 }
 
 @media (max-width: 64rem) {
-  .grift-founder-take-preparation {
+  .grift-extraction-preparation {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .grift-founder-take-summary,
-  .grift-founder-take-opportunity {
+  .grift-extraction-summary,
+  .grift-extraction-opportunity {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .grift-founder-take-summary > span {
+  .grift-extraction-summary > span {
     text-align: left;
   }
 
-  .grift-action-founder-take {
+  .grift-action-extraction {
     flex-basis: auto;
     width: 100%;
   }

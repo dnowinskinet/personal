@@ -8,7 +8,7 @@ Working progression:
 
 ```text
 manual action
--> unit expansion
+-> scale expansion
 -> automation
 -> multi-Hustle portfolio
 -> milestones
@@ -39,7 +39,7 @@ The logger remains local-only. It does not send analytics, create accounts, or c
 
 1. Does the player understand the first manual action without prior explanation?
 2. Is the manual action visibly discoverable without knowing that the Hustle icon is clickable?
-3. Does `Social Media Account / Followers / Post an Affiliate Link / Auto-Poster` read better than old Generator grammar?
+3. Does `Online Rage Farm / Followers / Add Followers / Post a Product Link / Auto-Poster` clearly separate durable scale from the transaction?
 4. Does the first expansion at about 30 seconds feel earned or slow?
 5. Does the next-Hustle horizon create anticipation, confusion, or indifference?
 6. Does Hustle 2 arrive at a satisfying time?
@@ -48,7 +48,7 @@ The logger remains local-only. It does not send analytics, create accounts, or c
 9. After automation, does the Hustle visibly feel self-running even without relying on a badge?
 10. Does the shift from manual-action-primary to expansion-primary feel natural?
 11. Do milestone hints appear at a moment when the player understands why they matter?
-12. Do milestone hints make unit expansion more meaningful?
+12. Do milestone hints make scale expansion more meaningful?
 13. When selected-Hustle context first becomes useful, does it feel informative rather than intrusive?
 14. Does the context surface preserve enough comedy and flavor without overloading the Hustle rows?
 15. On wide desktop, is pinned selected context useful enough to justify its space?
@@ -133,7 +133,7 @@ Prioritize automation as soon as it becomes affordable.
 
 ### Expansion First
 
-Buy units before automation when possible.
+Buy scale before automation when possible.
 
 ### Next Hustle Rush
 
@@ -141,7 +141,7 @@ Save for new Hustles before optimizing old ones.
 
 ### Milestone Rush
 
-Try to reach visible unit thresholds.
+Try to reach visible scale thresholds.
 
 ### Rug Pull Greedy
 
@@ -164,7 +164,7 @@ The playtest summary derives:
 - time Rug Pull is used;
 - Net Worth gain;
 - Buy Max uses;
-- final units;
+- final scale counts;
 - automation states;
 - longest interval without player input.
 
@@ -243,7 +243,7 @@ Check:
 
 ## Current Balance Note
 
-The revised campaign is designed for roughly one to two weeks of intermittent play rather than a single continuous sitting. The current simulator reaches the campaign target in approximately 6.8 to 10.3 days across the tested hourly, four-hour, eight-hour, and morning/evening profiles.
+The revised campaign is designed for roughly a week to ten days of morning/evening intermittent play rather than a single continuous sitting. The current natural prepared simulator reaches the target in about 8.62 days for morning/evening returns; Subscriber Towns is acquired around 5.58 days and automated around 7.10 days before the winning Rug. Four-hour and eight-hour heuristic profiles currently finish around 11.37 and 5.78 days. The one-hour natural heuristic remains slower than the intended envelope and needs strategy-model investigation before another tuning pass.
 
 Do not treat the simulator as final balance doctrine. If human play confirms Rug Pull feels too distant or too frequent, choose one explicit tuning path:
 
@@ -251,7 +251,7 @@ Do not treat the simulator as final balance doctrine. If human play confirms Rug
 - increase mid/late Hustle output;
 - reduce mid/late acquisition costs;
 - make milestone rewards stronger;
-- add a small Leverage purchase proof.
+- test the explicit Net-Worth-reinvestment Leverage strategy.
 
 Do not silently change all of them at once.
 

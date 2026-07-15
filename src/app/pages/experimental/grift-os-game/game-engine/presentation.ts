@@ -38,26 +38,20 @@ export function deriveEnterprisePresentation(
   const activeCount = definitions.filter((definition) => {
     const hustle = state.hustles[definition.id];
 
-    return hustle.units > 0 || hustle.isActive || hustle.isAutomated;
+    return hustle.scaleCount > 0 || hustle.isActive || hustle.isAutomated;
   }).length;
   const automatedCount = definitions.filter((definition) =>
     state.hustles[definition.id].isAutomated
   ).length;
-  const milestoneCount = definitions.reduce(
-    (total, definition) => total + state.hustles[definition.id].reachedMilestones.length,
-    0
-  );
-  const possibleMilestones = definitions.reduce(
-    (total, definition) => total + definition.milestones.length,
-    0
-  );
   const valuationProgress = logarithmicProgress(
     state.peakValuation,
-    rugPullTargetForNetWorth(state.netWorth, definitions)
+    rugPullTargetForNetWorth(state.peakNetWorth, definitions)
   );
   const activeRatio = activeCount / definitions.length;
   const automationRatio = automatedCount / definitions.length;
-  const leverageProgress = possibleMilestones > 0 ? milestoneCount / possibleMilestones : 0;
+  const leverageProgress = definitions.leverage.length > 0
+    ? state.leveragePurchases.length / definitions.leverage.length
+    : 0;
   const metaProgress = logarithmicProgress(
     state.netWorth,
     ENTERPRISE_INTENSITY_CONFIG.netWorthSoftCap
@@ -75,7 +69,7 @@ export function deriveEnterprisePresentation(
     enterpriseStage: stageForIntensity(
       enterpriseIntensity,
       state.peakValuation,
-      rugPullTargetForNetWorth(state.netWorth, definitions)
+      rugPullTargetForNetWorth(state.peakNetWorth, definitions)
     ),
     activeRatio,
     automationRatio,

@@ -46,7 +46,7 @@ Risk: balance complexity.
 
 Translation: make each stratum reset viable and desirable.
 
-Smallest prototype: compare `immediate`, `prepared`, and `deep` Founder Take strategies through the balance simulator before changing code.
+Smallest prototype: compare `immediate`, `prepared`, and `deep` extraction-preparation strategies through the balance simulator before changing code.
 
 Risk: Rug Pull becomes either mandatory too early or unreachable.
 
@@ -54,7 +54,7 @@ Risk: Rug Pull becomes either mandatory too early or unreachable.
 
 Translation: persistent Net Worth becomes a source of explicit strategic choices.
 
-Smallest prototype: one non-spendable display-only benefit remains current; do not add spendable Net Worth until explicitly approved.
+Current baseline: Influence Leverage may sacrifice current Net Worth while peak Net Worth prevents progression regression. The next experiment must test authored deal value and payback without adding another currency.
 
 Risk: introducing a second prestige currency by accident.
 

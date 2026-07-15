@@ -2,7 +2,7 @@ import { INFLUENCE_CONTENT_PACK } from '../empires/influence/content/influence-c
 import {
   INFLUENCE_MECHANICS_PACK,
   InfluenceCampaignStratumId,
-  InfluenceFounderTakeStageId,
+  InfluenceExtractionStageId,
   InfluenceHustleEconomyTuning,
   InfluenceMilestoneMechanics,
 } from '../empires/influence/mechanics/influence-mechanics';
@@ -25,8 +25,8 @@ export interface CampaignStratumTuning {
   rewardShaping: number;
 }
 
-export interface FounderTakeStageTuning {
-  id: InfluenceFounderTakeStageId;
+export interface ExtractionStageTuning {
+  id: InfluenceExtractionStageId;
   name: string;
   description: string;
   takeBonus: number;
@@ -57,12 +57,12 @@ export const GRIFT_OS_CAMPAIGN_STRATA: readonly CampaignStratumTuning[] =
 
 export const GRIFT_OS_PRESTIGE_TUNING = INFLUENCE_MECHANICS_PACK.prestige;
 
-export const GRIFT_OS_FOUNDER_TAKE_TUNING = {
-  baseTake: INFLUENCE_MECHANICS_PACK.founderTake.baseTake,
-  stages: INFLUENCE_MECHANICS_PACK.founderTake.stages.map((stage) => ({
+export const GRIFT_OS_EXTRACTION_TUNING = {
+  baseTake: INFLUENCE_MECHANICS_PACK.extraction.baseTake,
+  stages: INFLUENCE_MECHANICS_PACK.extraction.stages.map((stage) => ({
     ...stage,
-    ...INFLUENCE_CONTENT_PACK.founderTake[stage.id],
-  })) as readonly FounderTakeStageTuning[],
+    ...INFLUENCE_CONTENT_PACK.extraction[stage.id],
+  })) as readonly ExtractionStageTuning[],
 } as const;
 
 function requiredMilestoneContent(milestoneId: string) {

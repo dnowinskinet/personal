@@ -125,8 +125,8 @@ async function checkStyleBoundaries() {
       importantBaseline: 0,
     },
     {
-      name: 'Influence Founder Take component styles',
-      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'rug-pull', 'founder-take', 'influence-founder-take.component.scss'),
+      name: 'Influence extraction component styles',
+      path: path.join(featureRoot, 'empires', 'influence', 'renderer', 'rug-pull', 'extraction', 'influence-extraction.component.scss'),
       importantBaseline: 0,
     },
   ];

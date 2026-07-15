@@ -19,16 +19,18 @@ interface LegacyHustlePresentation {
 
 // Visual/audio ownership is intentionally unchanged until its approved migration phase.
 const LEGACY_HUSTLE_PRESENTATION: Readonly<Record<HustleId, LegacyHustlePresentation>> = {
-  'troll-network': appearance('signal', 'creator-scroll'),
-  'podcast-network': appearance('broadcast', 'member-chime'),
-  'culture-war-media': appearance('outrage', 'fulfillment-line'),
-  'masterclass-business': appearance('funnel', 'studio-clock'),
-  'manifesto-imprint': appearance('manifesto', 'venue-crowd'),
-  'founder-retreat-circuit': appearance('summit', 'inner-circle'),
-  'ai-venture': appearance('ai', 'donation-counter'),
-  'venture-portfolio': appearance('fund', 'token-ticks'),
-  'media-holdings': appearance('media', 'network-bed'),
-  'sovereign-network': appearance('sovereignty', 'platform-exchange'),
+  'online-rage-farm': appearance('signal', 'creator-scroll'),
+  'paid-friend-club': appearance('broadcast', 'member-chime'),
+  'autograph-factory': appearance('outrage', 'fulfillment-line'),
+  'paid-shoutout-studio': appearance('funnel', 'studio-clock'),
+  'outrage-podcast': appearance('broadcast', 'studio-clock'),
+  'get-rich-books': appearance('manifesto', 'inner-circle'),
+  'paid-endorsement-racket': appearance('ai', 'donation-counter'),
+  'vip-experience-tour': appearance('summit', 'venue-crowd'),
+  'success-university': appearance('fund', 'inner-circle'),
+  'mlm-ambassador-program': appearance('signal', 'token-ticks'),
+  'debt-club': appearance('media', 'network-bed'),
+  'subscriber-towns': appearance('sovereignty', 'platform-exchange'),
 };
 
 export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] & GameMechanics = Object.assign(
@@ -44,7 +46,7 @@ export const HUSTLE_DEFINITIONS: readonly HustleDefinition[] & GameMechanics = O
     leverage: INFLUENCE_ENGINE_MECHANICS.leverage,
     campaignStrata: INFLUENCE_ENGINE_MECHANICS.campaignStrata,
     prestige: INFLUENCE_ENGINE_MECHANICS.prestige,
-    founderTake: INFLUENCE_ENGINE_MECHANICS.founderTake,
+    extraction: INFLUENCE_ENGINE_MECHANICS.extraction,
   }
 );
 
@@ -53,8 +55,8 @@ function milestoneSet(hustleId: HustleId): HustleDefinition['milestones'] {
 
   return GRIFT_OS_MILESTONE_TUNING[hustleId].map((milestone) => ({
     id: milestone.id,
-    requiredUnits: milestone.requiredUnits,
-    name: `${milestone.requiredUnits} ${unitPlural}`,
+    requiredScaleCount: milestone.requiredScaleCount,
+    name: `${milestone.requiredScaleCount} ${unitPlural}`,
     description: milestone.description,
     reward: milestoneReward(hustleId, milestone),
   }));
@@ -65,7 +67,7 @@ function milestoneReward(
   milestone: (typeof GRIFT_OS_MILESTONE_TUNING)[HustleId][number]
 ): ModifierDefinition {
   return {
-    id: `${hustleId}-units-${milestone.requiredUnits}-${milestone.kind}`,
+    id: `${hustleId}-scale-${milestone.requiredScaleCount}-${milestone.kind}`,
     label: milestone.label,
     description: milestone.rewardDescription,
     scope: 'hustle',

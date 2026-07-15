@@ -1,4 +1,4 @@
-import { FounderTakeStatus, founderTakeStatus } from '../content/founder-take';
+import { ExtractionStatus, extractionStatus } from '../content/extraction';
 import { createRugPullPreview, RugPullPreview } from '../content/rug-pull-preview';
 import {
   automationCost,
@@ -41,7 +41,7 @@ import {
 export interface HustleViewModel {
   definition: HustleDefinition;
   id: HustleId;
-  units: number;
+  scaleCount: number;
   unitCountLabel: string;
   isActive: boolean;
   isAutomated: boolean;
@@ -136,14 +136,14 @@ export interface GamePresentationSnapshot {
   rugPullTargetLabel: string;
   rugPullWealthAdvantageLabel: string;
   rugPullRecoveryMultiplierLabel: string;
-  founderTake: FounderTakeStatus;
-  founderTakeRateLabel: string;
-  founderTakeNextCostLabel: string;
-  founderTakeDurationLabel: string;
-  founderTakeRemainingLabel: string;
-  founderTakeOutputLabel: string;
-  founderTakeNextOutputLabel: string;
-  founderTakeProgressScale: string;
+  extraction: ExtractionStatus;
+  extractionRateLabel: string;
+  extractionNextCostLabel: string;
+  extractionDurationLabel: string;
+  extractionRemainingLabel: string;
+  extractionOutputLabel: string;
+  extractionNextOutputLabel: string;
+  extractionProgressScale: string;
   resetHustleCount: number;
   resetAutomationCount: number;
   resetMilestoneCount: number;
@@ -196,16 +196,16 @@ export class GamePresentationFacade {
   private createSnapshot(input: GamePresentationInput): GamePresentationSnapshot {
     const { state } = input;
     const rugPullPreview = createRugPullPreview(state);
-    const founderTake = founderTakeStatus(state);
+    const extraction = extractionStatus(state);
     const enterprise = deriveEnterprisePresentation(state, this.mechanics);
     const hasAnyAutomation = this.definitions.some((definition) => state.hustles[definition.id].isAutomated);
     const hasAnyMilestone = this.definitions.some((definition) => state.hustles[definition.id].reachedMilestones.length > 0);
     const hustleRows = this.createHustleRows(input, hasAnyAutomation, hasAnyMilestone);
-    const visibleHustleRows = hustleRows.filter((row) => row.units > 0);
+    const visibleHustleRows = hustleRows.filter((row) => row.scaleCount > 0);
     const selectedHustle = hustleRows.find((row) => row.id === input.selectedHustleId) ?? hustleRows[0];
     const ownedHustleCount = visibleHustleRows.length;
     const hasExpandedBeyondInitialState = this.definitions.some((definition) =>
-      state.hustles[definition.id].units > definition.initialUnits
+      state.hustles[definition.id].scaleCount > definition.initialScaleCount
     );
     const availableTabs = this.tabs.filter((tab) => this.isTabAvailable(tab.id, state, rugPullPreview));
     const nextHustleHorizon = this.createHorizon(state);
@@ -245,17 +245,17 @@ export class GamePresentationFacade {
       rugPullTargetLabel: formatMoney(rugPullPreview.requiredPeakValuation, 'headline'),
       rugPullWealthAdvantageLabel: `Up to +${formatPercentage(rugPullPreview.wealthAdvantagePercent)} established next-run output`,
       rugPullRecoveryMultiplierLabel: formatMultiplier(rugPullPreview.recoveryMultiplier),
-      founderTake,
-      founderTakeRateLabel: formatPercentage(founderTake.takeRate * 100),
-      founderTakeNextCostLabel: formatMoney(founderTake.nextStageCost, 'transaction'),
-      founderTakeDurationLabel: founderTake.nextStage ? formatElapsed(founderTake.nextStage.durationMs) : '',
-      founderTakeRemainingLabel: formatElapsed(founderTake.remainingMs),
-      founderTakeOutputLabel: `${formatPercentage(founderTake.outputRetention * 100)} output retained`,
-      founderTakeNextOutputLabel: founderTake.nextStage
-        ? `${formatPercentage(founderTake.nextStage.outputRetention * 100)} output retained`
+      extraction,
+      extractionRateLabel: formatPercentage(extraction.takeRate * 100),
+      extractionNextCostLabel: formatMoney(extraction.nextStageCost, 'transaction'),
+      extractionDurationLabel: extraction.nextStage ? formatElapsed(extraction.nextStage.durationMs) : '',
+      extractionRemainingLabel: formatElapsed(extraction.remainingMs),
+      extractionOutputLabel: `${formatPercentage(extraction.outputRetention * 100)} output retained`,
+      extractionNextOutputLabel: extraction.nextStage
+        ? `${formatPercentage(extraction.nextStage.outputRetention * 100)} output retained`
         : '',
-      founderTakeProgressScale: founderTake.activeStage && founderTake.activeStage.durationMs > 0
-        ? Math.min(1, founderTake.progressMs / founderTake.activeStage.durationMs).toFixed(4)
+      extractionProgressScale: extraction.activeStage && extraction.activeStage.durationMs > 0
+        ? Math.min(1, extraction.progressMs / extraction.activeStage.durationMs).toFixed(4)
         : '0',
       resetHustleCount: visibleHustleRows.length,
       resetAutomationCount: hustleRows.filter((row) => row.isAutomated).length,
@@ -269,13 +269,13 @@ export class GamePresentationFacade {
   private createHorizon(state: GriftOsGameState): HustleHorizonView | null {
     const definition = [...this.definitions]
       .sort((first, second) => first.order - second.order)
-      .find((candidate) => state.hustles[candidate.id].units <= 0);
+      .find((candidate) => state.hustles[candidate.id].scaleCount <= 0);
 
     if (!definition) {
       return null;
     }
 
-    const cost = nextHustleCost(definition, state.hustles[definition.id].units, state, this.mechanics);
+    const cost = nextHustleCost(definition, state.hustles[definition.id].scaleCount, state, this.mechanics);
     return {
       definition,
       id: definition.id,
@@ -287,7 +287,7 @@ export class GamePresentationFacade {
 
   private createLeverageDeals(state: GriftOsGameState): readonly LeverageDealView[] {
     return this.leverageDefinitions
-      .filter((definition) => state.netWorth >= definition.unlockNetWorth)
+      .filter((definition) => state.peakNetWorth >= definition.unlockNetWorth)
       .map((definition) => {
         const isPurchased = state.leveragePurchases.includes(definition.id);
         const isUnlocked = isLeverageUnlocked(state, definition);
@@ -310,9 +310,9 @@ export class GamePresentationFacade {
                 ? `Establish ${missingOwnedCount} linked Hustle${missingOwnedCount === 1 ? '' : 's'}`
                 : missingAutomationCount > 0
                   ? `Automate ${missingAutomationCount} linked Hustle${missingAutomationCount === 1 ? '' : 's'}`
-                  : isUnlocked && state.valuation < definition.cost
-                    ? `Need ${formatMoney(definition.cost - state.valuation, 'transaction')} more`
-                    : `Invest ${formatMoney(definition.cost, 'transaction')} Valuation`,
+                  : isUnlocked && state.netWorth < definition.cost
+                    ? `Need ${formatMoney(definition.cost - state.netWorth, 'net-worth')} more Net Worth`
+                    : `Sacrifice ${formatMoney(definition.cost, 'net-worth')} Net Worth`,
           effectLabels: definition.modifiers.map((modifier) => modifier.label),
         };
       });
@@ -328,10 +328,10 @@ export class GamePresentationFacade {
       const cadenceSeconds = effectiveCadenceSeconds(input.state, this.mechanics, definition.id);
       const cadenceMs = cadenceSeconds * 1000;
       const progressPercent = hustle.isActive ? Math.min(100, (hustle.progressMs / cadenceMs) * 100) : 0;
-      const nextCost = nextHustleCost(definition, hustle.units, input.state, this.mechanics);
+      const nextCost = nextHustleCost(definition, hustle.scaleCount, input.state, this.mechanics);
       const buyMaxCount = maxAffordableQuantity(
         definition,
-        hustle.units,
+        hustle.scaleCount,
         input.state.valuation,
         input.state,
         this.mechanics
@@ -340,19 +340,21 @@ export class GamePresentationFacade {
       const nextMilestone = definition.milestones.find((milestone) =>
         !hustle.reachedMilestones.includes(milestone.id)
       );
-      const remainingUnits = nextMilestone ? nextMilestone.requiredUnits - hustle.units : Infinity;
+      const remainingScaleCount = nextMilestone
+        ? nextMilestone.requiredScaleCount - hustle.scaleCount
+        : Infinity;
       const isNearMilestone = nextMilestone
-        ? remainingUnits <= Math.max(2, Math.ceil(nextMilestone.requiredUnits * 0.2))
+        ? remainingScaleCount <= Math.max(2, Math.ceil(nextMilestone.requiredScaleCount * 0.2))
         : false;
-      const automationEligible = hustle.units > 0 && !hustle.isAutomated;
+      const automationEligible = hustle.scaleCount > 0 && !hustle.isAutomated;
       const canAutomate = canBuyAutomation(input.state, this.mechanics, definition.id);
       const modifierSummaryLabel = this.modifierSummaryLabel(input.state, definition.id);
 
       return {
         definition,
         id: definition.id,
-        units: hustle.units,
-        unitCountLabel: `${formatCount(hustle.units)} ${unitLabel(definition, hustle.units)}`,
+        scaleCount: hustle.scaleCount,
+        unitCountLabel: scaleCountLabel(definition, hustle.scaleCount),
         isActive: hustle.isActive,
         isAutomated: hustle.isAutomated,
         progressPercent,
@@ -380,10 +382,10 @@ export class GamePresentationFacade {
         manualActiveLabel: `${definition.manualActionLabel}...`,
         buyMaxLabel: buyMaxCount > 0 ? `Buy +${formatCount(buyMaxCount)}` : 'Buy Max',
         buyMaxCount,
-        canManualAction: hustle.units > 0 && !hustle.isActive && !hustle.isAutomated,
+        canManualAction: hustle.scaleCount > 0 && !hustle.isActive && !hustle.isAutomated,
         canBuyOne: input.state.valuation >= hustleCostForQuantity(
           definition,
-          hustle.units,
+          hustle.scaleCount,
           1,
           input.state,
           this.mechanics
@@ -391,23 +393,23 @@ export class GamePresentationFacade {
         canBuyMax: buyMaxCount > 0,
         canBuyAutomation: canAutomate,
         automationEligible,
-        isPlayerDependent: hustle.units > 0 && !hustle.isAutomated,
+        isPlayerDependent: hustle.scaleCount > 0 && !hustle.isAutomated,
         isSettledAutomated: hustle.isAutomated && !canAutomate,
         hasContextualAttention: definition.id === input.selectedHustleId || isNearMilestone,
         showAutomationState: hustle.isAutomated || (automationEligible && (hasAnyAutomation || canAutomate)),
         showAutomationOpportunity: automationEligible && canAutomate,
-        showNextMilestone: hustle.units > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone),
+        showNextMilestone: hustle.scaleCount > 0 && nextMilestone !== undefined && (hasAnyMilestone || isNearMilestone),
         showBuyMax: buyMaxCount >= 2,
         showModifierSummary: modifierSummaryLabel.length > 0,
         nextMilestoneLabel: nextMilestone
-          ? `${formatCount(nextMilestone.requiredUnits)} ${unitLabel(definition, nextMilestone.requiredUnits)}`
+          ? scaleCountLabel(definition, nextMilestone.requiredScaleCount)
           : 'All current milestones reached',
-        nextMilestoneCompactLabel: nextMilestone ? `Next ${formatCount(nextMilestone.requiredUnits)}` : 'Complete',
+        nextMilestoneCompactLabel: nextMilestone ? `Next ${formatCount(nextMilestone.requiredScaleCount)}` : 'Complete',
         nextMilestoneDescription: nextMilestone
           ? `${nextMilestone.reward.label} · ${nextMilestone.description ?? 'Milestone effect'}`
           : 'Future milestone tuning can extend this track.',
         milestoneProgressScale: nextMilestone
-          ? Math.min(1, Math.max(0, hustle.units / nextMilestone.requiredUnits)).toFixed(4)
+          ? Math.min(1, Math.max(0, hustle.scaleCount / nextMilestone.requiredScaleCount)).toFixed(4)
           : '1',
         modifierSummaryLabel,
       };
@@ -436,15 +438,17 @@ export class GamePresentationFacade {
     return this.leverageDefinitions.some((definition) =>
       state.leveragePurchases.includes(definition.id) ||
       (
-        state.netWorth >= definition.unlockNetWorth &&
-        definition.requiredOwnedHustles.every((hustleId) => state.hustles[hustleId].units > 0)
+        state.peakNetWorth >= definition.unlockNetWorth &&
+        definition.requiredOwnedHustles.every((hustleId) => state.hustles[hustleId].scaleCount > 0)
       )
     );
   }
 }
 
-function unitLabel(definition: HustleDefinition, units: number): string {
-  return units === 1 ? definition.unitSingular : definition.unitPlural;
+function scaleCountLabel(definition: HustleDefinition, scaleCount: number): string {
+  const displayedCount = scaleCount * (definition.scaleDisplayMultiplier ?? 1);
+  const unitLabel = displayedCount === 1 ? definition.unitSingular : definition.unitPlural;
+  return `${formatCount(displayedCount)} ${unitLabel}`;
 }
 
 function formatSeconds(value: number): string {

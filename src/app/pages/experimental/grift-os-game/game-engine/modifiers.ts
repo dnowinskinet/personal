@@ -4,7 +4,7 @@ import {
   ModifierKind,
   ModifierScope,
 } from './types';
-import { founderTakeOutputRetention } from './founder-take';
+import { extractionOutputRetention } from './extraction';
 import {
   GameMechanics,
   HustleMechanicsDefinition,
@@ -106,13 +106,13 @@ export function collectActiveModifiers(
   const leverageModifiers = mechanics.leverage
     .filter((definition) => state.leveragePurchases.includes(definition.id))
     .flatMap((definition) => definition.modifiers);
-  const founderTakeRetention = founderTakeOutputRetention(state, mechanics);
-  const founderTakeModifiers: MechanicalModifierDefinition[] = founderTakeRetention < 1
+  const extractionRetention = extractionOutputRetention(state, mechanics);
+  const extractionModifiers: MechanicalModifierDefinition[] = extractionRetention < 1
     ? [{
-        id: 'founder-take-output-diversion',
+        id: 'extraction-output-diversion',
         scope: 'temporary',
         kind: 'output',
-        value: founderTakeRetention - 1,
+        value: extractionRetention - 1,
         source: 'system',
       }]
     : [];
@@ -120,7 +120,7 @@ export function collectActiveModifiers(
   return [
     ...milestoneModifiers,
     ...leverageModifiers,
-    ...founderTakeModifiers,
+    ...extractionModifiers,
     ...mechanics.map((definition) => createMetaOutputModifier(state.netWorth, definition, mechanics)),
   ].filter((modifier) => Number.isFinite(modifier.value) && modifier.value !== 0);
 }

@@ -32,7 +32,7 @@ export type GameEvent =
     }
   | {
       type: 'purchase.completed' | 'purchase.denied';
-      target: 'hustle' | 'automation' | 'leverage' | 'founder-take';
+      target: 'hustle' | 'automation' | 'leverage' | 'extraction';
       hustleId?: HustleId;
       totalCost?: number;
     }

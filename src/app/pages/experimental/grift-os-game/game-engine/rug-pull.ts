@@ -1,5 +1,5 @@
 import { createInitialGameState } from './economy';
-import { founderTakeRate } from './founder-take';
+import { extractionRate } from './extraction';
 import { GameMechanics, GameUnlock } from './mechanics';
 import { wealthAdvantageMultiplier } from './modifiers';
 import {
@@ -21,7 +21,7 @@ export interface RugPullMechanicsPreview {
   recoveryMultiplier: number;
   newlyUnlocked: readonly GameUnlock[];
   campaignStratumId: string;
-  founderTakeRate: number;
+  extractionRate: number;
   isAvailable: boolean;
 }
 
@@ -38,18 +38,18 @@ export function rugPullStateForValuation(
     return state.rugPullState;
   }
 
-  return state.peakValuation >= rugPullTargetForNetWorth(state.netWorth, mechanics)
+  return state.peakValuation >= rugPullTargetForNetWorth(state.peakNetWorth, mechanics)
     ? 'available'
     : 'unavailable';
 }
 
 export function projectedNetWorthGain(
   peakValuation: number,
-  currentNetWorth: number,
+  peakNetWorth: number,
   takeRate: number,
   mechanics: GameMechanics
 ): number {
-  const stratum = campaignStratumForNetWorth(currentNetWorth, mechanics);
+  const stratum = campaignStratumForNetWorth(peakNetWorth, mechanics);
 
   if (!Number.isFinite(peakValuation) || peakValuation < stratum.rugPullTarget) {
     return 0;
@@ -65,18 +65,19 @@ export function createRugPullPreview(
   state: GriftOsGameState,
   mechanics: GameMechanics
 ): RugPullMechanicsPreview {
-  const requiredPeakValuation = rugPullTargetForNetWorth(state.netWorth, mechanics);
-  const takeRate = founderTakeRate(state, mechanics);
+  const requiredPeakValuation = rugPullTargetForNetWorth(state.peakNetWorth, mechanics);
+  const takeRate = extractionRate(state, mechanics);
   const projectedGain = projectedNetWorthGain(
     state.peakValuation,
-    state.netWorth,
+    state.peakNetWorth,
     takeRate,
     mechanics
   );
   const resultingNetWorth = state.netWorth + projectedGain;
   const resultingMultiplier = wealthAdvantageMultiplier(resultingNetWorth, mechanics);
   const currentMultiplier = wealthAdvantageMultiplier(state.netWorth, mechanics);
-  const stratum = campaignStratumForNetWorth(state.netWorth, mechanics);
+  const resultingPeakNetWorth = Math.max(state.peakNetWorth, resultingNetWorth);
+  const stratum = campaignStratumForNetWorth(state.peakNetWorth, mechanics);
 
   return {
     state: rugPullStateForValuation(state, mechanics),
@@ -88,9 +89,9 @@ export function createRugPullPreview(
     requiredPeakValuation,
     valuationRemaining: Math.max(0, requiredPeakValuation - state.peakValuation),
     recoveryMultiplier: resultingMultiplier / Math.max(1, currentMultiplier),
-    newlyUnlocked: newlyUnlockedMechanics(state.netWorth, resultingNetWorth, mechanics),
+    newlyUnlocked: newlyUnlockedMechanics(state.peakNetWorth, resultingPeakNetWorth, mechanics),
     campaignStratumId: stratum.id,
-    founderTakeRate: takeRate,
+    extractionRate: takeRate,
     isAvailable: projectedGain > 0,
   };
 }
@@ -101,8 +102,8 @@ export function commitRugPull(
 ): RugPullCommitResult {
   const netWorthGained = projectedNetWorthGain(
     state.peakValuation,
-    state.netWorth,
-    founderTakeRate(state, mechanics),
+    state.peakNetWorth,
+    extractionRate(state, mechanics),
     mechanics
   );
 
@@ -120,7 +121,8 @@ export function commitRugPull(
     state: createInitialGameState(
       mechanics,
       state.netWorth + netWorthGained,
-      state.rugPullCount + 1
+      state.rugPullCount + 1,
+      Math.max(state.peakNetWorth, state.netWorth + netWorthGained)
     ),
     netWorthGained,
   };

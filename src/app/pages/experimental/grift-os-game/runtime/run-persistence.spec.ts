@@ -4,8 +4,10 @@ import {
   GRIFT_META_STORAGE_KEY,
   GRIFT_RUN_STORAGE_KEY,
   LEGACY_GRIFT_META_STORAGE_KEY,
+  LEGACY_GRIFT_META_V2_STORAGE_KEY,
   LEGACY_GRIFT_RUN_STORAGE_KEY,
-  GriftMetaSaveV2,
+  LEGACY_GRIFT_RUN_V2_STORAGE_KEY,
+  GriftMetaSaveV3,
   GriftPersistence,
   RuntimeStorage,
 } from './run-persistence';
@@ -23,7 +25,7 @@ class MemoryStorage implements RuntimeStorage {
 }
 
 describe('GriftPersistence', () => {
-  it('writes the v2 single-active-run envelope, mirrors v1, and throttles run saves', () => {
+  it('writes the v3 single-active-run envelope and throttles run saves', () => {
     const storage = new MemoryStorage();
     let now = 10_000;
     const persistence = new GriftPersistence(
@@ -34,91 +36,119 @@ describe('GriftPersistence', () => {
     );
     const state = createInitialGameState(INFLUENCE_ENGINE_MECHANICS);
 
-    persistence.saveRun(state, 'troll-network');
+    persistence.saveRun(state, 'online-rage-farm');
     const firstSave = storage.getItem(GRIFT_RUN_STORAGE_KEY);
     expect(JSON.parse(firstSave ?? '{}')).toEqual(jasmine.objectContaining({
-      version: 2,
+      version: 3,
       empireId: 'influence',
-      selectedHustleId: 'troll-network',
+      selectedHustleId: 'online-rage-farm',
     }));
-    expect(JSON.parse(storage.getItem(LEGACY_GRIFT_RUN_STORAGE_KEY) ?? '{}').version).toBe(1);
 
     now = 11_000;
-    persistence.saveRun({ ...state, valuation: 12 }, 'troll-network');
+    persistence.saveRun({ ...state, valuation: 12 }, 'online-rage-farm');
     expect(storage.getItem(GRIFT_RUN_STORAGE_KEY)).toBe(firstSave);
 
     now = 12_000;
-    persistence.saveRun({ ...state, valuation: 12 }, 'troll-network');
+    persistence.saveRun({ ...state, valuation: 12 }, 'online-rage-farm');
     expect(JSON.parse(storage.getItem(GRIFT_RUN_STORAGE_KEY) ?? '{}').state.valuation).toBe(12);
-    expect(JSON.parse(storage.getItem(LEGACY_GRIFT_RUN_STORAGE_KEY) ?? '{}').state.valuation).toBe(12);
 
-    persistence.saveMeta({ netWorth: 25, rugPullCount: 2 });
+    persistence.saveMeta({ netWorth: 25, peakNetWorth: 100, rugPullCount: 2 });
     expect(JSON.parse(storage.getItem(GRIFT_META_STORAGE_KEY) ?? '{}')).toEqual({
-      version: 2,
+      version: 3,
       netWorth: 25,
+      peakNetWorth: 100,
       unlockedEmpireIds: ['influence'],
       exitCountsByEmpire: { influence: 2 },
     });
-    expect(JSON.parse(storage.getItem(LEGACY_GRIFT_META_STORAGE_KEY) ?? '{}')).toEqual({
-      netWorth: 25,
-      rugPullCount: 2,
-    });
+    expect(storage.getItem(LEGACY_GRIFT_META_V2_STORAGE_KEY)).toBeNull();
+    expect(storage.getItem(LEGACY_GRIFT_META_STORAGE_KEY)).toBeNull();
   });
 
-  it('migrates v1 meta and run data into v2 without deleting or rewriting the legacy records', () => {
+  it('migrates v2 wealth/history and resets the incompatible ten-Hustle run without rewriting it', () => {
     const storage = new MemoryStorage();
-    const state = {
-      ...createInitialGameState(INFLUENCE_ENGINE_MECHANICS),
-      valuation: 123,
+    const legacyMeta = JSON.stringify({
+      version: 2,
       netWorth: 50,
-      rugPullCount: 3,
-    };
-    const legacyMeta = JSON.stringify({ netWorth: 50, rugPullCount: 3 });
-    const legacyRun = JSON.stringify({
-      version: 1,
-      savedAt: 4_000,
-      selectedHustleId: 'troll-network',
-      state,
+      unlockedEmpireIds: ['influence'],
+      exitCountsByEmpire: { influence: 3 },
     });
-    storage.setItem(LEGACY_GRIFT_META_STORAGE_KEY, legacyMeta);
-    storage.setItem(LEGACY_GRIFT_RUN_STORAGE_KEY, legacyRun);
-    storage.setItem(GRIFT_RUN_STORAGE_KEY, '{bad json');
+    const legacyRun = JSON.stringify({
+      version: 2,
+      savedAt: 4_000,
+      empireId: 'influence',
+      selectedHustleId: 'troll-network',
+      state: {
+        valuation: 123,
+        netWorth: 50,
+        hustles: { 'troll-network': { units: 99, isAutomated: true } },
+      },
+    });
+    storage.setItem(LEGACY_GRIFT_META_V2_STORAGE_KEY, legacyMeta);
+    storage.setItem(LEGACY_GRIFT_RUN_V2_STORAGE_KEY, legacyRun);
     const persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
 
     const meta = persistence.loadMeta();
     const run = persistence.loadRun(meta);
 
     expect(meta).toEqual({
-      version: 2,
+      version: 3,
       netWorth: 50,
+      peakNetWorth: 50,
       unlockedEmpireIds: ['influence'],
       exitCountsByEmpire: { influence: 3 },
     });
     expect(run).toEqual(jasmine.objectContaining({
-      version: 2,
+      version: 3,
       empireId: 'influence',
       savedAt: 4_000,
-      selectedHustleId: 'troll-network',
+      selectedHustleId: 'online-rage-farm',
     }));
-    expect(run?.state.valuation).toBe(123);
-    expect(storage.getItem(LEGACY_GRIFT_META_STORAGE_KEY)).toBe(legacyMeta);
-    expect(storage.getItem(LEGACY_GRIFT_RUN_STORAGE_KEY)).toBe(legacyRun);
-    expect(JSON.parse(storage.getItem(GRIFT_META_STORAGE_KEY) ?? '{}').version).toBe(2);
-    expect(JSON.parse(storage.getItem(GRIFT_RUN_STORAGE_KEY) ?? '{}').empireId).toBe('influence');
+    expect(run?.state.valuation).toBe(0);
+    expect(run?.state.netWorth).toBe(50);
+    expect(run?.state.peakNetWorth).toBe(50);
+    expect(run?.state.hustles['online-rage-farm'].scaleCount).toBe(1);
+    expect(run?.state.hustles['online-rage-farm'].isAutomated).toBeFalse();
+    expect(storage.getItem(LEGACY_GRIFT_META_V2_STORAGE_KEY)).toBe(legacyMeta);
+    expect(storage.getItem(LEGACY_GRIFT_RUN_V2_STORAGE_KEY)).toBe(legacyRun);
   });
 
-  it('reconciles damaged v2 run data against mechanics and per-empire meta', () => {
+  it('migrates v1 meta when v2 is unavailable and preserves its exit history', () => {
+    const storage = new MemoryStorage();
+    storage.setItem(LEGACY_GRIFT_META_STORAGE_KEY, JSON.stringify({
+      netWorth: 10,
+      rugPullCount: 2,
+    }));
+    storage.setItem(LEGACY_GRIFT_RUN_STORAGE_KEY, JSON.stringify({
+      version: 1,
+      savedAt: 5_000,
+      state: { hustles: {} },
+    }));
+    const persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
+    const meta = persistence.loadMeta();
+
+    expect(meta).toEqual({
+      version: 3,
+      netWorth: 10,
+      peakNetWorth: 10,
+      unlockedEmpireIds: ['influence'],
+      exitCountsByEmpire: { influence: 2 },
+    });
+    expect(persistence.loadRun(meta)?.state.rugPullCount).toBe(2);
+  });
+
+  it('reconciles damaged v3 run data against mechanics and meta high-water state', () => {
     const storage = new MemoryStorage();
     const initial = createInitialGameState(INFLUENCE_ENGINE_MECHANICS);
-    const meta: GriftMetaSaveV2 = {
-      version: 2,
-      netWorth: 50,
+    const meta: GriftMetaSaveV3 = {
+      version: 3,
+      netWorth: 25,
+      peakNetWorth: 50,
       unlockedEmpireIds: ['influence'],
       exitCountsByEmpire: { influence: 3 },
     };
     storage.setItem(GRIFT_META_STORAGE_KEY, JSON.stringify(meta));
     storage.setItem(GRIFT_RUN_STORAGE_KEY, JSON.stringify({
-      version: 2,
+      version: 3,
       savedAt: 4_000,
       empireId: 'influence',
       selectedHustleId: 'unknown-hustle',
@@ -127,68 +157,50 @@ describe('GriftPersistence', () => {
         valuation: -20,
         peakValuation: -10,
         netWorth: 5,
+        peakNetWorth: 10,
         rugPullCount: 1,
         leveragePurchases: ['unknown-leverage'],
         hustles: {
           ...initial.hustles,
-          'troll-network': {
-            ...initial.hustles['troll-network'],
-            units: -3,
+          'online-rage-farm': {
+            ...initial.hustles['online-rage-farm'],
+            scaleCount: -3,
             reachedMilestones: ['unknown-milestone'],
           },
         },
       },
     }));
     const persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
-    const restoredMeta = persistence.loadMeta();
-    const restored = persistence.loadRun(restoredMeta);
+    const restored = persistence.loadRun(persistence.loadMeta());
 
-    expect(restored?.selectedHustleId).toBe('troll-network');
+    expect(restored?.selectedHustleId).toBe('online-rage-farm');
     expect(restored?.state.valuation).toBe(0);
     expect(restored?.state.peakValuation).toBe(0);
-    expect(restored?.state.netWorth).toBe(50);
+    expect(restored?.state.netWorth).toBe(5);
+    expect(restored?.state.peakNetWorth).toBe(50);
     expect(restored?.state.rugPullCount).toBe(3);
     expect(restored?.state.leveragePurchases).toEqual([]);
-    expect(restored?.state.hustles['troll-network'].units).toBe(0);
-    expect(restored?.state.hustles['troll-network'].reachedMilestones).toEqual([]);
+    expect(restored?.state.hustles['online-rage-farm'].scaleCount).toBe(0);
+    expect(restored?.state.hustles['online-rage-farm'].reachedMilestones).toEqual([]);
   });
 
-  it('prefers valid v2 data and falls back safely to v1 when v2 is corrupt', () => {
+  it('fails safely when every save version is corrupt or storage is unavailable', () => {
     const storage = new MemoryStorage();
-    storage.setItem(LEGACY_GRIFT_META_STORAGE_KEY, JSON.stringify({
-      netWorth: 10,
-      rugPullCount: 1,
-    }));
-    storage.setItem(GRIFT_META_STORAGE_KEY, JSON.stringify({
-      version: 2,
-      netWorth: 20,
-      unlockedEmpireIds: ['influence'],
-      exitCountsByEmpire: { influence: 2 },
-    }));
-    let persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
-
-    expect(persistence.loadMeta().netWorth).toBe(20);
-
-    storage.setItem(GRIFT_META_STORAGE_KEY, '{bad json');
-    persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
-    expect(persistence.loadMeta()).toEqual({
-      version: 2,
-      netWorth: 10,
-      unlockedEmpireIds: ['influence'],
-      exitCountsByEmpire: { influence: 1 },
-    });
-  });
-
-  it('fails safely when storage is unavailable or both save versions are corrupt', () => {
-    const storage = new MemoryStorage();
-    storage.setItem(GRIFT_META_STORAGE_KEY, '{bad json');
-    storage.setItem(GRIFT_RUN_STORAGE_KEY, '{bad json');
-    storage.setItem(LEGACY_GRIFT_META_STORAGE_KEY, '{bad json');
-    storage.setItem(LEGACY_GRIFT_RUN_STORAGE_KEY, '{bad json');
+    for (const key of [
+      GRIFT_META_STORAGE_KEY,
+      GRIFT_RUN_STORAGE_KEY,
+      LEGACY_GRIFT_META_V2_STORAGE_KEY,
+      LEGACY_GRIFT_RUN_V2_STORAGE_KEY,
+      LEGACY_GRIFT_META_STORAGE_KEY,
+      LEGACY_GRIFT_RUN_STORAGE_KEY,
+    ]) {
+      storage.setItem(key, '{bad json');
+    }
     const persistence = new GriftPersistence(storage, INFLUENCE_ENGINE_MECHANICS);
-    const emptyMeta: GriftMetaSaveV2 = {
-      version: 2,
+    const emptyMeta: GriftMetaSaveV3 = {
+      version: 3,
       netWorth: 0,
+      peakNetWorth: 0,
       unlockedEmpireIds: ['influence'],
       exitCountsByEmpire: { influence: 0 },
     };

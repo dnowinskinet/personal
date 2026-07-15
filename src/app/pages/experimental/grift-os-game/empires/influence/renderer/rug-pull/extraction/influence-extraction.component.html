@@ -1,0 +1,41 @@
+<section class="grift-extraction" aria-labelledby="grift-extraction-title">
+  <div class="grift-extraction-summary">
+    <div>
+      <p id="grift-extraction-title">Your Take</p>
+      <strong>{{ view.extractionRateLabel }}</strong>
+    </div>
+    <span>Peak Valuation × Your Take × extraction shaping becomes personal Net Worth.</span>
+  </div>
+
+  @if (view.extraction.isPreparing && view.extraction.activeStage; as stage) {
+    <div class="grift-extraction-preparation" aria-live="polite">
+      <div>
+        <p>{{ stage.name }} in progress</p>
+        <span>{{ view.extractionRemainingLabel }} remaining · {{ view.extractionOutputLabel }}</span>
+      </div>
+      <div class="grift-extraction-progress" aria-hidden="true">
+        <span [style.transform]="'scaleX(' + view.extractionProgressScale + ')'" ></span>
+      </div>
+    </div>
+  } @else if (view.extraction.nextStage; as stage) {
+    <div class="grift-extraction-opportunity">
+      <div>
+        <p>{{ stage.name }}</p>
+        <span>{{ stage.description }}</span>
+        <small>
+          {{ view.extractionDurationLabel }} commitment · {{ view.extractionNextOutputLabel }}
+        </small>
+      </div>
+      <button
+        type="button"
+        class="grift-action-button grift-action-extraction"
+        [disabled]="!view.extraction.canStartNextStage"
+        (click)="request.emit({ action: { type: 'extraction.prepare' } })"
+      >
+        Increase Your Take · {{ view.extractionNextCostLabel }}
+      </button>
+    </div>
+  } @else {
+    <p class="grift-extraction-complete">Control preparations complete for this run.</p>
+  }
+</section>

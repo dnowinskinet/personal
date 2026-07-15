@@ -108,7 +108,7 @@ Visual structure should express real game state:
 - automation;
 - milestones;
 - Leverage;
-- Founder Take;
+- neutral extraction presented by Influence as Your Take;
 - Rug Pull;
 - Net Worth;
 - current Hustle selection;

@@ -22,7 +22,7 @@ export type InfluenceCampaignStratumId =
   | 'sovereignty'
   | 'postgame';
 
-export type InfluenceFounderTakeStageId = 'retained-rights' | 'locked-cap-table';
+export type InfluenceExtractionStageId = 'retained-rights' | 'locked-cap-table';
 
 export type InfluenceHustleEconomyTuning = HustleEconomicTuning;
 
@@ -37,8 +37,8 @@ export interface InfluenceCampaignStratumMechanics {
   rewardShaping: number;
 }
 
-export interface InfluenceFounderTakeStageMechanics {
-  id: InfluenceFounderTakeStageId;
+export interface InfluenceExtractionStageMechanics {
+  id: InfluenceExtractionStageId;
   takeBonus: number;
   costTargetRatio: number;
   durationMs: number;
@@ -64,29 +64,33 @@ export interface InfluenceLeverageMechanics {
 }
 
 const hustleOrder: readonly HustleId[] = [
-  'troll-network',
-  'podcast-network',
-  'culture-war-media',
-  'masterclass-business',
-  'manifesto-imprint',
-  'founder-retreat-circuit',
-  'ai-venture',
-  'venture-portfolio',
-  'media-holdings',
-  'sovereign-network',
+  'online-rage-farm',
+  'paid-friend-club',
+  'autograph-factory',
+  'paid-shoutout-studio',
+  'outrage-podcast',
+  'get-rich-books',
+  'paid-endorsement-racket',
+  'vip-experience-tour',
+  'success-university',
+  'mlm-ambassador-program',
+  'debt-club',
+  'subscriber-towns',
 ];
 
 const hustleSlots: Readonly<Record<HustleId, HustleEconomicSlotId>> = {
-  'troll-network': 'hustle-01',
-  'podcast-network': 'hustle-02',
-  'culture-war-media': 'hustle-03',
-  'masterclass-business': 'hustle-04',
-  'manifesto-imprint': 'hustle-05',
-  'founder-retreat-circuit': 'hustle-06',
-  'ai-venture': 'hustle-07',
-  'venture-portfolio': 'hustle-08',
-  'media-holdings': 'hustle-09',
-  'sovereign-network': 'hustle-10',
+  'online-rage-farm': 'hustle-01',
+  'paid-friend-club': 'hustle-02',
+  'autograph-factory': 'hustle-03',
+  'paid-shoutout-studio': 'hustle-04',
+  'outrage-podcast': 'hustle-05',
+  'get-rich-books': 'hustle-06',
+  'paid-endorsement-racket': 'hustle-07',
+  'vip-experience-tour': 'hustle-08',
+  'success-university': 'hustle-09',
+  'mlm-ambassador-program': 'hustle-10',
+  'debt-club': 'hustle-11',
+  'subscriber-towns': 'hustle-12',
 };
 validateEconomicSlotMapping('influence', hustleOrder, hustleSlots);
 
@@ -98,7 +102,7 @@ const hustles = Object.fromEntries(hustleOrder.map((hustleId) => [
 const milestones = Object.fromEntries(hustleOrder.map((hustleId) => [
   hustleId,
   HUSTLE_ECONOMIC_SLOTS[hustleSlots[hustleId]].milestones.map((entry) => ({
-    id: `${hustleId}-${entry.requiredUnits}`,
+    id: `${hustleId}-${entry.requiredScaleCount}`,
     ...entry,
   })),
 ])) as unknown as Readonly<Record<HustleId, readonly InfluenceMilestoneMechanics[]>>;
@@ -112,54 +116,54 @@ const campaignStrata: readonly InfluenceCampaignStratumMechanics[] = [
   { id: 'postgame', minimumNetWorth: 1_000_000_000_000, rugPullTarget: 1_000_000_000_000_000, rewardShaping: 0.1 },
 ];
 
-const founderTake = {
+const extraction = {
   baseTake: 0.1,
   stages: [
     { id: 'retained-rights', takeBonus: 0.05, costTargetRatio: 0.03, durationMs: 2 * 60 * 60 * 1000, outputRetention: 0.75 },
     { id: 'locked-cap-table', takeBonus: 0.05, costTargetRatio: 0.07, durationMs: 6 * 60 * 60 * 1000, outputRetention: 0.6 },
-  ] as const satisfies readonly InfluenceFounderTakeStageMechanics[],
+  ] as const satisfies readonly InfluenceExtractionStageMechanics[],
 } as const;
 
 const leverage: readonly InfluenceLeverageMechanics[] = [
   {
-    id: 'attention-loop', domain: 'attention', cost: 25_000_000, unlockNetWorth: 0,
-    requiredOwnedHustles: ['masterclass-business'],
-    requiredAutomatedHustles: ['troll-network', 'podcast-network', 'culture-war-media'],
-    modifiers: [leverageModifier('attention-loop-output', 'output', 1, ['troll-network', 'podcast-network', 'culture-war-media', 'masterclass-business', 'manifesto-imprint'])],
+    id: 'attention-loop', domain: 'attention', cost: 250_000, unlockNetWorth: 1_000_000,
+    requiredOwnedHustles: ['paid-shoutout-studio'],
+    requiredAutomatedHustles: ['online-rage-farm', 'paid-friend-club', 'autograph-factory'],
+    modifiers: [leverageModifier('attention-loop-output', 'output', 1, ['online-rage-farm', 'paid-friend-club', 'autograph-factory', 'paid-shoutout-studio'])],
   },
   {
-    id: 'closed-circuit-doctrine', domain: 'doctrine', cost: 750_000_000, unlockNetWorth: 1_000_000,
-    requiredOwnedHustles: ['founder-retreat-circuit'],
-    requiredAutomatedHustles: ['podcast-network', 'manifesto-imprint', 'founder-retreat-circuit'],
+    id: 'closed-circuit-doctrine', domain: 'doctrine', cost: 2_000_000, unlockNetWorth: 30_000_000,
+    requiredOwnedHustles: ['get-rich-books'],
+    requiredAutomatedHustles: ['outrage-podcast', 'get-rich-books'],
     modifiers: [
-      leverageModifier('closed-circuit-doctrine-output', 'output', 1, ['podcast-network', 'culture-war-media', 'masterclass-business', 'manifesto-imprint', 'founder-retreat-circuit']),
+      leverageModifier('closed-circuit-doctrine-output', 'output', 1, ['outrage-podcast', 'get-rich-books', 'paid-endorsement-racket']),
       leverageModifier('closed-circuit-doctrine-cost', 'cost', 0.5),
     ],
   },
   {
-    id: 'capital-access', domain: 'capital', cost: 25_000_000_000, unlockNetWorth: 30_000_000,
-    requiredOwnedHustles: ['venture-portfolio'],
-    requiredAutomatedHustles: ['founder-retreat-circuit', 'ai-venture'],
+    id: 'capital-access', domain: 'capital', cost: 25_000_000, unlockNetWorth: 30_000_000,
+    requiredOwnedHustles: ['vip-experience-tour'],
+    requiredAutomatedHustles: ['paid-endorsement-racket', 'vip-experience-tour'],
     modifiers: [
-      leverageModifier('capital-access-output', 'output', 1, ['founder-retreat-circuit', 'ai-venture', 'venture-portfolio']),
+      leverageModifier('capital-access-output', 'output', 1, ['paid-endorsement-racket', 'vip-experience-tour', 'success-university']),
       leverageModifier('capital-access-automation', 'automation-cost', 1),
     ],
   },
   {
-    id: 'institutional-capture', domain: 'capital', cost: 750_000_000_000, unlockNetWorth: 1_000_000_000,
-    requiredOwnedHustles: ['venture-portfolio'],
-    requiredAutomatedHustles: ['ai-venture', 'venture-portfolio'],
+    id: 'institutional-capture', domain: 'capital', cost: 250_000_000, unlockNetWorth: 1_000_000_000,
+    requiredOwnedHustles: ['mlm-ambassador-program'],
+    requiredAutomatedHustles: ['success-university', 'mlm-ambassador-program'],
     modifiers: [
-      leverageModifier('institutional-capture-output', 'output', 1, ['masterclass-business', 'venture-portfolio', 'media-holdings', 'sovereign-network']),
-      leverageModifier('institutional-capture-speed', 'cadence', 0.5, ['masterclass-business', 'media-holdings', 'sovereign-network']),
+      leverageModifier('institutional-capture-output', 'output', 1, ['success-university', 'mlm-ambassador-program', 'debt-club']),
+      leverageModifier('institutional-capture-speed', 'cadence', 0.5, ['success-university', 'debt-club']),
     ],
   },
   {
-    id: 'sovereign-stack', domain: 'sovereignty', cost: 25_000_000_000_000, unlockNetWorth: 30_000_000_000,
-    requiredOwnedHustles: ['sovereign-network'],
-    requiredAutomatedHustles: ['media-holdings'],
+    id: 'sovereign-stack', domain: 'sovereignty', cost: 2_500_000_000, unlockNetWorth: 30_000_000_000,
+    requiredOwnedHustles: ['subscriber-towns'],
+    requiredAutomatedHustles: ['debt-club'],
     modifiers: [
-      leverageModifier('sovereign-stack-output', 'output', 2, ['media-holdings', 'sovereign-network']),
+      leverageModifier('sovereign-stack-output', 'output', 2, ['debt-club', 'subscriber-towns']),
       leverageModifier('sovereign-stack-cost', 'cost', 0.5),
     ],
   },
@@ -183,7 +187,7 @@ export const INFLUENCE_MECHANICS_PACK = {
     campaignTargetNetWorth: 1_000_000_000_000,
     curatedValuationEnvelope: 1_000_000_000_000_000,
   },
-  founderTake,
+  extraction,
   leverage,
 } as const;
 
@@ -193,9 +197,9 @@ export const INFLUENCE_ENGINE_MECHANICS: GameMechanics = Object.assign(
     ...hustles[hustleId],
     milestones: milestones[hustleId].map((entry) => ({
       id: entry.id,
-      requiredUnits: entry.requiredUnits,
+      requiredScaleCount: entry.requiredScaleCount,
       reward: {
-        id: `${hustleId}-units-${entry.requiredUnits}-${entry.kind}`,
+        id: `${hustleId}-scale-${entry.requiredScaleCount}-${entry.kind}`,
         scope: 'hustle' as const,
         kind: entry.kind,
         value: entry.value,
@@ -214,7 +218,7 @@ export const INFLUENCE_ENGINE_MECHANICS: GameMechanics = Object.assign(
     })),
     campaignStrata,
     prestige: INFLUENCE_MECHANICS_PACK.prestige,
-    founderTake,
+    extraction,
   }
 );
 

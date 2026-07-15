@@ -45,7 +45,7 @@ export function canBuyLeverage(
 
   return !state.leveragePurchases.includes(leverageId) &&
     isLeverageUnlocked(state, definition) &&
-    state.valuation >= definition.cost;
+    state.netWorth >= definition.cost;
 }
 
 export function buyLeverage(
@@ -62,7 +62,7 @@ export function buyLeverage(
   return {
     state: {
       ...state,
-      valuation: Math.max(0, state.valuation - definition.cost),
+      netWorth: Math.max(0, state.netWorth - definition.cost),
       leveragePurchases: [...state.leveragePurchases, leverageId],
     },
     purchased: true,
@@ -75,9 +75,9 @@ export function leverageRequirements(
   definition: LeverageMechanicsDefinition
 ): LeverageRequirements {
   return {
-    netWorthRequired: Math.max(0, definition.unlockNetWorth - state.netWorth),
+    netWorthRequired: Math.max(0, definition.unlockNetWorth - state.peakNetWorth),
     missingOwnedHustles: definition.requiredOwnedHustles
-      .filter((hustleId) => state.hustles[hustleId].units <= 0),
+      .filter((hustleId) => state.hustles[hustleId].scaleCount <= 0),
     missingAutomatedHustles: definition.requiredAutomatedHustles
       .filter((hustleId) => !state.hustles[hustleId].isAutomated),
   };

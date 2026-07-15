@@ -3,10 +3,10 @@ import { createRugPullPreview } from '../content/rug-pull-preview';
 import { GameMechanics } from '../game-engine/mechanics';
 import { GriftOsGameState, HustleDefinition, HustleId, LeverageId } from '../game-engine/types';
 
-export const PLAYTEST_SCHEMA_VERSION = 2;
-export const GRIFT_OS_PLAYTEST_BUILD_ID = 'grift-os-modernization-playtest';
+export const PLAYTEST_SCHEMA_VERSION = 3;
+export const GRIFT_OS_PLAYTEST_BUILD_ID = 'grift-os-twelve-hustle-migration';
 export const DEFAULT_SNAPSHOT_INTERVAL_MS = 10_000;
-export const PLAYTEST_STORAGE_KEY = 'grift-os-playtest-session-v2';
+export const PLAYTEST_STORAGE_KEY = 'grift-os-playtest-session-v3';
 
 export type PlaytestEventType =
   | 'session_started'
@@ -30,7 +30,7 @@ export type PlaytestEventType =
   | 'economy_snapshot';
 
 export interface PlaytestHustleSnapshot {
-  units: number;
+  scaleCount: number;
   isActive: boolean;
   isAutomated: boolean;
   progressMs: number;
@@ -58,7 +58,7 @@ export interface PlaytestEvent {
   milestoneName?: string;
   leverageId?: LeverageId;
   quantityPurchased?: number;
-  resultingUnits?: number;
+  resultingScaleCount?: number;
   valuationBefore?: number;
   valuationAfter?: number;
   netWorthBefore?: number;
@@ -92,10 +92,10 @@ export interface PlaytestTuningHustle {
   cadenceSeconds: number;
   automationName: string;
   automationCost: number;
-  initialUnits: number;
+  initialScaleCount: number;
   milestones: readonly {
     id: string;
-    requiredUnits: number;
+    requiredScaleCount: number;
     rewardLabel: string;
   }[];
 }
@@ -131,16 +131,16 @@ export interface PlaytestSummaryMetrics {
   timeRugPullUsedMs: number | null;
   netWorthGain: number;
   buyMaxUses: number;
-  finalUnits: Record<HustleId, number>;
+  finalScaleCounts: Record<HustleId, number>;
   automationStates: Partial<Record<HustleId, boolean>>;
   eventCount: number;
   snapshotCount: number;
   longestIntervalWithoutPlayerInputMs: number;
 }
 
-const HUSTLE_2_ID: HustleId = 'podcast-network';
-const HUSTLE_3_ID: HustleId = 'culture-war-media';
-const HUSTLE_4_ID: HustleId = 'masterclass-business';
+const HUSTLE_2_ID: HustleId = 'paid-friend-club';
+const HUSTLE_3_ID: HustleId = 'autograph-factory';
+const HUSTLE_4_ID: HustleId = 'paid-shoutout-studio';
 
 const PLAYER_INPUT_EVENT_TYPES = new Set<PlaytestEventType>([
   'manual_action_started',
@@ -210,7 +210,7 @@ export function recordManualActivation(
     {
       hustleId: definition.id,
       hustleName: definition.name,
-      resultingUnits: hustle.units,
+      resultingScaleCount: hustle.scaleCount,
       valuationBefore: state.valuation,
       valuationAfter: state.valuation,
     },
@@ -243,14 +243,14 @@ export function recordHustlePurchase(
   definition: HustleDefinition,
   quantityPurchased: number,
   totalCost: number,
-  resultingUnits: number,
+  resultingScaleCount: number,
   valuationBefore: number,
   valuationAfter: number,
   wasBuyMax: boolean,
   nowMs = Date.now()
 ): PlaytestSession {
   const eventType: PlaytestEventType =
-    resultingUnits === quantityPurchased ? 'hustle_acquired' : 'hustle_expanded';
+    resultingScaleCount === quantityPurchased ? 'hustle_acquired' : 'hustle_expanded';
   let nextSession = appendPlaytestEvent(
     session,
     wasBuyMax ? 'buy_max_purchase' : eventType,
@@ -258,7 +258,7 @@ export function recordHustlePurchase(
       hustleId: definition.id,
       hustleName: definition.name,
       quantityPurchased,
-      resultingUnits,
+      resultingScaleCount,
       valuationBefore,
       valuationAfter,
       totalCost,
@@ -274,7 +274,7 @@ export function recordHustlePurchase(
         hustleId: definition.id,
         hustleName: definition.name,
         quantityPurchased,
-        resultingUnits,
+        resultingScaleCount,
         valuationBefore,
         valuationAfter,
         totalCost,
@@ -290,7 +290,7 @@ export function recordAutomationPurchase(
   session: PlaytestSession,
   definition: HustleDefinition,
   totalCost: number,
-  unitsAtPurchase: number,
+  scaleCountAtPurchase: number,
   valuationBefore: number,
   valuationAfter: number,
   nowMs = Date.now()
@@ -302,7 +302,7 @@ export function recordAutomationPurchase(
       hustleId: definition.id,
       hustleName: definition.name,
       automationName: definition.automationName,
-      resultingUnits: unitsAtPurchase,
+      resultingScaleCount: scaleCountAtPurchase,
       valuationBefore,
       valuationAfter,
       totalCost,
@@ -367,7 +367,7 @@ export function recordDiscoveryEvents(
     const hustle = state.hustles[definition.id];
 
     if (
-      hustle.units <= 0 &&
+      hustle.scaleCount <= 0 &&
       state.valuation >= nextHustleCost(definition, 0, state, mechanics) &&
       !hasEvent(nextSession, 'hustle_affordable', (event) => event.hustleId === definition.id)
     ) {
@@ -385,7 +385,7 @@ export function recordDiscoveryEvents(
     }
 
     if (
-      hustle.units > 0 &&
+      hustle.scaleCount > 0 &&
       !hustle.isAutomated &&
       state.valuation >= definition.automationCost &&
       !hasEvent(nextSession, 'automation_affordable', (event) => event.hustleId === definition.id)
@@ -397,7 +397,7 @@ export function recordDiscoveryEvents(
           hustleId: definition.id,
           hustleName: definition.name,
           automationName: definition.automationName,
-          resultingUnits: hustle.units,
+          resultingScaleCount: hustle.scaleCount,
           valuationAfter: state.valuation,
           totalCost: definition.automationCost,
         },
@@ -479,10 +479,10 @@ export function createPlaytestExport(
         cadenceSeconds: definition.cadenceSeconds,
         automationName: definition.automationName,
         automationCost: definition.automationCost,
-        initialUnits: definition.initialUnits,
+        initialScaleCount: definition.initialScaleCount,
         milestones: definition.milestones.map((milestone) => ({
           id: milestone.id,
-          requiredUnits: milestone.requiredUnits,
+          requiredScaleCount: milestone.requiredScaleCount,
           rewardLabel: milestone.reward.label,
         })),
       })),
@@ -518,8 +518,8 @@ export function summarizePlaytestSession(
   const hustle4 = firstEvent(session, (event) => event.type === 'hustle_acquired' && event.hustleId === HUSTLE_4_ID);
   const rugPullAvailable = firstEvent(session, (event) => event.type === 'rug_pull_available');
   const rugPullUsed = firstEvent(session, (event) => event.type === 'rug_pull_committed');
-  const finalUnits = Object.fromEntries(
-    definitions.map((definition) => [definition.id, state.hustles[definition.id].units])
+  const finalScaleCounts = Object.fromEntries(
+    definitions.map((definition) => [definition.id, state.hustles[definition.id].scaleCount])
   ) as Record<HustleId, number>;
   const automationStates = Object.fromEntries(
     definitions.map((definition) => [definition.id, state.hustles[definition.id].isAutomated])
@@ -540,7 +540,7 @@ export function summarizePlaytestSession(
     timeRugPullUsedMs: rugPullUsed?.elapsedMs ?? null,
     netWorthGain: session.events.reduce((total, event) => total + (event.netWorthGain ?? 0), 0),
     buyMaxUses: session.events.filter((event) => event.type === 'buy_max_purchase').length,
-    finalUnits,
+    finalScaleCounts,
     automationStates,
     eventCount: session.events.length,
     snapshotCount: session.events.filter((event) => event.type === 'economy_snapshot').length,
@@ -573,10 +573,13 @@ export function createHumanReadablePlaytestSummary(
     `Net Worth gain: ${summary.netWorthGain}`,
     `Longest interval without player input: ${formatDuration(summary.longestIntervalWithoutPlayerInputMs)}`,
     '',
-    'Final units:',
-    ...definitions.map((definition) =>
-      `${definition.name}: ${summary.finalUnits[definition.id]} ${unitLabel(definition, summary.finalUnits[definition.id])}`
-    ),
+    'Final scale owned:',
+    ...definitions.map((definition) => {
+      const scaleCount = summary.finalScaleCounts[definition.id];
+      const displayCount = scaleCount * (definition.scaleDisplayMultiplier ?? 1);
+
+      return `${definition.name}: ${displayCount.toLocaleString('en-US')} ${unitLabel(definition, displayCount)}`;
+    }),
     '',
     'Subjective note:',
     'Not recorded by instrumentation.',
@@ -630,7 +633,7 @@ function createEconomySnapshot(
       return [
         definition.id,
         {
-          units: hustle.units,
+          scaleCount: hustle.scaleCount,
           isActive: hustle.isActive,
           isAutomated: hustle.isAutomated,
           progressMs: hustle.progressMs,
@@ -710,8 +713,8 @@ function formatDuration(valueMs: number): string {
   return `${minutes}m ${seconds}s`;
 }
 
-function unitLabel(definition: HustleDefinition, units: number): string {
-  return units === 1 ? definition.unitSingular : definition.unitPlural;
+function unitLabel(definition: HustleDefinition, scaleCount: number): string {
+  return scaleCount === 1 ? definition.unitSingular : definition.unitPlural;
 }
 
 function createSessionId(nowMs: number): string {

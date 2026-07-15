@@ -11,15 +11,15 @@ describe('GriftRunRuntime', () => {
       ...state,
       hustles: {
         ...state.hustles,
-        'troll-network': {
-          ...state.hustles['troll-network'],
+        'online-rage-farm': {
+          ...state.hustles['online-rage-farm'],
           isActive: true,
         },
       },
     };
 
     const result = runtime.advanceForeground(activeState, 1_000, 11_000);
-    expect(result.state.hustles['troll-network'].progressMs).toBeLessThanOrEqual(5_000);
+    expect(result.state.hustles['online-rage-farm'].progressMs).toBeLessThanOrEqual(5_000);
   });
 
   it('credits only automated production after the threshold and caps it at eight hours', () => {
@@ -30,8 +30,8 @@ describe('GriftRunRuntime', () => {
       peakValuation: 100,
       hustles: {
         ...state.hustles,
-        'troll-network': {
-          ...state.hustles['troll-network'],
+        'online-rage-farm': {
+          ...state.hustles['online-rage-farm'],
           isActive: true,
           isAutomated: true,
         },

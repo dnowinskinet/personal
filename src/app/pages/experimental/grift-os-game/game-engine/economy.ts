@@ -16,21 +16,22 @@ import {
   modifierBreakdownForHustle,
 } from './modifiers';
 import {
-  advanceFounderTakePreparation,
-  founderTakePreparationRemainingMs,
-} from './founder-take';
+  advanceExtractionPreparation,
+  extractionPreparationRemainingMs,
+} from './extraction';
 
 export function createInitialGameState(
   definitions: GameMechanics,
   netWorth = 0,
-  rugPullCount = 0
+  rugPullCount = 0,
+  peakNetWorth = netWorth
 ): GriftOsGameState {
   const hustles = Object.fromEntries(
     definitions.map((definition) => [
       definition.id,
       {
         id: definition.id,
-        units: definition.initialUnits,
+        scaleCount: definition.initialScaleCount,
         isActive: false,
         isAutomated: false,
         progressMs: 0,
@@ -43,9 +44,10 @@ export function createInitialGameState(
     valuation: 0,
     peakValuation: 0,
     netWorth,
+    peakNetWorth: Math.max(netWorth, peakNetWorth),
     rugPullCount,
     rugPullState: 'unavailable',
-    founderTakePreparation: {
+    extractionPreparation: {
       completedStages: 0,
       isActive: false,
       progressMs: 0,
@@ -70,11 +72,11 @@ export function getHustleDefinition(
 
 export function nextHustleCost(
   definition: HustleMechanicsDefinition,
-  units: number,
+  scaleCount: number,
   state?: GriftOsGameState,
   definitions?: GameMechanics
 ): number {
-  const baseCost = definition.acquisitionCost * definition.growthRate ** units;
+  const baseCost = definition.acquisitionCost * definition.growthRate ** scaleCount;
 
   if (!state) {
     return baseCost;
@@ -88,7 +90,7 @@ export function nextHustleCost(
 
 export function hustleCostForQuantity(
   definition: HustleMechanicsDefinition,
-  units: number,
+  scaleCount: number,
   quantity: number,
   state?: GriftOsGameState,
   definitions?: GameMechanics
@@ -97,7 +99,7 @@ export function hustleCostForQuantity(
     return 0;
   }
 
-  const nextCost = nextHustleCost(definition, units, state, definitions);
+  const nextCost = nextHustleCost(definition, scaleCount, state, definitions);
 
   if (definition.growthRate === 1) {
     return nextCost * quantity;
@@ -108,7 +110,7 @@ export function hustleCostForQuantity(
 
 export function maxAffordableQuantity(
   definition: HustleMechanicsDefinition,
-  units: number,
+  scaleCount: number,
   availableValuation: number,
   state?: GriftOsGameState,
   definitions?: GameMechanics
@@ -117,7 +119,7 @@ export function maxAffordableQuantity(
     return 0;
   }
 
-  const nextCost = nextHustleCost(definition, units, state, definitions);
+  const nextCost = nextHustleCost(definition, scaleCount, state, definitions);
 
   if (availableValuation < nextCost) {
     return 0;
@@ -136,13 +138,13 @@ export function maxAffordableQuantity(
 
   while (
     quantity > 0 &&
-    hustleCostForQuantity(definition, units, quantity, state, definitions) > availableValuation
+    hustleCostForQuantity(definition, scaleCount, quantity, state, definitions) > availableValuation
   ) {
     quantity -= 1;
   }
 
   while (
-    hustleCostForQuantity(definition, units, quantity + 1, state, definitions) <= availableValuation
+    hustleCostForQuantity(definition, scaleCount, quantity + 1, state, definitions) <= availableValuation
   ) {
     quantity += 1;
   }
@@ -160,9 +162,9 @@ export function buyHustle(
   const hustle = state.hustles[hustleId];
 
   const quantityToBuy = quantity === 'max'
-    ? maxAffordableQuantity(definition, hustle.units, state.valuation, state, definitions)
+    ? maxAffordableQuantity(definition, hustle.scaleCount, state.valuation, state, definitions)
     : Math.max(0, Math.floor(quantity));
-  const totalCost = hustleCostForQuantity(definition, hustle.units, quantityToBuy, state, definitions);
+  const totalCost = hustleCostForQuantity(definition, hustle.scaleCount, quantityToBuy, state, definitions);
 
   if (quantityToBuy <= 0 || totalCost > state.valuation) {
     return {
@@ -173,8 +175,8 @@ export function buyHustle(
     };
   }
 
-  const nextUnits = hustle.units + quantityToBuy;
-  const milestonesReached = newlyReachedMilestones(definition, hustle, nextUnits);
+  const nextScaleCount = hustle.scaleCount + quantityToBuy;
+  const milestonesReached = newlyReachedMilestones(definition, hustle, nextScaleCount);
   const reachedMilestones = [
     ...hustle.reachedMilestones,
     ...milestonesReached.map((event) => event.milestoneId),
@@ -190,7 +192,7 @@ export function buyHustle(
         ...state.hustles,
         [hustleId]: {
           ...hustle,
-          units: nextUnits,
+          scaleCount: nextScaleCount,
           reachedMilestones,
         },
       },
@@ -221,7 +223,7 @@ export function canBuyAutomation(
 ): boolean {
   const hustle = state.hustles[hustleId];
 
-  return hustle.units > 0 && !hustle.isAutomated && state.valuation >= automationCost(state, definitions, hustleId);
+  return hustle.scaleCount > 0 && !hustle.isAutomated && state.valuation >= automationCost(state, definitions, hustleId);
 }
 
 export function buyAutomation(
@@ -266,7 +268,7 @@ export function activateHustle(
 ): GriftOsGameState {
   const hustle = state.hustles[hustleId];
 
-  if (hustle.units <= 0 || hustle.isActive) {
+  if (hustle.scaleCount <= 0 || hustle.isActive) {
     return state;
   }
 
@@ -290,7 +292,7 @@ export function hustlePayout(
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
   const hustle = state.hustles[hustleId];
-  const basePayout = definition.basePayout * hustle.units;
+  const basePayout = definition.basePayout * hustle.scaleCount;
 
   return applyOutputModifiers(
     basePayout,
@@ -325,10 +327,10 @@ export function advanceGame(
   const events: AdvanceResult['events'] = [];
 
   while (remainingMs > 0) {
-    const preparationRemainingMs = founderTakePreparationRemainingMs(nextState, definitions);
+    const preparationRemainingMs = extractionPreparationRemainingMs(nextState, definitions);
 
     if (preparationRemainingMs !== null && preparationRemainingMs <= 0) {
-      nextState = advanceFounderTakePreparation(nextState, 0, definitions);
+      nextState = advanceExtractionPreparation(nextState, 0, definitions);
       continue;
     }
 
@@ -337,7 +339,7 @@ export function advanceGame(
       : Math.min(remainingMs, preparationRemainingMs);
     const advanced = advanceProduction(nextState, definitions, sliceMs);
     events.push(...advanced.events);
-    nextState = advanceFounderTakePreparation(advanced.state, sliceMs, definitions);
+    nextState = advanceExtractionPreparation(advanced.state, sliceMs, definitions);
     remainingMs -= sliceMs;
   }
 
@@ -357,7 +359,7 @@ function advanceProduction(
   for (const definition of definitions) {
     const hustle = hustles[definition.id];
 
-    if ((!hustle.isActive && !hustle.isAutomated) || hustle.units <= 0) {
+    if ((!hustle.isActive && !hustle.isAutomated) || hustle.scaleCount <= 0) {
       continue;
     }
 
@@ -426,11 +428,11 @@ export function valuationPerSecond(
 function newlyReachedMilestones(
   definition: HustleMechanicsDefinition,
   hustle: HustleState,
-  nextUnits: number
+  nextScaleCount: number
 ): MilestoneReachedEvent[] {
   return definition.milestones
     .filter((milestone) =>
-      nextUnits >= milestone.requiredUnits &&
+      nextScaleCount >= milestone.requiredScaleCount &&
       !hustle.reachedMilestones.includes(milestone.id)
     )
     .map((milestone) => ({
@@ -443,8 +445,8 @@ export const nextGeneratorCost = nextHustleCost;
 export const generatorCostForQuantity = hustleCostForQuantity;
 export const buyGenerator = buyHustle;
 export const activateGenerator = activateHustle;
-export const generatorPayout = (definition: HustleMechanicsDefinition, units: number): number =>
-  definition.basePayout * units;
+export const generatorPayout = (definition: HustleMechanicsDefinition, scaleCount: number): number =>
+  definition.basePayout * scaleCount;
 
 function requireMechanics(mechanics?: GameMechanics): GameMechanics {
   if (!mechanics) {

@@ -111,6 +111,8 @@ export class AudioDirectorService implements OnDestroy {
    * copies of the same background loop.
    */
   private musicStartPromise: Promise<void> | null = null;
+  private routeActive = false;
+  private routeActivation = 0;
 
   private musicPlaybackState: MusicPlaybackState = 'idle';
   private musicPlaybackError = '';
@@ -148,6 +150,26 @@ export class AudioDirectorService implements OnDestroy {
     }
   }
 
+  activateForRoute(): void {
+    if (this.routeActive) {
+      return;
+    }
+
+    this.routeActive = true;
+    this.routeActivation += 1;
+    this.refreshDebugState();
+  }
+
+  deactivateForRoute(): void {
+    this.routeActive = false;
+    this.routeActivation += 1;
+    this.musicStartPromise = null;
+    this.presentation = null;
+    this.policyState = createInitialAudioPolicyState();
+    this.stopActiveMusic();
+    this.refreshDebugState();
+  }
+
   /**
    * Call from a trusted user interaction.
    *
@@ -159,8 +181,12 @@ export class AudioDirectorService implements OnDestroy {
    * the current position when unmuted.
    */
   unlockFromTrustedInteraction(): void {
+    if (!this.routeActive) {
+      return;
+    }
+
     void this.ensureAudioContextRunning().then((context) => {
-      if (!context) {
+      if (!context || !this.routeActive) {
         return;
       }
 
@@ -195,7 +221,7 @@ export class AudioDirectorService implements OnDestroy {
      *
      * adaptiveMusic intentionally does not gate basic music playback.
      */
-    if (this.audioContext?.state === 'running') {
+    if (this.routeActive && this.audioContext?.state === 'running') {
       this.ensureBackgroundMusicStarted();
     }
 
@@ -203,7 +229,7 @@ export class AudioDirectorService implements OnDestroy {
   }
 
   handleGameEvent(event: GameEvent, nowMs = Date.now()): void {
-    if (!this.presentation) {
+    if (!this.routeActive || !this.presentation) {
       return;
     }
 
@@ -230,8 +256,12 @@ export class AudioDirectorService implements OnDestroy {
    * which avoids losing the first test cue while the context is resuming.
    */
   testCue(id = 'manual-click'): void {
+    if (!this.routeActive) {
+      return;
+    }
+
     void this.ensureAudioContextRunning().then((context) => {
-      if (!context) {
+      if (!context || !this.routeActive) {
         return;
       }
 
@@ -391,7 +421,7 @@ export class AudioDirectorService implements OnDestroy {
    * stage selection, suite selection, or stem logic yet.
    */
   private ensureBackgroundMusicStarted(): void {
-    if (!this.isBrowser) {
+    if (!this.isBrowser || !this.routeActive) {
       return;
     }
 
@@ -427,7 +457,8 @@ export class AudioDirectorService implements OnDestroy {
     this.musicPlaybackError = '';
     this.refreshDebugState();
 
-    const startPromise = this.startMusicTrack(track)
+    const routeActivation = this.routeActivation;
+    const startPromise = this.startMusicTrack(track, routeActivation)
       .then(() => {
         if (this.activeMusicTrackId === track.id) {
           this.musicPlaybackState = 'playing';
@@ -466,7 +497,8 @@ export class AudioDirectorService implements OnDestroy {
    *   -> destination
    */
   private async startMusicTrack(
-    track: MusicTrackDefinition
+    track: MusicTrackDefinition,
+    routeActivation: number
   ): Promise<void> {
     if (!track.src) {
       return;
@@ -488,6 +520,8 @@ export class AudioDirectorService implements OnDestroy {
      * Re-check state after async fetch/decode.
      */
     if (
+      !this.routeActive ||
+      routeActivation !== this.routeActivation ||
       context !== this.audioContext ||
       context.state !== 'running' ||
       !this.musicGain

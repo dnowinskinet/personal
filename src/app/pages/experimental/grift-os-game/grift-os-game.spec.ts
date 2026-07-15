@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
+import { AudioDirectorService } from './audio/audio-director.service';
 import { GriftOsGameComponent } from './grift-os-game';
 import { ACTIVE_EMPIRE_RENDERER } from './empires/empire-renderer-registry';
 import { INFLUENCE_ENGINE_MECHANICS } from './empires/influence/mechanics/influence-mechanics';
@@ -54,6 +55,8 @@ describe('GriftOsGameComponent', () => {
     window.localStorage.removeItem('grift-os-run-v1');
     window.localStorage.removeItem('grift-os-meta-v2');
     window.localStorage.removeItem('grift-os-run-v2');
+    window.localStorage.removeItem('grift-os-meta-v3');
+    window.localStorage.removeItem('grift-os-run-v3');
     window.localStorage.removeItem('grift-os-audio-settings-v1');
   });
 
@@ -65,8 +68,8 @@ describe('GriftOsGameComponent', () => {
     expect(component).toBeTruthy();
     expect(component.isPlaytestMode).toBeFalse();
     expect(component.state.valuation).toBe(0);
-    expect(component.definitions.length).toBe(10);
-    expect(component.state.hustles['troll-network'].units).toBe(1);
+    expect(component.definitions.length).toBe(12);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(1);
     expect(text).toContain('Hustles');
     expect(text).toContain('Valuation');
     expect(text).not.toContain('Leverage');
@@ -107,13 +110,13 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.querySelector('app-influence-empire-renderer')).toBeNull();
     expect(replacement?.querySelector('[aria-label="Game utilities"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('.grift-os-app > [aria-label="Game utilities"]')).not.toBeNull();
-    expect(component.state.hustles['troll-network'].isActive).toBeFalse();
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeFalse();
 
     const activate = replacement?.querySelector('button') as HTMLButtonElement | null;
     activate?.click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].isActive).toBeTrue();
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeTrue();
   });
 
   it('dispatches semantic gameplay actions through the existing runtime entrypoints', async () => {
@@ -127,7 +130,7 @@ describe('GriftOsGameComponent', () => {
 
     component.dispatchGameAction({
       type: 'hustle.expand',
-      hustleId: 'troll-network',
+      hustleId: 'online-rage-farm',
       quantity: 1,
     });
     component.dispatchGameAction({ type: 'mode.select', modeId: 'hustles' });
@@ -135,7 +138,7 @@ describe('GriftOsGameComponent', () => {
     component.dispatchGameAction({ type: 'offline.dismiss' });
     component.dispatchGameAction({ type: 'rugPull.resolution.dismiss' });
 
-    expect(buyOne).toHaveBeenCalledOnceWith('troll-network');
+    expect(buyOne).toHaveBeenCalledOnceWith('online-rage-farm');
     expect(setGameTab).toHaveBeenCalledOnceWith('hustles');
     expect(closeContext).toHaveBeenCalledOnceWith(false);
     expect(dismissOffline).toHaveBeenCalledTimes(1);
@@ -162,7 +165,7 @@ describe('GriftOsGameComponent', () => {
     component.state = {
       ...component.state,
       netWorth: 1_000_000,
-      founderTakePreparation: {
+      extractionPreparation: {
         completedStages: 1,
         isActive: true,
         progressMs: 1_000,
@@ -176,8 +179,8 @@ describe('GriftOsGameComponent', () => {
       ...component.state,
       hustles: {
         ...component.state.hustles,
-        'troll-network': {
-          ...component.state.hustles['troll-network'],
+        'online-rage-farm': {
+          ...component.state.hustles['online-rage-farm'],
           isAutomated: true,
         },
       },
@@ -232,6 +235,19 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Music off');
   });
 
+  it('deactivates route-owned audio when the GriftOS page is destroyed', async () => {
+    fixture = await createFixture({});
+    const audioDirector = TestBed.inject(AudioDirectorService);
+    const deactivateSpy = spyOn(audioDirector, 'deactivateForRoute').and.callThrough();
+
+    fixture.destroy();
+    fixture = null;
+
+    expect(deactivateSpy).toHaveBeenCalledTimes(1);
+    expect(audioDirector.debugState().activeMusicTrackId).toBe('none');
+    expect(audioDirector.debugState().musicPlaybackState).toBe('idle');
+  });
+
   it('restores the local run state on the same machine', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
@@ -239,18 +255,17 @@ describe('GriftOsGameComponent', () => {
     component.applyRunShortcut('two-hustles');
     detectStateChange(fixture);
 
-    expect(window.localStorage.getItem('grift-os-run-v1')).toContain('podcast-network');
-    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('podcast-network');
-    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('"empireId":"influence"');
+    expect(window.localStorage.getItem('grift-os-run-v3')).toContain('paid-friend-club');
+    expect(window.localStorage.getItem('grift-os-run-v3')).toContain('"empireId":"influence"');
 
     fixture.destroy();
     fixture = await createFixture({});
     const restored = fixture.componentInstance;
 
     expect(restored.state.valuation).toBe(320);
-    expect(restored.state.hustles['troll-network'].units).toBe(2);
-    expect(restored.state.hustles['podcast-network'].units).toBe(1);
-    expect(restored.selectedHustleId).toBe('podcast-network');
+    expect(restored.state.hustles['online-rage-farm'].scaleCount).toBe(2);
+    expect(restored.state.hustles['paid-friend-club'].scaleCount).toBe(1);
+    expect(restored.selectedHustleId).toBe('paid-friend-club');
   });
 
   it('credits automated offline production before showing a dismissible notice', async () => {
@@ -261,8 +276,8 @@ describe('GriftOsGameComponent', () => {
       peakValuation: 100,
       hustles: {
         ...savedState.hustles,
-        'troll-network': {
-          ...savedState.hustles['troll-network'],
+        'online-rage-farm': {
+          ...savedState.hustles['online-rage-farm'],
           isActive: true,
           isAutomated: true,
           progressMs: 0,
@@ -270,10 +285,11 @@ describe('GriftOsGameComponent', () => {
       },
     };
 
-    window.localStorage.setItem('grift-os-run-v1', JSON.stringify({
-      version: 1,
+    window.localStorage.setItem('grift-os-run-v3', JSON.stringify({
+      version: 3,
       savedAt: Date.now() - 120_000,
-      selectedHustleId: 'troll-network',
+      empireId: 'influence',
+      selectedHustleId: 'online-rage-farm',
       state: automatedState,
     }));
 
@@ -298,8 +314,7 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.offlineReturn).toBeNull();
     expect(component.state.valuation).toBe(creditedValuation);
-    expect(window.localStorage.getItem('grift-os-run-v1')).toContain(String(component.state.valuation));
-    expect(window.localStorage.getItem('grift-os-run-v2')).toContain(String(component.state.valuation));
+    expect(window.localStorage.getItem('grift-os-run-v3')).toContain(String(component.state.valuation));
   });
 
   it('closes the playtest debug menu from inside the popover', async () => {
@@ -361,13 +376,13 @@ describe('GriftOsGameComponent', () => {
     twoHustlesButton?.click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].units).toBe(2);
-    expect(component.state.hustles['podcast-network'].units).toBe(1);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(2);
+    expect(component.state.hustles['paid-friend-club'].scaleCount).toBe(1);
     expect(component.ownedHustleCount).toBe(2);
     expect(component.showPinnedSelectedContext).toBeTrue();
-    expect(component.selectedHustleId).toBe('podcast-network');
-    expect(fixture.nativeElement.textContent).toContain('Paid Fan Club');
-    expect(fixture.nativeElement.textContent).toContain('Merch Store');
+    expect(component.selectedHustleId).toBe('paid-friend-club');
+    expect(fixture.nativeElement.textContent).toContain('Paid Friend Club');
+    expect(fixture.nativeElement.textContent).toContain('Autograph Factory');
   });
 
   it('provides a buildout shortcut with a selected owned Hustle', async () => {
@@ -378,9 +393,9 @@ describe('GriftOsGameComponent', () => {
     detectStateChange(fixture);
 
     expect(component.ownedHustleCount).toBe(4);
-    expect(component.selectedHustleId).toBe('culture-war-media');
-    expect(component.state.hustles['culture-war-media'].units).toBe(4);
-    expect(component.state.hustles['venture-portfolio'].units).toBe(0);
+    expect(component.selectedHustleId).toBe('autograph-factory');
+    expect(component.state.hustles['autograph-factory'].scaleCount).toBe(4);
+    expect(component.state.hustles['vip-experience-tour'].scaleCount).toBe(0);
   });
 
   it('provides a mature portfolio shortcut without reordering Hustles', async () => {
@@ -395,16 +410,16 @@ describe('GriftOsGameComponent', () => {
     const rows = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.grift-hustle-entry'));
 
     expect(component.ownedHustleCount).toBe(8);
-    expect(component.selectedHustleId).toBe('venture-portfolio');
+    expect(component.selectedHustleId).toBe('vip-experience-tour');
     expect(names.slice(0, 8)).toEqual([
-      'Social Media Account',
-      'Paid Fan Club',
-      'Merch Store',
-      'Podcast',
-      'VIP Events',
-      'Success University',
-      'Brand Ambassador Program',
-      'Coaching Company',
+      'Online Rage Farm',
+      'Paid Friend Club',
+      'Autograph Factory',
+      'Paid Shoutout Studio',
+      'Outrage Podcast',
+      'Get-Rich Books',
+      'Paid Endorsement Racket',
+      'VIP Experience Tour',
     ]);
     expect(rows[0].classList).toContain('grift-hustle-settled');
     expect(rows[7].classList).toContain('grift-hustle-contextual');
@@ -426,11 +441,11 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.netWorth).toBe(1_000_000_000_000);
     expect(component.state.rugPullCount).toBe(8);
     expect(component.state.valuation).toBe(1_000_000_000_000_000);
-    expect(component.ownedHustleCount).toBe(10);
-    expect(component.selectedHustleId).toBe('sovereign-network');
+    expect(component.ownedHustleCount).toBe(12);
+    expect(component.selectedHustleId).toBe('subscriber-towns');
     expect(component.rugPullPreview.isAvailable).toBeTrue();
     expect(Object.values(component.state.hustles).every((hustle) =>
-      hustle.units > 0 && hustle.isAutomated && hustle.isActive
+      hustle.scaleCount > 0 && hustle.isAutomated && hustle.isActive
     )).toBeTrue();
     expect(fixture.nativeElement.textContent).toContain('$1T');
     expect(fixture.nativeElement.textContent).toContain('$1Q');
@@ -469,15 +484,15 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.valuation).toBe(0);
     expect(component.state.netWorth).toBe(1_000_000);
     expect(component.showNetWorth).toBeTrue();
-    expect(component.selectedHustleId).toBe('troll-network');
+    expect(component.selectedHustleId).toBe('online-rage-farm');
     expect(component.selectedHustle.modifierSummaryLabel).toContain('x5 output');
     expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$1M');
     expect(fixture.nativeElement.textContent).toContain('+$1M Net Worth realized');
     expect(fixture.nativeElement.textContent).toContain('x5 output');
-    expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
-    expect(window.localStorage.getItem('grift-os-run-v1')).toContain('"netWorth":100000');
-    expect(window.localStorage.getItem('grift-os-meta-v2')).toContain('"influence":1');
-    expect(window.localStorage.getItem('grift-os-run-v2')).toContain('"empireId":"influence"');
+    expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('100000');
+    expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('"influence":1');
+    expect(window.localStorage.getItem('grift-os-run-v3')).toContain('"netWorth":100000');
+    expect(window.localStorage.getItem('grift-os-run-v3')).toContain('"empireId":"influence"');
   });
 
   it('shows the current Net Worth advantage in the HUD and reserves projected values for Rug Pull', async () => {
@@ -487,6 +502,7 @@ describe('GriftOsGameComponent', () => {
     component.state = {
       ...component.state,
       netWorth: 1_000_000,
+      peakNetWorth: 1_000_000,
       valuation: 3_000_000_000,
       peakValuation: 3_000_000_000,
     };
@@ -508,20 +524,20 @@ describe('GriftOsGameComponent', () => {
     const component = fixture.componentInstance;
     const text = fixture.nativeElement.textContent;
 
-    expect(component.selectedHustle.definition.name).toBe('Social Media Account');
+    expect(component.selectedHustle.definition.name).toBe('Online Rage Farm');
     expect(component.showNextHustleHorizon).toBeFalse();
     expect(component.showPinnedSelectedContext).toBeFalse();
-    expect(text).toContain('Social Media Account');
+    expect(text).toContain('Online Rage Farm');
     expect(text).toContain('Your Hustles');
     expect(text).not.toContain('Active ledger');
     expect(text).not.toContain('Next enterprise');
-    expect(text).not.toContain('Paid Fan Club');
-    expect(text).not.toContain('Merch Store');
-    expect(text).not.toContain('Private Community');
+    expect(text).not.toContain('Paid Friend Club');
+    expect(text).not.toContain('Autograph Factory');
+    expect(text).not.toContain('Subscriber Towns');
     expect(text).not.toContain('Selected Hustle');
     expect(text).not.toContain('10 visible');
     expect(text).not.toContain('x1 output');
-    expect(text).not.toContain('Post an Affiliate LinkPost an Affiliate Link');
+    expect(text).not.toContain('Post a Product LinkPost a Product Link');
     const viewport = fixture.nativeElement.querySelector('.influence-lane-viewport') as HTMLImageElement;
     expect(fixture.nativeElement.querySelectorAll('.influence-lane-viewport').length).toBe(1);
     expect(viewport.getAttribute('src')).toBe('/assets/image/grift-os/influence/hustles/troll-network/viewport.jpg');
@@ -547,11 +563,11 @@ describe('GriftOsGameComponent', () => {
     addForumButton?.click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].units).toBe(2);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(2);
     expect(component.showNextHustleHorizon).toBeTrue();
     expect(fixture.nativeElement.textContent).toContain('Next enterprise');
-    expect(fixture.nativeElement.textContent).toContain('Paid Fan Club');
-    expect(fixture.nativeElement.textContent).not.toContain('Merch Store');
+    expect(fixture.nativeElement.textContent).toContain('Paid Friend Club');
+    expect(fixture.nativeElement.textContent).not.toContain('Autograph Factory');
   });
 
   it('keeps one next-enterprise horizon after later Hustles are owned', async () => {
@@ -563,21 +579,21 @@ describe('GriftOsGameComponent', () => {
       ...initialState,
       hustles: {
         ...initialState.hustles,
-        'podcast-network': {
-          ...initialState.hustles['podcast-network'],
-          units: 1,
+        'paid-friend-club': {
+          ...initialState.hustles['paid-friend-club'],
+          scaleCount: 1,
         },
       },
     };
-    component.selectedHustleId = 'podcast-network';
+    component.selectedHustleId = 'paid-friend-club';
     detectStateChange(fixture);
 
     expect(component.showNextHustleHorizon).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Paid Fan Club');
+    expect(component.selectedHustle.definition.name).toBe('Paid Friend Club');
     expect(fixture.nativeElement.textContent).toContain('Selected Hustle');
     expect(fixture.nativeElement.textContent).toContain('Next enterprise');
-    expect(fixture.nativeElement.textContent).toContain('Merch Store');
-    expect(fixture.nativeElement.textContent).not.toContain('Podcast');
+    expect(fixture.nativeElement.textContent).toContain('Autograph Factory');
+    expect(fixture.nativeElement.textContent).not.toContain('Paid Shoutout Studio');
     expect(fixture.nativeElement.textContent).not.toContain('Valuation pressure');
     expect(fixture.nativeElement.textContent).not.toContain('Automation spread');
     expect(fixture.nativeElement.textContent).not.toContain('Milestone density');
@@ -621,9 +637,9 @@ describe('GriftOsGameComponent', () => {
       ...initialState,
       hustles: {
         ...initialState.hustles,
-        'podcast-network': {
-          ...initialState.hustles['podcast-network'],
-          units: 1,
+        'paid-friend-club': {
+          ...initialState.hustles['paid-friend-club'],
+          scaleCount: 1,
         },
       },
     };
@@ -636,15 +652,15 @@ describe('GriftOsGameComponent', () => {
     fixture.detectChanges();
 
     expect(component.selectedContextOpen).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Social Media Account');
+    expect(component.selectedHustle.definition.name).toBe('Online Rage Farm');
     expect(fixture.nativeElement.textContent).not.toContain('x1 output');
 
     rowSelectButtons[1].click();
     fixture.detectChanges();
 
     expect(component.selectedContextOpen).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Paid Fan Club');
-    expect(fixture.nativeElement.querySelector('.grift-inspector-panel')?.textContent).toContain('Paid Fan Club');
+    expect(component.selectedHustle.definition.name).toBe('Paid Friend Club');
+    expect(fixture.nativeElement.querySelector('.grift-inspector-panel')?.textContent).toContain('Paid Friend Club');
   });
 
   it('closes the selected-Hustle context with Escape', async () => {
@@ -680,23 +696,23 @@ describe('GriftOsGameComponent', () => {
 
     const manualButton = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'))
       .find((button): button is HTMLButtonElement =>
-        button.textContent?.includes('Post an Affiliate Link ·') ?? false
+        button.textContent?.includes('Post a Product Link ·') ?? false
       );
 
     manualButton?.click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].isActive).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Social Media Account');
-    expect(fixture.nativeElement.textContent).toContain('Post an Affiliate Link...');
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeTrue();
+    expect(component.selectedHustle.definition.name).toBe('Online Rage Farm');
+    expect(fixture.nativeElement.textContent).toContain('Post a Product Link...');
     expect(fixture.nativeElement.textContent).not.toContain('Running');
 
     component.state = {
       ...component.state,
       hustles: {
         ...component.state.hustles,
-        'troll-network': {
-          ...component.state.hustles['troll-network'],
+        'online-rage-farm': {
+          ...component.state.hustles['online-rage-farm'],
           isActive: false,
         },
       },
@@ -706,8 +722,8 @@ describe('GriftOsGameComponent', () => {
     iconButtons[0].click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].isActive).toBeTrue();
-    expect(component.selectedHustle.definition.name).toBe('Social Media Account');
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeTrue();
+    expect(component.selectedHustle.definition.name).toBe('Online Rage Farm');
   });
 
   it('keeps payout feedback silent until a stable local feedback surface is designed', async () => {
@@ -715,14 +731,14 @@ describe('GriftOsGameComponent', () => {
     const component = fixture.componentInstance;
 
     component['addPayoutFeedback'](
-      { hustleId: 'troll-network', payout: 4, cyclesCompleted: 1 },
+      { hustleId: 'online-rage-farm', payout: 4, cyclesCompleted: 1 },
       performance.now()
     );
     detectStateChange(fixture);
 
     expect(fixture.nativeElement.querySelector('.grift-toast')).toBeNull();
     expect(fixture.nativeElement.querySelector('.grift-local-feedback')).toBeNull();
-    expect(fixture.nativeElement.textContent).not.toContain('+$0.01 Social Media Account');
+    expect(fixture.nativeElement.textContent).not.toContain('+$0.01 Online Rage Farm');
   });
 
   it('creates a Valuation gain flyout from an actual payout event', async () => {
@@ -730,7 +746,7 @@ describe('GriftOsGameComponent', () => {
     const component = fixture.componentInstance;
 
     component['addPayoutFeedback'](
-      { hustleId: 'troll-network', payout: 4, cyclesCompleted: 2 },
+      { hustleId: 'online-rage-farm', payout: 4, cyclesCompleted: 2 },
       performance.now()
     );
     detectStateChange(fixture);
@@ -752,10 +768,10 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    component.buyOne('troll-network');
+    component.buyOne('online-rage-farm');
     detectStateChange(fixture);
 
-    expect(component.state.hustles['troll-network'].units).toBe(2);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(2);
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('spend');
     expect(component.valuationFlyouts[0].label).toBe('↓ -2.95¢');
@@ -772,12 +788,12 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    component.buyMax('troll-network');
+    component.buyMax('online-rage-farm');
 
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('spend');
     expect(component.valuationFlyouts[0].label).toMatch(/^↓ -\$/);
-    expect(component.state.hustles['troll-network'].units).toBeGreaterThan(2);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBeGreaterThan(2);
   });
 
   it('creates one Valuation spend flyout from an automation purchase', async () => {
@@ -790,10 +806,10 @@ describe('GriftOsGameComponent', () => {
     };
     detectStateChange(fixture);
 
-    component.automate('troll-network');
+    component.automate('online-rage-farm');
     detectStateChange(fixture);
 
-    expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
+    expect(component.state.hustles['online-rage-farm'].isAutomated).toBeTrue();
     expect(component.valuationFlyouts.length).toBe(1);
     expect(component.valuationFlyouts[0].direction).toBe('spend');
     expect(component.valuationFlyouts[0].label).toBe('↓ -50¢');
@@ -828,15 +844,15 @@ describe('GriftOsGameComponent', () => {
     }
 
     spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
-    component.activate('troll-network');
+    component.activate('online-rage-farm');
     component['lastTickTime'] = 1_000;
     spyOn(performance, 'now').and.returnValue(3_150);
 
     component['tick']();
 
     expect(component.state.valuation).toBe(0.0025);
-    expect(component.state.hustles['troll-network'].isActive).toBeFalse();
-    expect(component.state.hustles['troll-network'].progressMs).toBe(0);
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeFalse();
+    expect(component.state.hustles['online-rage-farm'].progressMs).toBe(0);
   });
 
   it('flushes partial progress ticks without waiting for another interaction', async () => {
@@ -849,7 +865,7 @@ describe('GriftOsGameComponent', () => {
     }
 
     spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
-    component.activate('troll-network');
+    component.activate('online-rage-farm');
     component['lastTickTime'] = 1_000;
     spyOn(performance, 'now').and.returnValue(1_500);
 
@@ -860,7 +876,7 @@ describe('GriftOsGameComponent', () => {
       '.grift-hustle-entry'
     ) as HTMLElement | null;
 
-    expect(component.state.hustles['troll-network'].progressMs).toBe(500);
+    expect(component.state.hustles['online-rage-farm'].progressMs).toBe(500);
     expect(progressLane?.style.getPropertyValue('--grift-cycle-duration')).toBe('2000ms');
     expect(progressLane?.style.getPropertyValue('--grift-cycle-delay')).toBe('-500ms');
   });
@@ -874,10 +890,10 @@ describe('GriftOsGameComponent', () => {
       ...initialState,
       hustles: {
         ...initialState.hustles,
-        'troll-network': {
-          ...initialState.hustles['troll-network'],
-          units: 10,
-          reachedMilestones: ['troll-network-10'],
+        'online-rage-farm': {
+          ...initialState.hustles['online-rage-farm'],
+          scaleCount: 10,
+          reachedMilestones: ['online-rage-farm-10'],
         },
       },
     };
@@ -912,12 +928,12 @@ describe('GriftOsGameComponent', () => {
     automateButton?.click();
     fixture.detectChanges();
 
-    expect(component.state.hustles['troll-network'].isAutomated).toBeTrue();
+    expect(component.state.hustles['online-rage-farm'].isAutomated).toBeTrue();
     expect(fixture.nativeElement.textContent).toContain('Auto-Poster · posting links');
-    component.openSelectedContext('troll-network');
+    component.openSelectedContext('online-rage-farm');
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Automation active');
-    expect(fixture.nativeElement.textContent).not.toContain('Post an Affiliate Link ·');
+    expect(fixture.nativeElement.textContent).not.toContain('Post a Product Link ·');
   });
 
   it('reveals milestone grammar only near an existing milestone threshold', async () => {
@@ -930,9 +946,9 @@ describe('GriftOsGameComponent', () => {
       ...component.state,
       hustles: {
         ...component.state.hustles,
-        'troll-network': {
-          ...component.state.hustles['troll-network'],
-          units: 8,
+        'online-rage-farm': {
+          ...component.state.hustles['online-rage-farm'],
+          scaleCount: 8,
         },
       },
     };
@@ -942,7 +958,7 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Next 10');
   });
 
-  it('hides Buy Max until at least two units are affordable', async () => {
+  it('hides Buy Max until at least two scaleCount are affordable', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
 
@@ -1049,16 +1065,16 @@ describe('GriftOsGameComponent', () => {
       netWorth: 100_000,
       hustles: {
         ...initialState.hustles,
-        'troll-network': {
-          ...initialState.hustles['troll-network'],
-          units: 7,
+        'online-rage-farm': {
+          ...initialState.hustles['online-rage-farm'],
+          scaleCount: 7,
           isActive: true,
           isAutomated: true,
           progressMs: 1_200,
         },
-        'podcast-network': {
-          ...initialState.hustles['podcast-network'],
-          units: 3,
+        'paid-friend-club': {
+          ...initialState.hustles['paid-friend-club'],
+          scaleCount: 3,
           isActive: true,
           isAutomated: true,
           progressMs: 2_400,
@@ -1071,17 +1087,17 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.valuation).toBe(0);
     expect(component.state.netWorth).toBe(0);
     expect(component.state.rugPullCount).toBe(0);
-    expect(component.state.hustles['troll-network'].units).toBe(1);
-    expect(component.state.hustles['troll-network'].isActive).toBeFalse();
-    expect(component.state.hustles['troll-network'].isAutomated).toBeFalse();
-    expect(component.state.hustles['troll-network'].progressMs).toBe(0);
-    expect(component.state.hustles['podcast-network'].units).toBe(0);
-    expect(component.state.hustles['podcast-network'].isActive).toBeFalse();
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(1);
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeFalse();
+    expect(component.state.hustles['online-rage-farm'].isAutomated).toBeFalse();
+    expect(component.state.hustles['online-rage-farm'].progressMs).toBe(0);
+    expect(component.state.hustles['paid-friend-club'].scaleCount).toBe(0);
+    expect(component.state.hustles['paid-friend-club'].isActive).toBeFalse();
     expect(component.playtestSession?.events.at(-1)?.type).toBe('session_reset');
 
-    component.activate('troll-network');
+    component.activate('online-rage-farm');
 
-    expect(component.state.hustles['troll-network'].isActive).toBeTrue();
+    expect(component.state.hustles['online-rage-farm'].isActive).toBeTrue();
   });
 
   it('commits a Rug Pull into persistent Net Worth when the forecast is available', async () => {
@@ -1101,7 +1117,7 @@ describe('GriftOsGameComponent', () => {
 
     expect(component.state.valuation).toBe(0);
     expect(component.state.netWorth).toBe(1_000_000);
-    expect(component.state.hustles['troll-network'].units).toBe(1);
+    expect(component.state.hustles['online-rage-farm'].scaleCount).toBe(1);
     expect(component.selectedVisibleTab).toBe('hustles');
     expect(component.payoutFeedback.some((feedback) => feedback.tone === 'rug-pull')).toBeFalse();
     expect(component.valuationFlyouts.length).toBe(0);
@@ -1112,8 +1128,8 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('$1M');
     expect(component.selectedHustle.modifierSummaryLabel).toContain('x5 output');
     expect(fixture.nativeElement.textContent).toContain('x5 output');
-    expect(window.localStorage.getItem('grift-os-meta-v1')).toContain('100000');
-    expect(window.localStorage.getItem('grift-os-meta-v2')).toContain('"influence":1');
+    expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('100000');
+    expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('"influence":1');
 
     fixture.destroy();
     fixture = await createFixture({});
@@ -1121,7 +1137,7 @@ describe('GriftOsGameComponent', () => {
 
     expect(restored.state.valuation).toBe(0);
     expect(restored.state.netWorth).toBe(1_000_000);
-    expect(restored.state.hustles['troll-network'].units).toBe(1);
+    expect(restored.state.hustles['online-rage-farm'].scaleCount).toBe(1);
     expect(restored.showNetWorth).toBeTrue();
     expect(restored.selectedHustle.modifierSummaryLabel).toContain('x5 output');
     expect(fixture.nativeElement.textContent).toContain('x5 output');

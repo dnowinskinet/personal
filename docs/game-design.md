@@ -1,6 +1,6 @@
 # GriftOS Game Design
 
-GriftOS is a browser-native incremental game about a fictional composite tech-elite Founder building increasingly dubious Hustles into a large Valuation, then eventually using Rug Pull to convert paper success into personal Net Worth.
+GriftOS is a browser-native incremental game about a fictional composite operator building increasingly dubious Hustles into a large Valuation, then eventually using Rug Pull to convert paper success into personal Net Worth. The current Influence empire does not establish a literal Founder character.
 
 The current public title is unresolved. `GriftOS` remains the working codename and route name.
 
@@ -10,7 +10,7 @@ The core loop is:
 
 ```text
 perform a questionable Hustle manually
-expand it through concrete units
+expand its durable productive scale
 automate it
 use Leverage and milestones to distort output
 grow Valuation
@@ -46,9 +46,10 @@ Player-facing systems are **Hustles**, not Generators.
 
 Each Hustle separates:
 
-- durable enterprise: `Social Media Account`;
-- expansion unit: `Followers`;
-- manual action: `Post an Affiliate Link`;
+- durable enterprise: `Online Rage Farm`;
+- player-facing scale noun: `Followers`;
+- expansion action: `Add Followers`;
+- manual action: `Post a Product Link`;
 - automation: `Auto-Poster`.
 
 Invalid grammar:
@@ -60,26 +61,29 @@ Owned: 17 Troll People Online
 Valid grammar:
 
 ```text
-Social Media Account
-17 Followers
-Post an Affiliate Link
+Online Rage Farm
+17,000 Followers
+Add Followers
+Post a Product Link
 Auto-Poster online
 ```
 
-## Current Ten-Hustle Ladder
+## Current Twelve-Hustle Ladder
 
-| # | Hustle | Expansion unit | Manual action | Automation |
+| # | Hustle | Scale noun | Manual action | Automation |
 | ---: | --- | --- | --- | --- |
-| 1 | Social Media Account | Followers | Post an Affiliate Link | Auto-Poster |
-| 2 | Paid Fan Club | Members | Charge a Fee | Auto-Renewal |
-| 3 | Merch Store | Products | Sell Merch | Fulfillment Partner |
-| 4 | Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
-| 5 | VIP Events | Cities | Sell VIP Access | Ticketing Site |
-| 6 | Success University | Campuses | Enroll a Student | Admissions Office |
-| 7 | Brand Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
-| 8 | Coaching Company | Regions | Sell a Coaching Session | Booking Team |
-| 9 | Member Bank | Banks | Charge Fees | Collections Team |
-| 10 | Private Community | Towns | Charge HOA Fees | HOA Office |
+| 1 | Online Rage Farm | Followers | Post a Product Link | Auto-Poster |
+| 2 | Paid Friend Club | Members | Charge a Fee | Auto-Renewal |
+| 3 | Autograph Factory | Editions | Sign Memorabilia | Autopen |
+| 4 | Paid Shoutout Studio | Booking Slots | Record a Shoutout | AI Double |
+| 5 | Outrage Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
+| 6 | Get-Rich Books | Titles | Publish the Method | Ghostwriter |
+| 7 | Paid Endorsement Racket | Brand Deals | Endorse a Product | AI Spokesperson |
+| 8 | VIP Experience Tour | Venues | Sell VIP Tickets | Hologram Headliner |
+| 9 | Success University | Campuses | Enroll a Student | Admissions Office |
+| 10 | MLM Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
+| 11 | Debt Club | Loan Books | Collect Fees | Collections Team |
+| 12 | Subscriber Towns | Towns | Charge HOA Dues | HOA Office |
 
 This is the current working Hustle ladder. The game is under active development, and names, copy, and tuning remain subject to revision.
 
@@ -90,7 +94,7 @@ Current UX direction is to show:
 - owned Hustles;
 - one meaningful next-Hustle horizon early.
 
-The escalation ladder should be discovered rather than presented immediately as ten dead rows.
+The escalation ladder should be discovered rather than presented immediately as twelve dead rows.
 
 ## Core UX Progression
 
@@ -117,7 +121,7 @@ The Hustle icon may be an additional tactile target, but the manual action must 
 
 ### Expansion
 
-The player grows a durable enterprise through concrete units.
+The player grows durable productive scale through concrete in-world nouns.
 
 Examples:
 
@@ -183,7 +187,7 @@ Implemented:
 
 - Valuation as the single in-run value;
 - timed manual production;
-- Hustle unit expansion;
+- Hustle scale expansion;
 - exponential expansion costs;
 - Buy 1 and Buy Max;
 - automation as automatic cycle restart;
@@ -193,7 +197,7 @@ Implemented:
 - purchasable run-scoped Leverage deals;
 - Rug Pull forecast and commit;
 - persistent Net Worth;
-- timed, output-diverting Founder Take preparation;
+- timed, output-diverting neutral extraction preparation presented by Influence as `Your Take`;
 - internal Enterprise Intensity and Enterprise Stage presentation derivation;
 - visual progression hooks;
 - semantic game events;

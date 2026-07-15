@@ -4,28 +4,32 @@ This document records the current economy implementation and the balance decisio
 
 ## Value Model
 
-`Valuation` is the only spendable in-run value. `Net Worth` is persistent prestige value and is not spendable during the current run. Average Rate is a display metric, not a currency.
+`Valuation` is the spendable operating value for Hustle scale, automation, and extraction preparation. `Net Worth` is persistent personal wealth and is spendable only on temporary, empire-specific Leverage. Average Rate is a display metric, not a currency.
 
-The opening Social Media Account intentionally earns fractions of a cent. Values remain JavaScript `number`s; the formatter preserves sub-cent values until they become too small to display meaningfully.
+The state also records nondecreasing `peakNetWorth`. Current Net Worth remains visible, affects Wealth Advantage, and counts toward the `$1T` objective. Peak Net Worth selects campaign strata, progression unlocks, and Rug Pull targets so a Leverage purchase cannot move the player backward or relock progress.
+
+The opening Online Rage Farm intentionally earns fractions of a cent. Values remain JavaScript `number`s; the formatter preserves sub-cent values until they become too small to display meaningfully.
 
 ## Hustle Ladder
 
-The internal IDs remain the original prototype IDs so existing local saves can be reconciled. This is the actual current game, not an alternate test configuration. Names, copy, and tuning remain subject to revision as development continues. Player-facing content follows the attention-to-power career arc:
+The twelve semantic IDs and authored Influence catalog are the current game. Owned `scaleCount` means durable productive scale; the manual action is the recurring transaction performed across that scale. Names and copy are empire-specific while economic slots and formulas remain shared.
 
 | # | Hustle | Unit | Manual action | Automation |
 | ---: | --- | --- | --- | --- |
-| 1 | Social Media Account | Followers | Post an Affiliate Link | Auto-Poster |
-| 2 | Paid Fan Club | Members | Charge a Fee | Auto-Renewal |
-| 3 | Merch Store | Products | Sell Merch | Fulfillment Partner |
-| 4 | Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
-| 5 | VIP Events | Cities | Sell VIP Access | Ticketing Site |
-| 6 | Success University | Campuses | Enroll a Student | Admissions Office |
-| 7 | Brand Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
-| 8 | Coaching Company | Regions | Sell a Coaching Session | Booking Team |
-| 9 | Member Bank | Banks | Charge Fees | Collections Team |
-| 10 | Private Community | Towns | Charge HOA Fees | HOA Office |
+| 1 | Online Rage Farm | Followers | Post a Product Link | Auto-Poster |
+| 2 | Paid Friend Club | Members | Charge a Fee | Auto-Renewal |
+| 3 | Autograph Factory | Editions | Sign Memorabilia | Autopen |
+| 4 | Paid Shoutout Studio | Booking Slots | Record a Shoutout | AI Double |
+| 5 | Outrage Podcast | Episodes | Sell a Sponsor Spot | Ad Sales Team |
+| 6 | Get-Rich Books | Titles | Publish the Method | Ghostwriter |
+| 7 | Paid Endorsement Racket | Brand Deals | Endorse a Product | AI Spokesperson |
+| 8 | VIP Experience Tour | Venues | Sell VIP Tickets | Hologram Headliner |
+| 9 | Success University | Campuses | Enroll a Student | Admissions Office |
+| 10 | MLM Ambassador Program | Branches | Charge a Sign-Up Fee | Recruiting Team |
+| 11 | Debt Club | Loan Books | Collect Fees | Collections Team |
+| 12 | Subscriber Towns | Towns | Charge HOA Dues | HOA Office |
 
-Every Hustle has a data-driven acquisition cost, geometric unit growth rate, per-unit payout, cadence, automation cost, unlock Net Worth, and milestone list.
+Every Hustle has a data-driven acquisition cost, geometric scale growth rate, per-scale payout, cadence, automation cost, unlock Net Worth, and milestone list. Online Rage Farm uses presentation metadata to display one underlying scale count as 1,000 Followers; its economy remains ordinary shared-slot behavior.
 
 ## Production Rules
 
@@ -40,7 +44,7 @@ averageRate = effectivePayout / effectiveCadenceSeconds
 Base payout is:
 
 ```text
-basePayout = basePayoutPerCyclePerUnit * ownedUnits
+basePayout = basePayoutPerCyclePerScale * scaleCount
 ```
 
 The output multiplier is a product of additive scope buckets:
@@ -60,25 +64,25 @@ Cadence modifiers divide the base cadence. Cadence is clamped to a minimum of `0
 
 ## Expansion Costs
 
-For acquisition cost `A`, growth rate `g`, and `u` owned units:
+For acquisition cost `A`, growth rate `g`, and `s` owned scale:
 
 ```text
-nextUnitCost = A * g^u / combinedCostMultiplier
+nextScaleCost = A * g^s / combinedCostMultiplier
 ```
 
-Buying `q` units uses the exact geometric sum:
+Buying `q` scale increments uses the exact geometric sum:
 
 ```text
-cost(q) = nextUnitCost * ((g^q - 1) / (g - 1))
+cost(q) = nextScaleCost * ((g^q - 1) / (g - 1))
 ```
 
-When `g = 1`, the engine uses `nextUnitCost * q`. Buy Max estimates the affordable quantity with the inverse logarithm and then corrects it with exact cost checks, so it never intentionally overspends.
+When `g = 1`, the engine uses `nextScaleCost * q`. Buy Max estimates the affordable quantity with the inverse logarithm and then corrects it with exact cost checks, so it never intentionally overspends.
 
 ## Milestones
 
 Milestones are Hustle-specific and data-driven. They can improve output, cadence, expansion cost, or automation cost. They are additive inside their scope bucket, then multiply with other buckets. For example, a Hustle with local output bonuses of `+2` and `+7` has a `10x` local output bucket, not `3x * 8x`.
 
-The current milestone sets contain four milestones per Hustle, with thresholds ranging from 2 to 100 units. The later milestones are intentionally lumpy: they are investment decisions, not a smooth global level curve.
+The current milestone sets contain four milestones per Hustle, with thresholds ranging from 2 to 100 scale count. The later giant-multiplier, cross-Hustle, and old-Hustle resurgence layer is deferred; the current milestones keep the plumbing measurable without pretending to solve that later design.
 
 ## Automation
 
@@ -86,38 +90,40 @@ Automation is a one-time Valuation purchase for an owned Hustle. It changes rest
 
 ## Leverage
 
-Leverage is a run-scoped purchase layer. A deal must meet its Net Worth, ownership, automation, and Valuation requirements before it can be bought. A purchased deal applies its declared output, cadence, or cost modifier and resets on Rug Pull.
+Leverage is a run-scoped, Influence-owned purchase layer. A deal must meet peak-Net-Worth, ownership, and automation prerequisites, then sacrifices current Net Worth. Spent wealth is permanently gone; the deal applies its declared temporary modifier and clears on Rug Pull or empire replacement. The current catalog and magnitudes are scaffolding, not final content.
 
 Current deals are:
 
 | Deal | Cost | Role |
 | --- | ---: | --- |
-| Cross-Promotion Compact | $25M | Doubles the early creator portfolio |
-| Direct Audience Ledger | $750M | Doubles direct-audience output and discounts expansion |
-| Crisis Conversion Desk | $25B | Doubles belief-conversion output and halves automation costs |
-| Network Ad Exchange | $750B | Doubles network inventory and speeds selected network Hustles |
-| Controlling Interest | $25T | Triples owned attention-market output and discounts expansion |
+| Cross-Promotion Compact | $250K Net Worth | Doubles the early creator portfolio |
+| Direct Audience Ledger | $2M Net Worth | Doubles selected direct-audience output and discounts expansion |
+| Crisis Conversion Desk | $25M Net Worth | Doubles selected commercial output and halves automation costs |
+| Network Ad Exchange | $250M Net Worth | Doubles selected institutional output and speeds selected Hustles |
+| Controlling Interest | $2.5B Net Worth | Triples late output and discounts expansion |
 
-These are intended to compete with unit purchases, milestones, new Hustles, automation, saving for the next stratum, and Founder Take preparation. They are not mandatory toll booths by rule; the simulator tests their opportunity cost.
+The simulator buys these only under the explicit `leverage-reinvestment` strategy. Ordinary strategies never sacrifice persistent currency merely because a deal is affordable.
 
 ## Provisional Tuning Baseline
 
 | # | Hustle | Acquisition | Growth | Payout | Cadence | Automation cost | Unlock Net Worth |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | Social Media Account | $0.025 | 1.18 | $0.0025 | 2s | $0.50 | $0 |
-| 2 | Paid Fan Club | $2 | 1.20 | $0.20 | 5s | $12 | $0 |
-| 3 | Merch Store | $50 | 1.22 | $8 | 10s | $300 | $0 |
-| 4 | Podcast | $1,500 | 1.24 | $250 | 20s | $9,000 | $0 |
-| 5 | VIP Events | $50,000 | 1.26 | $8,000 | 30s | $300,000 | $0 |
-| 6 | Success University | $2M | 1.28 | $120,000 | 45s | $12M | $1M |
-| 7 | Brand Ambassador Program | $75M | 1.30 | $600,000 | 60s | $450M | $30M |
-| 8 | Coaching Company | $3B | 1.32 | $30M | 90s | $18B | $1B |
-| 9 | Member Bank | $100B | 1.34 | $200M | 120s | $500B | $30B |
-| 10 | Private Community | $2T | 1.36 | $2B | 180s | $6T | $30B |
+| 1 | Online Rage Farm | $0.025 | 1.18 | $0.0025 | 2s | $0.50 | $0 |
+| 2 | Paid Friend Club | $0.40 | 1.19 | $0.096 | 4s | $3 | $0 |
+| 3 | Autograph Factory | $6 | 1.20 | $0.936 | 6s | $36 | $0 |
+| 4 | Paid Shoutout Studio | $90 | 1.21 | $10.20 | 10s | $540 | $0 |
+| 5 | Outrage Podcast | $2,700 | 1.22 | $184.50 | 15s | $16,200 | $0 |
+| 6 | Get-Rich Books | $40,000 | 1.23 | $1,908 | 24s | $240,000 | $1M |
+| 7 | Paid Endorsement Racket | $600,000 | 1.24 | $18,576 | 36s | $3.6M | $1M |
+| 8 | VIP Experience Tour | $9M | 1.25 | $167,700 | 50s | $54M | $30M |
+| 9 | Success University | $270M | 1.27 | $3,018,600 | 75s | $1.35B | $30M |
+| 10 | MLM Ambassador Program | $4B | 1.29 | $26.16M | 100s | $20B | $1B |
+| 11 | Debt Club | $80B | 1.32 | $292.992M | 140s | $240B | $30B |
+| 12 | Subscriber Towns | $2T | 1.36 | $3.76704B | 180s | $6T | $30B |
 
 These values are deliberately provisional. The first run uses microscopic output, while later Hustles bridge recognizable transaction scales to the prestige campaign without requiring quintillion-scale pre-victory Valuation.
 
-## Rug Pull and Founder Take
+## Rug Pull and Extraction
 
 Each Net Worth stratum has a target peak and reward shaping:
 
@@ -134,14 +140,14 @@ The current projected Net Worth gain is:
 
 ```text
 gain = rugTarget
-  * founderTakeRate
+  * extractionRate
   * rewardShaping
   * (peakValuation / rugTarget)^0.75
 ```
 
-The gain is available only after the current stratum target is reached. Base Founder Take is `10%` and is increased by completed preparation stages.
+The gain is available only after the current stratum target is reached. Base extraction share is `10%` and is increased by completed preparation stages. Influence labels that share `Your Take`.
 
-Founder Take is a timed, run-scoped commitment rather than a last-second button:
+Extraction preparation is a timed, run-scoped commitment rather than a last-second button:
 
 | Stage | Cost | Duration | Final take bonus | Output retained while preparing |
 | --- | ---: | ---: | ---: | ---: |
@@ -169,17 +175,17 @@ This keeps rebuilt early content fast while preserving difficulty for newly reve
 
 ## Simulation Targets
 
-The campaign simulator is `src/app/pages/experimental/grift-os-game/game-engine/balance-sim.ts`, exposed through `npm run game:balance`. It models fractional-cent opening progress, active sessions, capped idle returns, purchases, milestones, Leverage, Founder Take, multiple Rug strategies, recovery, and post-victory scaling.
+The campaign simulator is `src/app/pages/experimental/grift-os-game/game-engine/balance-sim.ts`, exposed through `npm run game:balance`. It models fractional-cent opening progress, active sessions, capped idle returns, purchases, milestones, explicit-strategy Leverage, extraction preparation, multiple Rug strategies, recovery, and post-victory scaling.
 
-Using the current natural strategy with one prepared Founder Take stage:
+Using the current natural strategy with one prepared extraction stage:
 
 | Profile | Time to campaign target |
 | --- | ---: |
-| Hourly returns | 9.1 days |
-| Four-hour returns | 10.3 days |
-| Eight-hour returns | 6.8 days |
-| Morning/evening returns | 10.1 days |
+| Hourly returns | More than 14 days in the current natural-purchase heuristic |
+| Four-hour returns | 11.37 days |
+| Eight-hour returns | 5.78 days |
+| Morning/evening returns | 8.62 days |
 
-An eight-hour profile with the immediate strategy reaches successive strata faster but extracts less per Rug. The deep strategy takes fewer, larger Rugs and delays extraction for two Founder Take stages. Post-victory simulation is intentionally uncapped; the curated pre-victory envelope is approximately below `$1Q` under the tested campaign paths.
+The morning/evening path acquires Subscriber Towns at about 5.58 days and automates it at about 7.10 days before victory at 8.62 days. The explicit `leverage-reinvestment` version reaches victory in about 6.59 days. The hourly heuristic's slower result is under review as a purchase-strategy artifact rather than a target for broader multipliers. Post-victory simulation remains intentionally uncapped.
 
 The eight-hour offline credit remains capped at eight hours. Offline progress is a local playtest feature, not a new currency or backend system.

@@ -23,10 +23,10 @@ describe('GriftOS audio engine policy', () => {
 
   it('maps semantic game events to audio intents without presentation-specific events', () => {
     const settings = createDefaultAudioSettings();
-    const manualEvent: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'troll-network' };
+    const manualEvent: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'online-rage-farm' };
     const automationEvent: GameEvent = {
       type: 'hustle.automationActivated',
-      hustleId: 'troll-network',
+      hustleId: 'online-rage-farm',
       automationName: 'Bots',
     };
     const rugEvent: GameEvent = {
@@ -45,14 +45,14 @@ describe('GriftOS audio engine policy', () => {
       ...createDefaultAudioSettings(),
       isMuted: true,
     };
-    const event: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'troll-network' };
+    const event: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'online-rage-farm' };
 
     expect(gameEventToAudioIntent(event, presentation, settings)).toBeNull();
   });
 
   it('throttles repeated low-level cues by manifest cooldown', () => {
     const settings = createDefaultAudioSettings();
-    const event: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'troll-network' };
+    const event: GameEvent = { type: 'hustle.manualActionStarted', hustleId: 'online-rage-farm' };
     const first = reduceAudioEvent(createInitialAudioPolicyState(), event, presentation, settings, 1_000);
     const second = reduceAudioEvent(first.state, event, presentation, settings, 1_020);
 
@@ -65,10 +65,10 @@ describe('GriftOS audio engine policy', () => {
     const settings = createDefaultAudioSettings();
     const automationEvent: GameEvent = {
       type: 'hustle.automationActivated',
-      hustleId: 'troll-network',
+      hustleId: 'online-rage-farm',
       automationName: 'Bots',
     };
-    const purchaseEvent: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'troll-network' };
+    const purchaseEvent: GameEvent = { type: 'purchase.completed', target: 'hustle', hustleId: 'online-rage-farm' };
     const automation = reduceAudioEvent(createInitialAudioPolicyState(), automationEvent, presentation, settings, 1_000);
     const purchase = reduceAudioEvent(automation.state, purchaseEvent, presentation, settings, 1_100);
 

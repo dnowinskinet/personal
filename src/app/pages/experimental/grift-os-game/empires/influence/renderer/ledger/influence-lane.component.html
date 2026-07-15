@@ -14,7 +14,7 @@
     <button type="button" class="grift-row-select-hitbox" tabindex="-1" aria-hidden="true"
       (click)="emit({ type: 'context.open', hustleId: row.id }, $event)"></button>
 
-    <button type="button" class="grift-icon-button" [class.grift-icon-owned]="row.units > 0"
+    <button type="button" class="grift-icon-button" [class.grift-icon-owned]="row.scaleCount > 0"
       [class.grift-icon-active]="row.isActive" [class.grift-icon-automated]="row.isAutomated"
       [disabled]="!row.canManualAction"
       [attr.aria-label]="row.definition.manualActionLabel + ' for ' + row.definition.name"

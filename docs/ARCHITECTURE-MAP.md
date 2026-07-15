@@ -2,7 +2,7 @@
 Status: CURRENT/TARGET — CANONICAL NAVIGATION MAP
 Authority: Navigational and ownership guidance; product decisions remain governed by the decision log and dated canonical domain documents
 Scope: GriftOS source locations, dependency direction, ownership, UI vocabulary, and migration status
-Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
+Last verified against commit: e4a8fa9aa717155e2f3f83c2071fb12cb0f2e8e4
 Update trigger: Source ownership, dependency direction, feature paths, renderer boundaries, or migration status changes
 Supersedes: Repository-location and ownership guidance scattered across historical task briefs
 ---
@@ -16,7 +16,7 @@ The route lazy-loads `GriftOsGameComponent` from `src/app/pages/experimental/gri
 ```text
 grift-os-game/
   empire-id.ts   Shared compile-time empire ID catalog and runtime validator
-  economic-slots/ CURRENT shared ten-position Hustle tuning, milestone mechanics,
+  economic-slots/ CURRENT shared twelve-position Hustle tuning, milestone mechanics,
                   scoped slot IDs, and empire-mapping validator
   content/        Compatibility assembly and label-enrichment adapters
   empires/
@@ -25,6 +25,7 @@ grift-os-game/
     influence/
       mechanics/  CURRENT Influence tuning and mechanical catalogs
       content/    CURRENT Influence player-facing language
+      visuals/    CURRENT Influence Hustle-ID-to-viewport-asset mapping
       renderer/   CURRENT Influence renderer boundary, local root template, and scoped
                   renderer-wide surface/action compatibility styles
         stage/    CURRENT statically composed Stage view/template/style owner with
@@ -34,11 +35,12 @@ grift-os-game/
         context/  CURRENT selected-Hustle Context template and component-local
                   interaction/visual styles
         leverage/ CURRENT Leverage presentation component
-        rug-pull/ CURRENT Rug Pull component with an internal Founder Take child
+        rug-pull/ CURRENT Rug Pull component with an internal Influence extraction child
   host/           Renderer-neutral host view, typed semantic request, and registration contracts
-  game-engine/    Mechanics-only contracts, formulas, state, modifiers, prestige, simulation
+  game-engine/    Neutral mechanics-only contracts, formulas, state, modifiers,
+                  extraction, prestige, and simulation
   presentation/   Pure rule-complete view models and typed gameplay actions
-  runtime/        V2 single-run persistence, v1 migration/mirroring, simulation policy,
+  runtime/        V3 single-run persistence, v2/v1 migration, simulation policy,
                   semantic event history
   formatting/     Number and value formatting
   audio/          Shared policy/director plus the current manifest
@@ -48,27 +50,31 @@ grift-os-game/
                   fixtures, and shared utilities
 src/styles/_grift-os.scss
                   Shared shell/theme tokens and mobile Context/site-scroll bridge only
+src/assets/image/grift-os/influence/
+                  CURRENT Influence Stage and prototype Hustle viewport raster assets
 ```
 
 Current dependency problems are known implementation evidence, not approved boundaries:
 
 - compatibility `HustleDefinition` still mixes content, icons, and audio references, but engine functions consume `GameMechanics` instead;
-- Influence's stable Hustle IDs map one-to-one onto the shared economic-slot catalog; the pack validator rejects missing, extra, unknown, or duplicate slot ownership before the mechanics pack is consumed;
+- Influence's twelve semantic Hustle IDs map one-to-one onto the shared economic-slot catalog; the pack validator rejects missing, extra, unknown, or duplicate slot ownership before the mechanics pack is consumed;
 - content-bearing compatibility types remain in `game-engine/types.ts` pending later type-ownership work;
 - the host owns platform scheduling, action execution, shared UI effects, fixtures, and utilities; the Influence renderer owns game-world rendering and Context focus behavior through a semantic request boundary;
+- the GriftOS route component activates and deactivates the root-provided audio director; route exit stops playback and invalidates pending asynchronous music starts while preserving the player's music preference;
 - the host imports no Influence renderer type. The composition registry adapts the neutral host view with Influence content and supplies the production renderer registration;
 - the replacement renderer exists only in the component test and proves the boundary; it is not a second production empire or a runtime switching feature;
 - the Influence renderer template is local to its renderer and statically composes every current visual region;
+- Lane and Context resolve Influence-owned prototype viewport assets through `visuals/influence-hustle-visuals.ts`; the shared host, engine, and presentation layers do not receive those asset paths;
 - the renderer stylesheet contains no Stage, Context, Modes, Leverage, or Rug Pull selectors. Ledger/Lane components own their final Circulating Institution overrides while the renderer sheet retains shared surface/action compatibility rules.
 
 ## TARGET — approved destination, not yet implemented
 
-The following structure is the approved migration destination. Feature-local mechanics, content, presentation, runtime, host contract, registry, the single Influence renderer boundary, and renderer-level style containment now exist. The proposed top-level relocation, interaction layer, visual/audio packs, and renderer-internal component ownership below are not yet implemented:
+The following structure is the approved migration destination. Feature-local mechanics, content, presentation, runtime, host contract, registry, the single Influence renderer boundary, renderer-internal component ownership, and renderer-level style containment now exist. The proposed top-level relocation, shared interaction layer, and formal visual/audio pack contracts below are not yet implemented:
 
 ```text
 grift-os/
   host/           Route host and the single runtime-selected empire boundary; CURRENT locally
-  runtime/        Current-run policy, v2 persistence plus v1 compatibility, events,
+  runtime/        Current-run policy, v3 persistence plus v2/v1 migration, events,
                   offline credit; CURRENT locally
   engine/         Pure shared formulas and mechanical primitives
   presentation/   Rule-complete view models and semantic actions; CURRENT locally, final placement deferred
@@ -121,8 +127,8 @@ Target prohibitions:
 | Capital Panel | Stable owner/Net Worth presentation using only real facade data | Persistent panel internal to `InfluenceStageComponent` | Stage-internal unless complexity warrants extraction | CURRENT inside Stage | Shared meta data, empire-specific expression | Right-side panel, including real `$0` | Compact panel stacked beneath Chamber |
 | Modes | Navigation among shared mechanical capabilities | `InfluenceModesComponent` consuming shared availability | Influence Modes | CURRENT | Shared capabilities, empire expression | In-game navigation | Touch-safe compact navigation |
 | Ledger | Ordered Hustle operating field | `InfluenceLedgerComponent` with local template/styles | Influence Ledger | CURRENT | Empire-specific composition | Dominant operating surface | Full-width stack |
-| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row with local visual/progress rules; 3.42rem placeholder action footprint is CURRENT | Influence Lane with an empire-authored small Hustle viewport | Viewport artwork TARGET | Empire-specific composition over shared VM | Horizontal machine/row with recognizable enterprise image | Stacked touch-safe unit with preserved viewport presence |
-| Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row with component-local Context styles | Shared interaction contract + Influence Context | K.4 component and style ownership CURRENT | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
+| Lane | One Hustle's identity, production, and actions | `InfluenceLaneComponent` consuming one rule-complete row and an Influence-owned prototype viewport mapped by Hustle ID | Influence Lane with final empire-authored viewport art | Prototype viewport CURRENT; final art deferred | Empire-specific composition over shared VM | Horizontal machine/row with recognizable enterprise image | Stacked touch-safe unit with preserved viewport presence |
+| Context | Rich selected-Hustle explanation | `InfluenceContextComponent` consuming one rule-complete row and the same current prototype viewport source at 4:3 | Shared interaction contract + Influence Context with optional richer empire-authored rendition | K.4 ownership and prototype viewport CURRENT; final art deferred | Shared behavior, empire expression | Pinned when genuinely wide | Bottom sheet |
 | Horizon | Next meaningful Hustle establishment | `InfluenceLedgerComponent` template/styles | Influence Horizon | CURRENT inside Ledger | Empire-specific content/composition | After current portfolio | Inline after relevant lanes |
 | Utilities | Audio and development controls | Shared host template/component | Shared host utilities; dev tooling isolated | Host ownership CURRENT | Shared/player plus DEV_ONLY | Subordinate | Compact and touch-safe |
 
@@ -135,12 +141,12 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 | Formula | Shared engine formula receiving an explicit mechanics-only catalog | Shared engine formula (CURRENT dependency direction) |
 | Hustle-ladder balance | `economic-slots/economic-slot-catalog.ts`; Influence maps stable IDs in its mechanics pack and `content/economy-tuning.ts` remains a compatibility adapter | Shared economic-slot tuning with an independently validated mapping for every production empire |
 | Hustle/manual/automation wording | Influence content pack, assembled through current `content/` exports; presentation assembles current action labels | Influence content pack plus shared presentation contract |
-| Hustle viewport or motion | Current initials and legacy definition metadata are placeholders | Influence visual pack plus Lane/Context components; the shared contract supplies identity and semantic state only |
+| Hustle viewport or motion | `empires/influence/visuals/`, Influence Lane/Context components, and Influence raster assets; current prototypes reuse one source in both placements | Formal Influence visual pack plus Lane/Context components; the shared contract supplies identity and semantic state only |
 | Sound | Definitions, global manifest, director | Influence audio pack |
 | Action availability/mode reveal | Pure presentation facade consumed by the main component | Shared runtime/presentation facade (CURRENT ownership) |
 | Stage layout | `InfluenceStageComponent` and its local stylesheet | Influence Stage (CURRENT) |
 | Lane/Leverage/Rug Pull layout | Corresponding Influence renderer component | Corresponding Influence renderer component (CURRENT) |
-| Global Net Worth behavior | Prestige/modifier engine and v2 runtime meta | Shared mechanics/meta contract (CURRENT persistence ownership) |
+| Global Net Worth behavior | Prestige/modifier engine and v3 runtime meta with current/peak values | Shared mechanics/meta contract (CURRENT persistence ownership) |
 | Mobile Context behavior | Shared host interaction/focus policy, `InfluenceContextComponent` breakpoints, and global scroll bridge | Shared interaction contract + Influence Context |
 
 ## DEFERRED
@@ -148,7 +154,7 @@ Intermediate widths have no dedicated art direction. They must keep the Ledger u
 - Exact prestige-complete transition UI, final shared terminology, and empire unlock requirements.
 - Any later economy change that makes prestige easier for empire switching.
 
-The CURRENT v2 envelope is not `runsByEmpire`: it stores one active `empireId` and run, global Net Worth, explicit unlocked IDs, and per-empire exit counts. Completed runs will be replaced after a prestige-gated, player-chosen transition; inactive empires have no saved run and earn no offline progress.
+The CURRENT v3 envelope is not `runsByEmpire`: it stores one active `empireId` and run, current/peak global Net Worth, explicit unlocked IDs, and per-empire exit counts. Completed runs will be replaced after a prestige-gated, player-chosen transition; inactive empires have no saved run and earn no offline progress.
 
 ## HISTORICAL
 

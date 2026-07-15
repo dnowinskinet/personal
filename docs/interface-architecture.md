@@ -83,7 +83,7 @@ Normally hidden:
 
 After the player begins expanding the first Hustle:
 
-- maintain clear unit, rate, cost, and cycle feedback;
+- maintain clear scale, rate, cost, and cycle feedback;
 - reveal one meaningful next-Hustle horizon.
 
 Early game should generally show:
@@ -217,7 +217,7 @@ The ledger should support:
 
 - fast portfolio scanning;
 - obvious manual action;
-- concrete unit ownership;
+- concrete scale ownership;
 - expansion;
 - cycle state;
 - automation;
@@ -237,7 +237,7 @@ It should not become:
 Default priority:
 
 1. Hustle identity;
-2. concrete unit count;
+2. concrete scale count;
 3. one dominant comparable economic signal;
 4. cycle/progress state;
 5. automation state when relevant;
@@ -310,7 +310,7 @@ It is an additional tactile target, not the only discoverable target.
 
 ### Expansion action
 
-Separate semantic action using concrete unit grammar:
+Separate semantic action using concrete scale grammar:
 
 - Add Forum · $X;
 - Launch Show · $X;

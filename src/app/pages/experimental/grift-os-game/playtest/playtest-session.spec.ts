@@ -29,10 +29,10 @@ describe('GriftOS playtest session', () => {
     window.localStorage.removeItem(PLAYTEST_STORAGE_KEY);
   });
 
-  it('records a schema v2 session start event', () => {
+  it('records a schema v3 session start event', () => {
     const session = createPlaytestSession(startedAtMs, 'test-session');
 
-    expect(session.schemaVersion).toBe(2);
+    expect(session.schemaVersion).toBe(3);
     expect(session.sessionId).toBe('test-session');
     expect(session.events.length).toBe(1);
     expect(session.events[0].type).toBe('session_started');
@@ -61,7 +61,7 @@ describe('GriftOS playtest session', () => {
       10,
       startedAtMs + 500
     );
-    session = recordMilestoneReached(session, trollDefinition, 'troll-network-10', startedAtMs + 3_000);
+    session = recordMilestoneReached(session, trollDefinition, 'online-rage-farm-10', startedAtMs + 3_000);
     session = recordRugPullCommit(session, 50_000_000, 0, 100_000, 100_000, startedAtMs + 4_000);
 
     expect(session.events[1].type).toBe('hustle_expanded');
@@ -81,9 +81,9 @@ describe('GriftOS playtest session', () => {
       peakValuation: 800,
       hustles: {
         ...initialState.hustles,
-        'podcast-network': {
-          ...initialState.hustles['podcast-network'],
-          units: 1,
+        'paid-friend-club': {
+          ...initialState.hustles['paid-friend-club'],
+          scaleCount: 1,
         },
       },
     };
@@ -121,7 +121,7 @@ describe('GriftOS playtest session', () => {
       10,
       startedAtMs + 7_000
     );
-    session = recordMilestoneReached(session, trollDefinition, 'troll-network-10', startedAtMs + 8_000);
+    session = recordMilestoneReached(session, trollDefinition, 'online-rage-farm-10', startedAtMs + 8_000);
     session = recordHustlePurchase(
       session,
       HUSTLE_DEFINITIONS[2],
@@ -205,7 +205,7 @@ describe('GriftOS playtest session', () => {
       startedAtMs + 20_000
     );
 
-    expect(session.events.some((event) => event.type === 'hustle_affordable' && event.hustleId === 'podcast-network')).toBeTrue();
+    expect(session.events.some((event) => event.type === 'hustle_affordable' && event.hustleId === 'paid-friend-club')).toBeTrue();
     expect(session.events.some((event) => event.type === 'rug_pull_available')).toBeTrue();
     expect(session.events.filter((event) => event.type === 'economy_snapshot').length).toBe(2);
   });
@@ -218,15 +218,15 @@ describe('GriftOS playtest session', () => {
     const exportJson = createPlaytestExportJson(session, state, HUSTLE_DEFINITIONS, startedAtMs + 3_000);
     const parsed = JSON.parse(exportJson) as ReturnType<typeof createPlaytestExport>;
 
-    expect(parsed.schemaVersion).toBe(2);
+    expect(parsed.schemaVersion).toBe(3);
     expect(parsed.gameId).toBe('grift-os');
-    expect(parsed.tuning.hustles.length).toBe(10);
-    expect(parsed.tuning.hustles[0].name).toBe('Social Media Account');
+    expect(parsed.tuning.hustles.length).toBe(12);
+    expect(parsed.tuning.hustles[0].name).toBe('Online Rage Farm');
     expect(parsed.tuning.hustles[0].unitPlural).toBe('Followers');
     expect(parsed.tuning.hustles[0].automationCost).toBe(0.5);
-    expect(parsed.tuning.hustles[2].name).toBe('Merch Store');
-    expect(parsed.tuning.hustles[3].automationName).toBe('Ad Sales Team');
-    expect(parsed.tuning.hustles[9].name).toBe('Private Community');
+    expect(parsed.tuning.hustles[2].name).toBe('Autograph Factory');
+    expect(parsed.tuning.hustles[3].automationName).toBe('AI Double');
+    expect(parsed.tuning.hustles[11].name).toBe('Subscriber Towns');
     expect(parsed.summary.totalElapsedMs).toBe(3_000);
     expect(exportJson).not.toContain('emailAddress');
     expect(exportJson).not.toContain('ipAddress');
@@ -257,9 +257,9 @@ describe('GriftOS playtest session', () => {
 
     expect(summary).toContain('GriftOS Playtest Summary');
     expect(summary).toContain('Duration: 0m 12s');
-    expect(summary).toContain('Final units:');
-    expect(summary).toContain('Social Media Account: 1 Follower');
-    expect(summary).toContain('Paid Fan Club: 0 Members');
-    expect(summary).toContain('Private Community: 0 Towns');
+    expect(summary).toContain('Final scale owned:');
+    expect(summary).toContain('Online Rage Farm: 1,000 Followers');
+    expect(summary).toContain('Paid Friend Club: 0 Members');
+    expect(summary).toContain('Subscriber Towns: 0 Towns');
   });
 });

@@ -2,7 +2,7 @@
 Status: CURRENT — CANONICAL DURABLE CONSTRAINTS
 Authority: Canonical behavioral and compatibility constraints tied to executable evidence
 Scope: GriftOS mechanics, persistence, presentation, interaction, and architecture boundaries
-Last verified against commit: bc075cd9342deafe05cae756829438c3c47adbba
+Last verified against commit: e4a8fa9aa717155e2f3f83c2071fb12cb0f2e8e4
 Update trigger: A durable behavior is added, changed, removed, or protected by a different test
 Supersedes: Invariant lists repeated across historical implementation briefs
 ---
@@ -16,28 +16,31 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Valuation never becomes negative after purchases. Buy Max does not overspend. | `game-engine/economy.spec.ts`: geometric cost and Buy Max tests |
 | Manual Hustles require activation, complete one cycle, and return to ready. | `game-engine/economy.spec.ts`: manual activation/cycle tests |
 | Automated Hustles continuously run and preserve elapsed remainder. | `game-engine/economy.spec.ts`: automation cycle test |
-| Payout is linear in units before modifiers; modifier buckets combine through the current additive-within/multiplicative-across rule. | `game-engine/economy.spec.ts`: centralized tuning and modifier tests |
+| Payout is linear in durable owned scale before modifiers; modifier buckets combine through the current additive-within/multiplicative-across rule. | `game-engine/economy.spec.ts`: centralized tuning and modifier tests |
 | Cadence, cost, and automation-cost modifiers stay within engine safety floors. | Economy/modifier implementation plus current economy suite |
-| Leverage purchases require real prerequisites, spend Valuation, apply supported modifiers, and reset on Rug Pull. | `game-engine/economy.spec.ts`: Leverage and Rug Pull tests |
-| Founder Take preparation is timed, spends current Valuation, diverts output, and resets with the run. | `game-engine/economy.spec.ts`: Founder Take test |
+| Influence Leverage purchases require real prerequisites, spend current Net Worth without decreasing peak Net Worth, apply run-scoped modifiers, and reset on Rug Pull or empire replacement. | `game-engine/economy.spec.ts`: Leverage/high-water and Rug Pull tests |
+| Neutral extraction preparation is timed, spends current Valuation, diverts output, and resets with the run; Influence presents it as `Your Take`. | `game-engine/economy.spec.ts`: extraction test; component copy tests |
 | Rug Pull is a stateful extraction action that resets run state and preserves/increases global Net Worth. | `game-engine/economy.spec.ts` and `grift-os-game.spec.ts` Rug Pull tests |
 | Offline credit applies only to automated production, begins after 30 seconds, and is capped at eight hours. | `runtime/run-runtime.spec.ts`; `grift-os-game.spec.ts` integration coverage |
-| Existing Influence Hustle IDs remain stable and reconcile against v2 saves and migrated v1 saves. | `economy.spec.ts`: ordered ID test; persistence and component restore/reconciliation tests |
+| Influence uses twelve semantic Hustle IDs in canonical order. V3 persistence restores those IDs; v2/v1 migration preserves persistent wealth/history and resets the incompatible ten-ID run without deleting legacy records. | `economy.spec.ts`: ordered ID test; `runtime/run-persistence.spec.ts`; component restore tests |
 | Influence mechanics and content catalogs remain complete and assemble into the unchanged compatibility definitions. | `empires/influence/influence-packs.spec.ts`: Hustle, milestone, and Leverage pack parity tests |
-| Equivalent Hustle positions use the shared ten-slot costs, payouts, cadence, growth, automation, unlocks, initial units, and milestone effects; an empire must map exactly one local Hustle to every slot. | `empires/influence/influence-packs.spec.ts`; `economic-slots/economic-slot-catalog.ts`; `npm run grift:arch` |
+| Equivalent Hustle positions use the shared twelve-slot costs, payouts, cadence, growth, automation, unlocks, initial scale, and milestone effects; an empire must map exactly one local Hustle to every slot. | `empires/influence/influence-packs.spec.ts`; `economic-slots/economic-slot-catalog.ts`; `npm run grift:arch` |
 | Engine production sources import no Angular, browser storage/DOM, empire content, visual, audio, renderer, or playtest code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
-| Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and Founder Take data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
+| Engine formulas receive mechanics-only Hustle, milestone, Leverage, campaign, prestige, and neutral extraction data explicitly. | `game-engine/mechanics.ts`; engine signatures; economy and balance suites |
 | The current renderer consumes rule-complete presentation models for display state and emits typed semantic gameplay actions rather than reconstructing costs, affordability, or mode reveal in the template. | `presentation/game-presentation.spec.ts`; component action-dispatch test; `npm run grift:arch` |
 | Exactly one runtime-selected empire renderer is mounted, its live DOM contains the Influence style root, shared utilities remain outside it in the host, and the Influence renderer does not import economy, runtime, audio, or playtest code. | `grift-os-game.spec.ts`: renderer/style-root/utility ownership test; `npm run grift:arch` |
 | The Influence Stage is statically composed inside the one empire renderer, consumes presentation-only data, owns no gameplay actions, and keeps active Circulating Institution Stage rules out of the prototype-level stylesheet. | `stage/influence-stage.component.spec.ts`; `grift-os-game.spec.ts`; `npm run grift:arch` |
 | Influence Ledger and Lane are ordinary static children inside the single renderer, consume rule-complete presentation rows, and emit typed semantic requests without importing economy/runtime/audio/playtest code. | Full component interaction suite; `npm run grift:arch` |
+| Influence Hustle viewport paths are empire-owned and keyed by stable Hustle ID. The current Lane and selected Context use the matching image, the Lane image remains decorative inside the existing semantically labeled action, and no asset path leaks into engine or shared presentation data. | `grift-os-game.spec.ts`: Lane/Context viewport mapping and empty-alt assertions; `npm run grift:arch`; desktop/mobile browser review |
 | Lane progress animation uses engine-derived cadence and initial phase without renderer timers or per-render transform reconstruction; engine progress and payout timing remain authoritative. | `game-presentation.spec.ts`; partial-progress component characterization; browser fixture review |
 | Influence Context is an ordinary static child that owns its Context-specific styles, consumes the selected rule-complete row, and emits semantic requests while preserving wide pinning, mobile overlay/backdrop behavior, focus entry, Escape closure, and focus return. | `grift-os-game.spec.ts`: selected-Context open/update/Escape tests; `npm run grift:arch` |
 | The Influence Capital Panel remains structurally present and shows real Net Worth, including `$0` before the first exit; the Stage does not invent owner metrics, tiers, telemetry, or graph data. | `stage/influence-stage.component.spec.ts`; normal-route component characterization; deterministic `fresh` and `post-rug` review |
 | A replacement renderer can consume the neutral host view and dispatch semantic actions without the host importing a concrete empire renderer; replacement does not move shared utilities inside the renderer. | `grift-os-game.spec.ts`: replacement-renderer proof; `npm run grift:arch` |
 | Influence selectors remain under the renderer root; empire composition/keyframes do not return to the global GriftOS bridge; `::ng-deep`, append-only phase sections, and new unreviewed `!important` declarations are rejected. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Presentation production sources import no Angular, browser storage/DOM, audio, renderer, playtest, or current component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
-| V2 persistence stores one active empire run, global Net Worth, explicit unlocked IDs, and per-empire exit counts. V1 migrates to Influence, remains undeleted, and is mirrored for rollback while Influence is the only production empire. Corrupt v2 falls back safely to valid v1. | `runtime/run-persistence.spec.ts`; component persistence tests |
+| V3 persistence stores one active empire run, current/peak global Net Worth, explicit unlocked IDs, and per-empire exit counts. V2/v1 migrate to Influence without deleting old records; incompatible current-run data resets cleanly and corrupt records fall back safely. | `runtime/run-persistence.spec.ts`; component persistence tests |
+| Peak Net Worth never decreases and governs campaign strata, unlocks, and Rug Pull targets; current Net Worth remains spendable, affects Wealth Advantage, and counts toward the campaign objective. | `game-engine/economy.spec.ts`: Leverage/high-water test; progression/Rug Pull tests; persistence reconciliation tests |
+| The natural morning/evening prepared simulator acquires and automates Subscriber Towns before the campaign-winning Rug, without purchasing Leverage automatically. | `game-engine/economy.spec.ts`: intermittent campaign test; `game:balance` report |
 | Runtime production sources import no Angular, browser globals, empire content/visual/audio, presentation, renderer, playtest, or component code. | `npm run grift:arch`; `scripts/check-grift-boundaries.mjs` |
 | Semantic event history remains ordered, bounded to twelve records, and separate from audio consumption. | `runtime/game-event-log.spec.ts`; component event/audio integration |
 | Progressive mode/navigation reveal is derived from real state; unavailable modes are not decorative. | `grift-os-game.spec.ts`: progressive navigation and reveal tests |
@@ -45,14 +48,14 @@ Supersedes: Invariant lists repeated across historical implementation briefs
 | Selected Context supports intentional opening, updates selection, closes with Escape, and restores interaction safely. | `grift-os-game.spec.ts`: Context interaction tests |
 | Normal Hustles play has no required horizontal scrolling and supports semantic keyboard/touch controls. | Angular template accessibility lint plus browser verification in `VERIFICATION.md` |
 | Reduced motion preserves state and meaningful progress while removing nonessential motion. | SCSS media rules plus browser verification in `VERIFICATION.md` |
-| Audio remains SSR-safe, gesture-unlocked, optional without assets, and driven by semantic events. | `audio-engine.spec.ts`, production build, and `audio-architecture.md` |
-| Influence tuning changes require balance-simulation evidence; architecture extraction must not rebalance it. | `game:balance` workflow and `economy-tuning-brief.md` |
+| Audio remains SSR-safe, gesture-unlocked, optional without assets, driven by semantic events, and scoped to the GriftOS route; route destruction stops playback and invalidates pending starts. | `audio-engine.spec.ts`; `grift-os-game.spec.ts`: route-owned audio teardown; production build; `audio-architecture.md` |
+| Influence tuning changes require balance-simulation evidence. The giant-milestone/cross-Hustle resurgence layer remains deferred rather than being smuggled into baseline tuning. | `game:balance` workflow and `economy-tuning-brief.md` |
 
 ## TARGET — approved constraints not yet enforceable
 
 - Visual and audio pack extraction is not yet implemented.
-- Hustle imagery uses related small-Lane and richer selected-Context renditions. Each empire owns assets, frames, crops, materials, and restrained effects; shared code owns only placement, identity/state semantics, accessibility, and reduced-motion requirements.
-- The placeholder initials must not become a universal flat-icon or generic SVG-glyph system, and the future viewport family must not collapse into one heavily configurable cross-empire widget.
+- Final Hustle imagery may use related small-Lane and richer selected-Context renditions. Each empire owns assets, frames, crops, materials, and restrained effects; shared code owns only placement, identity/state semantics, accessibility, and reduced-motion requirements. Reusing one source in both placements is the CURRENT prototype implementation, not a permanent cross-empire requirement.
+- The current viewport family must not be replaced by a universal flat-icon or generic SVG-glyph system, or collapsed into one heavily configurable cross-empire widget.
 - Catalog assembly validates IDs and cross-references before a run begins.
 - Empire replacement is available only after the active empire's prestige completes, and it starts the chosen empire from that empire's initial run state rather than carrying Hustle progress across.
 

@@ -71,6 +71,7 @@ const entrySource = `
     'milestone-rush',
     'rough-roi',
     'expansion-first',
+    'leverage-reinvestment',
   ];
   const profiles = profileIds.map((profile) => summarize(runCampaignSimulation({
     profile,
@@ -111,18 +112,19 @@ const entrySource = `
         resultingNetWorth: rug.resultingNetWorth,
         recoveryHours: rug.recoveryMs === null ? null : round(rug.recoveryMs / 3_600_000, 2),
         newlyUnlocked: rug.newlyUnlocked.map(unlockLabel),
-        founderTakePercent: round(rug.founderTakeRate * 100, 1),
-        founderTakeStages: rug.founderTakeStages,
+        extractionPercent: round(rug.extractionRate * 100, 1),
+        extractionStages: rug.extractionStages,
       })),
       finalNetWorth: result.finalState.netWorth,
+      finalPeakNetWorth: result.finalState.peakNetWorth,
       finalPeakValuation: result.finalState.peakValuation,
       hustleAcquisitionHours: hoursMap(result.timings.hustleAcquiredAtMs),
       automationHours: hoursMap(result.timings.automationAtMs),
       leverageHours: hoursMap(result.timings.leverageAtMs),
-      founderTakePreparationHours: result.timings.founderTakeAtMs.map((elapsedMs) => round(elapsedMs / 3_600_000, 2)),
+      extractionPreparationHours: result.timings.extractionAtMs.map((elapsedMs) => round(elapsedMs / 3_600_000, 2)),
       milestoneCount: Object.keys(result.timings.milestoneAtMs).length,
-      finalUnits: Object.fromEntries(
-        Object.entries(result.finalState.hustles).map(([id, hustle]) => [id, hustle.units])
+      finalScaleCounts: Object.fromEntries(
+        Object.entries(result.finalState.hustles).map(([id, hustle]) => [id, hustle.scaleCount])
       ),
       productionShare: Object.fromEntries(
         Object.entries(result.productionShareByHustle)

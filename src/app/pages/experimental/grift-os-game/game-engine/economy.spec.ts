@@ -5,11 +5,11 @@ import {
   GRIFT_OS_MILESTONE_TUNING,
   GRIFT_OS_PRESTIGE_TUNING,
 } from '../content/economy-tuning';
-import { runBalanceSimulation } from './balance-sim';
+import { runBalanceSimulation, runCampaignSimulation } from './balance-sim';
 import {
-  founderTakeRate,
-  startFounderTakePreparation,
-} from './founder-take';
+  extractionRate,
+  startExtractionPreparation,
+} from './extraction';
 import {
   activateHustle,
   advanceGame,
@@ -32,43 +32,46 @@ import {
 } from './modifiers';
 import { buyLeverage } from './leverage';
 import { deriveEnterprisePresentation } from './presentation';
-import { newlyUnlockedMechanics } from './progression';
+import { campaignComplete, newlyUnlockedMechanics } from './progression';
 import { commitRugPull, createRugPullPreview, projectedNetWorthGain } from './rug-pull';
 
 describe('GriftOS Hustle economy', () => {
   const trollDefinition = HUSTLE_DEFINITIONS[0];
   const podcastDefinition = HUSTLE_DEFINITIONS[1];
   const cultureWarDefinition = HUSTLE_DEFINITIONS[2];
-  const sovereignDefinition = HUSTLE_DEFINITIONS[9];
+  const finalDefinition = HUSTLE_DEFINITIONS[11];
 
   it('creates the modern starting state', () => {
     const state = createInitialGameState(HUSTLE_DEFINITIONS);
 
-    expect(HUSTLE_DEFINITIONS.length).toBe(10);
+    expect(HUSTLE_DEFINITIONS.length).toBe(12);
     expect(state.valuation).toBe(0);
     expect(state.peakValuation).toBe(0);
     expect(state.netWorth).toBe(0);
-    expect(state.hustles['troll-network'].units).toBe(1);
-    expect(state.hustles['troll-network'].isAutomated).toBeFalse();
+    expect(state.peakNetWorth).toBe(0);
+    expect(state.hustles['online-rage-farm'].scaleCount).toBe(1);
+    expect(state.hustles['online-rage-farm'].isAutomated).toBeFalse();
 
     for (const definition of HUSTLE_DEFINITIONS.slice(1)) {
-      expect(state.hustles[definition.id].units).toBe(0);
+      expect(state.hustles[definition.id].scaleCount).toBe(0);
       expect(state.hustles[definition.id].isAutomated).toBeFalse();
     }
   });
 
-  it('defines the ten-Hustle ladder with durable nouns and unit grammar', () => {
+  it('defines the twelve-Hustle ladder with durable nouns and transaction grammar', () => {
     expect(HUSTLE_DEFINITIONS.map((definition) => definition.id)).toEqual([
-      'troll-network',
-      'podcast-network',
-      'culture-war-media',
-      'masterclass-business',
-      'manifesto-imprint',
-      'founder-retreat-circuit',
-      'ai-venture',
-      'venture-portfolio',
-      'media-holdings',
-      'sovereign-network',
+      'online-rage-farm',
+      'paid-friend-club',
+      'autograph-factory',
+      'paid-shoutout-studio',
+      'outrage-podcast',
+      'get-rich-books',
+      'paid-endorsement-racket',
+      'vip-experience-tour',
+      'success-university',
+      'mlm-ambassador-program',
+      'debt-club',
+      'subscriber-towns',
     ]);
     expect(HUSTLE_DEFINITIONS.map((definition) => ({
       name: definition.name,
@@ -77,19 +80,22 @@ describe('GriftOS Hustle economy', () => {
       automationName: definition.automationName,
       automationActivityLabel: definition.automationActivityLabel,
     }))).toEqual([
-      { name: 'Social Media Account', unitPlural: 'Followers', manualActionLabel: 'Post an Affiliate Link', automationName: 'Auto-Poster', automationActivityLabel: 'posting links' },
-      { name: 'Paid Fan Club', unitPlural: 'Members', manualActionLabel: 'Charge a Fee', automationName: 'Auto-Renewal', automationActivityLabel: 'renewing memberships' },
-      { name: 'Merch Store', unitPlural: 'Products', manualActionLabel: 'Sell Merch', automationName: 'Fulfillment Partner', automationActivityLabel: 'processing orders' },
-      { name: 'Podcast', unitPlural: 'Episodes', manualActionLabel: 'Sell a Sponsor Spot', automationName: 'Ad Sales Team', automationActivityLabel: 'booking sponsors' },
-      { name: 'VIP Events', unitPlural: 'Cities', manualActionLabel: 'Sell VIP Access', automationName: 'Ticketing Site', automationActivityLabel: 'selling access' },
+      { name: 'Online Rage Farm', unitPlural: 'Followers', manualActionLabel: 'Post a Product Link', automationName: 'Auto-Poster', automationActivityLabel: 'posting links' },
+      { name: 'Paid Friend Club', unitPlural: 'Members', manualActionLabel: 'Charge a Fee', automationName: 'Auto-Renewal', automationActivityLabel: 'renewing memberships' },
+      { name: 'Autograph Factory', unitPlural: 'Editions', manualActionLabel: 'Sign Memorabilia', automationName: 'Autopen', automationActivityLabel: 'signing memorabilia' },
+      { name: 'Paid Shoutout Studio', unitPlural: 'Booking Slots', manualActionLabel: 'Record a Shoutout', automationName: 'AI Double', automationActivityLabel: 'generating shoutouts' },
+      { name: 'Outrage Podcast', unitPlural: 'Episodes', manualActionLabel: 'Sell a Sponsor Spot', automationName: 'Ad Sales Team', automationActivityLabel: 'booking sponsors' },
+      { name: 'Get-Rich Books', unitPlural: 'Titles', manualActionLabel: 'Publish the Method', automationName: 'Ghostwriter', automationActivityLabel: 'publishing under your name' },
+      { name: 'Paid Endorsement Racket', unitPlural: 'Brand Deals', manualActionLabel: 'Endorse a Product', automationName: 'AI Spokesperson', automationActivityLabel: 'endorsing products' },
+      { name: 'VIP Experience Tour', unitPlural: 'Venues', manualActionLabel: 'Sell VIP Tickets', automationName: 'Hologram Headliner', automationActivityLabel: 'headlining without you' },
       { name: 'Success University', unitPlural: 'Campuses', manualActionLabel: 'Enroll a Student', automationName: 'Admissions Office', automationActivityLabel: 'enrolling students' },
-      { name: 'Brand Ambassador Program', unitPlural: 'Branches', manualActionLabel: 'Charge a Sign-Up Fee', automationName: 'Recruiting Team', automationActivityLabel: 'signing up ambassadors' },
-      { name: 'Coaching Company', unitPlural: 'Regions', manualActionLabel: 'Sell a Coaching Session', automationName: 'Booking Team', automationActivityLabel: 'booking sessions' },
-      { name: 'Member Bank', unitPlural: 'Banks', manualActionLabel: 'Charge Fees', automationName: 'Collections Team', automationActivityLabel: 'charging fees' },
-      { name: 'Private Community', unitPlural: 'Towns', manualActionLabel: 'Charge HOA Fees', automationName: 'HOA Office', automationActivityLabel: 'collecting HOA fees' },
+      { name: 'MLM Ambassador Program', unitPlural: 'Branches', manualActionLabel: 'Charge a Sign-Up Fee', automationName: 'Recruiting Team', automationActivityLabel: 'recruiting ambassadors' },
+      { name: 'Debt Club', unitPlural: 'Loan Books', manualActionLabel: 'Collect Fees', automationName: 'Collections Team', automationActivityLabel: 'collecting fees' },
+      { name: 'Subscriber Towns', unitPlural: 'Towns', manualActionLabel: 'Charge HOA Dues', automationName: 'HOA Office', automationActivityLabel: 'collecting HOA dues' },
     ]);
-    expect(sovereignDefinition.audio?.ambientSignature).toBe('platform-exchange');
-    expect(trollDefinition.milestones.map((milestone) => milestone.requiredUnits)).toEqual([
+    expect(finalDefinition.audio?.ambientSignature).toBe('platform-exchange');
+    expect(trollDefinition.scaleDisplayMultiplier).toBe(1_000);
+    expect(trollDefinition.milestones.map((milestone) => milestone.requiredScaleCount)).toEqual([
       10,
       25,
       50,
@@ -105,16 +111,16 @@ describe('GriftOS Hustle economy', () => {
         basePayout: definition.basePayout,
         cadenceSeconds: definition.cadenceSeconds,
         automationCost: definition.automationCost,
-        initialUnits: definition.initialUnits,
+        initialScaleCount: definition.initialScaleCount,
         unlockNetWorth: definition.unlockNetWorth,
       }).toEqual(GRIFT_OS_HUSTLE_TUNING[definition.id]);
 
       expect(definition.milestones.map((milestone) => ({
-        requiredUnits: milestone.requiredUnits,
+        requiredScaleCount: milestone.requiredScaleCount,
         kind: milestone.reward.kind,
         value: milestone.reward.value,
       }))).toEqual(GRIFT_OS_MILESTONE_TUNING[definition.id].map((milestone) => ({
-        requiredUnits: milestone.requiredUnits,
+        requiredScaleCount: milestone.requiredScaleCount,
         kind: milestone.kind,
         value: milestone.value,
       })));
@@ -143,20 +149,20 @@ describe('GriftOS Hustle economy', () => {
     expect(nextCost).toBeGreaterThan(0.2);
   });
 
-  it('buys Hustle units and records reached milestones', () => {
+  it('buys Hustle scaleCount and records reached milestones', () => {
     const state = {
       ...createInitialGameState(HUSTLE_DEFINITIONS),
       valuation: 2_000,
       peakValuation: 2_000,
     };
 
-    const result = buyHustle(state, HUSTLE_DEFINITIONS, 'troll-network', 9);
+    const result = buyHustle(state, HUSTLE_DEFINITIONS, 'online-rage-farm', 9);
 
     expect(result.quantityPurchased).toBe(9);
-    expect(result.state.hustles['troll-network'].units).toBe(10);
-    expect(result.state.hustles['troll-network'].reachedMilestones).toContain('troll-network-10');
+    expect(result.state.hustles['online-rage-farm'].scaleCount).toBe(10);
+    expect(result.state.hustles['online-rage-farm'].reachedMilestones).toContain('online-rage-farm-10');
     expect(result.milestonesReached).toEqual([
-      { hustleId: 'troll-network', milestoneId: 'troll-network-10' },
+      { hustleId: 'online-rage-farm', milestoneId: 'online-rage-farm-10' },
     ]);
   });
 
@@ -167,10 +173,10 @@ describe('GriftOS Hustle economy', () => {
       peakValuation: 2_000_000,
     };
 
-    const result = buyHustle(state, HUSTLE_DEFINITIONS, 'founder-retreat-circuit', 1);
+    const result = buyHustle(state, HUSTLE_DEFINITIONS, 'get-rich-books', 1);
 
     expect(result.quantityPurchased).toBe(1);
-    expect(result.state.hustles['founder-retreat-circuit'].units).toBe(1);
+    expect(result.state.hustles['get-rich-books'].scaleCount).toBe(1);
     expect(result.state.netWorth).toBe(0);
   });
 
@@ -190,14 +196,14 @@ describe('GriftOS Hustle economy', () => {
         peakValuation: 2_000,
       },
       HUSTLE_DEFINITIONS,
-      'troll-network',
+      'online-rage-farm',
       9
     ).state;
 
     const modifiers = collectActiveModifiers(milestoneState, HUSTLE_DEFINITIONS);
-    const payout = hustlePayout(milestoneState, HUSTLE_DEFINITIONS, 'troll-network');
+    const payout = hustlePayout(milestoneState, HUSTLE_DEFINITIONS, 'online-rage-farm');
 
-    expect(modifiers.map((modifier) => modifier.id)).toContain('troll-network-units-10-output');
+    expect(modifiers.map((modifier) => modifier.id)).toContain('online-rage-farm-scale-10-output');
     expect(wealthAdvantageMultiplier(100_000, HUSTLE_DEFINITIONS)).toBeCloseTo(3.0, 2);
     expect(payout).toBeGreaterThan(trollDefinition.basePayout * 10 * 1.5);
   });
@@ -207,7 +213,7 @@ describe('GriftOS Hustle economy', () => {
       .toBeCloseTo(253.38, 2);
     expect(wealthAdvantageMultiplierForHustle(
       1_000_000_000_000,
-      sovereignDefinition,
+      finalDefinition,
       HUSTLE_DEFINITIONS
     ))
       .toBeCloseTo(64.1, 2);
@@ -220,11 +226,11 @@ describe('GriftOS Hustle economy', () => {
     expect(idleResult.events.length).toBe(0);
     expect(idleResult.state.valuation).toBe(0);
 
-    const activeState = activateHustle(initialState, 'troll-network');
+    const activeState = activateHustle(initialState, 'online-rage-farm');
     const activeResult = advanceGame(activeState, HUSTLE_DEFINITIONS, 2_000);
 
     expect(activeResult.events).toEqual([
-      { hustleId: 'troll-network', payout: 0.0025, cyclesCompleted: 1 },
+      { hustleId: 'online-rage-farm', payout: 0.0025, cyclesCompleted: 1 },
     ]);
     expect(activeResult.state.valuation).toBe(0.0025);
   });
@@ -232,15 +238,15 @@ describe('GriftOS Hustle economy', () => {
   it('manual Hustles complete one cycle and become ready again', () => {
     const activeState = activateHustle(
       createInitialGameState(HUSTLE_DEFINITIONS),
-      'troll-network'
+      'online-rage-farm'
     );
 
     const result = advanceGame(activeState, HUSTLE_DEFINITIONS, 20_000);
 
     expect(result.events.length).toBe(1);
     expect(result.state.valuation).toBe(0.0025);
-    expect(result.state.hustles['troll-network'].isActive).toBeFalse();
-    expect(result.state.hustles['troll-network'].progressMs).toBe(0);
+    expect(result.state.hustles['online-rage-farm'].isActive).toBeFalse();
+    expect(result.state.hustles['online-rage-farm'].progressMs).toBe(0);
   });
 
   it('automation is priced directly and restarts completed cycles', () => {
@@ -250,19 +256,19 @@ describe('GriftOS Hustle economy', () => {
       peakValuation: trollDefinition.automationCost,
     };
 
-    expect(automationCost(state, HUSTLE_DEFINITIONS, 'troll-network')).toBe(0.5);
-    expect(canBuyAutomation(state, HUSTLE_DEFINITIONS, 'troll-network')).toBeTrue();
+    expect(automationCost(state, HUSTLE_DEFINITIONS, 'online-rage-farm')).toBe(0.5);
+    expect(canBuyAutomation(state, HUSTLE_DEFINITIONS, 'online-rage-farm')).toBeTrue();
 
-    const automated = buyAutomation(state, HUSTLE_DEFINITIONS, 'troll-network').state;
+    const automated = buyAutomation(state, HUSTLE_DEFINITIONS, 'online-rage-farm').state;
     const result = advanceGame(automated, HUSTLE_DEFINITIONS, 4_500);
 
     expect(result.events).toEqual([
-      { hustleId: 'troll-network', payout: 0.0025, cyclesCompleted: 2 },
+      { hustleId: 'online-rage-farm', payout: 0.0025, cyclesCompleted: 2 },
     ]);
     expect(result.state.valuation).toBe(0.005);
-    expect(result.state.hustles['troll-network'].isAutomated).toBeTrue();
-    expect(result.state.hustles['troll-network'].isActive).toBeTrue();
-    expect(result.state.hustles['troll-network'].progressMs).toBe(500);
+    expect(result.state.hustles['online-rage-farm'].isAutomated).toBeTrue();
+    expect(result.state.hustles['online-rage-farm'].isActive).toBeTrue();
+    expect(result.state.hustles['online-rage-farm'].progressMs).toBe(500);
   });
 
   it('calculates displayed rate from active and automated Hustles only', () => {
@@ -274,13 +280,13 @@ describe('GriftOS Hustle economy', () => {
 
     expect(valuationPerSecond(idle, HUSTLE_DEFINITIONS)).toBe(0);
 
-    const active = activateHustle(idle, 'troll-network');
+    const active = activateHustle(idle, 'online-rage-farm');
 
     expect(valuationPerSecond(active, HUSTLE_DEFINITIONS)).toBeCloseTo(
       trollDefinition.basePayout / trollDefinition.cadenceSeconds,
       6
     );
-    expect(effectiveCadenceSeconds(active, HUSTLE_DEFINITIONS, 'troll-network')).toBe(2);
+    expect(effectiveCadenceSeconds(active, HUSTLE_DEFINITIONS, 'online-rage-farm')).toBe(2);
   });
 
   it('previews and commits the first campaign Rug Pull', () => {
@@ -301,10 +307,10 @@ describe('GriftOS Hustle economy', () => {
     expect(result.state.valuation).toBe(0);
     expect(result.state.netWorth).toBe(1_000_000);
     expect(result.state.rugPullCount).toBe(1);
-    expect(result.state.hustles['troll-network'].units).toBe(1);
+    expect(result.state.hustles['online-rage-farm'].scaleCount).toBe(1);
   });
 
-  it('requires timed, output-diverting preparation before Founder Take improves', () => {
+  it('requires timed, output-diverting preparation before extraction improves', () => {
     const target = RUG_PULL_CONFIG.unlockValuation;
     const readyState = {
       ...createInitialGameState(HUSTLE_DEFINITIONS),
@@ -312,55 +318,67 @@ describe('GriftOS Hustle economy', () => {
       peakValuation: target,
       hustles: {
         ...createInitialGameState(HUSTLE_DEFINITIONS).hustles,
-        'troll-network': {
-          ...createInitialGameState(HUSTLE_DEFINITIONS).hustles['troll-network'],
+        'online-rage-farm': {
+          ...createInitialGameState(HUSTLE_DEFINITIONS).hustles['online-rage-farm'],
           isActive: true,
           isAutomated: true,
         },
       },
     };
-    const preparation = startFounderTakePreparation(readyState, HUSTLE_DEFINITIONS);
+    const preparation = startExtractionPreparation(readyState, HUSTLE_DEFINITIONS);
 
     expect(preparation.started).toBeTrue();
     expect(preparation.totalCost).toBe(3_000_000);
-    expect(founderTakeRate(preparation.state, HUSTLE_DEFINITIONS)).toBe(0.1);
-    expect(hustlePayout(preparation.state, HUSTLE_DEFINITIONS, 'troll-network')).toBeCloseTo(0.001875, 8);
+    expect(extractionRate(preparation.state, HUSTLE_DEFINITIONS)).toBe(0.1);
+    expect(hustlePayout(preparation.state, HUSTLE_DEFINITIONS, 'online-rage-farm')).toBeCloseTo(0.001875, 8);
 
     const completed = advanceGame(preparation.state, HUSTLE_DEFINITIONS, 2 * 60 * 60 * 1000);
 
-    expect(completed.state.founderTakePreparation.completedStages).toBe(1);
-    expect(completed.state.founderTakePreparation.isActive).toBeFalse();
-    expect(founderTakeRate(completed.state, HUSTLE_DEFINITIONS)).toBeCloseTo(0.15, 8);
+    expect(completed.state.extractionPreparation.completedStages).toBe(1);
+    expect(completed.state.extractionPreparation.isActive).toBeFalse();
+    expect(extractionRate(completed.state, HUSTLE_DEFINITIONS)).toBeCloseTo(0.15, 8);
     expect(createRugPullPreview(completed.state, HUSTLE_DEFINITIONS).projectedNetWorthGain)
       .toBe(1_500_000);
   });
 
-  it('makes Leverage an expensive run-scoped output decision', () => {
-    const initial = createInitialGameState(HUSTLE_DEFINITIONS);
+  it('spends current Net Worth on temporary Leverage without lowering the high-water mark', () => {
+    const initial = createInitialGameState(HUSTLE_DEFINITIONS, 1_000_000);
     const eligibleState = {
       ...initial,
       valuation: 25_000_000,
       peakValuation: 25_000_000,
       hustles: {
         ...initial.hustles,
-        'troll-network': { ...initial.hustles['troll-network'], isAutomated: true },
-        'podcast-network': { ...initial.hustles['podcast-network'], units: 1, isAutomated: true },
-        'culture-war-media': { ...initial.hustles['culture-war-media'], units: 1, isAutomated: true },
-        'masterclass-business': { ...initial.hustles['masterclass-business'], units: 1 },
+        'online-rage-farm': { ...initial.hustles['online-rage-farm'], isAutomated: true },
+        'paid-friend-club': { ...initial.hustles['paid-friend-club'], scaleCount: 1, isAutomated: true },
+        'autograph-factory': { ...initial.hustles['autograph-factory'], scaleCount: 1, isAutomated: true },
+        'paid-shoutout-studio': { ...initial.hustles['paid-shoutout-studio'], scaleCount: 1 },
       },
     };
-    const beforePayout = hustlePayout(eligibleState, HUSTLE_DEFINITIONS, 'troll-network');
+    const beforePayout = hustlePayout(eligibleState, HUSTLE_DEFINITIONS, 'online-rage-farm');
     const purchased = buyLeverage(eligibleState, 'attention-loop', HUSTLE_DEFINITIONS);
 
     expect(purchased.purchased).toBeTrue();
-    expect(purchased.state.valuation).toBe(0);
-    expect(hustlePayout(purchased.state, HUSTLE_DEFINITIONS, 'troll-network')).toBeCloseTo(beforePayout * 2, 8);
+    expect(purchased.state.valuation).toBe(25_000_000);
+    expect(purchased.state.netWorth).toBe(750_000);
+    expect(purchased.state.peakNetWorth).toBe(1_000_000);
+    expect(createRugPullPreview(purchased.state, HUSTLE_DEFINITIONS).requiredPeakValuation)
+      .toBe(3_000_000_000);
+    expect(hustlePayout(purchased.state, HUSTLE_DEFINITIONS, 'online-rage-farm'))
+      .toBeGreaterThan(beforePayout);
 
     const reset = commitRugPull(
-      { ...purchased.state, peakValuation: RUG_PULL_CONFIG.unlockValuation },
+      { ...purchased.state, peakValuation: 3_000_000_000 },
       HUSTLE_DEFINITIONS
     ).state;
     expect(reset.leveragePurchases).toEqual([]);
+    expect(reset.netWorth).toBe(30_750_000);
+    expect(reset.peakNetWorth).toBe(30_750_000);
+  });
+
+  it('uses current Net Worth for the campaign objective rather than the high-water mark', () => {
+    expect(campaignComplete(750_000_000_000, HUSTLE_DEFINITIONS)).toBeFalse();
+    expect(campaignComplete(1_000_000_000_000, HUSTLE_DEFINITIONS)).toBeTrue();
   });
 
   it('applies committed Net Worth to the first fresh-run payout', () => {
@@ -372,7 +390,7 @@ describe('GriftOS Hustle economy', () => {
       },
       HUSTLE_DEFINITIONS
     );
-    const activeState = activateHustle(result.state, 'troll-network');
+    const activeState = activateHustle(result.state, 'online-rage-farm');
     const advanced = advanceGame(activeState, HUSTLE_DEFINITIONS, 2_000);
     const expectedPayout = trollDefinition.basePayout *
       wealthAdvantageMultiplier(result.state.netWorth, HUSTLE_DEFINITIONS);
@@ -399,11 +417,11 @@ describe('GriftOS Hustle economy', () => {
         peakValuation: 2_000_000,
         hustles: {
           ...createInitialGameState(HUSTLE_DEFINITIONS).hustles,
-          'troll-network': {
-            ...createInitialGameState(HUSTLE_DEFINITIONS).hustles['troll-network'],
-            units: 10,
+          'online-rage-farm': {
+            ...createInitialGameState(HUSTLE_DEFINITIONS).hustles['online-rage-farm'],
+            scaleCount: 10,
             isAutomated: true,
-            reachedMilestones: ['troll-network-10'],
+            reachedMilestones: ['online-rage-farm-10'],
           },
         },
       },
@@ -423,7 +441,23 @@ describe('GriftOS Hustle economy', () => {
     });
 
     expect(result.timeline.length).toBeGreaterThan(2);
-    expect(result.timeline.some((entry) => entry.action.includes('automate troll-network'))).toBeTrue();
+    expect(result.timeline.some((entry) => entry.action.includes('automate online-rage-farm'))).toBeTrue();
     expect(result.finalState.peakValuation).toBeGreaterThan(0);
+  });
+
+  it('acquires and automates the final Hustle before the intermittent campaign victory Rug', () => {
+    const result = runCampaignSimulation({
+      profile: 'morning-evening',
+      strategy: 'natural',
+      rugPullStrategy: 'prepared',
+      maxWallClockMs: 10 * 24 * 60 * 60 * 1000,
+      mechanics: HUSTLE_DEFINITIONS,
+    });
+    const finalRugAt = result.rugPulls.at(-1)?.elapsedMs ?? 0;
+
+    expect(result.reachedTarget).toBeTrue();
+    expect(result.timings.hustleAcquiredAtMs['subscriber-towns']).toBeLessThan(finalRugAt);
+    expect(result.timings.automationAtMs['subscriber-towns']).toBeLessThan(finalRugAt);
+    expect(result.timings.leverageAtMs).toEqual({});
   });
 });

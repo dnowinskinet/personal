@@ -15,9 +15,9 @@ import { AudioDirectorService } from './audio/audio-director.service';
 import { AudioSettings } from './audio/audio-engine';
 import { GRIFT_OS_COPY } from './content/game-copy';
 import {
-  FounderTakeStatus,
-  startFounderTakePreparation,
-} from './content/founder-take';
+  ExtractionStatus,
+  startExtractionPreparation,
+} from './content/extraction';
 import { HUSTLE_DEFINITIONS } from './content/hustle-definitions';
 import { LEVERAGE_DEFINITIONS } from './content/leverage-definitions';
 import {
@@ -85,9 +85,9 @@ import {
   ValuationFlyoutView,
 } from './host/empire-renderer-contract';
 import {
-  GriftMetaSaveV2,
+  GriftMetaSaveV3,
   GriftPersistence,
-  GriftRunSaveV2,
+  GriftRunSaveV3,
 } from './runtime/run-persistence';
 import { GriftRunRuntime } from './runtime/run-runtime';
 
@@ -224,6 +224,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.audioDirector.activateForRoute();
+
     if (!this.isBrowser) {
       return;
     }
@@ -233,7 +235,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = savedRun?.state ?? createInitialGameState(
       this.mechanics,
       savedMeta.netWorth,
-      savedMeta.exitCountsByEmpire[this.activeEmpireId]
+      savedMeta.exitCountsByEmpire[this.activeEmpireId],
+      savedMeta.peakNetWorth
     );
     this.selectedHustleId = savedRun?.selectedHustleId ?? this.definitions[0].id;
     this.prepareOfflineReturn(savedRun);
@@ -248,6 +251,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.audioDirector.deactivateForRoute();
+
     if (this.simulationTimerId !== null) {
       window.clearInterval(this.simulationTimerId);
     }
@@ -430,36 +435,36 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return this.presentationView.rugPullPreview;
   }
 
-  get founderTake(): FounderTakeStatus {
-    return this.presentationView.founderTake;
+  get extraction(): ExtractionStatus {
+    return this.presentationView.extraction;
   }
 
-  get founderTakeRateLabel(): string {
-    return this.presentationView.founderTakeRateLabel;
+  get extractionRateLabel(): string {
+    return this.presentationView.extractionRateLabel;
   }
 
-  get founderTakeNextCostLabel(): string {
-    return this.presentationView.founderTakeNextCostLabel;
+  get extractionNextCostLabel(): string {
+    return this.presentationView.extractionNextCostLabel;
   }
 
-  get founderTakeDurationLabel(): string {
-    return this.presentationView.founderTakeDurationLabel;
+  get extractionDurationLabel(): string {
+    return this.presentationView.extractionDurationLabel;
   }
 
-  get founderTakeRemainingLabel(): string {
-    return this.presentationView.founderTakeRemainingLabel;
+  get extractionRemainingLabel(): string {
+    return this.presentationView.extractionRemainingLabel;
   }
 
-  get founderTakeOutputLabel(): string {
-    return this.presentationView.founderTakeOutputLabel;
+  get extractionOutputLabel(): string {
+    return this.presentationView.extractionOutputLabel;
   }
 
-  get founderTakeNextOutputLabel(): string {
-    return this.presentationView.founderTakeNextOutputLabel;
+  get extractionNextOutputLabel(): string {
+    return this.presentationView.extractionNextOutputLabel;
   }
 
-  get founderTakeProgressScale(): string {
-    return this.presentationView.founderTakeProgressScale;
+  get extractionProgressScale(): string {
+    return this.presentationView.extractionProgressScale;
   }
 
   get leverageDeals(): readonly LeverageDealView[] {
@@ -546,8 +551,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       case 'offline.dismiss':
         this.dismissOfflineReturn();
         return;
-      case 'rugPull.prepare':
-        this.prepareFounderTake();
+      case 'extraction.prepare':
+        this.prepareExtraction();
         return;
       case 'rugPull.commit':
         this.commitRugPull();
@@ -612,11 +617,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   buyOne(hustleId: HustleId): void {
-    this.buyUnits(hustleId, 1);
+    this.buyScale(hustleId, 1);
   }
 
   buyMax(hustleId: HustleId): void {
-    this.buyUnits(hustleId, 'max');
+    this.buyScale(hustleId, 'max');
   }
 
   automate(hustleId: HustleId): void {
@@ -650,7 +655,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
             session,
             definition,
             result.totalCost,
-            result.state.hustles[hustleId].units,
+            result.state.hustles[hustleId].scaleCount,
             previousState.valuation,
             result.state.valuation,
             nowMs
@@ -673,7 +678,6 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.purchased && definition) {
-      this.addValuationFlyout('spend', result.totalCost);
       this.addFeedback(definition.name, 'secured', 'leverage', null);
       this.emitGameEvent({ type: 'leverage.purchased', leverageId });
       this.emitGameEvent({
@@ -694,14 +698,17 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.updateAudioPresentation();
+    if (result.purchased) {
+      this.persistNetWorth();
+    }
     this.persistRunState(true);
     this.changeDetectorRef.markForCheck();
   }
 
-  prepareFounderTake(): void {
+  prepareExtraction(): void {
     this.unlockAudio();
-    const stage = this.founderTake.nextStage;
-    const result = startFounderTakePreparation(this.state);
+    const stage = this.extraction.nextStage;
+    const result = startExtractionPreparation(this.state);
     this.state = result.state;
 
     if (result.started && stage) {
@@ -709,11 +716,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       this.addFeedback(stage.name, 'in progress', 'rug-pull', null);
       this.emitGameEvent({
         type: 'purchase.completed',
-        target: 'founder-take',
+        target: 'extraction',
         totalCost: result.totalCost,
       });
     } else {
-      this.emitGameEvent({ type: 'purchase.denied', target: 'founder-take' });
+      this.emitGameEvent({ type: 'purchase.denied', target: 'extraction' });
     }
 
     this.persistRunState(true);
@@ -900,15 +907,15 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       : null;
     this.lastTickTime = this.isBrowser ? performance.now() : 0;
     if (shortcutId === 'two-hustles') {
-      this.selectedHustleId = 'podcast-network';
+      this.selectedHustleId = 'paid-friend-club';
     } else if (shortcutId === 'portfolio-mid') {
-      this.selectedHustleId = 'culture-war-media';
+      this.selectedHustleId = 'autograph-factory';
     } else if (shortcutId === 'portfolio-scale') {
-      this.selectedHustleId = 'venture-portfolio';
+      this.selectedHustleId = 'vip-experience-tour';
     } else if (shortcutId === 'endgame') {
-      this.selectedHustleId = 'sovereign-network';
+      this.selectedHustleId = 'subscriber-towns';
     } else {
-      this.selectedHustleId = 'troll-network';
+      this.selectedHustleId = 'online-rage-farm';
     }
     this.playtestStatusMessage = `Jumped to ${this.runShortcutLabel(shortcutId)}.`;
     this.updateAudioPresentation();
@@ -1133,7 +1140,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buyUnits(hustleId: HustleId, quantity: number | 'max'): void {
+  private buyScale(hustleId: HustleId, quantity: number | 'max'): void {
     this.unlockAudio();
     this.selectHustle(hustleId);
     this.capturePlaytestDiscoveries();
@@ -1143,7 +1150,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     if (result.quantityPurchased > 0) {
       const definition = this.getDefinition(hustleId);
-      const wasAcquisition = previousState.hustles[hustleId].units <= 0;
+      const wasAcquisition = previousState.hustles[hustleId].scaleCount <= 0;
 
       this.addValuationFlyout('spend', result.totalCost);
       this.emitGameEvent({
@@ -1166,7 +1173,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
             definition,
             result.quantityPurchased,
             result.totalCost,
-            result.state.hustles[hustleId].units,
+            result.state.hustles[hustleId].scaleCount,
             previousState.valuation,
             result.state.valuation,
             quantity === 'max',
@@ -1301,9 +1308,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: 75,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 2,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 2,
             },
           },
         };
@@ -1314,9 +1321,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: 220,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 2,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 2,
             },
           },
         };
@@ -1327,13 +1334,13 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: 320,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 2,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 2,
             },
-            'podcast-network': {
-              ...state.hustles['podcast-network'],
-              units: 1,
+            'paid-friend-club': {
+              ...state.hustles['paid-friend-club'],
+              scaleCount: 1,
             },
           },
         };
@@ -1344,9 +1351,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: 650,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 8,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 8,
             },
           },
         };
@@ -1357,84 +1364,86 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: 60_000,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 18,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 18,
               isAutomated: true,
               isActive: true,
-              reachedMilestones: ['troll-network-10'],
+              reachedMilestones: ['online-rage-farm-10'],
             },
-            'podcast-network': {
-              ...state.hustles['podcast-network'],
-              units: 8,
+            'paid-friend-club': {
+              ...state.hustles['paid-friend-club'],
+              scaleCount: 8,
               isAutomated: true,
               isActive: true,
             },
-            'culture-war-media': {
-              ...state.hustles['culture-war-media'],
-              units: 4,
+            'autograph-factory': {
+              ...state.hustles['autograph-factory'],
+              scaleCount: 4,
             },
-            'masterclass-business': {
-              ...state.hustles['masterclass-business'],
-              units: 1,
+            'paid-shoutout-studio': {
+              ...state.hustles['paid-shoutout-studio'],
+              scaleCount: 1,
             },
           },
         };
       case 'portfolio-scale':
         return {
           ...state,
+          netWorth: Math.max(state.netWorth, 1_000_000),
+          peakNetWorth: Math.max(state.peakNetWorth, 1_000_000),
           valuation: 999_900_000,
           peakValuation: 999_900_000,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 30,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 30,
               isAutomated: true,
               isActive: true,
-              reachedMilestones: ['troll-network-10', 'troll-network-25'],
+              reachedMilestones: ['online-rage-farm-10', 'online-rage-farm-25'],
             },
-            'podcast-network': {
-              ...state.hustles['podcast-network'],
-              units: 20,
+            'paid-friend-club': {
+              ...state.hustles['paid-friend-club'],
+              scaleCount: 20,
               isAutomated: true,
               isActive: true,
-              reachedMilestones: ['podcast-network-5'],
+              reachedMilestones: ['paid-friend-club-5'],
             },
-            'culture-war-media': {
-              ...state.hustles['culture-war-media'],
-              units: 12,
+            'autograph-factory': {
+              ...state.hustles['autograph-factory'],
+              scaleCount: 12,
               isAutomated: true,
               isActive: true,
-              reachedMilestones: ['culture-war-media-5'],
+              reachedMilestones: ['autograph-factory-5'],
             },
-            'masterclass-business': {
-              ...state.hustles['masterclass-business'],
-              units: 8,
-              isAutomated: true,
-              isActive: true,
-            },
-            'manifesto-imprint': {
-              ...state.hustles['manifesto-imprint'],
-              units: 6,
+            'paid-shoutout-studio': {
+              ...state.hustles['paid-shoutout-studio'],
+              scaleCount: 8,
               isAutomated: true,
               isActive: true,
             },
-            'founder-retreat-circuit': {
-              ...state.hustles['founder-retreat-circuit'],
-              units: 4,
+            'outrage-podcast': {
+              ...state.hustles['outrage-podcast'],
+              scaleCount: 6,
               isAutomated: true,
               isActive: true,
             },
-            'ai-venture': {
-              ...state.hustles['ai-venture'],
-              units: 2,
+            'get-rich-books': {
+              ...state.hustles['get-rich-books'],
+              scaleCount: 4,
               isAutomated: true,
               isActive: true,
             },
-            'venture-portfolio': {
-              ...state.hustles['venture-portfolio'],
-              units: 1,
+            'paid-endorsement-racket': {
+              ...state.hustles['paid-endorsement-racket'],
+              scaleCount: 2,
+              isAutomated: true,
+              isActive: true,
+            },
+            'vip-experience-tour': {
+              ...state.hustles['vip-experience-tour'],
+              scaleCount: 1,
             },
           },
         };
@@ -1445,22 +1454,22 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           peakValuation: createRugPullPreview(state).requiredPeakValuation,
           hustles: {
             ...state.hustles,
-            'troll-network': {
-              ...state.hustles['troll-network'],
-              units: 10,
+            'online-rage-farm': {
+              ...state.hustles['online-rage-farm'],
+              scaleCount: 10,
               isAutomated: true,
               isActive: true,
-              reachedMilestones: ['troll-network-10'],
+              reachedMilestones: ['online-rage-farm-10'],
             },
-            'podcast-network': {
-              ...state.hustles['podcast-network'],
-              units: 5,
+            'paid-friend-club': {
+              ...state.hustles['paid-friend-club'],
+              scaleCount: 5,
               isAutomated: true,
               isActive: true,
             },
-            'culture-war-media': {
-              ...state.hustles['culture-war-media'],
-              units: 3,
+            'autograph-factory': {
+              ...state.hustles['autograph-factory'],
+              scaleCount: 3,
             },
           },
         };
@@ -1492,7 +1501,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
                 definition.id,
                 {
                   ...endgameState.hustles[definition.id],
-                  units: Math.max(1, finalMilestone?.requiredUnits ?? 1),
+                  scaleCount: Math.max(1, finalMilestone?.requiredScaleCount ?? 1),
                   isActive: true,
                   isAutomated: true,
                   reachedMilestones: definition.milestones.map((milestone) => milestone.id),
@@ -1558,15 +1567,15 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = this.createRunShortcutState(this.initialRouteRunState);
 
     if (this.initialRouteRunState === 'two-hustles') {
-      this.selectedHustleId = 'podcast-network';
+      this.selectedHustleId = 'paid-friend-club';
     } else if (this.initialRouteRunState === 'portfolio-mid') {
-      this.selectedHustleId = 'culture-war-media';
+      this.selectedHustleId = 'autograph-factory';
     } else if (this.initialRouteRunState === 'portfolio-scale') {
-      this.selectedHustleId = 'venture-portfolio';
+      this.selectedHustleId = 'vip-experience-tour';
     } else if (this.initialRouteRunState === 'endgame') {
-      this.selectedHustleId = 'sovereign-network';
+      this.selectedHustleId = 'subscriber-towns';
     } else {
-      this.selectedHustleId = 'troll-network';
+      this.selectedHustleId = 'online-rage-farm';
     }
 
     if (this.initialRouteSurface && this.isTabAvailable(this.initialRouteSurface)) {
@@ -1738,11 +1747,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadSavedRunState(savedMeta: GriftMetaSaveV2): GriftRunSaveV2 | null {
+  private loadSavedRunState(savedMeta: GriftMetaSaveV3): GriftRunSaveV3 | null {
     return this.persistence.loadRun(savedMeta);
   }
 
-  private prepareOfflineReturn(savedRun: GriftRunSaveV2 | null): void {
+  private prepareOfflineReturn(savedRun: GriftRunSaveV3 | null): void {
     if (!savedRun) {
       return;
     }
@@ -1770,7 +1779,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.persistence.saveRun(this.state, this.selectedHustleId, force);
   }
 
-  private loadSavedMeta(): GriftMetaSaveV2 {
+  private loadSavedMeta(): GriftMetaSaveV3 {
     return this.persistence.loadMeta();
   }
 
@@ -1815,8 +1824,8 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return LEVERAGE_DEFINITIONS.some((definition) =>
       this.state.leveragePurchases.includes(definition.id) ||
       (
-        this.state.netWorth >= definition.unlockNetWorth &&
-        definition.requiredOwnedHustles.every((hustleId) => this.state.hustles[hustleId].units > 0)
+        this.state.peakNetWorth >= definition.unlockNetWorth &&
+        definition.requiredOwnedHustles.every((hustleId) => this.state.hustles[hustleId].scaleCount > 0)
       )
     );
   }

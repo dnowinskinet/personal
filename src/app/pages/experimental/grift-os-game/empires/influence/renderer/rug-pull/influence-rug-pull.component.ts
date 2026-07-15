@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { EmpireRendererRequest } from '../../../../host/empire-renderer-contract';
 import { GamePresentationSnapshot } from '../../../../presentation/game-presentation';
-import { InfluenceFounderTakeComponent } from './founder-take/influence-founder-take.component';
+import { InfluenceExtractionComponent } from './extraction/influence-extraction.component';
 
 export type InfluenceRugPullView = Pick<
   GamePresentationSnapshot,
@@ -14,14 +14,14 @@ export type InfluenceRugPullView = Pick<
   | 'rugPullTargetLabel'
   | 'rugPullWealthAdvantageLabel'
   | 'rugPullRecoveryMultiplierLabel'
-  | 'founderTake'
-  | 'founderTakeRateLabel'
-  | 'founderTakeNextCostLabel'
-  | 'founderTakeDurationLabel'
-  | 'founderTakeRemainingLabel'
-  | 'founderTakeOutputLabel'
-  | 'founderTakeNextOutputLabel'
-  | 'founderTakeProgressScale'
+  | 'extraction'
+  | 'extractionRateLabel'
+  | 'extractionNextCostLabel'
+  | 'extractionDurationLabel'
+  | 'extractionRemainingLabel'
+  | 'extractionOutputLabel'
+  | 'extractionNextOutputLabel'
+  | 'extractionProgressScale'
   | 'resetHustleCount'
   | 'resetAutomationCount'
   | 'resetMilestoneCount'
@@ -30,7 +30,7 @@ export type InfluenceRugPullView = Pick<
 @Component({
   selector: 'app-influence-rug-pull',
   standalone: true,
-  imports: [InfluenceFounderTakeComponent],
+  imports: [InfluenceExtractionComponent],
   templateUrl: './influence-rug-pull.component.html',
   styleUrl: './influence-rug-pull.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

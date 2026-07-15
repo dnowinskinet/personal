@@ -34,12 +34,12 @@ export function commitRugPull(state: GriftOsGameState): RugPullCommitResult {
 
 export function projectedNetWorthGain(
   peakValuation: number,
-  currentNetWorth = 0,
-  takeRate = INFLUENCE_ENGINE_MECHANICS.founderTake.baseTake
+  peakNetWorth = 0,
+  takeRate = INFLUENCE_ENGINE_MECHANICS.extraction.baseTake
 ): number {
   return projectedMechanicalNetWorthGain(
     peakValuation,
-    currentNetWorth,
+    peakNetWorth,
     takeRate,
     INFLUENCE_ENGINE_MECHANICS
   );

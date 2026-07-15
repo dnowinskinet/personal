@@ -22,7 +22,7 @@ Avoid:
 
 ## Fictional Composite Guardrail
 
-The Founder is fictional and composite.
+The Influence target and any implied operator are fictional composites. The game does not currently establish a literal Founder character.
 
 Do not:
 
@@ -36,18 +36,19 @@ Do not:
 Every Hustle must separate:
 
 - durable enterprise;
-- expansion unit;
+- player-facing scale noun;
 - manual action;
 - automation.
 
-Expansion units must match the scale of their economic slot. A late-Hustle unit is an institution or territory, not a single customer or worker.
+Scale nouns must match the durable capacity represented by their economic slot. A late-Hustle scale count is an institution, portfolio, or territory, not the individual transaction completed by the manual action.
 
 Example:
 
 ```text
-Hustle: Social Media Account
-Expansion unit: Followers
-Manual action: Post an Affiliate Link
+Hustle: Online Rage Farm
+Scale noun: Followers
+Expansion action: Add Followers
+Manual action: Post a Product Link
 Automation: Auto-Poster
 ```
 
@@ -60,9 +61,9 @@ Owned 17 Troll People Online
 Write:
 
 ```text
-17 Followers
-Add Follower
-Post an Affiliate Link
+17,000 Followers
+Add Followers
+Post a Product Link
 Auto-Poster online
 ```
 
@@ -93,7 +94,7 @@ Avoid in player-facing UI:
 Current source of truth:
 
 ```text
-src/app/pages/experimental/grift-os-game/content/game-copy.ts
+src/app/pages/experimental/grift-os-game/empires/influence/content/influence-content.ts
 src/app/pages/experimental/grift-os-game/content/hustle-definitions.ts
 ```
 
@@ -107,16 +108,18 @@ The automated ledger status uses `Automation name · activity label`; activity l
 Current examples:
 
 ```text
-Post an Affiliate Link -> Auto-Poster -> posting links
+Post a Product Link -> Auto-Poster -> posting links
 Charge a Fee -> Auto-Renewal -> renewing memberships
-Sell Merch -> Fulfillment Partner -> processing orders
+Sign Memorabilia -> Autopen -> signing memorabilia
+Record a Shoutout -> AI Double -> generating shoutouts
 Sell a Sponsor Spot -> Ad Sales Team -> booking sponsors
-Sell VIP Access -> Ticketing Site -> selling access
+Publish the Method -> Ghostwriter -> publishing under your name
+Endorse a Product -> AI Spokesperson -> endorsing products
+Sell VIP Tickets -> Hologram Headliner -> headlining without you
 Enroll a Student -> Admissions Office -> enrolling students
-Charge a Sign-Up Fee -> Recruiting Team -> signing up ambassadors
-Charge Fees -> Collections Team -> charging fees
-Sell a Coaching Session -> Booking Team -> booking sessions
-Charge HOA Fees -> HOA Office -> collecting HOA fees
+Charge a Sign-Up Fee -> Recruiting Team -> recruiting ambassadors
+Collect Fees -> Collections Team -> collecting fees
+Charge HOA Dues -> HOA Office -> collecting HOA dues
 ```
 
 Avoid generic labels such as Manager or Assistant unless the genericness itself carries the joke.

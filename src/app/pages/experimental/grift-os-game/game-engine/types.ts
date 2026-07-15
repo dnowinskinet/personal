@@ -1,14 +1,16 @@
 export type HustleId =
-  | 'troll-network'
-  | 'podcast-network'
-  | 'culture-war-media'
-  | 'masterclass-business'
-  | 'manifesto-imprint'
-  | 'founder-retreat-circuit'
-  | 'ai-venture'
-  | 'venture-portfolio'
-  | 'media-holdings'
-  | 'sovereign-network';
+  | 'online-rage-farm'
+  | 'paid-friend-club'
+  | 'autograph-factory'
+  | 'paid-shoutout-studio'
+  | 'outrage-podcast'
+  | 'get-rich-books'
+  | 'paid-endorsement-racket'
+  | 'vip-experience-tour'
+  | 'success-university'
+  | 'mlm-ambassador-program'
+  | 'debt-club'
+  | 'subscriber-towns';
 
 export type HustleIconKind =
   | 'signal'
@@ -63,7 +65,7 @@ export interface ModifierDefinition {
 
 export interface HustleMilestoneDefinition {
   id: string;
-  requiredUnits: number;
+  requiredScaleCount: number;
   name: string;
   description?: string;
   reward: ModifierDefinition;
@@ -80,12 +82,13 @@ export interface HustleDefinition {
   automationName: string;
   automationActivityLabel: string;
   automationDescription: string;
+  scaleDisplayMultiplier?: number;
   automationCost: number;
   acquisitionCost: number;
   growthRate: number;
   basePayout: number;
   cadenceSeconds: number;
-  initialUnits: number;
+  initialScaleCount: number;
   unlockNetWorth: number;
   order: number;
   iconKind: HustleIconKind;
@@ -99,14 +102,14 @@ export interface HustleDefinition {
 
 export interface HustleState {
   id: HustleId;
-  units: number;
+  scaleCount: number;
   isActive: boolean;
   isAutomated: boolean;
   progressMs: number;
   reachedMilestones: readonly string[];
 }
 
-export interface FounderTakePreparationState {
+export interface ExtractionPreparationState {
   completedStages: number;
   isActive: boolean;
   progressMs: number;
@@ -124,9 +127,10 @@ export interface GriftOsGameState {
   valuation: number;
   peakValuation: number;
   netWorth: number;
+  peakNetWorth: number;
   rugPullCount: number;
   rugPullState: RugPullState;
-  founderTakePreparation: FounderTakePreparationState;
+  extractionPreparation: ExtractionPreparationState;
   leveragePurchases: readonly LeverageId[];
   hustles: Record<HustleId, HustleState>;
 }
@@ -178,7 +182,7 @@ export interface LeveragePurchaseResult {
   totalCost: number;
 }
 
-export interface FounderTakePreparationResult {
+export interface ExtractionPreparationResult {
   state: GriftOsGameState;
   started: boolean;
   totalCost: number;
