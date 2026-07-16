@@ -32,7 +32,11 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('main')).toBeTruthy();
+    const main = compiled.querySelector('main');
+
+    expect(main).toBeTruthy();
     expect(compiled.querySelector('foot-note')).toBeTruthy();
+    expect(main?.classList).toContain('site-main');
+    expect(main?.classList).not.toContain('min-h-screen');
   });
 });

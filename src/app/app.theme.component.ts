@@ -9,13 +9,30 @@ import { NgClass } from '@angular/common';
   selector: 'app-root',
   template: `
   <navbar/>
-    <main class="max-w-screen-lg mx-auto px-4 md:px-10 my-28 overflow-x-hidden min-h-screen">
+    <main class="site-main max-w-screen-lg mx-auto px-4 md:px-10 mt-20 mb-4 overflow-x-hidden">
       <router-outlet/>
       <scroll-to-top/>
     </main>
   <foot-note/>
   `,
   imports: [Footer, RouterOutlet, Navbar, ScrollToTop, NgClass],
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+    }
+
+    .site-main {
+      flex: 1 0 auto;
+      min-height: 0;
+      width: 100%;
+    }
+
+    foot-note {
+      flex-shrink: 0;
+    }
+  `],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
 })

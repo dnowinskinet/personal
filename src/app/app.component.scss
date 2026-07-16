@@ -1,9 +1,24 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.site-main {
+  flex: 1 0 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+:host > foot-note {
+  flex-shrink: 0;
+}
+
 .site-main--grift-os {
   --grift-nav-clearance: 4.6rem;
 
   max-width: none;
   width: min(1500px, calc(100vw - 48px));
-  min-height: 0;
   margin-block: var(--grift-nav-clearance) 1.5rem;
   padding-inline: 0;
   overflow-x: visible;

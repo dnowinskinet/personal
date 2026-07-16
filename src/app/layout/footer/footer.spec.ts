@@ -11,32 +11,31 @@ describe('Footer', () => {
     }).compileComponents();
   });
 
-  it('renders semantic footer and absolute legal links', () => {
+  it('renders the compact footer with the current year and absolute legal links', () => {
     const fixture = TestBed.createComponent(Footer);
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
     const legalNav = host.querySelector('nav[aria-label="Legal"]');
     const links = [...host.querySelectorAll('nav[aria-label="Legal"] a')] as HTMLAnchorElement[];
-    const easternYear = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      timeZone: 'America/New_York',
-    }).format(new Date());
 
     expect(host.querySelector('footer')).not.toBeNull();
     expect(legalNav).not.toBeNull();
     expect(links.map((link) => link.getAttribute('href'))).toEqual(['/privacy', '/terms']);
-    expect(host.textContent).toContain(`© ${easternYear} Daniel T Nowinski`);
+    expect(host.textContent).toContain(`© ${new Date().getFullYear()}`);
+    expect(host.textContent).toContain('Daniel T Nowinski');
+    expect(host.querySelectorAll('footer > div > *').length).toBe(3);
 
     fixture.destroy();
   });
 
-  it('formats summer and winter time in America/New_York', () => {
+  it('does not render a clock or retain clock formatting behavior', () => {
     const fixture = TestBed.createComponent(Footer);
-    const component = fixture.componentInstance;
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
 
-    expect(component.getCurrentTime(new Date('2026-07-15T16:05:00Z'))).toBe('12:05 PM');
-    expect(component.getCurrentTime(new Date('2026-01-15T17:05:00Z'))).toBe('12:05 PM');
+    expect(host.textContent).not.toContain('Eastern Time');
+    expect('getCurrentTime' in fixture.componentInstance).toBeFalse();
 
     fixture.destroy();
   });

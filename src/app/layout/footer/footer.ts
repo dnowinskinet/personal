@@ -1,52 +1,36 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  NgZone,
   ViewEncapsulation,
-  effect,
-  inject,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlatformCheckService } from '../../core/services/platform-check.service';
 import profileData from '../../data/profile.data';
 import { ProfileSchema } from '../../data/schema/profile.schema';
 import { Logo } from '../../shared/components/logo/logo';
 import { SocialLink } from '../../shared/components/social-link/social-link';
-import { Subscription, interval } from 'rxjs';
 @Component({
     selector: 'foot-note',
     template: `<footer aria-label="Site footer">
-  <div class="mx-auto max-w-screen-lg border-t border-neutral-200 p-2 dark:border-neutral-700">
-    <div
-      class="grid justify-items-center gap-3 py-2 text-gray-900 dark:text-white sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4"
-    >
-      <div class="flex flex-row items-center gap-3 sm:justify-self-start">
+  <div class="mx-auto grid max-w-screen-lg grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-t border-neutral-200 px-4 py-2 text-gray-900 dark:border-neutral-700 dark:text-white md:px-10 sm:grid-cols-[1fr_auto_1fr] sm:gap-x-4">
+      <div class="flex min-w-0 items-center gap-2 whitespace-nowrap sm:justify-self-start">
         <logo/>
         <span>{{ profile().name }}</span>
       </div>
-      <div class="flex items-center justify-center text-center">
-        <span aria-label="Current time in Eastern Time">{{ currentTime() }} (Eastern Time)</span>
-      </div>
-      <social-link class="sm:justify-self-end"/>
-    </div>
-
-    <div
-      class="flex flex-col items-center gap-1 border-t border-neutral-200 pt-1 text-xs text-gray-600 dark:border-neutral-800 dark:text-gray-300 sm:flex-row sm:justify-between"
-    >
-      <span class="py-2">© {{ currentYear }} {{ profile().name }}</span>
-      <nav aria-label="Legal" class="flex items-center">
+      <social-link class="justify-self-end sm:col-start-3 sm:row-start-1"/>
+      <nav aria-label="Legal" class="col-span-2 flex min-h-11 items-center justify-center text-center text-xs text-gray-600 dark:text-gray-300 sm:col-span-1 sm:col-start-2 sm:row-start-1">
+        <span>© {{ currentYear }}</span>
+        <span aria-hidden="true" class="mx-1 text-gray-400 dark:text-gray-500">·</span>
         <a
           routerLink="/privacy"
-          class="inline-flex min-h-11 items-center rounded px-2 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+          class="inline-flex min-h-11 items-center rounded px-1 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
         >Privacy</a>
-        <span aria-hidden="true" class="text-gray-400 dark:text-gray-500">·</span>
+        <span aria-hidden="true" class="mx-1 text-gray-400 dark:text-gray-500">·</span>
         <a
           routerLink="/terms"
-          class="inline-flex min-h-11 items-center rounded px-2 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+          class="inline-flex min-h-11 items-center rounded px-1 underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
         >Terms</a>
       </nav>
-    </div>
   </div>
 </footer>`,
     imports: [SocialLink, Logo, RouterLink],
@@ -69,42 +53,6 @@ import { Subscription, interval } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Footer {
-  private readonly easternTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'America/New_York',
-  });
-  private readonly easternYearFormatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    timeZone: 'America/New_York',
-  });
-
-  platformCheck = inject(PlatformCheckService);
-  private readonly ngZone = inject(NgZone);
-  currentTime = signal<string>(this.getCurrentTime());
-  currentYear = this.easternYearFormatter.format(new Date());
+  currentYear = new Date().getFullYear();
   profile = signal<ProfileSchema>(profileData);
-  timer!: Subscription;
-  constructor() {
-    effect((onCleanup) => {
-      if (this.platformCheck.onBrowser) {
-        this.ngZone.runOutsideAngular(() => {
-          this.timer = interval(1000).subscribe(() => {
-            this.ngZone.run(() => {
-              this.currentTime.set(this.getCurrentTime());
-            });
-          });
-        });
-      }
-      onCleanup(() => {
-        if (this.timer) {
-          this.timer.unsubscribe();
-        }
-      });
-    });
-  }
-
-  getCurrentTime(date = new Date()): string {
-    return this.easternTimeFormatter.format(date);
-  }
 }
