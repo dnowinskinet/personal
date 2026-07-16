@@ -1,3 +1,22 @@
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
 User-agent: *
-Disallow: /project
-Host: https://dnowinski.com
+Allow: /
+
+Sitemap: https://dnowinski.com/sitemap.xml
