@@ -8,7 +8,6 @@ import {
   hustlePayout,
   maxAffordableQuantity,
   nextHustleCost,
-  valuationPerSecond,
 } from '../game-engine/economy';
 import { GameTabId } from '../game-engine/game-events';
 import { canBuyLeverage, isLeverageUnlocked, leverageRequirements } from '../game-engine/leverage';
@@ -16,6 +15,8 @@ import { GameMechanics } from '../game-engine/mechanics';
 import {
   combinedMultiplier,
   modifierBreakdownForHustle,
+  ResolvedModifierContext,
+  resolveModifierContext,
   wealthAdvantageMultiplier,
 } from '../game-engine/modifiers';
 import {
@@ -195,12 +196,18 @@ export class GamePresentationFacade {
 
   private createSnapshot(input: GamePresentationInput): GamePresentationSnapshot {
     const { state } = input;
+    const modifierContext = resolveModifierContext(state, this.mechanics);
     const rugPullPreview = createRugPullPreview(state);
     const extraction = extractionStatus(state);
-    const enterprise = deriveEnterprisePresentation(state, this.mechanics);
+    const enterprise = deriveEnterprisePresentation(state, this.mechanics, modifierContext);
     const hasAnyAutomation = this.definitions.some((definition) => state.hustles[definition.id].isAutomated);
     const hasAnyMilestone = this.definitions.some((definition) => state.hustles[definition.id].reachedMilestones.length > 0);
-    const hustleRows = this.createHustleRows(input, hasAnyAutomation, hasAnyMilestone);
+    const hustleRows = this.createHustleRows(
+      input,
+      hasAnyAutomation,
+      hasAnyMilestone,
+      modifierContext
+    );
     const visibleHustleRows = hustleRows.filter((row) => row.scaleCount > 0);
     const selectedHustle = hustleRows.find((row) => row.id === input.selectedHustleId) ?? hustleRows[0];
     const ownedHustleCount = visibleHustleRows.length;
@@ -208,14 +215,14 @@ export class GamePresentationFacade {
       state.hustles[definition.id].scaleCount > definition.initialScaleCount
     );
     const availableTabs = this.tabs.filter((tab) => this.isTabAvailable(tab.id, state, rugPullPreview));
-    const nextHustleHorizon = this.createHorizon(state);
+    const nextHustleHorizon = this.createHorizon(state, modifierContext);
     const stageCopy = STAGE_COPY[enterprise.enterpriseStage];
     const outputAdvantagePercent = (wealthAdvantageMultiplier(state.netWorth, this.mechanics) - 1) * 100;
 
     return {
       valuationLabel: formatMoney(state.valuation, 'headline'),
       peakValuationLabel: formatMoney(state.peakValuation, 'headline'),
-      valuationPerSecondLabel: formatMoneyRate(valuationPerSecond(state, this.mechanics)),
+      valuationPerSecondLabel: formatMoneyRate(enterprise.valuationPerSecond),
       netWorthLabel: formatMoney(state.netWorth, 'net-worth'),
       wealthAdvantageLabel: `Up to +${formatPercentage(outputAdvantagePercent)} established output`,
       showNetWorth: state.netWorth > 0,
@@ -266,7 +273,10 @@ export class GamePresentationFacade {
     };
   }
 
-  private createHorizon(state: GriftOsGameState): HustleHorizonView | null {
+  private createHorizon(
+    state: GriftOsGameState,
+    modifierContext: ResolvedModifierContext
+  ): HustleHorizonView | null {
     const definition = [...this.definitions]
       .sort((first, second) => first.order - second.order)
       .find((candidate) => state.hustles[candidate.id].scaleCount <= 0);
@@ -275,7 +285,13 @@ export class GamePresentationFacade {
       return null;
     }
 
-    const cost = nextHustleCost(definition, state.hustles[definition.id].scaleCount, state, this.mechanics);
+    const cost = nextHustleCost(
+      definition,
+      state.hustles[definition.id].scaleCount,
+      state,
+      this.mechanics,
+      modifierContext
+    );
     return {
       definition,
       id: definition.id,
@@ -321,22 +337,40 @@ export class GamePresentationFacade {
   private createHustleRows(
     input: GamePresentationInput,
     hasAnyAutomation: boolean,
-    hasAnyMilestone: boolean
+    hasAnyMilestone: boolean,
+    modifierContext: ResolvedModifierContext
   ): HustleViewModel[] {
     return this.definitions.map((definition) => {
       const hustle = input.state.hustles[definition.id];
-      const cadenceSeconds = effectiveCadenceSeconds(input.state, this.mechanics, definition.id);
+      const cadenceSeconds = effectiveCadenceSeconds(
+        input.state,
+        this.mechanics,
+        definition.id,
+        modifierContext
+      );
       const cadenceMs = cadenceSeconds * 1000;
       const progressPercent = hustle.isActive ? Math.min(100, (hustle.progressMs / cadenceMs) * 100) : 0;
-      const nextCost = nextHustleCost(definition, hustle.scaleCount, input.state, this.mechanics);
+      const nextCost = nextHustleCost(
+        definition,
+        hustle.scaleCount,
+        input.state,
+        this.mechanics,
+        modifierContext
+      );
       const buyMaxCount = maxAffordableQuantity(
         definition,
         hustle.scaleCount,
         input.state.valuation,
         input.state,
-        this.mechanics
+        this.mechanics,
+        modifierContext
       );
-      const payout = hustlePayout(input.state, this.mechanics, definition.id);
+      const payout = hustlePayout(
+        input.state,
+        this.mechanics,
+        definition.id,
+        modifierContext
+      );
       const nextMilestone = definition.milestones.find((milestone) =>
         !hustle.reachedMilestones.includes(milestone.id)
       );
@@ -347,8 +381,17 @@ export class GamePresentationFacade {
         ? remainingScaleCount <= Math.max(2, Math.ceil(nextMilestone.requiredScaleCount * 0.2))
         : false;
       const automationEligible = hustle.scaleCount > 0 && !hustle.isAutomated;
-      const canAutomate = canBuyAutomation(input.state, this.mechanics, definition.id);
-      const modifierSummaryLabel = this.modifierSummaryLabel(input.state, definition.id);
+      const canAutomate = canBuyAutomation(
+        input.state,
+        this.mechanics,
+        definition.id,
+        modifierContext
+      );
+      const modifierSummaryLabel = this.modifierSummaryLabel(
+        input.state,
+        definition.id,
+        modifierContext
+      );
 
       return {
         definition,
@@ -366,7 +409,10 @@ export class GamePresentationFacade {
         cadenceLabel: `Every ${formatSeconds(cadenceSeconds)}`,
         productionLabel: `${formatMoney(payout, 'payout')} every ${formatSeconds(cadenceSeconds)}`,
         nextCostLabel: formatMoney(nextCost, 'transaction'),
-        automationCostLabel: formatMoney(automationCost(input.state, this.mechanics, definition.id), 'transaction'),
+        automationCostLabel: formatMoney(
+          automationCost(input.state, this.mechanics, definition.id, modifierContext),
+          'transaction'
+        ),
         automationStatusLabel: hustle.isAutomated
           ? `${definition.automationName} · ${definition.automationActivityLabel}`
           : canAutomate
@@ -388,7 +434,8 @@ export class GamePresentationFacade {
           hustle.scaleCount,
           1,
           input.state,
-          this.mechanics
+          this.mechanics,
+          modifierContext
         ),
         canBuyMax: buyMaxCount > 0,
         canBuyAutomation: canAutomate,
@@ -416,8 +463,17 @@ export class GamePresentationFacade {
     });
   }
 
-  private modifierSummaryLabel(state: GriftOsGameState, hustleId: HustleId): string {
-    const breakdown = modifierBreakdownForHustle(state, this.mechanics, hustleId);
+  private modifierSummaryLabel(
+    state: GriftOsGameState,
+    hustleId: HustleId,
+    modifierContext: ResolvedModifierContext
+  ): string {
+    const breakdown = modifierBreakdownForHustle(
+      state,
+      this.mechanics,
+      hustleId,
+      modifierContext
+    );
     const outputMultiplier = combinedMultiplier(breakdown.output);
     const cadenceMultiplier = combinedMultiplier(breakdown.cadence);
     const parts: string[] = [];

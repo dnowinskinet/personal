@@ -26,6 +26,14 @@ export interface ModifierBreakdown {
   automationCost: ModifierBuckets;
 }
 
+/**
+ * A disposable modifier snapshot for one synchronous calculation pass.
+ * Never retain this across a state change.
+ */
+export interface ResolvedModifierContext {
+  readonly breakdownForHustle: (hustleId: HustleId) => ModifierBreakdown;
+}
+
 const EMPTY_BUCKETS: ModifierBuckets = {
   local: 1,
   global: 1,
@@ -128,9 +136,42 @@ export function collectActiveModifiers(
 export function modifierBreakdownForHustle(
   state: GriftOsGameState,
   mechanics: GameMechanics,
+  hustleId: HustleId,
+  context?: ResolvedModifierContext
+): ModifierBreakdown {
+  return context?.breakdownForHustle(hustleId) ?? modifierBreakdownFromModifiers(
+    collectActiveModifiers(state, mechanics),
+    hustleId
+  );
+}
+
+export function resolveModifierContext(
+  state: GriftOsGameState,
+  mechanics: GameMechanics
+): ResolvedModifierContext {
+  const modifiers = collectActiveModifiers(state, mechanics);
+  const byHustle = new Map<HustleId, ModifierBreakdown>();
+
+  return {
+    breakdownForHustle: (hustleId) => {
+      const existing = byHustle.get(hustleId);
+
+      if (existing) {
+        return existing;
+      }
+
+      const breakdown = modifierBreakdownFromModifiers(modifiers, hustleId);
+      byHustle.set(hustleId, breakdown);
+      return breakdown;
+    },
+  };
+}
+
+function modifierBreakdownFromModifiers(
+  activeModifiers: readonly MechanicalModifierDefinition[],
   hustleId: HustleId
 ): ModifierBreakdown {
-  const modifiers = collectActiveModifiers(state, mechanics)
+  const modifiers = activeModifiers
     .filter((modifier) => appliesToHustle(modifier, hustleId));
 
   return {

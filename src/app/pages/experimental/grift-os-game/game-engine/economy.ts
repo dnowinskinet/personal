@@ -14,6 +14,8 @@ import {
   applyCostModifiers,
   applyOutputModifiers,
   modifierBreakdownForHustle,
+  ResolvedModifierContext,
+  resolveModifierContext,
 } from './modifiers';
 import {
   advanceExtractionPreparation,
@@ -74,7 +76,8 @@ export function nextHustleCost(
   definition: HustleMechanicsDefinition,
   scaleCount: number,
   state?: GriftOsGameState,
-  definitions?: GameMechanics
+  definitions?: GameMechanics,
+  modifierContext?: ResolvedModifierContext
 ): number {
   const baseCost = definition.acquisitionCost * definition.growthRate ** scaleCount;
 
@@ -84,7 +87,12 @@ export function nextHustleCost(
 
   return applyCostModifiers(
     baseCost,
-    modifierBreakdownForHustle(state, requireMechanics(definitions), definition.id)
+    modifierBreakdownForHustle(
+      state,
+      requireMechanics(definitions),
+      definition.id,
+      modifierContext
+    )
   );
 }
 
@@ -93,13 +101,20 @@ export function hustleCostForQuantity(
   scaleCount: number,
   quantity: number,
   state?: GriftOsGameState,
-  definitions?: GameMechanics
+  definitions?: GameMechanics,
+  modifierContext?: ResolvedModifierContext
 ): number {
   if (quantity <= 0) {
     return 0;
   }
 
-  const nextCost = nextHustleCost(definition, scaleCount, state, definitions);
+  const nextCost = nextHustleCost(
+    definition,
+    scaleCount,
+    state,
+    definitions,
+    modifierContext
+  );
 
   if (definition.growthRate === 1) {
     return nextCost * quantity;
@@ -113,13 +128,20 @@ export function maxAffordableQuantity(
   scaleCount: number,
   availableValuation: number,
   state?: GriftOsGameState,
-  definitions?: GameMechanics
+  definitions?: GameMechanics,
+  modifierContext?: ResolvedModifierContext
 ): number {
   if (availableValuation <= 0) {
     return 0;
   }
 
-  const nextCost = nextHustleCost(definition, scaleCount, state, definitions);
+  const nextCost = nextHustleCost(
+    definition,
+    scaleCount,
+    state,
+    definitions,
+    modifierContext
+  );
 
   if (availableValuation < nextCost) {
     return 0;
@@ -138,13 +160,27 @@ export function maxAffordableQuantity(
 
   while (
     quantity > 0 &&
-    hustleCostForQuantity(definition, scaleCount, quantity, state, definitions) > availableValuation
+    hustleCostForQuantity(
+      definition,
+      scaleCount,
+      quantity,
+      state,
+      definitions,
+      modifierContext
+    ) > availableValuation
   ) {
     quantity -= 1;
   }
 
   while (
-    hustleCostForQuantity(definition, scaleCount, quantity + 1, state, definitions) <= availableValuation
+    hustleCostForQuantity(
+      definition,
+      scaleCount,
+      quantity + 1,
+      state,
+      definitions,
+      modifierContext
+    ) <= availableValuation
   ) {
     quantity += 1;
   }
@@ -160,11 +196,26 @@ export function buyHustle(
 ): PurchaseResult {
   const definition = getHustleDefinition(definitions, hustleId);
   const hustle = state.hustles[hustleId];
+  const modifierContext = resolveModifierContext(state, definitions);
 
   const quantityToBuy = quantity === 'max'
-    ? maxAffordableQuantity(definition, hustle.scaleCount, state.valuation, state, definitions)
+    ? maxAffordableQuantity(
+        definition,
+        hustle.scaleCount,
+        state.valuation,
+        state,
+        definitions,
+        modifierContext
+      )
     : Math.max(0, Math.floor(quantity));
-  const totalCost = hustleCostForQuantity(definition, hustle.scaleCount, quantityToBuy, state, definitions);
+  const totalCost = hustleCostForQuantity(
+    definition,
+    hustle.scaleCount,
+    quantityToBuy,
+    state,
+    definitions,
+    modifierContext
+  );
 
   if (quantityToBuy <= 0 || totalCost > state.valuation) {
     return {
@@ -206,24 +257,28 @@ export function buyHustle(
 export function automationCost(
   state: GriftOsGameState,
   definitions: GameMechanics,
-  hustleId: HustleId
+  hustleId: HustleId,
+  modifierContext?: ResolvedModifierContext
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
 
   return applyAutomationCostModifiers(
     definition.automationCost,
-    modifierBreakdownForHustle(state, definitions, hustleId)
+    modifierBreakdownForHustle(state, definitions, hustleId, modifierContext)
   );
 }
 
 export function canBuyAutomation(
   state: GriftOsGameState,
   definitions: GameMechanics,
-  hustleId: HustleId
+  hustleId: HustleId,
+  modifierContext?: ResolvedModifierContext
 ): boolean {
   const hustle = state.hustles[hustleId];
 
-  return hustle.scaleCount > 0 && !hustle.isAutomated && state.valuation >= automationCost(state, definitions, hustleId);
+  return hustle.scaleCount > 0 &&
+    !hustle.isAutomated &&
+    state.valuation >= automationCost(state, definitions, hustleId, modifierContext);
 }
 
 export function buyAutomation(
@@ -231,7 +286,9 @@ export function buyAutomation(
   definitions: GameMechanics,
   hustleId: HustleId
 ): AutomationPurchaseResult {
-  if (!canBuyAutomation(state, definitions, hustleId)) {
+  const hustle = state.hustles[hustleId];
+
+  if (hustle.scaleCount <= 0 || hustle.isAutomated) {
     return {
       state,
       purchased: false,
@@ -239,8 +296,17 @@ export function buyAutomation(
     };
   }
 
-  const totalCost = automationCost(state, definitions, hustleId);
-  const hustle = state.hustles[hustleId];
+  const modifierContext = resolveModifierContext(state, definitions);
+
+  if (!canBuyAutomation(state, definitions, hustleId, modifierContext)) {
+    return {
+      state,
+      purchased: false,
+      totalCost: 0,
+    };
+  }
+
+  const totalCost = automationCost(state, definitions, hustleId, modifierContext);
   const valuation = Math.max(0, state.valuation - totalCost);
 
   return {
@@ -288,7 +354,8 @@ export function activateHustle(
 export function hustlePayout(
   state: GriftOsGameState,
   definitions: GameMechanics,
-  hustleId: HustleId
+  hustleId: HustleId,
+  modifierContext?: ResolvedModifierContext
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
   const hustle = state.hustles[hustleId];
@@ -296,20 +363,21 @@ export function hustlePayout(
 
   return applyOutputModifiers(
     basePayout,
-    modifierBreakdownForHustle(state, definitions, hustleId)
+    modifierBreakdownForHustle(state, definitions, hustleId, modifierContext)
   );
 }
 
 export function effectiveCadenceSeconds(
   state: GriftOsGameState,
   definitions: GameMechanics,
-  hustleId: HustleId
+  hustleId: HustleId,
+  modifierContext?: ResolvedModifierContext
 ): number {
   const definition = getHustleDefinition(definitions, hustleId);
 
   return applyCadenceModifiers(
     definition.cadenceSeconds,
-    modifierBreakdownForHustle(state, definitions, hustleId)
+    modifierBreakdownForHustle(state, definitions, hustleId, modifierContext)
   );
 }
 
@@ -351,7 +419,7 @@ function advanceProduction(
   definitions: GameMechanics,
   elapsedMs: number
 ): AdvanceResult {
-
+  let modifierContext: ResolvedModifierContext | undefined;
   let valuation = state.valuation;
   const events: AdvanceResult['events'] = [];
   const hustles = { ...state.hustles };
@@ -363,10 +431,13 @@ function advanceProduction(
       continue;
     }
 
+    modifierContext ??= resolveModifierContext(state, definitions);
+
     const cadenceMs = effectiveCadenceSeconds(
       { ...state, hustles },
       definitions,
-      definition.id
+      definition.id,
+      modifierContext
     ) * 1000;
     const nextProgress = hustle.progressMs + elapsedMs;
 
@@ -374,7 +445,12 @@ function advanceProduction(
       const cyclesCompleted = hustle.isAutomated
         ? Math.floor(nextProgress / cadenceMs)
         : 1;
-      const payout = hustlePayout({ ...state, valuation, hustles }, definitions, definition.id);
+      const payout = hustlePayout(
+        { ...state, valuation, hustles },
+        definitions,
+        definition.id,
+        modifierContext
+      );
       const totalPayout = payout * cyclesCompleted;
       valuation += totalPayout;
 
@@ -411,8 +487,11 @@ function advanceProduction(
 
 export function valuationPerSecond(
   state: GriftOsGameState,
-  definitions: GameMechanics
+  definitions: GameMechanics,
+  modifierContext?: ResolvedModifierContext
 ): number {
+  let context = modifierContext;
+
   return definitions.reduce((total, definition) => {
     const hustle = state.hustles[definition.id];
 
@@ -420,8 +499,10 @@ export function valuationPerSecond(
       return total;
     }
 
-    return total + hustlePayout(state, definitions, definition.id) /
-      effectiveCadenceSeconds(state, definitions, definition.id);
+    context ??= resolveModifierContext(state, definitions);
+
+    return total + hustlePayout(state, definitions, definition.id, context) /
+      effectiveCadenceSeconds(state, definitions, definition.id, context);
   }, 0);
 }
 

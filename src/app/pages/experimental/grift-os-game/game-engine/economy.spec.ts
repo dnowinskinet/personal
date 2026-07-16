@@ -27,6 +27,7 @@ import {
 } from './economy';
 import {
   collectActiveModifiers,
+  resolveModifierContext,
   wealthAdvantageMultiplier,
   wealthAdvantageMultiplierForHustle,
 } from './modifiers';
@@ -34,6 +35,7 @@ import { buyLeverage } from './leverage';
 import { deriveEnterprisePresentation } from './presentation';
 import { campaignComplete, newlyUnlockedMechanics } from './progression';
 import { commitRugPull, createRugPullPreview, projectedNetWorthGain } from './rug-pull';
+import { GriftOsGameState } from './types';
 
 describe('GriftOS Hustle economy', () => {
   const trollDefinition = HUSTLE_DEFINITIONS[0];
@@ -206,6 +208,89 @@ describe('GriftOS Hustle economy', () => {
     expect(modifiers.map((modifier) => modifier.id)).toContain('online-rage-farm-scale-10-output');
     expect(wealthAdvantageMultiplier(100_000, HUSTLE_DEFINITIONS)).toBeCloseTo(3.0, 2);
     expect(payout).toBeGreaterThan(trollDefinition.basePayout * 10 * 1.5);
+  });
+
+  it('keeps pass-scoped modifier results identical to direct calculations', () => {
+    const initial = createInitialGameState(HUSTLE_DEFINITIONS, 1_000_000_000_000);
+    const state: GriftOsGameState = {
+      ...initial,
+      valuation: 5_000_000_000_000,
+      peakValuation: 5_000_000_000_000,
+      leveragePurchases: [...initial.leveragePurchases, 'attention-loop'],
+      extractionPreparation: {
+        completedStages: 0,
+        isActive: true,
+        progressMs: 1_000,
+      },
+      hustles: {
+        ...initial.hustles,
+        'online-rage-farm': {
+          ...initial.hustles['online-rage-farm'],
+          scaleCount: 10,
+          isActive: true,
+          isAutomated: true,
+          reachedMilestones: ['online-rage-farm-10'],
+        },
+      },
+    };
+    const modifierContext = resolveModifierContext(state, HUSTLE_DEFINITIONS);
+
+    for (const definition of HUSTLE_DEFINITIONS) {
+      expect(hustlePayout(state, HUSTLE_DEFINITIONS, definition.id, modifierContext))
+        .toBe(hustlePayout(state, HUSTLE_DEFINITIONS, definition.id));
+      expect(effectiveCadenceSeconds(state, HUSTLE_DEFINITIONS, definition.id, modifierContext))
+        .toBe(effectiveCadenceSeconds(state, HUSTLE_DEFINITIONS, definition.id));
+      expect(nextHustleCost(
+        definition,
+        state.hustles[definition.id].scaleCount,
+        state,
+        HUSTLE_DEFINITIONS,
+        modifierContext
+      )).toBe(nextHustleCost(
+        definition,
+        state.hustles[definition.id].scaleCount,
+        state,
+        HUSTLE_DEFINITIONS
+      ));
+      expect(automationCost(state, HUSTLE_DEFINITIONS, definition.id, modifierContext))
+        .toBe(automationCost(state, HUSTLE_DEFINITIONS, definition.id));
+    }
+  });
+
+  it('uses fresh modifiers immediately after a level crosses a milestone', () => {
+    const initial = {
+      ...createInitialGameState(HUSTLE_DEFINITIONS),
+      valuation: 2_000,
+      peakValuation: 2_000,
+    };
+    const beforeContext = resolveModifierContext(initial, HUSTLE_DEFINITIONS);
+    const beforePayout = hustlePayout(
+      initial,
+      HUSTLE_DEFINITIONS,
+      'online-rage-farm',
+      beforeContext
+    );
+    const leveled = buyHustle(
+      initial,
+      HUSTLE_DEFINITIONS,
+      'online-rage-farm',
+      9
+    ).state;
+    const afterContext = resolveModifierContext(leveled, HUSTLE_DEFINITIONS);
+    const afterPayout = hustlePayout(
+      leveled,
+      HUSTLE_DEFINITIONS,
+      'online-rage-farm',
+      afterContext
+    );
+
+    expect(leveled.hustles['online-rage-farm'].scaleCount).toBe(10);
+    expect(afterPayout).toBe(hustlePayout(
+      leveled,
+      HUSTLE_DEFINITIONS,
+      'online-rage-farm'
+    ));
+    expect(afterPayout).toBeGreaterThan(beforePayout * 10);
   });
 
   it('makes $1T Net Worth a decisive post-victory advantage without changing the frontier rule', () => {

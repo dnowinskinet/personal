@@ -1,5 +1,6 @@
 import { valuationPerSecond } from './economy';
 import { GameMechanics } from './mechanics';
+import { ResolvedModifierContext } from './modifiers';
 import { rugPullTargetForNetWorth } from './progression';
 import { GriftOsGameState } from './types';
 
@@ -33,7 +34,8 @@ export const ENTERPRISE_INTENSITY_CONFIG = {
 
 export function deriveEnterprisePresentation(
   state: GriftOsGameState,
-  definitions: GameMechanics
+  definitions: GameMechanics,
+  modifierContext?: ResolvedModifierContext
 ): EnterprisePresentation {
   const activeCount = definitions.filter((definition) => {
     const hustle = state.hustles[definition.id];
@@ -76,7 +78,7 @@ export function deriveEnterprisePresentation(
     valuationProgress,
     leverageProgress,
     metaProgress,
-    valuationPerSecond: valuationPerSecond(state, definitions),
+    valuationPerSecond: valuationPerSecond(state, definitions, modifierContext),
   };
 }
 
