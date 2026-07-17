@@ -83,4 +83,27 @@ describe('GamePresentationFacade', () => {
     expect(facade.derive(input)).toBe(facade.derive(input));
     expect(state.valuation).toBe(0);
   });
+
+  it('times only presentation rebuilds and keeps memoized reads free of duplicate samples', () => {
+    const durations: number[] = [];
+    const timedFacade = new GamePresentationFacade(
+      HUSTLE_DEFINITIONS,
+      LEVERAGE_DEFINITIONS,
+      INFLUENCE_ENGINE_MECHANICS,
+      [{ id: 'hustles', label: 'Hustles' }],
+      (durationMs) => durations.push(durationMs)
+    );
+    const input = {
+      state: createInitialGameState(INFLUENCE_ENGINE_MECHANICS),
+      selectedHustleId: 'online-rage-farm' as const,
+      selectedTab: 'hustles' as const,
+      selectedContextOpen: false,
+    };
+
+    timedFacade.derive(input);
+    timedFacade.derive(input);
+
+    expect(durations.length).toBe(1);
+    expect(durations[0]).toBeGreaterThanOrEqual(0);
+  });
 });

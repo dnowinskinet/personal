@@ -49,6 +49,15 @@ export interface RuntimeStorage {
   setItem(key: string, value: string): void;
 }
 
+export interface RunPersistenceTimingSample {
+  stage: 'stringify' | 'setItem';
+  durationMs: number;
+  force: boolean;
+  serializedBytes: number;
+}
+
+export type RunPersistenceTimingObserver = (sample: RunPersistenceTimingSample) => void;
+
 const RUN_SAVE_THROTTLE_MS = 2000;
 
 export class GriftPersistence {
@@ -59,7 +68,8 @@ export class GriftPersistence {
     private readonly storage: RuntimeStorage | null,
     private readonly mechanics: GameMechanics,
     private readonly activeEmpireId: EmpireId = DEFAULT_EMPIRE_ID,
-    private readonly now: () => number = Date.now
+    private readonly now: () => number = Date.now,
+    private readonly timingObserver?: RunPersistenceTimingObserver
   ) {
     this.currentMeta = emptyMeta(activeEmpireId);
   }
@@ -137,7 +147,7 @@ export class GriftPersistence {
       selectedHustleId,
     };
 
-    if (this.writeV3Run(save)) {
+    if (this.writeV3Run(save, force)) {
       this.lastRunSaveAt = savedAt;
     }
   }
@@ -278,10 +288,36 @@ export class GriftPersistence {
     }
   }
 
-  private writeV3Run(save: GriftRunSaveV3): boolean {
+  private writeV3Run(save: GriftRunSaveV3, force = false): boolean {
+    if (!this.storage) {
+      return false;
+    }
+
+    let serialized: string;
+
     try {
-      this.storage?.setItem(GRIFT_RUN_STORAGE_KEY, JSON.stringify(save));
-      return Boolean(this.storage);
+      const stringifyStartedAt = this.timingObserver ? performanceNow() : 0;
+      serialized = JSON.stringify(save);
+      this.timingObserver?.({
+        stage: 'stringify',
+        durationMs: performanceNow() - stringifyStartedAt,
+        force,
+        serializedBytes: serialized.length,
+      });
+    } catch {
+      return false;
+    }
+
+    try {
+      const setItemStartedAt = this.timingObserver ? performanceNow() : 0;
+      this.storage.setItem(GRIFT_RUN_STORAGE_KEY, serialized);
+      this.timingObserver?.({
+        stage: 'setItem',
+        durationMs: performanceNow() - setItemStartedAt,
+        force,
+        serializedBytes: serialized.length,
+      });
+      return true;
     } catch {
       return false;
     }
@@ -448,4 +484,8 @@ function uniqueEmpireIds(values: readonly EmpireId[]): readonly EmpireId[] {
 
 function finiteNumber(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function performanceNow(): number {
+  return globalThis.performance?.now() ?? Date.now();
 }

@@ -67,6 +67,10 @@ import {
   recordSnapshotIfDue,
   savePlaytestSession,
 } from './playtest/playtest-session';
+import {
+  GriftPerformanceDiagnostics,
+  PlaytestPerformanceContext,
+} from './playtest/performance-diagnostics';
 import { GameAction } from './presentation/game-action';
 import {
   GamePresentationFacade,
@@ -159,14 +163,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     { id: 'leverage', label: GRIFT_OS_COPY.tabs.leverage },
     { id: 'rugPull', label: GRIFT_OS_COPY.tabs.rugPull },
   ];
-  private readonly gamePresentation = new GamePresentationFacade(
-    this.definitions,
-    LEVERAGE_DEFINITIONS,
-    this.mechanics,
-    this.tabs
-  );
+  private readonly gamePresentation: GamePresentationFacade;
   private readonly runRuntime = new GriftRunRuntime(this.mechanics);
   private readonly gameEventLog = new GameEventLog();
+  private readonly performanceDiagnostics: GriftPerformanceDiagnostics;
 
   state: GriftOsGameState = createInitialGameState(this.mechanics);
   payoutFeedback: PayoutFeedback[] = [];
@@ -196,6 +196,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private selectedContextReturnTarget: HTMLElement | null = null;
   private selectedContextReturnHustleId: HustleId | null = null;
   private lastUiRenderTime = 0;
+  private longTaskObserver: PerformanceObserver | null = null;
+  private angularTurnStartedAt = 0;
+  private readonly performanceSubscriptions: { unsubscribe(): void }[] = [];
   private readonly initialRouteRunState: InitialRouteRunState | null;
   private readonly initialRouteSurface: GameTabId | null;
   private readonly visibilityChangeHandler = (): void => {
@@ -212,12 +215,35 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
+    this.performanceDiagnostics = new GriftPerformanceDiagnostics(this.isPlaytestMode);
+    this.gamePresentation = new GamePresentationFacade(
+      this.definitions,
+      LEVERAGE_DEFINITIONS,
+      this.mechanics,
+      this.tabs,
+      this.isPlaytestMode
+        ? (durationMs) => this.performanceDiagnostics.record('presentation.snapshot', durationMs)
+        : undefined
+    );
     this.persistence = new GriftPersistence(
       this.getLocalStorage(),
       this.mechanics,
-      this.activeEmpireId
+      this.activeEmpireId,
+      Date.now,
+      this.isPlaytestMode
+        ? (sample) => this.performanceDiagnostics.record(
+            sample.stage === 'stringify'
+              ? 'persistence.stringify'
+              : 'persistence.setItem',
+            sample.durationMs,
+            {
+              saveCount: 1,
+              forcedSaveCount: sample.force ? 1 : 0,
+            }
+          )
+        : undefined
     );
-    this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
     this.initialRouteRunState = this.parseInitialRouteRunState(this.route.snapshot.queryParamMap.get('run'));
     this.initialRouteSurface = this.parseInitialRouteSurface(this.route.snapshot.queryParamMap.get('surface'));
     this.applyInitialRouteState(0);
@@ -244,6 +270,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     if (this.isPlaytestMode) {
       this.initializePlaytestSession();
+      this.startPlaytestPerformanceDiagnostics();
     }
 
     this.updateAudioPresentation();
@@ -262,6 +289,12 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.valuationFlyoutTimerIds.clear();
+    this.longTaskObserver?.disconnect();
+    this.longTaskObserver = null;
+    for (const subscription of this.performanceSubscriptions) {
+      subscription.unsubscribe();
+    }
+    this.performanceSubscriptions.length = 0;
 
     if (this.isBrowser) {
       this.persistRunState(true);
@@ -521,6 +554,15 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     return this.playtestSession?.sessionId ?? 'not started';
   }
 
+  get playtestPerformanceSummary(): string {
+    return this.performanceDiagnostics.compactSummary();
+  }
+
+  resetPlaytestPerformanceDiagnostics(): void {
+    this.performanceDiagnostics.reset();
+    this.playtestStatusMessage = 'Performance diagnostics reset.';
+  }
+
   dispatchGameAction(action: GameAction, sourceEvent?: Event): void {
     switch (action.type) {
       case 'mode.select':
@@ -633,6 +675,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.purchased) {
+      this.performanceDiagnostics.notePendingUiContext({ purchaseCount: 1 });
       this.lastTickTime = performance.now();
       const definition = this.getDefinition(hustleId);
       this.addValuationFlyout('spend', result.totalCost);
@@ -678,6 +721,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.purchased && definition) {
+      this.performanceDiagnostics.notePendingUiContext({ purchaseCount: 1 });
       this.addFeedback(definition.name, 'secured', 'leverage', null);
       this.emitGameEvent({ type: 'leverage.purchased', leverageId });
       this.emitGameEvent({
@@ -712,6 +756,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.started && stage) {
+      this.performanceDiagnostics.notePendingUiContext({ purchaseCount: 1 });
       this.addValuationFlyout('spend', result.totalCost);
       this.addFeedback(stage.name, 'in progress', 'rug-pull', null);
       this.emitGameEvent({
@@ -1079,6 +1124,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
   private readonly tick = (): void => {
     const timestamp = performance.now();
+    const diagnosticsEnabled = this.performanceDiagnostics.enabled;
+    const tickStartedAt = diagnosticsEnabled ? timestamp : 0;
+    let tickContext: PlaytestPerformanceContext = {};
 
     if (this.documentRef.hidden) {
       this.lastTickTime = timestamp;
@@ -1090,40 +1138,75 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     this.ngZone.runOutsideAngular(() => {
       const previousState = this.state;
+      const advanceStartedAt = this.performanceDiagnostics.enabled ? performance.now() : 0;
       const result = this.runRuntime.advanceForeground(this.state, previousTimestamp, timestamp);
+      const context: PlaytestPerformanceContext = {
+        payoutCount: result.events.length,
+      };
+      tickContext = {
+        ...context,
+        saveCount: result.events.length > 0 ? 1 : 0,
+        forcedSaveCount: result.events.length > 0 ? 1 : 0,
+      };
+      if (diagnosticsEnabled) {
+        this.performanceDiagnostics.record(
+          'runtime.advance',
+          performance.now() - advanceStartedAt,
+          context
+        );
+      }
       this.state = result.state;
       const nowMs = Date.now();
 
-      if (result.events.length > 0) {
-        const previousPresentation = deriveEnterprisePresentation(previousState, this.mechanics);
+      this.performanceDiagnostics.runWithContext(context, () => {
+        if (result.events.length > 0) {
+          const eventsStartedAt = this.performanceDiagnostics.enabled ? performance.now() : 0;
+          const previousPresentation = deriveEnterprisePresentation(previousState, this.mechanics);
 
-        for (const event of result.events) {
-          this.addPayoutFeedback(event, timestamp);
-          this.recordPlaytestCycle(event, previousState, nowMs);
-          this.emitGameEvent({ type: 'hustle.manualActionCompleted', hustleId: event.hustleId });
+          for (const event of result.events) {
+            this.addPayoutFeedback(event, timestamp);
+            this.recordPlaytestCycle(event, previousState, nowMs);
+            this.emitGameEvent({ type: 'hustle.manualActionCompleted', hustleId: event.hustleId });
+          }
+
+          this.capturePlaytestDiscoveries(nowMs);
+          this.emitStageChangeIfNeeded(previousPresentation, this.presentation);
+          if (diagnosticsEnabled) {
+            this.performanceDiagnostics.record('events', performance.now() - eventsStartedAt);
+          }
+          this.updateAudioPresentation();
+          this.persistRunState(true);
         }
 
-        this.capturePlaytestDiscoveries(nowMs);
-        this.emitStageChangeIfNeeded(previousPresentation, this.presentation);
-        this.updateAudioPresentation();
-        this.persistRunState(true);
-      }
+        this.capturePlaytestSnapshot(nowMs);
+        this.persistRunState();
 
-      this.capturePlaytestSnapshot(nowMs);
-      this.persistRunState();
+        if (this.payoutFeedback.length > 0) {
+          this.payoutFeedback = this.payoutFeedback.filter((feedback) => feedback.expiresAt > timestamp);
+        }
 
-      if (this.payoutFeedback.length > 0) {
-        this.payoutFeedback = this.payoutFeedback.filter((feedback) => feedback.expiresAt > timestamp);
-      }
-
-      if (
-        result.events.length > 0 ||
-        timestamp - this.lastUiRenderTime >= UI_RENDER_INTERVAL_MS
-      ) {
-        this.changeDetectorRef.detectChanges();
-        this.lastUiRenderTime = timestamp;
-      }
+        if (
+          result.events.length > 0 ||
+          timestamp - this.lastUiRenderTime >= UI_RENDER_INTERVAL_MS
+        ) {
+          const uiRenderStartedAt = this.performanceDiagnostics.enabled ? performance.now() : 0;
+          const detectChangesStartedAt = this.performanceDiagnostics.enabled ? performance.now() : 0;
+          this.changeDetectorRef.detectChanges();
+          if (diagnosticsEnabled) {
+            this.performanceDiagnostics.record(
+              'detectChanges',
+              performance.now() - detectChangesStartedAt
+            );
+            this.performanceDiagnostics.completeUiRender(performance.now() - uiRenderStartedAt);
+          }
+          this.lastUiRenderTime = timestamp;
+        }
+      });
     });
+
+    if (diagnosticsEnabled) {
+      this.performanceDiagnostics.record('tick', performance.now() - tickStartedAt, tickContext);
+    }
   };
 
   private startSimulationTimer(): void {
@@ -1149,6 +1232,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     this.state = result.state;
 
     if (result.quantityPurchased > 0) {
+      this.performanceDiagnostics.notePendingUiContext({
+        purchaseCount: 1,
+        milestoneCount: result.milestonesReached.length,
+      });
       const definition = this.getDefinition(hustleId);
       const wasAcquisition = previousState.hustles[hustleId].scaleCount <= 0;
 
@@ -1253,6 +1340,44 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     }
 
     this.persistPlaytestSession();
+  }
+
+  private startPlaytestPerformanceDiagnostics(): void {
+    if (!this.isBrowser || !this.performanceDiagnostics.enabled) {
+      return;
+    }
+
+    this.performanceSubscriptions.push(
+      this.ngZone.onUnstable.subscribe(() => {
+        if (this.angularTurnStartedAt === 0) {
+          this.angularTurnStartedAt = performance.now();
+        }
+      }),
+      this.ngZone.onStable.subscribe(() => {
+        if (this.angularTurnStartedAt === 0) {
+          return;
+        }
+
+        const durationMs = performance.now() - this.angularTurnStartedAt;
+        this.angularTurnStartedAt = 0;
+        this.performanceDiagnostics.completeUiRender(durationMs);
+      })
+    );
+
+    try {
+      if (!PerformanceObserver.supportedEntryTypes.includes('longtask')) {
+        return;
+      }
+
+      this.longTaskObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          this.performanceDiagnostics.recordLongTask(entry.duration);
+        }
+      });
+      this.longTaskObserver.observe({ type: 'longtask', buffered: true });
+    } catch {
+      this.longTaskObserver = null;
+    }
   }
 
   private createRugPullResolution(

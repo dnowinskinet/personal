@@ -157,6 +157,11 @@ export interface GamePresentationInput {
   selectedContextOpen: boolean;
 }
 
+export type PresentationTimingObserver = (
+  durationMs: number,
+  input: GamePresentationInput
+) => void;
+
 const STAGE_COPY: Record<EnterpriseStage, { label: string; summary: string }> = {
   scrappy: { label: 'Scrappy cover story', summary: 'One working Hustle and almost no institutional camouflage.' },
   traction: { label: 'Traction theater', summary: 'The stack starts to look repeatable, even if it is still mostly personal labor.' },
@@ -174,7 +179,8 @@ export class GamePresentationFacade {
     private readonly definitions: readonly HustleDefinition[],
     private readonly leverageDefinitions: readonly LeverageDefinition[],
     private readonly mechanics: GameMechanics,
-    private readonly tabs: readonly { id: GameTabId; label: string }[]
+    private readonly tabs: readonly { id: GameTabId; label: string }[],
+    private readonly timingObserver?: PresentationTimingObserver
   ) {}
 
   derive(input: GamePresentationInput): GamePresentationSnapshot {
@@ -195,6 +201,20 @@ export class GamePresentationFacade {
   }
 
   private createSnapshot(input: GamePresentationInput): GamePresentationSnapshot {
+    if (!this.timingObserver) {
+      return this.buildSnapshot(input);
+    }
+
+    const startedAt = performanceNow();
+
+    try {
+      return this.buildSnapshot(input);
+    } finally {
+      this.timingObserver(performanceNow() - startedAt, input);
+    }
+  }
+
+  private buildSnapshot(input: GamePresentationInput): GamePresentationSnapshot {
     const { state } = input;
     const modifierContext = resolveModifierContext(state, this.mechanics);
     const rugPullPreview = createRugPullPreview(state);
@@ -517,4 +537,8 @@ function formatElapsed(valueMs: number): string {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
+}
+
+function performanceNow(): number {
+  return globalThis.performance?.now() ?? Date.now();
 }

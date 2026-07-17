@@ -152,6 +152,8 @@ describe('GriftOsGameComponent', () => {
     expect(component.isPlaytestMode).toBeTrue();
     expect(component.playtestSession).not.toBeNull();
     expect(fixture.nativeElement.querySelector('[data-testid="grift-playtest-controls"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="grift-performance-summary"]')).not.toBeNull();
+    expect(component.playtestPerformanceSummary).toMatch(/performance samples|presentation\.snapshot/);
     expect(fixture.nativeElement.textContent).toContain('TEST');
   });
 

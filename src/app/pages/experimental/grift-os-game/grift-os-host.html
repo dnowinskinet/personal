@@ -52,7 +52,12 @@
                         <button type="button" (click)="exportPlaytestLog()">Export JSON</button>
                         <button type="button" (click)="copyPlaytestSummary()">Copy Summary</button>
                         <button type="button" (click)="clearStoredPlaytestLogs()">Clear Logs</button>
+                        <button type="button" (click)="resetPlaytestPerformanceDiagnostics()">
+                            Reset Performance
+                        </button>
                     </div>
+
+                    <pre class="grift-performance-summary" data-testid="grift-performance-summary">{{ playtestPerformanceSummary }}</pre>
 
                     <section class="grift-audio-debug" aria-label="Audio debug">
                         <div>

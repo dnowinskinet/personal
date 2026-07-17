@@ -64,6 +64,32 @@ describe('GriftPersistence', () => {
     expect(storage.getItem(LEGACY_GRIFT_META_STORAGE_KEY)).toBeNull();
   });
 
+  it('reports run serialization and storage timing only for completed save stages', () => {
+    const storage = new MemoryStorage();
+    const samples: {
+      stage: 'stringify' | 'setItem';
+      force: boolean;
+      serializedBytes: number;
+    }[] = [];
+    const persistence = new GriftPersistence(
+      storage,
+      INFLUENCE_ENGINE_MECHANICS,
+      'influence',
+      () => 10_000,
+      (sample) => samples.push(sample)
+    );
+
+    persistence.saveRun(
+      createInitialGameState(INFLUENCE_ENGINE_MECHANICS),
+      'online-rage-farm',
+      true
+    );
+
+    expect(samples.map((sample) => sample.stage)).toEqual(['stringify', 'setItem']);
+    expect(samples.every((sample) => sample.force)).toBeTrue();
+    expect(samples.every((sample) => sample.serializedBytes > 0)).toBeTrue();
+  });
+
   it('migrates v2 wealth/history and resets the incompatible ten-Hustle run without rewriting it', () => {
     const storage = new MemoryStorage();
     const legacyMeta = JSON.stringify({

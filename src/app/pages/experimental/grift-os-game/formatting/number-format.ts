@@ -28,6 +28,11 @@ const COMPACT_UNITS = [
 ] as const;
 
 const MIN_CENTS_VALUE = 0.00001;
+const NUMBER_FORMATTERS = new Map<string, Intl.NumberFormat>();
+const INTEGER_FORMATTER = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0,
+  useGrouping: true,
+});
 
 export function formatMoney(value: number, role: MoneyFormatRole): string {
   const safeValue = safeNonNegative(value);
@@ -66,7 +71,7 @@ export function formatPercentage(value: number): string {
 }
 
 export function formatCount(value: number): string {
-  return Math.max(0, Math.trunc(finiteOrZero(value))).toLocaleString('en-US');
+  return INTEGER_FORMATTER.format(Math.max(0, Math.trunc(finiteOrZero(value))));
 }
 
 function formatCents(value: number, significantDigits: number): string {
@@ -99,10 +104,23 @@ function formatSignificantNumber(value: number, significantDigits: number, useGr
   const rounded = roundToSignificant(value, significantDigits);
   const maximumFractionDigits = fractionDigitsForSignificantValue(rounded, significantDigits);
 
-  return rounded.toLocaleString('en-US', {
+  return numberFormatter(useGrouping, maximumFractionDigits).format(rounded);
+}
+
+function numberFormatter(useGrouping: boolean, maximumFractionDigits: number): Intl.NumberFormat {
+  const key = `${useGrouping ? 'grouped' : 'plain'}:${maximumFractionDigits}`;
+  const existing = NUMBER_FORMATTERS.get(key);
+
+  if (existing) {
+    return existing;
+  }
+
+  const formatter = new Intl.NumberFormat('en-US', {
     useGrouping,
     maximumFractionDigits,
   });
+  NUMBER_FORMATTERS.set(key, formatter);
+  return formatter;
 }
 
 function roundToSignificant(value: number, significantDigits: number): number {
