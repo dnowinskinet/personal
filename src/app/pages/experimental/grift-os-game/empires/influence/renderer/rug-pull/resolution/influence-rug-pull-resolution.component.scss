@@ -1,0 +1,87 @@
+:host {
+  display: contents;
+}
+
+.grift-rug-resolution-dialog {
+  width: min(34rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--grift-warning), transparent 48%);
+  border-radius: 10px;
+  background: var(--grift-plane-raised);
+  padding: clamp(1.1rem, 4vw, 1.75rem);
+  color: var(--grift-ink);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.34);
+}
+
+.grift-rug-resolution-dialog::backdrop {
+  background: rgba(4, 8, 10, 0.66);
+  backdrop-filter: blur(2px);
+}
+
+.grift-rug-resolution-kicker,
+.grift-rug-resolution-summary {
+  margin: 0;
+}
+
+.grift-rug-resolution-kicker {
+  color: var(--grift-warning);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.grift-rug-resolution-dialog h2 {
+  margin: 0.32rem 0 0;
+  color: var(--grift-value);
+  font-size: clamp(1.55rem, 5vw, 2.35rem);
+  font-weight: 820;
+  line-height: 1.02;
+}
+
+.grift-rug-resolution-summary {
+  margin-top: 0.85rem;
+  color: var(--grift-ink-soft);
+  font-size: 0.94rem;
+  line-height: 1.48;
+}
+
+.grift-rug-resolution-dialog button {
+  display: block;
+  width: 100%;
+  min-height: 2.8rem;
+  margin-top: 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--grift-warning), transparent 40%);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--grift-warning), transparent 90%);
+  color: var(--grift-ink);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 720;
+}
+
+.grift-rug-resolution-dialog button:hover,
+.grift-rug-resolution-dialog button:focus-visible {
+  border-color: var(--grift-warning);
+  background: color-mix(in srgb, var(--grift-warning), transparent 84%);
+}
+
+.grift-rug-resolution-dialog button:focus-visible {
+  outline: 2px solid var(--grift-selection);
+  outline-offset: 3px;
+}
+
+@media (max-width: 44rem) {
+  .grift-rug-resolution-dialog {
+    width: calc(100vw - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grift-rug-resolution-dialog::backdrop {
+    backdrop-filter: none;
+  }
+}

@@ -1,0 +1,21 @@
+<dialog
+  #dialog
+  class="grift-rug-resolution-dialog"
+  aria-labelledby="grift-rug-resolution-title"
+  aria-describedby="grift-rug-resolution-description"
+  aria-modal="true"
+  data-testid="grift-rug-resolution-dialog"
+  (cancel)="dismissResolution($event)"
+>
+  <p class="grift-rug-resolution-kicker">Extraction committed</p>
+  <h2 id="grift-rug-resolution-title">
+    {{ resolution.netWorthGainLabel }} Net Worth realized
+  </h2>
+  <p id="grift-rug-resolution-description" class="grift-rug-resolution-summary">
+    {{ resolution.peakValuationLabel }} peak Valuation is gone. Your new run begins with
+    {{ resolution.resultingNetWorthLabel }} Net Worth and {{ resolution.wealthAdvantageLabel }}.
+  </p>
+  <button type="button" autofocus (click)="dismissResolution()">
+    Continue to new run
+  </button>
+</dialog>

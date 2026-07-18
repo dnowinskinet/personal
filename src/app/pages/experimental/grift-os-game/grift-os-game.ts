@@ -165,7 +165,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   ];
   private readonly gamePresentation: GamePresentationFacade;
   private readonly runRuntime = new GriftRunRuntime(this.mechanics);
-  private readonly gameEventLog = new GameEventLog();
+  private readonly gameEventLog: GameEventLog | null;
   private readonly performanceDiagnostics: GriftPerformanceDiagnostics;
 
   state: GriftOsGameState = createInitialGameState(this.mechanics);
@@ -198,6 +198,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   private lastUiRenderTime = 0;
   private longTaskObserver: PerformanceObserver | null = null;
   private angularTurnStartedAt = 0;
+  private diagnosticLastTickCallbackAt = 0;
   private readonly performanceSubscriptions: { unsubscribe(): void }[] = [];
   private readonly initialRouteRunState: InitialRouteRunState | null;
   private readonly initialRouteSurface: GameTabId | null;
@@ -206,16 +207,22 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const timestamp = performance.now();
+
     if (this.documentRef.hidden) {
       this.persistRunState(true);
     }
 
-    this.lastTickTime = performance.now();
+    this.lastTickTime = timestamp;
+    if (this.performanceDiagnostics.enabled) {
+      this.diagnosticLastTickCallbackAt = timestamp;
+    }
   };
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.isPlaytestMode = this.route.snapshot.queryParamMap.get('playtest') === '1';
+    this.gameEventLog = this.isPlaytestMode ? new GameEventLog() : null;
     this.performanceDiagnostics = new GriftPerformanceDiagnostics(this.isPlaytestMode);
     this.gamePresentation = new GamePresentationFacade(
       this.definitions,
@@ -1126,7 +1133,14 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
     const timestamp = performance.now();
     const diagnosticsEnabled = this.performanceDiagnostics.enabled;
     const tickStartedAt = diagnosticsEnabled ? timestamp : 0;
+    const schedulerDelayMs = diagnosticsEnabled && this.diagnosticLastTickCallbackAt > 0
+      ? Math.max(0, timestamp - this.diagnosticLastTickCallbackAt - SIMULATION_TICK_MS)
+      : 0;
     let tickContext: PlaytestPerformanceContext = {};
+
+    if (diagnosticsEnabled) {
+      this.diagnosticLastTickCallbackAt = timestamp;
+    }
 
     if (this.documentRef.hidden) {
       this.lastTickTime = timestamp;
@@ -1149,6 +1163,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         forcedSaveCount: result.events.length > 0 ? 1 : 0,
       };
       if (diagnosticsEnabled) {
+        this.performanceDiagnostics.record('scheduler.delay', schedulerDelayMs, context, timestamp);
         this.performanceDiagnostics.record(
           'runtime.advance',
           performance.now() - advanceStartedAt,
@@ -1156,6 +1171,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
         );
       }
       this.state = result.state;
+      const payoutDetectedAt = diagnosticsEnabled && result.events.length > 0
+        ? performance.now()
+        : 0;
       const nowMs = Date.now();
 
       this.performanceDiagnostics.runWithContext(context, () => {
@@ -1201,6 +1219,18 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           }
           this.lastUiRenderTime = timestamp;
         }
+
+        if (diagnosticsEnabled && result.events.length > 0) {
+          const frameContext = { ...tickContext };
+          window.requestAnimationFrame((frameTimestamp) => {
+            this.performanceDiagnostics.record(
+              'payout.frame',
+              Math.max(0, frameTimestamp - payoutDetectedAt),
+              frameContext,
+              frameTimestamp
+            );
+          });
+        }
       });
     });
 
@@ -1216,6 +1246,9 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
     this.lastTickTime = performance.now();
     this.lastUiRenderTime = this.lastTickTime;
+    if (this.performanceDiagnostics.enabled) {
+      this.diagnosticLastTickCallbackAt = this.lastTickTime;
+    }
     this.documentRef.addEventListener('visibilitychange', this.visibilityChangeHandler);
 
     this.ngZone.runOutsideAngular(() => {
@@ -1358,9 +1391,10 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
           return;
         }
 
-        const durationMs = performance.now() - this.angularTurnStartedAt;
+        const startedAtMs = this.angularTurnStartedAt;
+        const durationMs = performance.now() - startedAtMs;
         this.angularTurnStartedAt = 0;
-        this.performanceDiagnostics.completeUiRender(durationMs);
+        this.performanceDiagnostics.completeAngularTurn(durationMs, startedAtMs);
       })
     );
 
@@ -1371,7 +1405,7 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
 
       this.longTaskObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          this.performanceDiagnostics.recordLongTask(entry.duration);
+          this.performanceDiagnostics.recordLongTask(entry.duration, entry.startTime);
         }
       });
       this.longTaskObserver.observe({ type: 'longtask', buffered: true });
@@ -1913,8 +1947,11 @@ export class GriftOsGameComponent implements OnInit, OnDestroy {
   }
 
   private emitGameEvent(event: GameEvent): void {
-    const timestampMs = this.isBrowser ? performance.now() : Date.now();
-    this.gameEvents = [...this.gameEventLog.record(event, timestampMs)];
+    if (this.gameEventLog) {
+      const timestampMs = this.isBrowser ? performance.now() : Date.now();
+      this.gameEvents = [...this.gameEventLog.record(event, timestampMs)];
+    }
+
     this.audioDirector.handleGameEvent(event, Date.now());
   }
 

@@ -20,7 +20,11 @@ import { InfluenceLedgerComponent } from './ledger/influence-ledger.component';
 import { InfluenceContextComponent } from './context/influence-context.component';
 import { InfluenceModesComponent } from './modes/influence-modes.component';
 import { InfluenceLeverageComponent } from './leverage/influence-leverage.component';
-import { InfluenceRugPullComponent, InfluenceRugPullView } from './rug-pull/influence-rug-pull.component';
+import {
+  InfluenceRugPullComponent,
+  InfluenceRugPullView,
+} from './rug-pull/influence-rug-pull.component';
+import { InfluenceRugPullResolutionComponent } from './rug-pull/resolution/influence-rug-pull-resolution.component';
 
 export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
   copy: typeof GRIFT_OS_COPY;
@@ -29,7 +33,15 @@ export interface InfluenceEmpireRendererView extends EmpireRendererHostView {
 @Component({
   selector: 'app-influence-empire-renderer',
   standalone: true,
-  imports: [InfluenceStageComponent, InfluenceModesComponent, InfluenceLedgerComponent, InfluenceContextComponent, InfluenceLeverageComponent, InfluenceRugPullComponent],
+  imports: [
+    InfluenceStageComponent,
+    InfluenceModesComponent,
+    InfluenceLedgerComponent,
+    InfluenceContextComponent,
+    InfluenceLeverageComponent,
+    InfluenceRugPullComponent,
+    InfluenceRugPullResolutionComponent,
+  ],
   templateUrl: './influence-empire-renderer.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -118,8 +130,6 @@ export class InfluenceEmpireRendererComponent {
     if (request.action.type === 'context.open') {
       window.setTimeout(() => this.selectedContext?.focusPanel(), 0);
       window.setTimeout(() => this.selectedContext?.focusPanel(), 80);
-    } else if (request.action.type === 'rugPull.commit') {
-      window.setTimeout(() => this.hustlesSurface?.nativeElement.focus(), 0);
     }
   }
 
@@ -129,6 +139,7 @@ export class InfluenceEmpireRendererComponent {
 
   dismissRugPullResolution(): void {
     this.dispatch({ action: { type: 'rugPull.resolution.dismiss' } });
+    window.setTimeout(() => this.hustlesSurface?.nativeElement.focus(), 0);
   }
 
 }

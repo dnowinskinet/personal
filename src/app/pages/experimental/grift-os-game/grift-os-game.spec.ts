@@ -157,6 +157,30 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('TEST');
   });
 
+  it('records the every-action event history only in playtest mode', async () => {
+    fixture = await createFixture({});
+    const normalComponent = fixture.componentInstance;
+
+    normalComponent.activate('online-rage-farm');
+    fixture.detectChanges();
+
+    expect(normalComponent.state.hustles['online-rage-farm'].isActive).toBeTrue();
+    expect(normalComponent.gameEvents).toEqual([]);
+    expect(fixture.nativeElement.querySelector('.grift-event-history')).toBeNull();
+
+    fixture.destroy();
+    fixture = await createFixture({ playtest: '1', run: 'fresh' });
+    const playtestComponent = fixture.componentInstance;
+
+    playtestComponent.activate('online-rage-farm');
+    fixture.detectChanges();
+
+    expect(playtestComponent.gameEvents.map((event) => event.type)).toContain(
+      'hustle.manualActionStarted'
+    );
+    expect(fixture.nativeElement.querySelector('.grift-event-history')).not.toBeNull();
+  });
+
   it('derives the root visual condition only from automation and purchased Leverage', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
@@ -857,6 +881,39 @@ describe('GriftOsGameComponent', () => {
     expect(component.state.hustles['online-rage-farm'].progressMs).toBe(0);
   });
 
+  it('measures late timer delivery and payout-to-frame wait only in playtest mode', async () => {
+    fixture = await createFixture({ playtest: '1', run: 'endgame' });
+    const component = fixture.componentInstance;
+
+    if (component['simulationTimerId'] !== null) {
+      window.clearInterval(component['simulationTimerId']);
+      component['simulationTimerId'] = null;
+    }
+
+    const frameCapture: { callback?: FrameRequestCallback } = {};
+    spyOn(window, 'requestAnimationFrame').and.callFake((callback: FrameRequestCallback) => {
+      frameCapture.callback = callback;
+      return 1;
+    });
+    spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
+    component.resetPlaytestPerformanceDiagnostics();
+    component['lastTickTime'] = 1_000;
+    component['diagnosticLastTickCallbackAt'] = 1_000;
+    spyOn(performance, 'now').and.returnValue(3_150);
+
+    component['tick']();
+    expect(frameCapture.callback).toBeDefined();
+    frameCapture.callback?.(3_200);
+
+    const summary = component['performanceDiagnostics'].summarize();
+    expect(summary.stages.find((stage) => stage.stage === 'scheduler.delay')).toEqual(
+      jasmine.objectContaining({ maxMs: 2_100 })
+    );
+    expect(summary.stages.find((stage) => stage.stage === 'payout.frame')).toEqual(
+      jasmine.objectContaining({ maxMs: 50 })
+    );
+  });
+
   it('flushes partial progress ticks without waiting for another interaction', async () => {
     fixture = await createFixture({});
     const component = fixture.componentInstance;
@@ -1124,6 +1181,13 @@ describe('GriftOsGameComponent', () => {
     expect(component.payoutFeedback.some((feedback) => feedback.tone === 'rug-pull')).toBeFalse();
     expect(component.valuationFlyouts.length).toBe(0);
     expect(component.rugPullResolution?.netWorthGainLabel).toBe('+$1M');
+    const resolutionDialog = fixture.nativeElement.querySelector(
+      '[data-testid="grift-rug-resolution-dialog"]'
+    ) as HTMLDialogElement | null;
+    expect(resolutionDialog).not.toBeNull();
+    expect(resolutionDialog?.open).toBeTrue();
+    expect(resolutionDialog?.getAttribute('aria-modal')).toBe('true');
+    expect(resolutionDialog?.closest('.grift-work-surface--hustles')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Extraction committed');
     expect(fixture.nativeElement.textContent).toContain('+$1M Net Worth realized');
     expect(fixture.nativeElement.textContent).toContain('Net Worth');
@@ -1132,6 +1196,16 @@ describe('GriftOsGameComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('x5 output');
     expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('100000');
     expect(window.localStorage.getItem('grift-os-meta-v3')).toContain('"influence":1');
+
+    const continueButton = resolutionDialog?.querySelector('button') as HTMLButtonElement | null;
+    continueButton?.click();
+    fixture.detectChanges();
+    await settleFocus();
+    fixture.detectChanges();
+
+    expect(component.rugPullResolution).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="grift-rug-resolution-dialog"]')).toBeNull();
+    expect(document.activeElement?.classList).toContain('grift-work-surface--hustles');
 
     fixture.destroy();
     fixture = await createFixture({});

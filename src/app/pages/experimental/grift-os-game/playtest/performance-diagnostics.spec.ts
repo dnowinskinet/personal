@@ -10,7 +10,7 @@ describe('GriftPerformanceDiagnostics', () => {
         diagnostics.record('tick', durationMs, { saveCount: 1, forcedSaveCount: 1 });
       }
     });
-    diagnostics.recordLongTask(75);
+    diagnostics.recordLongTask(75, 1_000);
 
     const summary = diagnostics.summarize();
     const tick = summary.stages.find((stage) => stage.stage === 'tick');
@@ -34,8 +34,40 @@ describe('GriftPerformanceDiagnostics', () => {
         forcedSaveCount: 1,
       },
     }));
-    expect(summary.longTasks).toEqual({ count: 1, totalMs: 75, maxMs: 75 });
+    expect(summary.longTasks).toEqual({
+      count: 1,
+      totalMs: 75,
+      maxMs: 75,
+      maxStartedAtMs: 1_000,
+      lastStartedAtMs: 1_000,
+      lastDurationMs: 75,
+    });
     expect(diagnostics.compactSummary()).toContain('over=4/3/2/1');
+  });
+
+  it('separates Angular turns, direct renders, scheduler delay, and payout frame wait', () => {
+    const diagnostics = new GriftPerformanceDiagnostics(true);
+
+    diagnostics.notePendingUiContext({ purchaseCount: 1 });
+    diagnostics.completeAngularTurn(970, 2_000);
+    diagnostics.completeUiRender(2, { payoutCount: 2 });
+    diagnostics.record('scheduler.delay', 920, { payoutCount: 2 }, 3_000);
+    diagnostics.record('payout.frame', 940, { payoutCount: 2 }, 3_940);
+
+    const summary = diagnostics.summarize();
+    const angularTurn = summary.stages.find((stage) => stage.stage === 'angular-turn');
+    const uiRender = summary.stages.find((stage) => stage.stage === 'ui-render');
+    const schedulerDelay = summary.stages.find((stage) => stage.stage === 'scheduler.delay');
+    const payoutFrame = summary.stages.find((stage) => stage.stage === 'payout.frame');
+
+    expect(angularTurn).toEqual(jasmine.objectContaining({
+      maxMs: 970,
+      maxAtMs: 2_000,
+      slowestContext: jasmine.objectContaining({ purchaseCount: 1 }),
+    }));
+    expect(uiRender).toEqual(jasmine.objectContaining({ maxMs: 2 }));
+    expect(schedulerDelay).toEqual(jasmine.objectContaining({ maxMs: 920, maxAtMs: 3_000 }));
+    expect(payoutFrame).toEqual(jasmine.objectContaining({ maxMs: 940, maxAtMs: 3_940 }));
   });
 
   it('becomes a no-op outside playtest mode and resets collected samples', () => {
@@ -47,7 +79,14 @@ describe('GriftPerformanceDiagnostics', () => {
     disabled.recordLongTask(500);
     expect(disabled.summarize()).toEqual({
       stages: [],
-      longTasks: { count: 0, totalMs: 0, maxMs: 0 },
+      longTasks: {
+        count: 0,
+        totalMs: 0,
+        maxMs: 0,
+        maxStartedAtMs: 0,
+        lastStartedAtMs: 0,
+        lastDurationMs: 0,
+      },
     });
 
     const enabled = new GriftPerformanceDiagnostics(true);

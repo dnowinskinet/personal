@@ -1,4 +1,5 @@
 export type PlaytestPerformanceStage =
+  | 'scheduler.delay'
   | 'runtime.advance'
   | 'presentation.snapshot'
   | 'persistence.stringify'
@@ -6,6 +7,8 @@ export type PlaytestPerformanceStage =
   | 'events'
   | 'detectChanges'
   | 'ui-render'
+  | 'angular-turn'
+  | 'payout.frame'
   | 'tick';
 
 export interface PlaytestPerformanceContext {
@@ -24,6 +27,7 @@ export interface PlaytestPerformanceStageSummary {
   p95Ms: number;
   p99Ms: number;
   maxMs: number;
+  maxAtMs: number;
   over16Ms: number;
   over50Ms: number;
   over100Ms: number;
@@ -37,6 +41,9 @@ export interface PlaytestPerformanceSummary {
     count: number;
     totalMs: number;
     maxMs: number;
+    maxStartedAtMs: number;
+    lastStartedAtMs: number;
+    lastDurationMs: number;
   };
 }
 
@@ -44,6 +51,7 @@ interface StageAccumulator {
   count: number;
   totalMs: number;
   maxMs: number;
+  maxAtMs: number;
   over16Ms: number;
   over50Ms: number;
   over100Ms: number;
@@ -68,6 +76,9 @@ export class GriftPerformanceDiagnostics {
   private longTaskCount = 0;
   private longTaskTotalMs = 0;
   private longTaskMaxMs = 0;
+  private longTaskMaxStartedAtMs = 0;
+  private longTaskLastStartedAtMs = 0;
+  private longTaskLastDurationMs = 0;
   private cachedSummary = 'No performance samples yet.';
   private summaryDirty = false;
   private lastSummaryAtMs = 0;
@@ -102,10 +113,20 @@ export class GriftPerformanceDiagnostics {
     this.pendingUiContext = { ...EMPTY_CONTEXT };
   }
 
+  completeAngularTurn(
+    durationMs: number,
+    startedAtMs: number,
+    context: PlaytestPerformanceContext = {}
+  ): void {
+    this.record('angular-turn', durationMs, context, startedAtMs);
+    this.pendingUiContext = { ...EMPTY_CONTEXT };
+  }
+
   record(
     stage: PlaytestPerformanceStage,
     durationMs: number,
-    context: PlaytestPerformanceContext = {}
+    context: PlaytestPerformanceContext = {},
+    recordedAtMs = performanceNow()
   ): void {
     if (!this.enabled || !Number.isFinite(durationMs) || durationMs < 0) {
       return;
@@ -131,6 +152,7 @@ export class GriftPerformanceDiagnostics {
 
     if (durationMs >= accumulator.maxMs) {
       accumulator.maxMs = durationMs;
+      accumulator.maxAtMs = recordedAtMs;
       accumulator.slowestContext = resolvedContext;
     }
 
@@ -138,14 +160,19 @@ export class GriftPerformanceDiagnostics {
     this.summaryDirty = true;
   }
 
-  recordLongTask(durationMs: number): void {
+  recordLongTask(durationMs: number, startedAtMs = performanceNow()): void {
     if (!this.enabled || !Number.isFinite(durationMs) || durationMs < 0) {
       return;
     }
 
     this.longTaskCount += 1;
     this.longTaskTotalMs += durationMs;
-    this.longTaskMaxMs = Math.max(this.longTaskMaxMs, durationMs);
+    this.longTaskLastStartedAtMs = startedAtMs;
+    this.longTaskLastDurationMs = durationMs;
+    if (durationMs >= this.longTaskMaxMs) {
+      this.longTaskMaxMs = durationMs;
+      this.longTaskMaxStartedAtMs = startedAtMs;
+    }
     this.summaryDirty = true;
   }
 
@@ -162,6 +189,7 @@ export class GriftPerformanceDiagnostics {
           p95Ms: percentile(sorted, 0.95),
           p99Ms: percentile(sorted, 0.99),
           maxMs: accumulator.maxMs,
+          maxAtMs: accumulator.maxAtMs,
           over16Ms: accumulator.over16Ms,
           over50Ms: accumulator.over50Ms,
           over100Ms: accumulator.over100Ms,
@@ -173,6 +201,9 @@ export class GriftPerformanceDiagnostics {
         count: this.longTaskCount,
         totalMs: this.longTaskTotalMs,
         maxMs: this.longTaskMaxMs,
+        maxStartedAtMs: this.longTaskMaxStartedAtMs,
+        lastStartedAtMs: this.longTaskLastStartedAtMs,
+        lastDurationMs: this.longTaskLastDurationMs,
       },
     };
   }
@@ -196,6 +227,7 @@ export class GriftPerformanceDiagnostics {
         `p95=${formatMs(stage.p95Ms)}`,
         `p99=${formatMs(stage.p99Ms)}`,
         `max=${formatMs(stage.maxMs)}`,
+        `at=${formatTimeline(stage.maxAtMs)}`,
         `over=${stage.over16Ms}/${stage.over50Ms}/${stage.over100Ms}/${stage.over500Ms}`,
         `slow[p=${context.payoutCount} buy=${context.purchaseCount}`,
         `milestone=${context.milestoneCount} save=${context.saveCount}`,
@@ -203,7 +235,13 @@ export class GriftPerformanceDiagnostics {
       ].join(' ');
     });
     lines.push(
-      `longtasks: n=${summary.longTasks.count} total=${formatMs(summary.longTasks.totalMs)} max=${formatMs(summary.longTasks.maxMs)}`
+      [
+        `longtasks: n=${summary.longTasks.count}`,
+        `total=${formatMs(summary.longTasks.totalMs)}`,
+        `max=${formatMs(summary.longTasks.maxMs)}`,
+        `maxAt=${formatTimeline(summary.longTasks.maxStartedAtMs)}`,
+        `last=${formatMs(summary.longTasks.lastDurationMs)}@${formatTimeline(summary.longTasks.lastStartedAtMs)}`,
+      ].join(' ')
     );
 
     this.cachedSummary = lines.join('\n');
@@ -219,6 +257,9 @@ export class GriftPerformanceDiagnostics {
     this.longTaskCount = 0;
     this.longTaskTotalMs = 0;
     this.longTaskMaxMs = 0;
+    this.longTaskMaxStartedAtMs = 0;
+    this.longTaskLastStartedAtMs = 0;
+    this.longTaskLastDurationMs = 0;
     this.cachedSummary = 'No performance samples yet.';
     this.summaryDirty = false;
     this.lastSummaryAtMs = 0;
@@ -230,6 +271,7 @@ function createAccumulator(): StageAccumulator {
     count: 0,
     totalMs: 0,
     maxMs: 0,
+    maxAtMs: 0,
     over16Ms: 0,
     over50Ms: 0,
     over100Ms: 0,
@@ -266,4 +308,12 @@ function percentile(sortedValues: readonly number[], percentileValue: number): n
 
 function formatMs(value: number): string {
   return `${value.toFixed(value >= 100 ? 0 : value >= 10 ? 1 : 2)}ms`;
+}
+
+function formatTimeline(valueMs: number): string {
+  return `${(valueMs / 1000).toFixed(2)}s`;
+}
+
+function performanceNow(): number {
+  return globalThis.performance?.now() ?? Date.now();
 }

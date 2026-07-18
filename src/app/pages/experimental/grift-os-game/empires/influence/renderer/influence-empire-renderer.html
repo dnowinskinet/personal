@@ -26,6 +26,13 @@
         </aside>
     }
 
+    @if (rugPullResolution; as resolution) {
+        <app-influence-rug-pull-resolution
+            [resolution]="resolution"
+            (dismiss)="dismissRugPullResolution()"
+        ></app-influence-rug-pull-resolution>
+    }
+
     @if (showModeTabs) {
         <app-influence-modes
             [modes]="availableTabs"
@@ -43,23 +50,6 @@
                 [class.grift-context-open]="selectedContextOpen"
                 tabindex="-1"
             >
-                @if (rugPullResolution) {
-                    <section class="grift-rug-resolution" aria-label="Rug Pull resolved">
-                        <div>
-                            <p>Extraction committed</p>
-                            <h2>{{ rugPullResolution.netWorthGainLabel }} Net Worth realized</h2>
-                            <span>
-                                {{ rugPullResolution.peakValuationLabel }} peak Valuation is gone.
-                                New run begins with {{ rugPullResolution.resultingNetWorthLabel }} Net Worth
-                                and {{ rugPullResolution.wealthAdvantageLabel }}.
-                            </span>
-                        </div>
-                        <button type="button" class="grift-quiet-button" (click)="dismissRugPullResolution()">
-                            Dismiss
-                        </button>
-                    </section>
-                }
-
                 <app-influence-ledger
                     [rows]="visibleHustleRows"
                     [countLabel]="visibleHustleCountLabel"
