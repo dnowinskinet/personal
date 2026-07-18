@@ -52,6 +52,12 @@ type ConfirmationAction =
   | { type: 'new-random' }
   | { type: 'random-difficulty'; difficulty: Difficulty };
 
+const DAILY_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
 @Component({
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -202,7 +208,7 @@ export class SudokuGameComponent implements OnDestroy {
     }
   }
 
-  clearCell(): void {
+  eraseCell(): void {
     const current = this.session();
     if (current) {
       this.commitSession(clearSelectedCell(current, Date.now()));
@@ -357,7 +363,12 @@ export class SudokuGameComponent implements OnDestroy {
   }
 
   dailyDisplay(): string {
-    return `${this.storedSessions.dailyDate} UTC`;
+    const [year, month, day] = this.storedSessions.dailyDate.split('-').map(Number);
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+
+    return Number.isNaN(utcDate.getTime())
+      ? this.storedSessions.dailyDate
+      : DAILY_DATE_FORMATTER.format(utcDate);
   }
 
   cellValue(index: number): number {
@@ -470,7 +481,7 @@ export class SudokuGameComponent implements OnDestroy {
 
     if (event.key === '0' || event.key === 'Backspace' || event.key === 'Delete') {
       event.preventDefault();
-      this.clearCell();
+      this.eraseCell();
       return;
     }
 

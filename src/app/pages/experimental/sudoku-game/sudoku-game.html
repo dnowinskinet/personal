@@ -128,7 +128,7 @@
           <button type="button" [disabled]="!canRedo()" (click)="redoMove()">Redo</button>
           <button type="button" [disabled]="game.paused || game.completed" (click)="useHint()">Hint <kbd>H</kbd></button>
           <button type="button" [disabled]="game.completed" (click)="togglePause()">{{ game.paused ? 'Resume' : 'Pause' }} <kbd>P</kbd></button>
-          <button type="button" [disabled]="game.paused || game.completed" (click)="clearCell()">Clear</button>
+          <button type="button" [disabled]="game.paused || game.completed" (click)="eraseCell()">Erase</button>
         </div>
 
         <div class="game-actions">
@@ -140,7 +140,7 @@
 
         <details class="keyboard-help">
           <summary>Keyboard controls</summary>
-          <p>Arrow keys move. 1–9 enters a value or note. Delete clears. N toggles notes, H gives a hint, P pauses, and Ctrl/Cmd+Z undoes.</p>
+          <p>Arrow keys move. 1–9 enters a value or note. Delete erases the selected cell. N toggles notes, H gives a hint, P pauses, and Ctrl/Cmd+Z undoes.</p>
         </details>
       </aside>
     </section>

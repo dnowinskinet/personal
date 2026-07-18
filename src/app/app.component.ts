@@ -11,6 +11,7 @@ import { ThemeService } from '@core/services/theme.service';
 export class AppComponent implements OnInit {
   title = "dnowinski";
   readonly isGriftOsRoute = signal(false);
+  readonly isSudokuRoute = signal(false);
 
   constructor(){
     effect(() => {
@@ -35,6 +36,8 @@ export class AppComponent implements OnInit {
   }
 
   private updateRouteShell(url: string): void {
-    this.isGriftOsRoute.set(url.startsWith('/experimental/grift-os'));
+    const path = url.split('?')[0].replace(/\/$/, '');
+    this.isGriftOsRoute.set(path.startsWith('/experimental/grift-os'));
+    this.isSudokuRoute.set(path === '/experimental/sudoku');
   }
 }

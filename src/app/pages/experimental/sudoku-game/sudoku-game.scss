@@ -8,12 +8,18 @@
   --sudoku-heavy: #27272a;
   --sudoku-surface: #ffffff;
   --sudoku-muted: #f4f4f5;
-  --sudoku-peer: color-mix(in srgb, var(--primary-color), transparent 91%);
-  --sudoku-match: color-mix(in srgb, var(--primary-color), transparent 78%);
-  --sudoku-selected: color-mix(in srgb, var(--primary-color), transparent 62%);
+  --sudoku-accent-ink: color-mix(in srgb, var(--primary-color) 45%, #18181b);
+  --sudoku-accent-solid: color-mix(in srgb, var(--primary-color) 50%, #18181b);
+  --sudoku-on-accent: #ffffff;
+  --sudoku-peer: color-mix(in srgb, var(--primary-color) 8%, var(--sudoku-surface));
+  --sudoku-match: color-mix(in srgb, var(--primary-color) 18%, var(--sudoku-surface));
+  --sudoku-selected: color-mix(in srgb, var(--primary-color) 28%, var(--sudoku-surface));
+  --sudoku-error-surface: #fee2e2;
+  --sudoku-error-ink: #991b1b;
 
   width: 100%;
   max-width: 68rem;
+  container-type: inline-size;
   margin-inline: auto;
   padding-bottom: env(safe-area-inset-bottom, 0);
   color: #18181b;
@@ -24,9 +30,12 @@
   --sudoku-heavy: #d4d4d8;
   --sudoku-surface: #18181b;
   --sudoku-muted: #27272a;
-  --sudoku-peer: color-mix(in srgb, var(--primary-color), transparent 86%);
-  --sudoku-match: color-mix(in srgb, var(--primary-color), transparent 70%);
-  --sudoku-selected: color-mix(in srgb, var(--primary-color), transparent 52%);
+  --sudoku-accent-ink: color-mix(in srgb, var(--primary-color) 45%, #fafafa);
+  --sudoku-peer: color-mix(in srgb, var(--primary-color) 14%, var(--sudoku-surface));
+  --sudoku-match: color-mix(in srgb, var(--primary-color) 26%, var(--sudoku-surface));
+  --sudoku-selected: color-mix(in srgb, var(--primary-color) 38%, var(--sudoku-surface));
+  --sudoku-error-surface: #450a0a;
+  --sudoku-error-ink: #fecaca;
 
   color: #f4f4f5;
 }
@@ -38,7 +47,7 @@ button {
 
 button:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--primary-color);
+  outline: 3px solid var(--sudoku-accent-ink);
   outline-offset: 3px;
 }
 
@@ -135,7 +144,7 @@ h1 {
 .mode-group button[aria-pressed='true'],
 .difficulty-bar button[aria-pressed='true'] {
   background: var(--sudoku-surface);
-  color: var(--primary-color);
+  color: var(--sudoku-accent-ink);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
 }
 
@@ -224,7 +233,7 @@ h1 {
   border-bottom: 1px solid var(--sudoku-border);
   border-radius: 0;
   background: var(--sudoku-surface);
-  color: var(--primary-color);
+  color: var(--sudoku-accent-ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -256,7 +265,7 @@ h1 {
 .sudoku-cell.is-selected {
   z-index: 1;
   background: var(--sudoku-selected);
-  box-shadow: inset 0 0 0 3px var(--primary-color);
+  box-shadow: inset 0 0 0 3px var(--sudoku-accent-ink);
 }
 
 .sudoku-cell.is-given {
@@ -268,18 +277,19 @@ h1 {
 }
 
 .sudoku-cell.is-conflict {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--sudoku-error-surface);
+  color: var(--sudoku-error-ink);
 }
 
-:host-context(.dark) .sudoku-cell.is-conflict {
-  background: #450a0a;
-  color: #fecaca;
+.sudoku-cell.is-conflict .cell-value {
+  text-decoration: underline wavy var(--sudoku-error-ink);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.12em;
 }
 
 .sudoku-cell:focus-visible {
   z-index: 2;
-  outline: 3px solid var(--primary-color);
+  outline: 3px solid var(--sudoku-accent-ink);
   outline-offset: -3px;
 }
 
@@ -293,25 +303,6 @@ h1 {
   font-weight: 850;
 }
 
-.cell-notes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: 100%;
-  height: 100%;
-  padding: 7%;
-  color: #52525b;
-  font-size: clamp(0.38rem, 1.8vw, 0.72rem);
-  line-height: 1;
-}
-
-:host-context(.dark) .cell-notes {
-  color: #d4d4d8;
-}
-
-.cell-notes span {
-  display: grid;
-  place-items: center;
-}
 
 .pause-cover {
   position: absolute;
@@ -337,9 +328,9 @@ h1 {
 
 .pause-cover button,
 .primary-action {
-  border: 1px solid var(--primary-color);
-  background: var(--primary-color);
-  color: white;
+  border: 1px solid var(--sudoku-accent-solid);
+  background: var(--sudoku-accent-solid);
+  color: var(--sudoku-on-accent);
 }
 
 .pause-cover button {

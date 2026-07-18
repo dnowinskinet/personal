@@ -4,6 +4,8 @@
   [class.site-main--grift-os]="isGriftOsRoute()"
 >
   <router-outlet/>
-  <scroll-to-top/>
+  @if (!isSudokuRoute()) {
+    <scroll-to-top/>
+  }
 </main>
 <foot-note></foot-note>
