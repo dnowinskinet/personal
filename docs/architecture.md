@@ -43,6 +43,7 @@ npm run lint
 npm run verify
 npm run audit:prod
 npm run deps:outdated
+npm run deploy:pages
 ```
 
 `npm run verify` is the preferred completion check for code changes.
@@ -52,11 +53,11 @@ npm run deps:outdated
 The existing deployment path uses:
 
 ```bash
-npm run push
+npm run deploy:pages
 push.bat
 ```
 
-`push.bat` calls `angular-cli-ghpages` against `dist/dnowinski/browser`.
+Both entry points build the current source before publishing `dist/dnowinski/browser` to the root of the `gh-pages` branch. The deployment command uses the repository-installed `angular-cli-ghpages` binary and writes `CNAME` with the custom domain `dnowinski.com`; `push.bat` is a portable, failure-aware wrapper around that command.
 
 Before changing deployment, check:
 
