@@ -2,7 +2,6 @@ import { NgModule, OnInit, effect, inject, ElementRef, ViewEncapsulation } from 
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { PreloadAllModules, provideRouter, withPreloading, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { Footer } from './layout/footer/footer';
@@ -44,7 +43,6 @@ import { NgbAccordionModule, NgbModule } from '@ng-bootstrap/ng-bootstrap'
   ],
   exports: [FontAwesomeModule],
   providers: [
-    provideAnimations(),
     provideHttpClient(withFetch()),
     provideRouter(routes, withViewTransitions(), withPreloading(PreloadAllModules),
       withInMemoryScrolling({

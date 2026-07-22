@@ -27,7 +27,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^21.2.18",
     "@angular/common": "^21.2.18",
     "@angular/compiler": "^21.2.18",
     "@angular/core": "^21.2.18",
@@ -47,7 +46,6 @@
     "@ng-bootstrap/ng-bootstrap": "^20.0.0",
     "@popperjs/core": "^2.11.8",
     "express": "^5.2.1",
-    "flowbite": "^4.0.2",
     "marked": "^18.0.4",
     "medium-zoom": "^1.1.0",
     "rxjs": "~7.8.0",
