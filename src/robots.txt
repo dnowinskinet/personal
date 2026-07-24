@@ -5,18 +5,23 @@ User-agent: ClaudeBot
 Disallow: /
 
 User-agent: OAI-SearchBot
+Disallow: /experimental/settlement
 Allow: /
 
 User-agent: ChatGPT-User
+Disallow: /experimental/settlement
 Allow: /
 
 User-agent: Claude-SearchBot
+Disallow: /experimental/settlement
 Allow: /
 
 User-agent: Claude-User
+Disallow: /experimental/settlement
 Allow: /
 
 User-agent: *
+Disallow: /experimental/settlement
 Allow: /
 
 Sitemap: https://dnowinski.com/sitemap.xml
