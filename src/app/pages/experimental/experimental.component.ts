@@ -14,11 +14,6 @@ export class ExperimentalComponent {
   readonly showExperimentIndex = signal(false);
   readonly experiments = [
     {
-      label: 'AI Settlement',
-      path: '/experimental/settlement',
-      description: 'A compact systems prototype about civic pressure, resources, and settlement survival.',
-    },
-    {
       label: 'Sudoku',
       path: '/experimental/sudoku',
       description: 'Daily seeded Sudoku and unlimited puzzles with four difficulties and local records.',
@@ -48,7 +43,6 @@ export class ExperimentalComponent {
         'daniel thomas nowinski',
         'experimental',
         'games',
-        'ai settlement',
         'griftos',
         'sudoku',
         'browser game',

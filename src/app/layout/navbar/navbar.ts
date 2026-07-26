@@ -101,10 +101,6 @@ export class Navbar {
   links = computed(() => navlinkData.filter((link) => link.name !== 'Experimental'))
   experimentalLinks = [
     {
-      name: 'AI Settlement',
-      path: '/experimental/settlement',
-    },
-    {
       name: 'Sudoku',
       path: '/experimental/sudoku',
     },
