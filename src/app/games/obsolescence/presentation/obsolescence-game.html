@@ -1,237 +1,261 @@
-<section class="flex flex-col gap-5 py-4">
+<section class="flex flex-col gap-4 py-4">
 
-  <header class="flex flex-col gap-2">
-    <h1 class="text-2xl font-semibold">Obsolescence, Inc. — the quarter race</h1>
-
-    <div class="flex flex-wrap gap-1">
-      @for (stage of ladder; track stage.id) {
-        <button type="button" class="px-2 py-1 text-xs rounded border border-current"
-                [class.font-bold]="config().id === stage.id"
-                [class.opacity-45]="config().id !== stage.id"
-                (click)="setStage(stage)">{{ stage.title }}</button>
-      }
+  <header class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold">Obsolescence, Inc.</h1>
+    <div class="flex flex-wrap gap-4 text-sm items-baseline">
+      <span>Quarter <strong>{{ campaign().quarterIndex + 1 }}</strong></span>
+      <span>Cash <strong>{{ money(campaign().cash) }}</strong></span>
+      <span>Standing <strong>{{ campaign().standing }}</strong></span>
+      <button type="button" class="ml-auto px-2 py-0.5 text-xs rounded border border-current opacity-60"
+              (click)="restartCampaign()">Restart</button>
     </div>
-
-    <p class="text-sm opacity-80 max-w-3xl">{{ config().teaches }}</p>
-    <p class="text-xs opacity-60">{{ config().goalLabel }} Target score {{ config().goalScore }}.</p>
+    <p class="text-xs opacity-70">{{ config().teaches }}</p>
   </header>
 
-  <!-- Clock -------------------------------------------------------------- -->
-  <div class="border-2 rounded p-3 flex flex-wrap items-center gap-4"
-       [class.border-current]="!endgame()" [style.border-color]="endgame() ? '#a70210' : null">
+  <div class="grid gap-4 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+
+    <!-- THE TOWER -------------------------------------------------------- -->
     <div class="flex flex-col">
-      <span class="text-xs uppercase tracking-wide opacity-70">Time left</span>
-      <span class="text-3xl font-bold tabular-nums" [style.color]="endgame() ? '#a70210' : null">{{ remaining() }}</span>
-    </div>
+      <div class="text-center text-[10px] uppercase tracking-widest opacity-50 pb-1">roof</div>
 
-    <div class="grow min-w-40">
-      <div class="h-3 w-full rounded bg-current/15 overflow-hidden">
-        <div class="h-full rounded" [style.width.%]="progress()"
-             [style.background-color]="endgame() ? '#a70210' : 'currentColor'"></div>
-      </div>
-      @if (endgame()) {
-        <p class="text-xs mt-1 font-semibold" style="color:#a70210">
-          Final stretch. Whatever isn't on the shelf now isn't going in the product.
-        </p>
-      }
-    </div>
+      @for (floor of tower(); track floor.definition.id) {
+        <div class="border-x border-t border-current/40 px-2 py-1.5 flex flex-col gap-1"
+             [class.border-b-2]="floor.definition.level === 0"
+             [class.opacity-40]="!floor.owned"
+             [style.background-color]="floor.definition.level === 0 ? 'rgba(127,127,127,0.12)' : null">
 
-    @if (!atDeadline()) {
-      <button type="button" class="px-4 py-2 rounded border-2 border-current font-semibold"
-              (click)="toggleRun()">{{ running() ? 'Pause' : 'Run' }}</button>
-      <div class="flex gap-1">
-        @for (option of speeds; track option) {
-          <button type="button" class="px-2 py-1 text-sm rounded border border-current"
-                  [class.font-bold]="speed() === option" [class.opacity-50]="speed() !== option"
-                  (click)="setSpeed(option)">{{ option }}×</button>
-        }
-      </div>
-      <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-70"
-              (click)="skipToDeadline()">Skip to deadline</button>
-    }
-    <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-70"
-            (click)="restart()">Restart</button>
-    <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-70"
-            (click)="nextSeed()">New seed ({{ seed() }})</button>
-  </div>
-
-  <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-
-    <!-- Where the staff go ---------------------------------------------- -->
-    <div class="border border-current/30 rounded p-4 flex flex-col gap-4">
-      <div class="flex justify-between items-baseline">
-        <h2 class="text-sm font-semibold">{{ config().enabled.allocation ? 'Where the staff go' : 'Your staff' }}</h2>
-        <span class="text-xs" [class.font-bold]="unassigned() > 0">
-          {{ unassigned() }} idle of {{ config().staff }}
-        </span>
-      </div>
-
-      @if (!config().enabled.allocation) {
-        <p class="text-sm opacity-75">
-          All {{ config().staff }} of them are building. There is nowhere else to put them yet.
-        </p>
-      }
-
-      @for (sink of sinks(); track sink.key) {
-        @if (config().enabled.allocation) {
-        <label class="flex flex-col gap-1">
-          <span class="flex justify-between text-sm">
-            <span>{{ sink.label }} <span class="opacity-60 text-xs">— {{ sink.note }}</span></span>
-            <span class="tabular-nums font-semibold">{{ staffIn(sink.key) }}</span>
-          </span>
-          <input type="range" min="0" [max]="config().staff" step="1" [disabled]="atDeadline()"
-                 [ngModel]="staffIn(sink.key)" [name]="sink.key"
-                 (ngModelChange)="assign(sink.key, asNumber($event))" />
-        </label>
-        }
-      }
-
-      @if (config().enabled.focus) {
-      <div class="flex flex-col gap-2 border-t border-current/20 pt-3">
-        <span class="text-sm">Production is making</span>
-        <div class="flex flex-wrap gap-2">
-          @for (option of focusOptions(); track option) {
-            <button type="button" class="px-3 py-1 text-sm rounded border border-current"
-                    [class.font-bold]="state().focus === option"
-                    [class.opacity-50]="state().focus !== option"
-                    [disabled]="atDeadline()" (click)="chooseFocus(option)">{{ option }}</button>
-          }
-        </div>
-        <p class="text-xs opacity-60">
-          Balanced keeps every shelf stocked. Focusing fills one fast and starves the rest.
-        </p>
-      </div>
-      }
-    </div>
-
-    <!-- State ------------------------------------------------------------ -->
-    <div class="flex flex-col gap-4">
-      @if (config().enabled.research || config().enabled.market) {
-      <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
-        @if (config().enabled.research) {
-        <div class="flex justify-between text-sm">
-          <span class="font-semibold">Research — tier {{ state().researchLevel }} unlocked</span>
-          <span class="opacity-70">{{ state().researchLevel < 3 ? research() + '% to next' : 'ceiling' }}</span>
-        </div>
-        <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
-          <div class="h-full rounded bg-current" [style.width.%]="research()"></div>
-        </div>
-        }
-
-        @if (config().enabled.market) {
-        <div class="flex justify-between text-sm mt-1">
-          <span class="font-semibold">Market readiness</span>
-          <span class="opacity-70">{{ market() }}%</span>
-        </div>
-        <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
-          <div class="h-full rounded bg-current" [style.width.%]="market()"></div>
-        </div>
-        }
-      </div>
-      }
-
-      <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
-        <h2 class="text-sm font-semibold">On the shelf</h2>
-        @for (row of stock(); track row.kind) {
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between text-sm">
-              <span [class.font-bold]="row.scarcest && row.total === 0">{{ labelFor(row.kind) }}</span>
-              <span class="tabular-nums">{{ row.total }}</span>
-            </div>
-            <div class="flex gap-1">
-              @for (tier of row.tiers; track tier.tier) {
-                <div class="flex-1 flex flex-col items-center gap-0.5">
-                  <div class="w-full h-6 rounded border border-current/30 flex items-center justify-center text-xs tabular-nums"
-                       [class.opacity-30]="tier.count === 0"
-                       [style.background-color]="tier.count > 0 ? 'currentColor' : null"
-                       [style.color]="tier.count > 0 ? 'var(--oi-chip, #fff)' : null">
-                    <span [style.mix-blend-mode]="tier.count > 0 ? 'difference' : null">{{ tier.count }}</span>
-                  </div>
-                  <span class="text-[10px] opacity-60">T{{ tier.tier }}</span>
-                </div>
-              }
-            </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono opacity-60 w-6">{{ levelLabel(floor.definition.level) }}</span>
+            <span class="text-sm font-medium grow">{{ floor.definition.name }}</span>
+            @if (floor.owned && floor.definition.capacity > 0) {
+              <span class="text-xs opacity-60">{{ sinkLabel(floor.sink) }}</span>
+            }
           </div>
-        }
-        <p class="text-xs opacity-60">A build needs one of each. Higher grades need higher tiers.</p>
-      </div>
 
-      @if (recentLog().length > 0) {
-        <div class="border border-current/30 rounded p-3 flex flex-col gap-1">
-          @for (entry of recentLog(); track entry.tick + entry.text) {
-            <span class="text-xs opacity-75">{{ entry.text }}</span>
+          @if (floor.owned && floor.definition.capacity > 0) {
+            <div class="flex items-center gap-2">
+              <button type="button"
+                      class="w-6 h-6 rounded border border-current text-sm leading-none disabled:opacity-25"
+                      [disabled]="floor.staff === 0"
+                      (click)="adjustStaff(floor.definition.id, -1)">&minus;</button>
+
+              <div class="flex gap-0.5 grow">
+                @for (slot of [].constructor(floor.definition.capacity); track $index) {
+                  <span class="h-4 flex-1 rounded-sm border border-current/40"
+                        [style.background-color]="$index < floor.staff ? 'currentColor' : null"></span>
+                }
+              </div>
+
+              <button type="button"
+                      class="w-6 h-6 rounded border border-current text-sm leading-none disabled:opacity-25"
+                      [disabled]="floor.staff >= floor.definition.capacity || unplaced() === 0"
+                      (click)="adjustStaff(floor.definition.id, 1)">+</button>
+
+              <span class="text-xs tabular-nums w-8 text-right">{{ floor.staff }}/{{ floor.definition.capacity }}</span>
+            </div>
+          }
+
+          @if (!floor.owned) {
+            @if (floor.affordable) {
+              <button type="button" class="text-xs px-2 py-1 rounded border-2 border-current font-semibold"
+                      (click)="buy(floor.definition)">Build — {{ money(floor.definition.cost) }}</button>
+            } @else {
+              <span class="text-[11px] leading-snug opacity-80">{{ floor.blockedBy }}</span>
+            }
           }
         </div>
       }
+
+      <div class="border border-current/40 text-center text-[10px] uppercase tracking-widest opacity-50 py-1">
+        bedrock
+      </div>
+
+      <p class="text-xs mt-2" [class.font-bold]="unplaced() > 0">
+        {{ unplaced() }} staff waiting to be placed
+        @if (idle() > 0) { <span>· {{ idle() }} on floors with no job</span> }
+      </p>
     </div>
-  </div>
 
-  <!-- Assembly ------------------------------------------------------------ -->
-  @if (atDeadline() && !outcome()) {
-    <section class="border-2 border-current rounded p-4 flex flex-col gap-3">
-      <h2 class="text-lg font-semibold">Build something</h2>
-      <p class="text-sm opacity-80">This is what the quarter left you.</p>
+    <!-- RIGHT SIDE ------------------------------------------------------- -->
+    <div class="flex flex-col gap-4">
 
-      <div class="grid gap-3 md:grid-cols-3">
-        @for (option of options(); track option.id) {
-          <div class="border rounded p-3 flex flex-col gap-2"
-               [class.border-current]="option.available" [class.opacity-45]="!option.available"
-               [class.border-current/30]="!option.available">
-            <span class="font-semibold text-sm">{{ option.label }}</span>
-            @if (option.available) {
-              <span class="text-2xl font-bold">{{ option.quality }}</span>
-              <span class="text-xs opacity-70">{{ usesLabel(option) }}</span>
-              <button type="button" class="mt-1 px-3 py-2 rounded border-2 border-current font-semibold"
-                      (click)="build(option.id)">Build this</button>
-            } @else {
-              <span class="text-xs">Can't build — {{ option.blockedBy }}</span>
+      @if (mode() === 'tower') {
+        <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">Before the quarter starts</h2>
+          <p class="text-sm opacity-80">
+            Put people on floors and build what you can afford. A floor you have not built cannot
+            hold anyone, and people standing in the showroom are not making anything.
+          </p>
+
+          <dl class="text-sm grid grid-cols-3 gap-2">
+            <div>
+              <dt class="opacity-60 text-xs">Research</dt>
+              <dd class="text-lg font-semibold">{{ allocation().research }}</dd>
+            </div>
+            <div>
+              <dt class="opacity-60 text-xs">Production</dt>
+              <dd class="text-lg font-semibold">{{ allocation().production }}</dd>
+            </div>
+            <div>
+              <dt class="opacity-60 text-xs">Market prep</dt>
+              <dd class="text-lg font-semibold">{{ allocation().market }}</dd>
+            </div>
+          </dl>
+
+          @if (nobodyWorking()) {
+            <p class="text-xs font-semibold" style="color:#a70210">
+              Nobody is doing anything. This quarter will produce nothing at all.
+            </p>
+          }
+
+          <button type="button" class="self-start px-4 py-2 rounded border-2 border-current font-semibold"
+                  (click)="beginQuarter()">Start the quarter</button>
+        </div>
+
+        @if (campaign().history.length > 0) {
+          <div class="border border-current/30 rounded p-3 flex flex-col gap-1">
+            <h3 class="text-sm font-semibold">Previously</h3>
+            @for (record of campaign().history; track record.quarterIndex) {
+              <span class="text-xs opacity-80">
+                Q{{ record.quarterIndex + 1 }} — {{ record.optionLabel }}, scored {{ record.score }}{{ record.goalMet ? ' · goal met' : ' · goal missed' }}
+              </span>
             }
           </div>
         }
-      </div>
+      }
 
-      <button type="button" class="self-start px-3 py-1 text-sm rounded border border-current opacity-70"
-              (click)="shipNothing()">Ship nothing</button>
-    </section>
-  }
+      @if (mode() === 'quarter') {
+        <div class="border-2 rounded p-3 flex flex-wrap items-center gap-3"
+             [class.border-current]="!endgame()" [style.border-color]="endgame() ? '#a70210' : null">
+          <div class="flex flex-col">
+            <span class="text-[10px] uppercase tracking-wide opacity-70">Time left</span>
+            <span class="text-2xl font-bold tabular-nums"
+                  [style.color]="endgame() ? '#a70210' : null">{{ remaining() }}</span>
+          </div>
+          <div class="grow min-w-32">
+            <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
+              <div class="h-full rounded" [style.width.%]="progress()"
+                   [style.background-color]="endgame() ? '#a70210' : 'currentColor'"></div>
+            </div>
+          </div>
 
-  <!-- Outcome ------------------------------------------------------------- -->
-  @if (outcome(); as result) {
-    <section class="border-2 rounded p-4 flex flex-col gap-3"
-             [style.border-color]="result.goalMet ? null : '#a70210'">
-      <div class="flex flex-wrap items-baseline gap-4">
-        <h2 class="text-lg font-semibold">{{ result.optionLabel }}</h2>
-        <span class="text-3xl font-bold">{{ result.score }}</span>
-        <span class="text-sm opacity-70">against a target of {{ result.goalScore }}</span>
-        <span class="text-sm font-semibold" [style.color]="result.goalMet ? null : '#a70210'">
-          {{ result.goalMet ? 'Goal met' : 'Goal missed' }}
-        </span>
-      </div>
+          @if (!atDeadline()) {
+            <button type="button" class="px-3 py-1.5 rounded border-2 border-current font-semibold"
+                    (click)="toggleRun()">{{ running() ? 'Pause' : 'Run' }}</button>
+            @for (option of speeds; track option) {
+              <button type="button" class="px-2 py-1 text-xs rounded border border-current"
+                      [class.font-bold]="speed() === option" [class.opacity-50]="speed() !== option"
+                      (click)="setSpeed(option)">{{ option }}&times;</button>
+            }
+            <button type="button" class="px-2 py-1 text-xs rounded border border-current opacity-70"
+                    (click)="skipToDeadline()">Skip</button>
+          }
+        </div>
 
-      <dl class="text-sm grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1">
-        <dt class="opacity-70">Build quality</dt><dd>{{ result.quality }}</dd>
-        <dt class="opacity-70">Market readiness</dt><dd>{{ result.marketReadiness }}%</dd>
-        <dt class="opacity-70">Cash</dt><dd>{{ result.cash | number }}</dd>
-        <dt class="opacity-70">Standing</dt><dd>{{ result.standing > 0 ? '+' : '' }}{{ result.standing }}</dd>
-      </dl>
-
-      <ul class="text-sm flex flex-col gap-1 list-disc pl-4">
-        @for (note of result.notes; track note) {
-          <li>{{ note }}</li>
+        @if (endgame()) {
+          <p class="text-xs font-semibold" style="color:#a70210">
+            Final stretch. Whatever isn't on the shelf now isn't going in the product.
+          </p>
         }
-      </ul>
 
-      <p class="text-xs opacity-60">
-        Cash and standing are what carry forward. The product itself will be obsolete by the end of
-        next quarter — the permits it earns you will not be.
-      </p>
+        @if (config().enabled.research || config().enabled.market) {
+          <div class="border border-current/30 rounded p-3 flex flex-col gap-2">
+            @if (config().enabled.research) {
+              <div class="flex justify-between text-sm">
+                <span class="font-semibold">Research — tier {{ state().researchLevel }}</span>
+                <span class="opacity-70">{{ state().researchLevel < 3 ? research() + '% to next' : 'ceiling' }}</span>
+              </div>
+              <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
+                <div class="h-full rounded bg-current" [style.width.%]="research()"></div>
+              </div>
+            }
+            @if (config().enabled.market) {
+              <div class="flex justify-between text-sm">
+                <span class="font-semibold">Market readiness</span>
+                <span class="opacity-70">{{ market() }}%</span>
+              </div>
+              <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
+                <div class="h-full rounded bg-current" [style.width.%]="market()"></div>
+              </div>
+            }
+          </div>
+        }
 
-      <div class="flex gap-2">
-        <button type="button" class="px-4 py-2 rounded border-2 border-current font-semibold"
-                (click)="restart()">Run it again</button>
-        <button type="button" class="px-3 py-2 rounded border border-current opacity-70"
-                (click)="nextSeed()">Different seed</button>
-      </div>
-    </section>
-  }
+        <div class="border border-current/30 rounded p-3 flex flex-col gap-2">
+          <div class="flex justify-between items-baseline">
+            <h2 class="text-sm font-semibold">On the shelf</h2>
+            @if (config().enabled.focus && !atDeadline()) {
+              <div class="flex gap-1">
+                @for (option of focusOptions(); track option) {
+                  <button type="button" class="px-2 py-0.5 text-[11px] rounded border border-current"
+                          [class.font-bold]="state().focus === option"
+                          [class.opacity-45]="state().focus !== option"
+                          (click)="chooseFocus(option)">{{ option }}</button>
+                }
+              </div>
+            }
+          </div>
+
+          @for (row of stock(); track row.kind) {
+            <div class="flex items-center gap-2">
+              <span class="text-xs w-16">{{ row.kind }}</span>
+              <div class="flex gap-1 grow">
+                @for (tier of row.tiers; track tier.tier) {
+                  <div class="flex-1 h-5 rounded border border-current/30 flex items-center justify-center text-[11px] tabular-nums"
+                       [class.opacity-30]="tier.count === 0">{{ tier.count }}</div>
+                }
+              </div>
+              <span class="text-[10px] opacity-50">T1 T2 T3</span>
+            </div>
+          }
+        </div>
+
+        @if (atDeadline() && !outcome()) {
+          <div class="border-2 border-current rounded p-3 flex flex-col gap-2">
+            <h2 class="font-semibold">Build something from what you have</h2>
+            @for (option of options(); track option.id) {
+              <div class="flex items-center gap-3 border border-current/25 rounded p-2"
+                   [class.opacity-45]="!option.available">
+                <span class="text-sm grow">{{ option.label }}</span>
+                @if (option.available) {
+                  <span class="text-lg font-bold">{{ option.quality }}</span>
+                  <button type="button" class="px-3 py-1 text-sm rounded border-2 border-current font-semibold"
+                          (click)="build(option.id)">Build</button>
+                } @else {
+                  <span class="text-[11px]">{{ option.blockedBy }}</span>
+                }
+              </div>
+            }
+            <button type="button" class="self-start text-xs px-2 py-1 rounded border border-current opacity-60"
+                    (click)="build(null)">Ship nothing</button>
+          </div>
+        }
+
+        @if (outcome(); as result) {
+          <div class="border-2 rounded p-3 flex flex-col gap-2"
+               [style.border-color]="result.goalMet ? null : '#a70210'">
+            <div class="flex flex-wrap items-baseline gap-3">
+              <span class="font-semibold">{{ result.optionLabel }}</span>
+              <span class="text-2xl font-bold">{{ result.score }}</span>
+              <span class="text-sm opacity-70">target {{ result.goalScore }}</span>
+              <span class="text-sm font-semibold" [style.color]="result.goalMet ? null : '#a70210'">
+                {{ result.goalMet ? 'Goal met' : 'Goal missed' }}
+              </span>
+            </div>
+            <dl class="text-sm grid grid-cols-2 sm:grid-cols-4 gap-x-3">
+              <dt class="opacity-60">Quality</dt><dd>{{ result.quality }}</dd>
+              <dt class="opacity-60">Cash</dt><dd>{{ money(result.cash) }}</dd>
+              <dt class="opacity-60">Standing</dt><dd>{{ result.standing > 0 ? '+' : '' }}{{ result.standing }}</dd>
+              <dt class="opacity-60">Reach</dt><dd>{{ result.marketReadiness }}%</dd>
+            </dl>
+            <ul class="text-xs flex flex-col gap-0.5 list-disc pl-4">
+              @for (note of result.notes; track note) { <li>{{ note }}</li> }
+            </ul>
+            <button type="button" class="self-start px-4 py-2 rounded border-2 border-current font-semibold"
+                    (click)="finishQuarter()">Back to the building</button>
+          </div>
+        }
+      }
+    </div>
+  </div>
 </section>

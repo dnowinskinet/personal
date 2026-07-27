@@ -562,3 +562,46 @@ merely ignored:**
 
 The second was invisible to the tests and obvious in the browser within seconds. Worth remembering
 which class of defect each instrument actually catches.
+
+---
+
+## D-024 — The building is the interface: staff assignment is spatial
+
+**Date:** 2026-07-27
+**Status:** Settled
+
+You do not set "research: 5". You put five people in the lab, and you can only do that if you have
+built a lab. The quarter simulation is unchanged underneath — the building derives the `Allocation`
+it already consumed.
+
+**Rationale:** D-021 made the building the thing you invest in, which makes it the natural interface
+for the decision rather than a picture next to it. Three sliders labelled research/production/market
+is the most abstract possible rendering of "who works where".
+
+**Consequence:** floors have capacity, so the shape of your building constrains what you can attempt.
+A floor kind maps to a sink; the showroom and storage map to none, which is stated honestly in the
+UI as "no job yet" rather than hidden. Moving staff mid-quarter pushes straight through as the
+reallocation Gate A already rewards.
+
+---
+
+## D-025 — Cash and standing gate expansion; overhead scales with headcount
+
+**Date:** 2026-07-27
+**Status:** Settled
+
+Between quarters you spend cash on floors. Standing gates which floors are even offered. The subway
+under B3 needs standing 60 and 240,000, and is visible from quarter one.
+
+**Overhead scales with headcount rather than being flat.** A flat per-quarter cost meant the opening
+quarter — deliberately unfailable, and capped at a low score by design — still lost money every
+time. The teaching ladder bankrupted you before you could build anything. Found by playing it, not
+by any test.
+
+A traced campaign now runs 24,000 → 29,220 → 31,840 → 67,820 → 74,500 with standing 4 → 28, which
+puts Design & Research in reach after Q1 and Assembly Line after Q2. Deep Works stays out of reach,
+correctly — it is the long goal, not the next purchase.
+
+**Consequence:** standing changes what is *offered*, cash changes what is *affordable*, and the UI
+distinguishes them: a floor moves from "needs standing 12" to "needs 38,000 in cash" as you earn
+reputation. That is the persistence model from D-020 made visible with no ledger and no cohorts.

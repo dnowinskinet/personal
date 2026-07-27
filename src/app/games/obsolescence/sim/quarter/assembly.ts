@@ -21,6 +21,12 @@ import {
   type Tier,
 } from './types';
 
+/** Cash earned per point of launch score. */
+const REVENUE_PER_POINT = 620;
+
+/** Cash it costs to run one member of staff for a quarter. */
+const OVERHEAD_PER_STAFF = 1300;
+
 interface Grade {
   readonly id: string;
   readonly label: string;
@@ -147,7 +153,7 @@ export function resolveQuarter(
       score: 0,
       goalScore: config.goalScore,
       goalMet: false,
-      cash: -18000,
+      cash: -Math.round(config.staff * OVERHEAD_PER_STAFF),
       standing: -14,
       notes,
     };
@@ -182,7 +188,10 @@ export function resolveQuarter(
     score,
     goalScore: config.goalScore,
     goalMet,
-    cash: Math.round(score * 520 - 22000),
+    // Overhead scales with headcount rather than being flat. A flat cost meant the opening quarter
+    // — which is deliberately unfailable and caps at a low score — still lost money every time, so
+    // the teaching ladder bankrupted you before you could build anything.
+    cash: Math.round(score * REVENUE_PER_POINT - config.staff * OVERHEAD_PER_STAFF),
     standing: goalMet ? Math.round((score - config.goalScore) / 4) + 6 : -8,
     notes,
   };

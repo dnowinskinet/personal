@@ -1,7 +1,7 @@
 # Obsolescence, Inc. — Current State
 
 **Last updated:** 2026-07-26
-**Phase:** 1, 2 and 3 complete. **Gate A passed. The loop works.**
+**Phase:** Gate A passed. **The tower demo is playable** — quarters on a building that grows.
 
 This file is rewritten at the end of every session. It describes the present, not the history.
 
@@ -9,9 +9,12 @@ This file is rewritten at the end of every session. It describes the present, no
 
 ## Where the project actually is
 
-**There is a playable prototype at `/experimental/obsolescence`.** A three-minute quarter: twelve
-staff split across research, production and market prep, a ticking clock, and an assembly step at
-the deadline where you build a product from whatever you actually managed to make.
+**There is a playable tower at `/experimental/obsolescence`.** You place staff on floors, run a
+quarter against the clock, build a product from whatever you produced, then spend the cash and
+standing it earned on new floors. Offices above, manufacturing below, showroom at street level, and
+a subway tunnel under B3 you cannot afford for a long time.
+
+Staff assignment is spatial (D-024): you put five people in the lab, and only if you built a lab.
 
 **Gate A has passed.** Machine conditions green, and Daniel played it: *"pretty good actually."*
 The named defect was onboarding — it dropped you into the middle of the game — so the systems now
