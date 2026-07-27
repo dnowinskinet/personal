@@ -158,4 +158,4 @@ The CURRENT v3 envelope is not `runsByEmpire`: it stores one active `empireId` a
 
 ## HISTORICAL
 
-`docs/HUSTLES-UX-RESET.md` is an implemented historical task contract. It may explain why current behavior exists but is not current architecture authority.
+`docs/griftos/HUSTLES-UX-RESET.md` is an implemented historical task contract. It may explain why current behavior exists but is not current architecture authority.

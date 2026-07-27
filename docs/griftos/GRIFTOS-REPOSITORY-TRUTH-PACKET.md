@@ -4,6 +4,11 @@ Audit date: 2026-07-17
 Evidence baseline: final working tree at audit close; this packet excluded from the GriftOS tree comparison  
 Repository root: `C:\Users\dnowi\Documents\Github\personal`
 
+> **Path note (added 2026-07-26):** this packet is a frozen audit snapshot and its inline
+> `docs/*.md` references reflect the layout at the audit date. GriftOS documentation has since
+> moved to `docs/griftos/`. Read every `docs/<name>.md` reference below as
+> `docs/griftos/<name>.md`. The audit findings themselves are unchanged.
+
 This packet treats executable code, production wiring, tests, and generated simulator output as evidence of current behavior. Documentation is audited against that evidence; historical prose is not used to override the repository. Test success establishes executable consistency, not whether the game is enjoyable or correctly tuned as a product.
 
 HEAD advanced during the audit from `32f5855` to `dc0d54d` as the local performance work was committed. The repository was allowed to settle, identity was refreshed, and every requested architecture/test/verify command plus the canonical balance reports was rerun against the source content now at final HEAD. Interim status and test values are not used below.

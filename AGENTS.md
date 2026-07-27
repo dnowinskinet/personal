@@ -1,56 +1,58 @@
 # Agent Guide
 
-Start here for Codex or any AI collaborator working in this repository.
+Start here for any AI collaborator working in this repository.
 
-## Source precedence
+This file covers **site-wide facts only**. Individual games and experiments carry their own
+doctrine, and that doctrine does **not** transfer between them. Find your area below and read its
+guide before writing code.
 
-Use this authority order:
+## Router
 
-1. CURRENT STATE
-2. DECISION LOG (`docs/decision-log.md`)
-3. Latest dated canonical design, economy, and architecture documents
-4. Current code and tests as implementation evidence
-5. Research references
-6. Historical task contracts and project chats
+| Area | Guide | Notes |
+|---|---|---|
+| Site (build, deploy, routing, layout, pages) | [docs/architecture.md](docs/architecture.md) | Stack, folder map, deployment, dependency policy |
+| GriftOS | [docs/griftos/AGENTS.md](docs/griftos/AGENTS.md) | Mature incremental game under `/experimental/grift-os` |
+| Obsolescence, Inc. | [docs/obsolescence/AGENTS.md](docs/obsolescence/AGENTS.md) | Management game in pre-implementation planning |
 
-Code and tests prove current behavior; they do not silently overrule newer product decisions. Orient GriftOS work with [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md), then use [docs/ARCHITECTURE-MAP.md](docs/ARCHITECTURE-MAP.md) to find the responsible layer.
+**GriftOS and Obsolescence, Inc. are unrelated projects.** They share a navbar entry under
+Experiments and nothing else — no code, doctrine, save keys, content, or visual direction. Do not
+apply one project's conventions to the other. If you arrived here from a GriftOS document, its
+authority stops at the GriftOS route.
+
+Other experiments under `src/app/pages/experimental/` (sudoku-game, model-grip-game,
+ai-settlement-game, senator-matching-game, game-prototype, degrees) have no dedicated guides.
+Treat them as small self-contained toys.
 
 ## Project posture
 
-- Angular 21 personal site with SSR and prerendering.
+- Angular 21.2 personal site with SSR and prerendering, deployed to dnowinski.com.
 - Tested toolchain: Node 22, npm 10, Angular 21.2, TypeScript 5.9.
-- Hybrid Angular structure: classic `AppModule` plus standalone components. Do not perform a broad standalone migration unless explicitly requested.
+- Hybrid Angular structure: classic `AppModule` plus standalone components. Do not perform a broad
+  standalone migration unless explicitly requested.
 - Tailwind remains on v3; treat Tailwind 4 as a separate migration.
-- Font Awesome Pro resolves through the configured npm registry.
-- Keep changes scoped and add no dependency without explicit approval.
+- ng-bootstrap 20, Express 5 SSR entry, Karma/Jasmine tests, ESLint 10.
+- Font Awesome Pro resolves through the configured npm registry. Local icon assets live in
+  `src/assets/fontawesome/`; run `npm run icons:sync` after changing imported icons.
+- Keep changes scoped and **add no dependency without explicit approval**.
+- `src/app/pages/experimental/` is playground surface and is not core site infrastructure.
 
 ## Verification
 
-Use the workflow in [docs/VERIFICATION.md](docs/VERIFICATION.md). At minimum, implementation work must pass:
+All implementation work must pass:
 
 ```bash
 npm run verify
 ```
 
-GriftOS work normally also requires:
+That runs lint plus build. Per-area guides may require additional commands — GriftOS work also
+requires `npm run grift:test`. Check the guide for your area.
 
-```bash
-npm run grift:test
-```
+## Repository conventions
 
-## GriftOS boundaries
-
-- Keep GriftOS under `/experimental/grift-os` unless a later decision moves it.
-- Preserve primary `grift-os-meta-v2` / `grift-os-run-v2`, the rollback-safe v1 migration/mirrors, and current Influence IDs unless a later approved migration explicitly changes them.
-- Keep formulas, tuning, content, presentation, visuals, audio, runtime, and development tooling as distinct owners; see [docs/ARCHITECTURE-MAP.md](docs/ARCHITECTURE-MAP.md).
-- The current architecture is transitional. Target paths and ownership documented as `TARGET` are not yet implemented.
-- Desktop and mobile are authored visual targets. Intermediate widths must remain functional but receive no dedicated art direction.
-- Support authored light/dark expressions and safe site-accent inheritance.
-- Use semantic game events; components must not call audio playback directly.
-- Audio remains SSR-safe, gesture-unlocked, and optional when assets are absent.
-- Enterprise Intensity/Stage is compatibility state, not the required future player-facing visual model.
-- Preserve the documented eight-hour offline-credit cap unless an approved mechanics decision changes it.
-- Do not add currencies, random events, bosses, backend systems, major mechanic trees, or broad dependency upgrades without an explicit decision.
-- Preserve the fictional composite target; do not imitate or allege wrongdoing by real people.
-
-Durable constraints and their tests are indexed in [docs/INVARIANTS.md](docs/INVARIANTS.md). Historical task briefs are not current authority unless a newer canonical source explicitly adopts them.
+- Routed pages live under `src/app/pages/`; shared UI under `src/app/shared/`; cross-cutting
+  services under `src/app/core/`.
+- Deployment is `npm run deploy:pages`, which builds and publishes `dist/dnowinski/browser` to the
+  `gh-pages` branch and preserves the `CNAME` custom domain.
+- The site must keep working. No experiment may break SSR, prerendering, or the Pages deployment.
+- Preserve fictional composite targets in satirical content; do not imitate or allege wrongdoing by
+  real people.

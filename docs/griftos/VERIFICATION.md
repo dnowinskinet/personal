@@ -35,7 +35,7 @@ Lint and production SSR/prerender build:
 npm run verify
 ```
 
-Balance work additionally requires the applicable commands from `docs/economy-tuning-brief.md`, beginning with:
+Balance work additionally requires the applicable commands from `docs/griftos/economy-tuning-brief.md`, beginning with:
 
 ```bash
 npm run game:balance -- --strategy=natural --rug-strategy=prepared --max-days=14
