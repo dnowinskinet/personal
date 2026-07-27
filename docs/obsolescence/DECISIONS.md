@@ -374,3 +374,59 @@ reverted. One was worse: two reconcilers argued R3 and R8 "converged independent
 doctrine, when R3 line 15 states it inherited R8's framing through its brief. Treat R3+R8 camera
 agreement as one source. Agreement between reports is not evidence unless the reports were
 independent, and in this corpus they frequently were not.
+
+---
+
+## D-016 — The ecosystem slot attaches to a device sale; it does not compete with one
+
+**Date:** 2026-07-26
+**Status:** Settled
+
+**Rationale:** implemented as a rival offer, it was chosen by every segment in preference to an
+actual handheld — customers "bought" a £129 dock and no phone. R1 describes the fourth slot as an
+accessory, dock, bundle or subscription, which is an *attach*, not a substitute.
+
+**Consequence:** the choice model considers only device offers. The ecosystem offer earns an attach
+rate against whatever device the segment bought, driven by compatibility and relative price — which
+is what makes the connector stance matter commercially. It is also exempt from the "nobody's first
+choice" clarity penalty, because being nobody's first choice is its job.
+
+---
+
+## D-017 — Segment population weights are the dominant balance lever
+
+**Date:** 2026-07-26
+**Status:** Settled
+
+Gate A ships four segments: Value Planners 26%, Mainstream Upgraders 32%, Prestige Seekers 28%,
+Long-Horizon Owners 14%.
+
+**Rationale:** at the first guess (30/36/16/18) the durable posture addressed 84% of the population
+and swept every seed. Trait tuning, price sensitivity, conversion curves and cost multipliers were
+all tried and **none of them could break the dominance**, because a posture serving 84% of buyers
+adequately beats one serving 52% brilliantly. Rebalancing toward Prestige Seekers gave the premium
+posture a real constituency and the dominance disappeared immediately.
+
+**Consequence:** when a future gate finds a dominant strategy, check segment sizes **before**
+tuning traits or prices. It is the cheaper and more likely fix. Record it in the gate result either
+way.
+
+---
+
+## D-018 — Gate A's machine-measurable conditions pass; the human gates are outstanding
+
+**Date:** 2026-07-26
+**Status:** Settled for the automated half; Gate A itself is **not closed**
+
+No posture sweeps reach + trust + ownership in any of 200 seeds, every posture wins at least one
+dimension in every seed, all five headline decisions move at least two dimensions in ≥80% of seeds,
+and the five pre-registered scenarios reproduce the causes they claim.
+
+**Rationale for recording this as a decision rather than only a gate result:** the sweep caught seven
+distinct balance failures that a tester panel would not have found, including total dominance by one
+posture and a demand model in which nobody bought a phone. That is the D-003 validation model
+working as designed, and it is the strongest evidence so far that replacing tester denominators with
+machine sweeps plus pre-registered scenarios was the right call.
+
+**Consequence:** Gate A stays open until Daniel runs the five scenarios and answers the two human
+gates. No Gate B work should start before that — the kill condition still applies.

@@ -24,6 +24,8 @@
   "files": [],
   "include": [
     "src/app/games/obsolescence/sim/**/*.ts",
-    "src/app/games/obsolescence/tests/sim/**/*.ts"
+    "src/app/games/obsolescence/content/**/*.ts",
+    "src/app/games/obsolescence/devtools/**/*.ts",
+    "src/app/games/obsolescence/tests/**/*.ts"
   ]
 }

@@ -1,0 +1,300 @@
+<section class="flex flex-col gap-6 py-4">
+
+  <header class="flex flex-col gap-2">
+    <h1 class="text-2xl font-semibold">Obsolescence, Inc. — Gate A</h1>
+    <p class="text-sm opacity-80 max-w-3xl">
+      Compose next quarter's lineup. Engineering, test and stock are all short. Every architecture
+      decision propagates to every offer. There is no overall score — the five outcome dimensions
+      are allowed to disagree with each other.
+    </p>
+    <p class="text-xs opacity-60">
+      Deliberately ugly. This gate asks whether the decision is interesting, not whether it looks good.
+    </p>
+  </header>
+
+  <!-- Presets ------------------------------------------------------------ -->
+  <div class="flex flex-wrap gap-2 items-center">
+    <span class="text-xs uppercase tracking-wide opacity-70">Start from</span>
+    @for (doctrine of doctrines; track doctrine.name; let i = $index) {
+      <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-90 hover:opacity-100"
+              [title]="doctrine.summary" (click)="applyDoctrine(i)">{{ doctrine.label }}</button>
+    }
+    <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-70" (click)="reset()">Reset</button>
+    <span class="ml-auto text-xs opacity-70">Seed {{ seed() }}</span>
+    <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-70" (click)="nextSeed()">New seed</button>
+  </div>
+
+  <!-- Pre-registered scenarios (Gate A condition 3) ---------------------- -->
+  <details class="border border-current/30 rounded p-3">
+    <summary class="text-sm font-semibold cursor-pointer">Pre-registered scenarios</summary>
+    <p class="text-xs opacity-70 mt-2 mb-3">
+      Load one, read the outcome, and say out loud what the dominant cause was — then reveal it.
+      Answer before revealing or the measurement is worthless. Four of five is a pass.
+    </p>
+    <div class="flex flex-wrap gap-2">
+      @for (scenario of scenarios; track scenario.id) {
+        <button type="button" class="px-3 py-1 text-sm rounded border border-current opacity-90"
+                (click)="loadScenario(scenario.id)">{{ scenario.label }}</button>
+      }
+    </div>
+
+    @if (scenarioDetail(); as detail) {
+      <div class="mt-3 border-t border-current/20 pt-3 flex flex-col gap-2">
+        <p class="text-sm">{{ detail.setup }}</p>
+        @if (causeRevealed()) {
+          <p class="text-sm border border-current/40 rounded p-2"><strong>Expected cause:</strong> {{ detail.expectedCause }}</p>
+        } @else {
+          <button type="button" class="self-start px-3 py-1 text-sm rounded border border-current"
+                  (click)="revealCause()">Reveal the expected cause</button>
+        }
+      </div>
+    }
+  </details>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+
+    <!-- Decisions -------------------------------------------------------- -->
+    <div class="flex flex-col gap-5">
+
+      <fieldset class="border border-current/30 rounded p-4 flex flex-col gap-3">
+        <legend class="px-2 text-sm font-semibold">Platform — applies to every offer</legend>
+
+        <div class="flex flex-wrap gap-4">
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="opacity-80">Battery</span>
+            <select class="border border-current/40 rounded px-2 py-1 bg-transparent"
+                    [ngModel]="decisions().platform.battery"
+                    (ngModelChange)="setBattery($event)" name="battery">
+              @for (option of batteryOptions; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="opacity-80">Connector</span>
+            <select class="border border-current/40 rounded px-2 py-1 bg-transparent"
+                    [ngModel]="decisions().platform.connector"
+                    (ngModelChange)="setConnector($event)" name="connector">
+              @for (option of connectorOptions; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm">
+            <span class="opacity-80">Supplier</span>
+            <select class="border border-current/40 rounded px-2 py-1 bg-transparent"
+                    [ngModel]="decisions().platform.supplier"
+                    (ngModelChange)="setSupplier($event)" name="supplier">
+              @for (option of supplierOptions; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="flex flex-wrap gap-6">
+          <label class="flex flex-col gap-1 text-sm grow">
+            <span class="opacity-80">Service reserve — {{ (decisions().reserveSplit * 100).toFixed(0) }}% of stock held back</span>
+            <input type="range" min="0" max="60" step="2"
+                   [ngModel]="decisions().reserveSplit * 100"
+                   (ngModelChange)="setReserve(asNumber($event))" name="reserve" />
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm grow">
+            <span class="opacity-80">Battery investigation — {{ decisions().batteryInvestigation }} test points</span>
+            <input type="range" min="0" max="20" step="1"
+                   [ngModel]="decisions().batteryInvestigation"
+                   (ngModelChange)="setInvestigation(asNumber($event))" name="investigation" />
+          </label>
+        </div>
+
+        <p class="text-xs opacity-70">
+          A late signal suggests elevated battery risk under heat. It is not conclusive. Investigating
+          it costs test capacity you wanted for validating the lineup.
+        </p>
+      </fieldset>
+
+      <!-- Offers --------------------------------------------------------- -->
+      <fieldset class="border border-current/30 rounded p-4 flex flex-col gap-3">
+        <legend class="px-2 text-sm font-semibold">Offers</legend>
+
+        @for (variant of variants; track variant.id) {
+          @let offer = offerFor(variant.id);
+          @if (offer) {
+            <div class="border border-current/20 rounded p-3 flex flex-col gap-2"
+                 [class.opacity-45]="!offer.included">
+              <div class="flex items-center gap-3 flex-wrap">
+                <label class="flex items-center gap-2 text-sm font-medium">
+                  <input type="checkbox" [checked]="offer.included" [disabled]="variant.mandatory"
+                         (change)="toggleOffer(variant.id, variant.mandatory)" />
+                  {{ variant.name }}
+                </label>
+                <span class="text-xs px-2 py-0.5 rounded border border-current/40 uppercase">{{ variant.slot }}</span>
+                @if (variant.carriedOver) {
+                  <span class="text-xs px-2 py-0.5 rounded border border-current/40">carried over</span>
+                }
+                @if (variant.mandatory) {
+                  <span class="text-xs opacity-70">must ship</span>
+                }
+              </div>
+
+              @if (offer.included) {
+                <div class="flex flex-wrap gap-4 text-sm">
+                  <label class="flex flex-col gap-1">
+                    <span class="opacity-80">Price</span>
+                    <input type="number" min="49" max="1800" step="10" class="w-24 border border-current/40 rounded px-2 py-1 bg-transparent"
+                           [ngModel]="offer.price" (ngModelChange)="setPrice(variant.id, asNumber($event))"
+                           [name]="variant.id + '-price'" />
+                  </label>
+                  <label class="flex flex-col gap-1">
+                    <span class="opacity-80">Tier</span>
+                    <select class="border border-current/40 rounded px-2 py-1 bg-transparent"
+                            [ngModel]="offer.tier" (ngModelChange)="setTier(variant.id, $event)"
+                            [name]="variant.id + '-tier'">
+                      @for (option of tierOptions; track option) {
+                        <option [value]="option">{{ option }}</option>
+                      }
+                    </select>
+                  </label>
+                  <label class="flex flex-col gap-1">
+                    <span class="opacity-80">Support years</span>
+                    <input type="number" min="1" max="8" step="1" class="w-20 border border-current/40 rounded px-2 py-1 bg-transparent"
+                           [ngModel]="offer.supportYears" (ngModelChange)="setSupportYears(variant.id, asNumber($event))"
+                           [name]="variant.id + '-support'" />
+                  </label>
+                  <label class="flex flex-col gap-1">
+                    <span class="opacity-80">Public claim</span>
+                    <select class="border border-current/40 rounded px-2 py-1 bg-transparent"
+                            [ngModel]="offer.claim" (ngModelChange)="setClaim(variant.id, $event)"
+                            [name]="variant.id + '-claim'">
+                      @for (option of claimOptions; track option) {
+                        <option [value]="option">{{ option }}</option>
+                      }
+                    </select>
+                  </label>
+                </div>
+              }
+            </div>
+          }
+        }
+      </fieldset>
+    </div>
+
+    <!-- Capacity and who is out there ------------------------------------ -->
+    <aside class="flex flex-col gap-5">
+      <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
+        <h2 class="text-sm font-semibold">Capacity</h2>
+        @for (bar of capacity(); track bar.label) {
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between text-xs">
+              <span>{{ bar.label }}</span>
+              <span [class.font-bold]="bar.over">{{ bar.used }} / {{ bar.available }}</span>
+            </div>
+            <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
+              <div class="h-full rounded" [style.width.%]="bar.percent"
+                   [style.background-color]="bar.over ? '#a70210' : 'currentColor'"></div>
+            </div>
+          </div>
+        }
+        <p class="text-xs" [class.font-semibold]="coverage() < 100">
+          Test coverage {{ coverage() }}%
+          @if (coverage() < 100) { — shipping under-validated raises defect risk }
+        </p>
+        @if (overCommitted()) {
+          <p class="text-xs font-semibold" style="color:#a70210">
+            Over-committed. Something has to give: drop an offer, downgrade a tier, or accept the risk.
+          </p>
+        }
+      </div>
+
+      <div class="border border-current/30 rounded p-4 flex flex-col gap-2">
+        <h2 class="text-sm font-semibold">Who is out there</h2>
+        @for (brief of briefs; track brief.id) {
+          <div class="text-xs flex flex-col">
+            <span class="font-medium">{{ brief.name }} — {{ brief.share }}</span>
+            <span class="opacity-75">wants: {{ brief.wants }}</span>
+            <span class="opacity-60">dislikes: {{ brief.dislikes }}</span>
+          </div>
+        }
+      </div>
+    </aside>
+  </div>
+
+  <!-- Lock --------------------------------------------------------------- -->
+  <div class="flex gap-3 items-center">
+    <button type="button"
+            class="px-4 py-2 rounded border-2 border-current font-semibold disabled:opacity-40"
+            [disabled]="locked()" (click)="lock()">Lock the quarter and launch</button>
+    @if (locked()) {
+      <span class="text-xs opacity-70">Locked. Change anything to plan again.</span>
+    }
+  </div>
+
+  <!-- Outcome ------------------------------------------------------------ -->
+  @if (outcome(); as result) {
+    <section class="flex flex-col gap-5 border-t border-current/25 pt-5">
+      <h2 class="text-lg font-semibold">The quarter happened</h2>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        @for (dimension of dimensions(); track dimension.key) {
+          <div class="border border-current/30 rounded p-3 flex flex-col gap-2">
+            <span class="text-xs uppercase tracking-wide opacity-70">{{ dimension.label }}</span>
+            <span class="text-2xl font-semibold">{{ dimension.value }}</span>
+            <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
+              <div class="h-full rounded bg-current" [style.width.%]="dimension.value"></div>
+            </div>
+            <span class="text-xs opacity-60">{{ dimension.hint }}</span>
+          </div>
+        }
+      </div>
+      <p class="text-xs opacity-60">
+        There is no total. A quarter can be commercially excellent and lifecycle-dangerous at once.
+      </p>
+
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <h3 class="text-sm font-semibold">What each segment did</h3>
+          @for (row of segments(); track row.id) {
+            <div class="border border-current/20 rounded p-3 text-sm flex flex-col gap-1">
+              <div class="flex justify-between">
+                <span class="font-medium">{{ row.name }} <span class="opacity-60">({{ row.share }})</span></span>
+                <span [class.opacity-60]="row.bought === 'Nothing'">{{ row.bought }}</span>
+              </div>
+              <span class="text-xs opacity-80">{{ row.reason }}</span>
+              @if (row.confused) {
+                <span class="text-xs font-medium">They could not tell two of your offers apart.</span>
+              }
+              @for (veto of row.vetoed; track veto) {
+                <span class="text-xs opacity-60">✕ {{ veto }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <h3 class="text-sm font-semibold">What it cost</h3>
+          <dl class="text-sm grid grid-cols-2 gap-x-4 gap-y-1">
+            <dt class="opacity-70">Units sold</dt><dd>{{ result.unitsSold }}</dd>
+            <dt class="opacity-70">Revenue</dt><dd>{{ result.revenue | number }}</dd>
+            <dt class="opacity-70">Cost</dt><dd>{{ result.cost | number }}</dd>
+            <dt class="opacity-70">Unmet demand</dt><dd>{{ result.stockouts }}</dd>
+            <dt class="opacity-70">Unsold stock</dt><dd>{{ result.overhang }}</dd>
+            <dt class="opacity-70">Defect</dt>
+            <dd>{{ result.defectOccurred ? 'yes, severity ' + result.defectSeverity : 'none this quarter' }}</dd>
+          </dl>
+
+          @if (result.notes.length > 0) {
+            <h3 class="text-sm font-semibold mt-2">Notes</h3>
+            <ul class="text-xs flex flex-col gap-1 list-disc pl-4">
+              @for (note of result.notes; track note) {
+                <li>{{ note }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+  }
+</section>

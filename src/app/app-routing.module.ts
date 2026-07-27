@@ -41,6 +41,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/experimental/grift-os-game/grift-os-game')
           .then((m) => m.GriftOsGameComponent),
       },
+      {
+        path: 'obsolescence',
+        loadComponent: () => import('./games/obsolescence/presentation/obsolescence-game')
+          .then((m) => m.ObsolescenceGameComponent),
+      },
     ],
   },
   { path: '**', component: ErrorComponent, pathMatch: 'full' },
