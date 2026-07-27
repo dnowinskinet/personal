@@ -320,3 +320,57 @@ on until there is somewhere to put code.
 **Consequence:** the RNG is a pure function of `(seed, cursor)` rather than a stateful generator,
 so save files carry two integers instead of generator internals, and any reader can derive a value
 at any position without replaying the sequence.
+
+---
+
+## D-015 — R1–R9 are reconciled; CANON.md is the build target
+
+**Date:** 2026-07-26
+**Status:** Settled
+**Resolves:** Q-005
+
+The Phase 2 synthesis produced [CANON.md](CANON.md) — the reconciled design canon — and
+[CONTRADICTIONS.md](CONTRADICTIONS.md) — the register of what disagreed and why each resolution was
+chosen. Where a single report disagrees with CANON.md, CANON.md wins.
+
+**Method:** 15 agents — one extractor per report, five thematic reconcilers, one completeness critic.
+Each extractor was told what its report could actually see when written, because that is what decides
+which side of a disagreement has better evidence. This **is** the R9 rerun: R9 was written without
+R1–R8 attached, so a Deep Research rerun was never the right instrument.
+
+**Findings:** 56 contradictions from the reconcilers plus 8 the critic found that single-theme
+reconcilers structurally could not see — 10 blocking, 32 significant, 14 minor. All 10 blocking are
+resolved. 62 tester-panel pass conditions collected for rescoping. Roughly 35 coverage gaps, of which
+11 are recorded as `G-*` in [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
+
+**Decisions of record adopted into canon:**
+
+- **15 quarters / 5 chapters**, keeping R6's Foundation → Market → Liability rhythm. Adopted over
+  R6's 18/6 on asymmetric production risk — explicitly **not** because R9 knew better, since R9 never
+  read R6.
+- **Compression is a property of the installed base and of retired SKUs, never of a family as a
+  whole.** A family can be compressed and per-offer visible at once. This is what makes the
+  carried-over low end coherent.
+- **Three sellable offers plus one ecosystem slot**, typically only two newly designed per quarter.
+- **Determinism is per-journey, not per-aggregate** — R5's stronger invariant over R8's. Already
+  implemented as I-004.
+- **Renderer-agnostic work comes first; camera and floor-band code waits for Gate C.** Writing camera
+  code against an undecided renderer is the most expensive avoidable mistake available.
+- **Tester denominators become scenario denominators**, pre-registered before the run.
+
+**Three findings that change the plan:**
+
+1. **C-41 changes what Gate C is** — a single-stack Pixi run judged against absolute bars rather than
+   a Pixi-versus-Phaser bake-off. This removes the reason to install `phaser` at all, narrowing D-012.
+2. **G-01: there is no `Offer` entity anywhere in the corpus.** `Variant` is the design,
+   `InstalledBaseCohort` is units sold, and nothing represents the sellable-this-quarter offer. It is
+   the missing noun the entire lineup loop is about.
+3. **G-02: no demand volume model exists.** No report says how many customers there are or how demand
+   scales. Invisible until you try to run a quarter.
+
+**On the method itself.** The reconcilers' recurring failure was resolving by fiat using a number the
+same reconciliation listed as an open gap — seven such resolutions are recorded as `U-*` and
+reverted. One was worse: two reconcilers argued R3 and R8 "converged independently" on the camera
+doctrine, when R3 line 15 states it inherited R8's framing through its brief. Treat R3+R8 camera
+agreement as one source. Agreement between reports is not evidence unless the reports were
+independent, and in this corpus they frequently were not.
