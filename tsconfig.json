@@ -37,6 +37,13 @@
       "@pages/*": ["src/app/pages/*"],
       "@shared/*": ["src/app/shared/*"],
       "@env/*": ["src/environments/*"],
+      "@oi/sim": ["src/app/games/obsolescence/sim/index.ts"],
+      "@oi/sim/*": ["src/app/games/obsolescence/sim/*"],
+      "@oi/content/*": ["src/app/games/obsolescence/content/*"],
+      "@oi/persistence/*": ["src/app/games/obsolescence/persistence/*"],
+      "@oi/presentation/*": ["src/app/games/obsolescence/presentation/*"],
+      "@oi/render/*": ["src/app/games/obsolescence/render/*"],
+      "@oi/devtools/*": ["src/app/games/obsolescence/devtools/*"],
     },
   },
   "angularCompilerOptions": {

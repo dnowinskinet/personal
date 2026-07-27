@@ -1,0 +1,29 @@
+/* Headless simulation test build.
+ *
+ * Compiles `sim/` plus its Node tests to CommonJS in ./dist/oi-sim so `node --test` can run them.
+ * `dist/` is gitignored, so nothing generated here is ever committed.
+ *
+ * Node types are available here because the tests need `node:test` and `node:assert`. The purity
+ * gate that forbids them inside `sim/` is tsconfig.sim.json, which runs first in `npm run oi:sim`.
+ * The DOM library stays excluded in both.
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/oi-sim",
+    "rootDir": "./src/app/games/obsolescence",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "declaration": false,
+    "sourceMap": false,
+    "importHelpers": false,
+    "noEmitOnError": true
+  },
+  "files": [],
+  "include": [
+    "src/app/games/obsolescence/sim/**/*.ts",
+    "src/app/games/obsolescence/tests/sim/**/*.ts"
+  ]
+}

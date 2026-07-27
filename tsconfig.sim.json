@@ -1,0 +1,27 @@
+/* Simulation purity gate — type-check only, no emit.
+ *
+ * Compiles `sim/` alone with `lib: ["ES2022"]` and `types: []`. That combination makes I-001 a
+ * compile error rather than a review catch:
+ *
+ *   - no DOM library  -> `document`, `window`, `localStorage`, `fetch`, `navigator` are undefined
+ *   - no @types/node  -> `process`, `require`, `Buffer`, `setImmediate` are undefined
+ *
+ * The compiler does this with real scope analysis, which a text scan cannot. A domain parameter
+ * named `document` or `process` is correctly allowed; a reference to the global is correctly
+ * rejected. This game is about office equipment, so those are plausible domain nouns.
+ *
+ * Tests are deliberately excluded — they legitimately need Node. See tsconfig.sim-test.json.
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2022"],
+    "types": [],
+    "declaration": false,
+    "sourceMap": false,
+    "importHelpers": false
+  },
+  "files": [],
+  "include": ["src/app/games/obsolescence/sim/**/*.ts"]
+}

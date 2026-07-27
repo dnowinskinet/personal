@@ -50,6 +50,9 @@ jobs:
       - name: Run GriftOS architecture and focused tests
         run: npm run grift:test
 
+      - name: Run Obsolescence architecture and headless simulation tests
+        run: npm run oi:test
+
   windows:
     name: Windows deployment-build compatibility
     runs-on: windows-latest
@@ -73,3 +76,8 @@ jobs:
 
       - name: Build GitHub Pages output without deploying
         run: npm run push
+
+      # Runs on Windows as well as Linux because oi:sim passes a glob to node --test, and glob
+      # handling is exactly the kind of thing that works on one platform and not the other.
+      - name: Run Obsolescence architecture and headless simulation tests
+        run: npm run oi:test
