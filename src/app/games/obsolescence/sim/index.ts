@@ -33,4 +33,4 @@ export {
 } from './commands';
 export { advanceTick, applyCommand, reset } from './reduce';
 export { deserialize, run, serialize, verifyReplay, type RunOptions } from './kernel';
-export * from './lineup';
+export * from './quarter';

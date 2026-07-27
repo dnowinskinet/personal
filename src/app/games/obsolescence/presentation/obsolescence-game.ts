@@ -1,36 +1,49 @@
 /**
- * Gate A — the lineup decision prototype.
+ * Gate A — the quarter race.
  *
- * Angular HTML and colored blocks. **If this looks good, effort went to the wrong place.** The gate
- * question is whether composing a lineup under a capacity ceiling is interesting, and art would
- * only confound the answer. The renderer decision is deliberately deferred to Gate C.
+ * A ticking clock, three competing sinks, and an assembly step at the end whose menu is whatever
+ * you actually managed to produce.
+ *
+ * Angular HTML and colored blocks. **If this looks good, effort went to the wrong place.**
  */
 
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  PLATFORM_ID,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { LARK_PACK } from '../content/lark';
-import { DEFAULT_DECISIONS, DOCTRINES } from '../content/doctrines';
-import { SCENARIOS } from '../content/scenarios';
+import { Q1 } from '../content/quarters';
 import {
+  advanceBy,
+  assemblyOptions,
+  reallocate,
   resolveQuarter,
-  type BatteryArchitecture,
-  type ClaimPosture,
-  type ComponentTier,
-  type ConnectorStance,
-  type OfferDecisions,
-  type QuarterDecisions,
-  type SupplierChoice,
+  setFocus,
+  startQuarter,
+  type Allocation,
+  type PartKind,
+  type ProductionFocus,
+  type QuarterOutcome,
+  type QuarterState,
 } from '../sim/index';
 import {
-  capacityBars,
-  coveragePercent,
-  dimensionBars,
-  segmentBriefs,
-  segmentRows,
-  variantsInSlotOrder,
+  inEndgame,
+  marketReadiness,
+  quarterProgress,
+  researchProgress,
+  stockRows,
+  timeRemaining,
 } from './quarter-view-model';
+
+/** Real milliseconds between simulation steps. Matches the 10 Hz authoritative tick (I-005). */
+const STEP_MS = 100;
 
 @Component({
   selector: 'obsolescence-game',
@@ -39,159 +52,144 @@ import {
   templateUrl: './obsolescence-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ObsolescenceGameComponent {
-  readonly pack = LARK_PACK;
-  readonly doctrines = DOCTRINES;
-  readonly variants = variantsInSlotOrder(LARK_PACK);
-  readonly briefs = segmentBriefs(LARK_PACK.segments);
+export class ObsolescenceGameComponent implements OnDestroy {
+  readonly config = Q1;
 
-  readonly scenarios = SCENARIOS;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private timer: ReturnType<typeof setInterval> | null = null;
 
-  readonly decisions = signal<QuarterDecisions>(DEFAULT_DECISIONS);
+  readonly state = signal<QuarterState>(startQuarter(Q1, 4242));
   readonly seed = signal(4242);
-  readonly locked = signal(false);
-  /** Set when a pre-registered scenario is loaded, so its cause can be revealed after answering. */
-  readonly activeScenario = signal<string | null>(null);
-  readonly causeRevealed = signal(false);
+  readonly speed = signal(1);
+  readonly running = signal(false);
+  readonly outcome = signal<QuarterOutcome | null>(null);
 
-  readonly scenarioDetail = computed(() =>
-    this.scenarios.find((entry) => entry.id === this.activeScenario()) ?? null
-  );
+  readonly remaining = computed(() => timeRemaining(this.state(), this.config));
+  readonly progress = computed(() => quarterProgress(this.state(), this.config));
+  readonly endgame = computed(() => inEndgame(this.state(), this.config));
+  readonly stock = computed(() => stockRows(this.state().stock));
+  readonly research = computed(() => researchProgress(this.state(), this.config));
+  readonly market = computed(() => marketReadiness(this.state(), this.config));
+  readonly options = computed(() => assemblyOptions(this.state().stock));
+  readonly atDeadline = computed(() => this.state().phase !== 'running');
+  readonly recentLog = computed(() => this.state().log.slice(-5).reverse());
 
-  readonly capacity = computed(() => capacityBars(this.pack, this.decisions()));
-  readonly coverage = computed(() => coveragePercent(this.pack, this.decisions()));
-  readonly overCommitted = computed(() => this.capacity().some((bar) => bar.over));
+  readonly focusOptions: readonly ProductionFocus[] = ['balanced', 'chassis', 'board', 'cell'];
+  readonly speeds = [1, 2, 4];
 
-  readonly outcome = computed(() =>
-    this.locked() ? resolveQuarter(this.pack, this.decisions(), this.seed()) : null
-  );
-  readonly dimensions = computed(() => {
-    const result = this.outcome();
-    return result === null ? [] : dimensionBars(result);
-  });
-  readonly segments = computed(() => {
-    const result = this.outcome();
-    return result === null ? [] : segmentRows(this.pack, result);
-  });
+  /** Typed here rather than inline in the template, which `strictTemplates` will not index. */
+  readonly sinks: readonly { key: keyof Allocation; label: string; note: string }[] = [
+    { key: 'research', label: 'Research', note: 'Raises the tier you can build' },
+    { key: 'production', label: 'Production', note: 'Fills the shelves' },
+    { key: 'market', label: 'Market prep', note: 'Decides if anyone hears about it' },
+  ];
 
-  readonly batteryOptions: readonly BatteryArchitecture[] = ['modular', 'sealed'];
-  readonly connectorOptions: readonly ConnectorStance[] = ['universal', 'proprietary'];
-  readonly supplierOptions: readonly SupplierChoice[] = ['incumbent', 'aggressive'];
-  readonly tierOptions: readonly ComponentTier[] = ['basic', 'standard', 'premium'];
-  readonly claimOptions: readonly ClaimPosture[] = ['conservative', 'confident', 'aggressive'];
-
-  offerFor(variantId: string): OfferDecisions | undefined {
-    return this.decisions().offers[variantId];
+  staffIn(sink: keyof Allocation): number {
+    return this.state().allocation[sink];
   }
 
-  setBattery(value: BatteryArchitecture): void {
-    this.update((current) => ({ ...current, platform: { ...current.platform, battery: value } }));
+  ngOnDestroy(): void {
+    this.stopTimer();
   }
 
-  setConnector(value: ConnectorStance): void {
-    this.update((current) => ({ ...current, platform: { ...current.platform, connector: value } }));
-  }
+  // --- clock --------------------------------------------------------------
 
-  setSupplier(value: SupplierChoice): void {
-    this.update((current) => ({ ...current, platform: { ...current.platform, supplier: value } }));
-  }
-
-  setReserve(value: number): void {
-    this.update((current) => ({ ...current, reserveSplit: value / 100 }));
-  }
-
-  setInvestigation(value: number): void {
-    this.update((current) => ({ ...current, batteryInvestigation: value }));
-  }
-
-  toggleOffer(variantId: string, mandatory: boolean): void {
-    if (mandatory) {
+  toggleRun(): void {
+    if (this.running()) {
+      this.pause();
       return;
     }
-    this.updateOffer(variantId, (offer) => ({ ...offer, included: !offer.included }));
-  }
-
-  setPrice(variantId: string, value: number): void {
-    this.updateOffer(variantId, (offer) => ({ ...offer, price: value }));
-  }
-
-  setTier(variantId: string, value: ComponentTier): void {
-    this.updateOffer(variantId, (offer) => ({ ...offer, tier: value }));
-  }
-
-  setSupportYears(variantId: string, value: number): void {
-    this.updateOffer(variantId, (offer) => ({ ...offer, supportYears: value }));
-  }
-
-  setClaim(variantId: string, value: ClaimPosture): void {
-    this.updateOffer(variantId, (offer) => ({ ...offer, claim: value }));
-  }
-
-  applyDoctrine(index: number): void {
-    const doctrine = this.doctrines[index];
-    if (doctrine !== undefined) {
-      this.decisions.set(doctrine.decisions);
-      this.locked.set(false);
-    }
-  }
-
-  /**
-   * Loads a pre-registered scenario and resolves it immediately.
-   *
-   * The expected cause stays hidden until the tester asks for it — Gate A condition 3 is only
-   * honest if the answer is committed to before the reveal.
-   */
-  loadScenario(id: string): void {
-    const entry = this.scenarios.find((candidate) => candidate.id === id);
-    if (entry === undefined) {
+    if (this.atDeadline()) {
       return;
     }
-    this.decisions.set(entry.decisions);
-    this.seed.set(entry.seed);
-    this.activeScenario.set(entry.id);
-    this.causeRevealed.set(false);
-    this.locked.set(true);
+    this.running.set(true);
+    if (!this.isBrowser) {
+      return;
+    }
+    this.timer = setInterval(() => this.step(), STEP_MS);
   }
 
-  revealCause(): void {
-    this.causeRevealed.set(true);
+  pause(): void {
+    this.running.set(false);
+    this.stopTimer();
   }
 
-  lock(): void {
-    this.locked.set(true);
+  setSpeed(value: number): void {
+    this.speed.set(value);
   }
 
-  reset(): void {
-    this.decisions.set(DEFAULT_DECISIONS);
-    this.locked.set(false);
+  /** Skips to the deadline. Useful when the interesting decisions are already made. */
+  skipToDeadline(): void {
+    this.pause();
+    this.state.update((current) => advanceBy(current, this.config, this.config.lengthTicks));
+  }
+
+  restart(): void {
+    this.pause();
+    this.outcome.set(null);
+    this.state.set(startQuarter(this.config, this.seed()));
   }
 
   nextSeed(): void {
-    this.seed.update((current) => current + 1);
-    this.locked.set(false);
+    this.seed.update((value) => value + 1);
+    this.restart();
   }
 
-  /** Number input helper — templates hand back strings. */
+  private step(): void {
+    const next = advanceBy(this.state(), this.config, this.speed());
+    this.state.set(next);
+    if (next.phase !== 'running') {
+      this.pause();
+    }
+  }
+
+  private stopTimer(): void {
+    if (this.timer !== null) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  // --- decisions ----------------------------------------------------------
+
+  get allocation(): Allocation {
+    return this.state().allocation;
+  }
+
+  /** Staff not currently assigned to anything. */
+  readonly unassigned = computed(() => {
+    const { research, production, market } = this.state().allocation;
+    return this.config.staff - research - production - market;
+  });
+
+  assign(sink: keyof Allocation, value: number): void {
+    const current = this.state().allocation;
+    const requested = Math.max(0, Math.round(value));
+    const others = this.config.staff - (current.research + current.production + current.market - current[sink]);
+    const next: Allocation = { ...current, [sink]: Math.min(requested, Math.max(0, others)) };
+    this.state.update((state) => reallocate(state, this.config, next));
+  }
+
+  chooseFocus(focus: ProductionFocus): void {
+    this.state.update((state) => setFocus(state, focus));
+  }
+
   asNumber(value: unknown): number {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  private update(change: (current: QuarterDecisions) => QuarterDecisions): void {
-    this.decisions.update(change);
-    this.locked.set(false);
-    // Editing anything means you are no longer running the pre-registered scenario.
-    this.activeScenario.set(null);
-    this.causeRevealed.set(false);
+  labelFor(kind: PartKind): string {
+    return kind.charAt(0).toUpperCase() + kind.slice(1);
   }
 
-  private updateOffer(variantId: string, change: (offer: OfferDecisions) => OfferDecisions): void {
-    this.update((current) => {
-      const existing = current.offers[variantId];
-      if (existing === undefined) {
-        return current;
-      }
-      return { ...current, offers: { ...current.offers, [variantId]: change(existing) } };
-    });
+  // --- assembly -----------------------------------------------------------
+
+  build(optionId: string): void {
+    this.outcome.set(resolveQuarter(this.state(), this.config, optionId));
+  }
+
+  shipNothing(): void {
+    this.outcome.set(resolveQuarter(this.state(), this.config, null));
   }
 }

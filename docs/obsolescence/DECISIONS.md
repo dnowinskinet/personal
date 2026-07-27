@@ -430,3 +430,79 @@ machine sweeps plus pre-registered scenarios was the right call.
 
 **Consequence:** Gate A stays open until Daniel runs the five scenarios and answers the two human
 gates. No Gate B work should start before that — the kill condition still applies.
+
+---
+
+## D-019 — The loop is a quarter race, not a lineup composition
+
+**Date:** 2026-07-26
+**Status:** Settled
+**Supersedes:** the lineup-composition Gate A (D-018), and large parts of D-016 and D-017
+
+The reference point is News Tower: **few decisions remade constantly under rising pressure**, not
+many decisions made once. The previous Gate A built the latter and it read as a configuration form.
+
+The loop: a finite clock, one staff pool, three competing sinks — research, production, market prep
+— and an assembly step at the deadline whose menu is whatever you actually managed to produce. The
+payoff moment is *finding out what you can even build*.
+
+**Rationale:** Daniel's diagnosis on seeing the prototype. The missing quarter clock had been
+recorded as a Gate B gap; that was wrong. The clock is the thing the loop hangs off, and without it
+there is nothing to rush toward and no reason to re-decide.
+
+**Consequence:** the lineup model, demand model, segments and doctrines were deleted, recoverable at
+commit `2693d3c`. The kernel, architecture and boundary enforcement were untouched and matter more
+now, since a real-time race is exactly what a deterministic 10 Hz tick is for.
+
+---
+
+## D-020 — Persistence lives in the institution, not the product
+
+**Date:** 2026-07-26
+**Status:** Settled
+**Supersedes:** R6's campaign memory model and parts of R2's lifecycle obligations
+
+Products are **disposable**. Ship a bad one, lose money, miss the goal. There is no installed base,
+no cohort ledger, no compression, no multi-year support obligation, and no burden family. A product
+is obsolete by the end of the following quarter.
+
+What carries forward is **cash** and **standing** with the bodies that gate expansion. The canonical
+image: you cannot dig Basement 3 because there is a subway under it, and moving it needs both the
+standing to get a permit and the cash to pay for it.
+
+**Rationale:** the lingering-consequence machinery was the largest source of complexity in the
+reconciled canon and it was decoration on a loop nobody had established was fun. Gating *expansion*
+on reputation is simpler, is the News Tower faction pattern, and is better satire — a company whose
+product is forgotten in a quarter but whose permits haunt it for years is funnier and truer than one
+keeping a careful ledger of its promises.
+
+**Cost, stated plainly:** the thesis "a flagship building that remembers its own promises" no longer
+holds as written. That is the real casualty and it was accepted deliberately, not overlooked.
+
+**Consequence:** [CANON.md](CANON.md) sections 3 and 4 are substantially void. C-01, C-02, C-04 and
+C-20 are moot. The reconciliation work is not wasted — it is why the cost of this change could be
+stated precisely instead of guessed at.
+
+---
+
+## D-021 — The building expands in both directions, and both directions pay
+
+**Date:** 2026-07-26
+**Status:** Settled in principle; mechanics undesigned
+
+Below street level: prototyping, manufacturing, assembly — what you are physically able to build.
+Above street level: marketing, sales and business development early; legal and HR arriving mid-game.
+
+The core investment decision is therefore **up versus down** — can I sell it, or can I make it —
+against one finite pool. That is what earns expansion in both directions and gives the vertical
+scroll a reason to exist in both.
+
+**Rationale:** Daniel's. It also rescues R3, which survives this pivot better than any other report:
+a fixed-width vertical cutaway scrolling both ways is exactly SimTower above and Fallout Shelter
+below.
+
+**Open:** whether floor one starts as showroom, office and manufacturing crammed together before you
+can afford to specialise. Undecided, and it does not block the loop prototype.
+
+**Consequence:** Gate A collapses the whole office side into a single "market prep" sink. That is
+right for testing the loop and wrong as a design. Legal and HR are explicitly late-game.
