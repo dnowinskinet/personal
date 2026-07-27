@@ -1,13 +1,19 @@
 <section class="flex flex-col gap-5 py-4">
 
-  <header class="flex flex-col gap-1">
+  <header class="flex flex-col gap-2">
     <h1 class="text-2xl font-semibold">Obsolescence, Inc. — the quarter race</h1>
-    <p class="text-sm opacity-80 max-w-3xl">
-      Twelve staff, one quarter, three things worth doing. Research raises what you're able to build,
-      production fills the shelves, market prep decides whether anyone hears about it. When the clock
-      runs out you build a product from whatever you actually made.
-    </p>
-    <p class="text-xs opacity-60">{{ config.goalLabel }} Target score {{ config.goalScore }}.</p>
+
+    <div class="flex flex-wrap gap-1">
+      @for (stage of ladder; track stage.id) {
+        <button type="button" class="px-2 py-1 text-xs rounded border border-current"
+                [class.font-bold]="config().id === stage.id"
+                [class.opacity-45]="config().id !== stage.id"
+                (click)="setStage(stage)">{{ stage.title }}</button>
+      }
+    </div>
+
+    <p class="text-sm opacity-80 max-w-3xl">{{ config().teaches }}</p>
+    <p class="text-xs opacity-60">{{ config().goalLabel }} Target score {{ config().goalScore }}.</p>
   </header>
 
   <!-- Clock -------------------------------------------------------------- -->
@@ -54,28 +60,37 @@
     <!-- Where the staff go ---------------------------------------------- -->
     <div class="border border-current/30 rounded p-4 flex flex-col gap-4">
       <div class="flex justify-between items-baseline">
-        <h2 class="text-sm font-semibold">Where the staff go</h2>
+        <h2 class="text-sm font-semibold">{{ config().enabled.allocation ? 'Where the staff go' : 'Your staff' }}</h2>
         <span class="text-xs" [class.font-bold]="unassigned() > 0">
-          {{ unassigned() }} idle of {{ config.staff }}
+          {{ unassigned() }} idle of {{ config().staff }}
         </span>
       </div>
 
-      @for (sink of sinks; track sink.key) {
+      @if (!config().enabled.allocation) {
+        <p class="text-sm opacity-75">
+          All {{ config().staff }} of them are building. There is nowhere else to put them yet.
+        </p>
+      }
+
+      @for (sink of sinks(); track sink.key) {
+        @if (config().enabled.allocation) {
         <label class="flex flex-col gap-1">
           <span class="flex justify-between text-sm">
             <span>{{ sink.label }} <span class="opacity-60 text-xs">— {{ sink.note }}</span></span>
             <span class="tabular-nums font-semibold">{{ staffIn(sink.key) }}</span>
           </span>
-          <input type="range" min="0" [max]="config.staff" step="1" [disabled]="atDeadline()"
+          <input type="range" min="0" [max]="config().staff" step="1" [disabled]="atDeadline()"
                  [ngModel]="staffIn(sink.key)" [name]="sink.key"
                  (ngModelChange)="assign(sink.key, asNumber($event))" />
         </label>
+        }
       }
 
+      @if (config().enabled.focus) {
       <div class="flex flex-col gap-2 border-t border-current/20 pt-3">
         <span class="text-sm">Production is making</span>
         <div class="flex flex-wrap gap-2">
-          @for (option of focusOptions; track option) {
+          @for (option of focusOptions(); track option) {
             <button type="button" class="px-3 py-1 text-sm rounded border border-current"
                     [class.font-bold]="state().focus === option"
                     [class.opacity-50]="state().focus !== option"
@@ -86,11 +101,14 @@
           Balanced keeps every shelf stocked. Focusing fills one fast and starves the rest.
         </p>
       </div>
+      }
     </div>
 
     <!-- State ------------------------------------------------------------ -->
     <div class="flex flex-col gap-4">
+      @if (config().enabled.research || config().enabled.market) {
       <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
+        @if (config().enabled.research) {
         <div class="flex justify-between text-sm">
           <span class="font-semibold">Research — tier {{ state().researchLevel }} unlocked</span>
           <span class="opacity-70">{{ state().researchLevel < 3 ? research() + '% to next' : 'ceiling' }}</span>
@@ -98,7 +116,9 @@
         <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
           <div class="h-full rounded bg-current" [style.width.%]="research()"></div>
         </div>
+        }
 
+        @if (config().enabled.market) {
         <div class="flex justify-between text-sm mt-1">
           <span class="font-semibold">Market readiness</span>
           <span class="opacity-70">{{ market() }}%</span>
@@ -106,7 +126,9 @@
         <div class="h-2 w-full rounded bg-current/15 overflow-hidden">
           <div class="h-full rounded bg-current" [style.width.%]="market()"></div>
         </div>
+        }
       </div>
+      }
 
       <div class="border border-current/30 rounded p-4 flex flex-col gap-3">
         <h2 class="text-sm font-semibold">On the shelf</h2>
@@ -158,9 +180,7 @@
             <span class="font-semibold text-sm">{{ option.label }}</span>
             @if (option.available) {
               <span class="text-2xl font-bold">{{ option.quality }}</span>
-              <span class="text-xs opacity-70">
-                chassis T{{ option.uses.chassis }} · board T{{ option.uses.board }} · cell T{{ option.uses.cell }}
-              </span>
+              <span class="text-xs opacity-70">{{ usesLabel(option) }}</span>
               <button type="button" class="mt-1 px-3 py-2 rounded border-2 border-current font-semibold"
                       (click)="build(option.id)">Build this</button>
             } @else {

@@ -10,6 +10,7 @@ import {
   PART_KINDS,
   TIERS,
   countOf,
+  tierCeiling,
   totalOf,
   type AssemblyOption,
   type PartKind,
@@ -45,19 +46,33 @@ function lowestAvailableTier(stock: PartStock, kind: PartKind, minTier: Tier): T
 }
 
 /** Quality from the tiers actually consumed. */
-function qualityFrom(uses: Readonly<Record<PartKind, Tier>>, premium: number): number {
-  const mean = PART_KINDS.reduce((sum, kind) => sum + uses[kind], 0) / PART_KINDS.length;
+function qualityFrom(
+  uses: Readonly<Record<PartKind, Tier>>,
+  premium: number,
+  kinds: readonly PartKind[]
+): number {
+  const mean = kinds.reduce((sum, kind) => sum + uses[kind], 0) / kinds.length;
   // Clamp AFTER the premium, not before — clamping first let a flagship build exceed 100.
   return Math.round(Math.min(100, (((mean - 1) / 2) * 70 + 26) * premium));
 }
 
-/** Everything the player could build right now, buildable or not. */
-export function assemblyOptions(stock: PartStock): readonly AssemblyOption[] {
-  return GRADES.map((grade) => {
+/**
+ * Everything the player could build right now, buildable or not.
+ *
+ * Both the part kinds required and the grades offered follow what the quarter has switched on. A
+ * first quarter with no research has exactly one grade and one part — there is no menu to read and
+ * nothing to get wrong, which is the point of it.
+ */
+export function assemblyOptions(
+  stock: PartStock,
+  kinds: readonly PartKind[] = PART_KINDS,
+  maxTier: Tier = 3
+): readonly AssemblyOption[] {
+  return GRADES.filter((grade) => grade.minTier <= maxTier).map((grade) => {
     const uses = {} as Record<PartKind, Tier>;
     const missing: string[] = [];
 
-    for (const kind of PART_KINDS) {
+    for (const kind of kinds) {
       const tier = lowestAvailableTier(stock, kind, grade.minTier);
       if (tier === null) {
         missing.push(
@@ -78,14 +93,18 @@ export function assemblyOptions(stock: PartStock): readonly AssemblyOption[] {
       uses,
       available,
       blockedBy: available ? null : missing.join(', '),
-      quality: available ? qualityFrom(uses, grade.premium) : 0,
+      quality: available ? qualityFrom(uses, grade.premium, kinds) : 0,
     };
   });
 }
 
 /** The best option currently buildable, or null when nothing can ship. */
-export function bestAvailable(stock: PartStock): AssemblyOption | null {
-  const buildable = assemblyOptions(stock).filter((option) => option.available);
+export function bestAvailable(
+  stock: PartStock,
+  kinds: readonly PartKind[] = PART_KINDS,
+  maxTier: Tier = 3
+): AssemblyOption | null {
+  const buildable = assemblyOptions(stock, kinds, maxTier).filter((option) => option.available);
   if (buildable.length === 0) {
     return null;
   }
@@ -104,9 +123,11 @@ export function resolveQuarter(
   config: QuarterConfig,
   optionId: string | null
 ): QuarterOutcome {
-  const options = assemblyOptions(state.stock);
+  const options = assemblyOptions(state.stock, config.partKinds, tierCeiling(config, 3));
   const chosen = options.find((option) => option.id === optionId && option.available) ?? null;
-  const readiness = Math.min(1, state.marketPoints / config.marketTarget);
+  // With market prep switched off the launch is treated as fully prepared — an early quarter should
+  // not silently score badly on a lever the player has not been shown yet.
+  const readiness = config.enabled.market ? Math.min(1, state.marketPoints / config.marketTarget) : 1;
   const notes: string[] = [];
 
   if (chosen === null) {
@@ -136,7 +157,7 @@ export function resolveQuarter(
   const score = Math.round(chosen.quality * (0.35 + readiness * 0.65));
   const goalMet = score >= config.goalScore;
 
-  if (readiness < 0.45) {
+  if (config.enabled.market && readiness < 0.45) {
     notes.push('Barely anyone knew it was coming. Market prep was starved.');
   }
   if (chosen.id === 'salvage') {

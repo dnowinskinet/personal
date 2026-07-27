@@ -9,6 +9,7 @@ import { randomAt } from '../rng';
 import {
   PART_KINDS,
   emptyStock,
+  tierCeiling,
   type Allocation,
   type PartKind,
   type PartStock,
@@ -38,9 +39,9 @@ export function researchLevelFor(points: number, config: QuarterConfig): number 
  * fills one shelf fast and leaves the others empty — that is how you arrive at the deadline unable
  * to build anything.
  */
-function kindFor(focus: ProductionFocus, produced: number): PartKind {
-  if (focus === 'balanced') {
-    return PART_KINDS[produced % PART_KINDS.length];
+function kindFor(focus: ProductionFocus, produced: number, kinds: readonly PartKind[]): PartKind {
+  if (focus === 'balanced' || !kinds.includes(focus)) {
+    return kinds[produced % kinds.length];
   }
   return focus;
 }
@@ -51,8 +52,7 @@ function kindFor(focus: ProductionFocus, produced: number): PartKind {
  * Capped by research level — you cannot build what you have not researched. Within that cap,
  * workforce skill decides how often you hit the ceiling rather than falling a tier short.
  */
-function tierFor(researchLevel: number, skill: number, seed: number, cursor: number): Tier {
-  const ceiling = Math.max(1, Math.min(MAX_RESEARCH_LEVEL, researchLevel)) as Tier;
+function tierFor(ceiling: Tier, skill: number, seed: number, cursor: number): Tier {
   if (ceiling === 1) {
     return 1;
   }
@@ -89,23 +89,30 @@ export function advanceQuarter(state: QuarterState, config: QuarterConfig): Quar
   const tick = state.tick + 1;
   const { allocation } = state;
 
-  const researchPoints =
-    state.researchPoints + allocation.research * RESEARCH_PER_STAFF_TICK * (0.5 + config.workforceSkill);
-  const marketPoints =
-    state.marketPoints + allocation.market * MARKET_PER_STAFF_TICK * (0.5 + config.workforceSkill);
-  const researchLevel = researchLevelFor(researchPoints, config);
+  // A disabled system does not accumulate. Market readiness is treated as full when the system is
+  // off, so an early quarter launches into a receptive world without the player learning a lever
+  // that is not there yet.
+  const researchPoints = config.enabled.research
+    ? state.researchPoints + allocation.research * RESEARCH_PER_STAFF_TICK * (0.5 + config.workforceSkill)
+    : 0;
+  const marketPoints = config.enabled.market
+    ? state.marketPoints + allocation.market * MARKET_PER_STAFF_TICK * (0.5 + config.workforceSkill)
+    : config.marketTarget;
+  const researchLevel = config.enabled.research ? researchLevelFor(researchPoints, config) : 1;
 
   // Production. Progress accumulates so the rate can be well below one part per tick.
+  // With allocation disabled the whole staff produces — there is nowhere else for them to be.
+  const producers = config.enabled.allocation ? allocation.production : config.staff;
   let progress =
-    state.productionProgress +
-    allocation.production * config.productionRate * (0.6 + config.workforceSkill * 0.7);
+    state.productionProgress + producers * config.productionRate * (0.6 + config.workforceSkill * 0.7);
   let stock = state.stock;
   let produced = countProduced(state.stock);
+  const ceiling = tierCeiling(config, researchLevel);
 
   while (progress >= 1) {
     progress -= 1;
-    const kind = kindFor(state.focus, produced);
-    const tier = tierFor(researchLevel, config.workforceSkill, state.seed, tick * 7 + produced);
+    const kind = kindFor(state.focus, produced, config.partKinds);
+    const tier = tierFor(ceiling, config.workforceSkill, state.seed, tick * 7 + produced);
     stock = addPart(stock, kind, tier);
     produced += 1;
   }

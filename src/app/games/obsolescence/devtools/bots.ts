@@ -45,7 +45,7 @@ function weighted(staff: number, research: number, production: number, market: n
   return { research: r, production: Math.max(0, staff - r - m), market: m };
 }
 
-function allocationFor(name: BotName, staff: number): Allocation {
+function allocationFor(name: BotName, staff: number, config: QuarterConfig): Allocation {
   switch (name) {
     case 'research-heavy':
       return weighted(staff, 7, 2, 1);
@@ -54,7 +54,7 @@ function allocationFor(name: BotName, staff: number): Allocation {
     case 'market-heavy':
       return weighted(staff, 1, 2, 7);
     default:
-      return evenAllocation(staff);
+      return evenAllocation(staff, config);
   }
 }
 
@@ -68,7 +68,7 @@ function allocationFor(name: BotName, staff: number): Allocation {
 function adaptiveRun(config: QuarterConfig, seed: number): QuarterState {
   const quarter = config.lengthTicks;
   let state = startQuarter(config, seed);
-  state = setFocus(state, 'balanced');
+  state = setFocus(state, 'balanced', config);
 
   // Phase 1: research until the tier ceiling is raised, or until it stops being worth waiting for.
   // Reacting to state rather than a fixed schedule is the point — a fixed schedule would be just
@@ -85,7 +85,7 @@ function adaptiveRun(config: QuarterConfig, seed: number): QuarterState {
   state = reallocate(state, config, weighted(config.staff, 1, 9, 2));
   const buildDeadline = Math.floor(quarter * 0.85);
   while (state.phase === 'running' && state.tick < buildDeadline) {
-    state = setFocus(state, scarcestAtCeiling(state));
+    state = setFocus(state, scarcestAtCeiling(state, config), config);
     state = advanceBy(state, config, Math.min(60, buildDeadline - state.tick));
   }
 
@@ -95,11 +95,11 @@ function adaptiveRun(config: QuarterConfig, seed: number): QuarterState {
 }
 
 /** Which part kind has fewest units at the best tier currently producible. */
-function scarcestAtCeiling(state: QuarterState): ProductionFocus {
+function scarcestAtCeiling(state: QuarterState, config: QuarterConfig): ProductionFocus {
   const tier = Math.max(1, Math.min(3, state.researchLevel)) as 1 | 2 | 3;
-  let scarcest: PartKind = PART_KINDS[0];
+  let scarcest: PartKind = config.partKinds[0];
   let lowest = Number.POSITIVE_INFINITY;
-  for (const kind of PART_KINDS) {
+  for (const kind of config.partKinds) {
     const held = countOf(state.stock, kind, tier);
     if (held < lowest) {
       lowest = held;
@@ -116,12 +116,12 @@ export function runBot(name: BotName, config: QuarterConfig, seed: number): BotR
     state = adaptiveRun(config, seed);
   } else {
     state = startQuarter(config, seed);
-    state = reallocate(state, config, allocationFor(name, config.staff));
+    state = reallocate(state, config, allocationFor(name, config.staff, config));
     state = runToDeadline(state, config);
   }
 
-  const options = assemblyOptions(state.stock);
-  const best = bestAvailable(state.stock);
+  const options = assemblyOptions(state.stock, config.partKinds);
+  const best = bestAvailable(state.stock, config.partKinds);
   const outcome = resolveQuarter(state, config, best?.id ?? null);
 
   return {
@@ -229,10 +229,10 @@ export function focusMatters(config: QuarterConfig, seeds: number): number {
     const seed = 1000 + index * 7919;
     const scores = (['balanced', 'chassis'] as ProductionFocus[]).map((focus) => {
       let state = startQuarter(config, seed);
-      state = reallocate(state, config, evenAllocation(config.staff));
-      state = setFocus(state, focus);
+      state = reallocate(state, config, evenAllocation(config.staff, config));
+      state = setFocus(state, focus, config);
       state = runToDeadline(state, config);
-      return resolveQuarter(state, config, bestAvailable(state.stock)?.id ?? null).score;
+      return resolveQuarter(state, config, bestAvailable(state.stock, config.partKinds)?.id ?? null).score;
     });
     if (Math.abs(scores[0] - scores[1]) >= 5) {
       differed += 1;

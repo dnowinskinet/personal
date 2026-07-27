@@ -23,8 +23,33 @@ export const TIERS: readonly Tier[] = [1, 2, 3];
 /** Parts on hand, counted by kind and tier. The assembly menu is derived entirely from this. */
 export type PartStock = Readonly<Record<PartKind, Readonly<Record<Tier, number>>>>;
 
+/**
+ * Which systems are switched on this quarter.
+ *
+ * The game teaches itself by turning these on one at a time. Quarter one is a single part with no
+ * choices at all; by the fifth everything is live. Playtest verdict on the full game cold was that
+ * it "hits the learning curve like a brick wall" — this is the ramp.
+ */
+export interface EnabledSystems {
+  /** Can staff be split between sinks, or does everyone just produce? */
+  readonly allocation: boolean;
+  /** Does research exist, and therefore part tiers above 1? */
+  readonly research: boolean;
+  /** Does market prep exist, or does everything launch fully prepared? */
+  readonly market: boolean;
+  /** Can production be pointed at a specific part kind? */
+  readonly focus: boolean;
+}
+
 export interface QuarterConfig {
   readonly id: string;
+  /** Short name for the stage picker. */
+  readonly title: string;
+  /** One line on what this quarter is teaching. */
+  readonly teaches: string;
+  readonly enabled: EnabledSystems;
+  /** Which part kinds are in play. A build needs one of each of these and no others. */
+  readonly partKinds: readonly PartKind[];
   /** Ticks in the quarter. At 10 Hz, 1800 is three minutes. */
   readonly lengthTicks: number;
   /** Total staff to distribute across the three sinks. */
@@ -102,6 +127,14 @@ export interface QuarterOutcome {
   readonly cash: number;
   readonly standing: number;
   readonly notes: readonly string[];
+}
+
+/** Highest tier reachable this quarter. Without research nothing rises above tier 1. */
+export function tierCeiling(config: QuarterConfig, researchLevel: number): Tier {
+  if (!config.enabled.research) {
+    return 1;
+  }
+  return Math.max(1, Math.min(3, researchLevel)) as Tier;
 }
 
 export function emptyStock(): PartStock {

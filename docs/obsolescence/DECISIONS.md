@@ -506,3 +506,59 @@ can afford to specialise. Undecided, and it does not block the loop prototype.
 
 **Consequence:** Gate A collapses the whole office side into a single "market prep" sink. That is
 right for testing the loop and wrong as a design. Legal and HR are explicitly late-game.
+
+---
+
+## D-022 — Gate A's human gates passed, with onboarding as the named defect
+
+**Date:** 2026-07-26
+**Status:** Settled
+
+Daniel played the quarter race. Verdict: **"pretty good actually."** The loop works.
+
+The defect: it drops you into the middle of the game. His words — *"like jumping into the middle of
+a game before you've played the prologue where you make one singular bullshit thing that can't fail
+and grows in complexity from there instead of hitting the learning curve like a brick wall."*
+
+**Consequence:** the systems now arrive one at a time as a five-stage ladder (D-023). No mechanic
+was changed to fix this — the loop was already right, it was being shown all at once.
+
+**Also settled by this playtest:** the machine sweep and the human gate found completely different
+things. The sweep found seven balance failures a human would never have seen; the human found the
+one thing no sweep can measure. That is D-003's validation model working exactly as designed, and it
+is worth remembering the next time a gate looks "already covered" by automated checks.
+
+---
+
+## D-023 — Systems arrive one at a time: the five-stage ladder
+
+**Date:** 2026-07-26
+**Status:** Settled
+
+| Stage | Turns on | Passive play meets goal |
+|---|---|---:|
+| Q1 — One thing | nothing; one part, no choices | 100% |
+| Q2 — Two shelves | a second part, production focus | 100% |
+| Q3 — Better parts | research, staff allocation, tiers | 35% |
+| Q4 — Someone has to hear about it | market prep | 70% |
+| Q5 — The real thing | third part; everything on | 20% |
+
+Q1 is deliberately unfailable: one part kind, one grade, every staff member producing, sixty
+seconds. The only lesson is that a quarter ends and you build from what you made.
+
+Rules the ladder must keep, enforced by `tests/gate-a/ladder.test.ts`: a system is never switched
+back off, a part kind is never removed, every stage stays shippable, and every stage stays winnable
+by attentive play.
+
+**Two bugs this surfaced, both the same class — a disabled system must be genuinely absent, not
+merely ignored:**
+
+1. The default allocation split staff three ways regardless, parking a third of them on market prep
+   during a quarter with no marketing. They did nothing. It made the teaching quarters unwinnable —
+   Q4 went from 0% to 70% once fixed.
+2. The assembly menu listed Standard and Flagship as "can't build" in quarters with no research,
+   teaching a lever that does not exist yet. Grades above the quarter's tier ceiling are now not
+   offered at all.
+
+The second was invisible to the tests and obvious in the browser within seconds. Worth remembering
+which class of defect each instrument actually catches.

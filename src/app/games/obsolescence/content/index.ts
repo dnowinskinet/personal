@@ -6,4 +6,12 @@
  * that is the extension test in ARCHITECTURE.md.
  */
 
-export { Q1, Q1_TIGHT, QUARTERS } from './quarters';
+export {
+  LADDER,
+  Q1,
+  Q1_ONE_THING,
+  Q2_TWO_SHELVES,
+  Q3_BETTER_PARTS,
+  Q4_HEARD_OF_IT,
+  Q5_THE_REAL_THING,
+} from './quarters';

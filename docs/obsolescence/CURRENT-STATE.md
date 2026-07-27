@@ -1,7 +1,7 @@
 # Obsolescence, Inc. — Current State
 
 **Last updated:** 2026-07-26
-**Phase:** 1, 2 and 3 complete. **Gate A rebuilt as the quarter race, awaiting Daniel.**
+**Phase:** 1, 2 and 3 complete. **Gate A passed. The loop works.**
 
 This file is rewritten at the end of every session. It describes the present, not the history.
 
@@ -13,8 +13,10 @@ This file is rewritten at the end of every session. It describes the present, no
 staff split across research, production and market prep, a ticking clock, and an assembly step at
 the deadline where you build a product from whatever you actually managed to make.
 
-**Gate A's machine-measurable conditions pass. Gate A is not closed** — two human gates are Daniel's.
-See [gates/A-quarter-race.result.md](gates/A-quarter-race.result.md).
+**Gate A has passed.** Machine conditions green, and Daniel played it: *"pretty good actually."*
+The named defect was onboarding — it dropped you into the middle of the game — so the systems now
+arrive one at a time as a five-stage ladder (D-023). No mechanic changed; the loop was already
+right, it was just being shown all at once.
 
 ## The design changed direction
 
@@ -34,14 +36,22 @@ Two consequences worth knowing before touching anything:
 
 [CANON.md](CANON.md) sections 3 and 4 are substantially void as a result. Everything else stands.
 
+## The ladder
+
+| Stage | Turns on | Passive | Attentive |
+|---|---|---:|---:|
+| Q1 — One thing | nothing; one part, no choices | 100% | 100% |
+| Q2 — Two shelves | second part, production focus | 100% | 100% |
+| Q3 — Better parts | research, allocation, tiers | 35% | 76% |
+| Q4 — Someone has to hear about it | market prep | 70% | 100% |
+| Q5 — The real thing | third part; everything on | 20% | 95% |
+
+Q1 is unfailable by design — one part, one grade, sixty seconds, everyone building.
+
 ## What Daniel needs to do
 
-Open `/experimental/obsolescence`, hit Run, and play a quarter. Then:
-
-1. **Does the rush at the deadline feel like a rush?**
-2. **Is finding out what you can build a payoff, or an anticlimax?**
-
-The honest fun signal is behavioural — opening it again, unprompted, days later.
+Play the ladder from Q1 and see whether the ramp lands. The remaining honest fun signal is
+behavioural: opening it again, unprompted, days later.
 
 ## Verification status
 

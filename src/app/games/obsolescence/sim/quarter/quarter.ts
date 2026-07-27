@@ -15,19 +15,38 @@ import {
   type QuarterState,
 } from './types';
 
-/** An even split. Deliberately unremarkable so every move away from it is the player's. */
-export function evenAllocation(staff: number): Allocation {
-  const each = Math.floor(staff / 3);
-  return { research: each, production: staff - each * 2, market: each };
+/**
+ * An even split across the sinks that actually exist this quarter.
+ *
+ * Splitting three ways regardless left a third of the staff assigned to market prep in a quarter
+ * where market prep is switched off — idle by definition, and it made the teaching quarters
+ * unwinnable for a player who touched nothing.
+ */
+export function evenAllocation(staff: number, config?: QuarterConfig): Allocation {
+  const research = config === undefined || config.enabled.research;
+  const market = config === undefined || config.enabled.market;
+  const sinks = 1 + (research ? 1 : 0) + (market ? 1 : 0);
+  const each = Math.floor(staff / sinks);
+  return {
+    research: research ? each : 0,
+    production: staff - (research ? each : 0) - (market ? each : 0),
+    market: market ? each : 0,
+  };
 }
 
 export function startQuarter(config: QuarterConfig, seed: number): QuarterState {
+  // With allocation switched off everyone is a producer. Showing a split the player cannot change
+  // would be a lie about where the staff are.
+  const allocation = config.enabled.allocation
+    ? evenAllocation(config.staff, config)
+    : { research: 0, production: config.staff, market: 0 };
+
   return {
     schemaVersion: SCHEMA_VERSION,
     seed,
     tick: 0,
     phase: 'running',
-    allocation: evenAllocation(config.staff),
+    allocation,
     focus: 'balanced',
     researchPoints: 0,
     researchLevel: 1,
@@ -50,11 +69,11 @@ export function reallocate(
   config: QuarterConfig,
   next: Allocation
 ): QuarterState {
-  if (state.phase !== 'running') {
+  if (state.phase !== 'running' || !config.enabled.allocation) {
     return state;
   }
 
-  const clamped = clampAllocation(next, config.staff);
+  const clamped = clampAllocation(withoutDisabledSinks(next, config), config.staff);
   const changed =
     clamped.research !== state.allocation.research ||
     clamped.production !== state.allocation.production ||
@@ -78,8 +97,15 @@ export function reallocate(
   };
 }
 
-export function setFocus(state: QuarterState, focus: ProductionFocus): QuarterState {
+export function setFocus(
+  state: QuarterState,
+  focus: ProductionFocus,
+  config?: QuarterConfig
+): QuarterState {
   if (state.phase !== 'running' || state.focus === focus) {
+    return state;
+  }
+  if (config !== undefined && !config.enabled.focus) {
     return state;
   }
   return {
@@ -88,6 +114,21 @@ export function setFocus(state: QuarterState, focus: ProductionFocus): QuarterSt
     reallocations: state.reallocations + 1,
     log: [...state.log, { tick: state.tick, text: `Production switched to ${focus}.` }],
   };
+}
+
+/**
+ * Moves staff off any sink that does not exist this quarter.
+ *
+ * You cannot put someone in a department that has not been built. Without this, both the policy
+ * bots and the UI could park staff on market prep during a quarter with no marketing, where they
+ * did nothing at all — which is what made the teaching quarters look unwinnable.
+ */
+function withoutDisabledSinks(allocation: Allocation, config: QuarterConfig): Allocation {
+  const research = config.enabled.research ? allocation.research : 0;
+  const market = config.enabled.market ? allocation.market : 0;
+  const displaced =
+    (config.enabled.research ? 0 : allocation.research) + (config.enabled.market ? 0 : allocation.market);
+  return { research, production: allocation.production + displaced, market };
 }
 
 function clampAllocation(allocation: Allocation, staff: number): Allocation {

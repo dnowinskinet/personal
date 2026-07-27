@@ -45,10 +45,13 @@ export function inEndgame(state: QuarterState, config: QuarterConfig): boolean {
   return state.tick > config.lengthTicks * 0.8 && state.phase === 'running';
 }
 
-export function stockRows(stock: PartStock): readonly StockRow[] {
-  const totals = PART_KINDS.map((kind) => totalOf(stock, kind));
+export function stockRows(
+  stock: PartStock,
+  kinds: readonly PartKind[] = PART_KINDS
+): readonly StockRow[] {
+  const totals = kinds.map((kind) => totalOf(stock, kind));
   const lowest = Math.min(...totals);
-  return PART_KINDS.map((kind, index) => ({
+  return kinds.map((kind, index) => ({
     kind,
     total: totals[index],
     tiers: TIERS.map((tier) => ({ tier, count: countOf(stock, kind, tier) })),
