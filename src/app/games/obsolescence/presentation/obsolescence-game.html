@@ -15,62 +15,11 @@
   <div class="grid gap-4 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
 
     <!-- THE TOWER -------------------------------------------------------- -->
-    <div class="flex flex-col">
-      <div class="text-center text-[10px] uppercase tracking-widest opacity-50 pb-1">roof</div>
+    <div class="flex flex-col gap-2">
+      <oi-tower [floors]="tower()" [partsOnHand]="partsOnHand()" [unplaced]="unplaced()"
+                (adjust)="onAdjust($event)" (purchase)="buy($event)" />
 
-      @for (floor of tower(); track floor.definition.id) {
-        <div class="border-x border-t border-current/40 px-2 py-1.5 flex flex-col gap-1"
-             [class.border-b-2]="floor.definition.level === 0"
-             [class.opacity-40]="!floor.owned"
-             [style.background-color]="floor.definition.level === 0 ? 'rgba(127,127,127,0.12)' : null">
-
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] font-mono opacity-60 w-6">{{ levelLabel(floor.definition.level) }}</span>
-            <span class="text-sm font-medium grow">{{ floor.definition.name }}</span>
-            @if (floor.owned && floor.definition.capacity > 0) {
-              <span class="text-xs opacity-60">{{ sinkLabel(floor.sink) }}</span>
-            }
-          </div>
-
-          @if (floor.owned && floor.definition.capacity > 0) {
-            <div class="flex items-center gap-2">
-              <button type="button"
-                      class="w-6 h-6 rounded border border-current text-sm leading-none disabled:opacity-25"
-                      [disabled]="floor.staff === 0"
-                      (click)="adjustStaff(floor.definition.id, -1)">&minus;</button>
-
-              <div class="flex gap-0.5 grow">
-                @for (slot of [].constructor(floor.definition.capacity); track $index) {
-                  <span class="h-4 flex-1 rounded-sm border border-current/40"
-                        [style.background-color]="$index < floor.staff ? 'currentColor' : null"></span>
-                }
-              </div>
-
-              <button type="button"
-                      class="w-6 h-6 rounded border border-current text-sm leading-none disabled:opacity-25"
-                      [disabled]="floor.staff >= floor.definition.capacity || unplaced() === 0"
-                      (click)="adjustStaff(floor.definition.id, 1)">+</button>
-
-              <span class="text-xs tabular-nums w-8 text-right">{{ floor.staff }}/{{ floor.definition.capacity }}</span>
-            </div>
-          }
-
-          @if (!floor.owned) {
-            @if (floor.affordable) {
-              <button type="button" class="text-xs px-2 py-1 rounded border-2 border-current font-semibold"
-                      (click)="buy(floor.definition)">Build — {{ money(floor.definition.cost) }}</button>
-            } @else {
-              <span class="text-[11px] leading-snug opacity-80">{{ floor.blockedBy }}</span>
-            }
-          }
-        </div>
-      }
-
-      <div class="border border-current/40 text-center text-[10px] uppercase tracking-widest opacity-50 py-1">
-        bedrock
-      </div>
-
-      <p class="text-xs mt-2" [class.font-bold]="unplaced() > 0">
+      <p class="text-xs" [class.font-bold]="unplaced() > 0">
         {{ unplaced() }} staff waiting to be placed
         @if (idle() > 0) { <span>· {{ idle() }} on floors with no job</span> }
       </p>

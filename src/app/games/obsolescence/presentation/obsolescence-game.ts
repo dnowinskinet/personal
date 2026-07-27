@@ -42,6 +42,7 @@ import {
   type QuarterOutcome,
   type QuarterState,
 } from '../sim/index';
+import { TowerViewComponent } from './tower-view';
 import {
   inEndgame,
   marketReadiness,
@@ -59,7 +60,7 @@ type Mode = 'tower' | 'quarter';
 @Component({
   selector: 'obsolescence-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TowerViewComponent],
   templateUrl: './obsolescence-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -93,6 +94,16 @@ export class ObsolescenceGameComponent implements OnDestroy {
   readonly idle = computed(() => idleStaff(this.campaign().building, this.floors));
   readonly allocation = computed(() => deriveAllocation(this.campaign().building, this.floors));
 
+  /** Everything on the shelf, drawn as crates in the stores. */
+  readonly partsOnHand = computed(() => {
+    const stock = this.state().stock;
+    let total = 0;
+    for (const kind of this.config().partKinds) {
+      total += stock[kind][1] + stock[kind][2] + stock[kind][3];
+    }
+    return total;
+  });
+
   /** True when nobody is anywhere useful — starting a quarter like this would waste it. */
   readonly nobodyWorking = computed(() => {
     const { research, production, market } = this.allocation();
@@ -123,6 +134,10 @@ export class ObsolescenceGameComponent implements OnDestroy {
   // --- staffing and building ----------------------------------------------
 
   /** Moves one person on or off a floor. Buttons rather than a drag — works on a phone (I-014). */
+  onAdjust(event: { floorId: string; delta: number }): void {
+    this.adjustStaff(event.floorId, event.delta);
+  }
+
   adjustStaff(floorId: string, delta: number): void {
     const campaign = this.campaign();
     const current = campaign.building.staffing[floorId] ?? 0;

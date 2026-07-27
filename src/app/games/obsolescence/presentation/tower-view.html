@@ -1,0 +1,166 @@
+<svg [attr.viewBox]="viewBox()" class="w-full h-auto select-none" role="img"
+     aria-label="Cutaway of the company building, offices above street level and manufacturing below">
+
+  <defs>
+    <!-- Earth below the pavement. -->
+    <pattern id="oi-earth" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="currentColor" opacity="0.07" />
+      <line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1" opacity="0.16" />
+    </pattern>
+    <!-- Unexcavated / unbuilt space. -->
+    <pattern id="oi-locked" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1" opacity="0.22" />
+    </pattern>
+  </defs>
+
+  <!-- sky and earth ---------------------------------------------------- -->
+  <rect x="0" y="0" [attr.width]="layout().width" [attr.height]="layout().groundY"
+        fill="currentColor" opacity="0.04" />
+  <rect x="0" [attr.y]="layout().groundY" [attr.width]="layout().width" [attr.height]="earthHeight()"
+        fill="url(#oi-earth)" />
+
+  <!-- pavement -->
+  <line x1="0" [attr.y1]="layout().groundY" [attr.x2]="layout().width" [attr.y2]="layout().groundY"
+        stroke="currentColor" stroke-width="2.5" />
+
+  <!-- loading ramp down to the first basement -->
+  @if (rampVisible()) {
+    <path [attr.d]="'M 4 ' + layout().groundY + ' L 40 ' + layout().groundY + ' L 40 ' + (layout().groundY + 44) + ' L 4 ' + (layout().groundY + 20) + ' Z'"
+          fill="currentColor" opacity="0.13" stroke="currentColor" stroke-width="0.8" />
+  }
+
+  <!-- floors ------------------------------------------------------------ -->
+  @for (floor of draw(); track floor.id) {
+    <g>
+      <!-- body -->
+      <rect [attr.x]="buildingLeft" [attr.y]="floor.y"
+            [attr.width]="buildingWidth" [attr.height]="floor.height"
+            [attr.fill]="floor.owned ? 'currentColor' : 'url(#oi-locked)'"
+            [attr.fill-opacity]="floor.owned ? (floor.isStreet ? 0.12 : 0.06) : 1"
+            stroke="currentColor" [attr.stroke-width]="floor.isStreet ? 1.8 : 0.9"
+            [attr.stroke-opacity]="floor.owned ? 0.85 : 0.3" />
+
+      @if (floor.owned) {
+        <!-- cores run the height of every owned floor -->
+        <rect [attr.x]="personnelCore.x" [attr.y]="floor.y"
+              [attr.width]="personnelCore.width" [attr.height]="floor.height"
+              fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.5" />
+        <rect [attr.x]="freightCore.x" [attr.y]="floor.y"
+              [attr.width]="freightCore.width" [attr.height]="floor.height"
+              fill="currentColor" opacity="0.16" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.5" />
+
+        <!-- windows on the office side, glass front on the showroom -->
+        @if (floor.isStreet) {
+          <rect [attr.x]="interiorLeft + 6" [attr.y]="floor.y + 8"
+                [attr.width]="interiorRight - interiorLeft - 12" [attr.height]="floor.height - 20"
+                fill="currentColor" opacity="0.05" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55" />
+        } @else {
+          @for (win of floor.windows; track win.x) {
+            <rect [attr.x]="win.x" [attr.y]="win.y" width="14" height="9" rx="1"
+                  fill="currentColor" opacity="0.16" />
+          }
+        }
+
+        <!-- staff -->
+        @for (person of floor.people; track person.x + '-' + person.y) {
+          <g [attr.transform]="'translate(' + person.x + ',' + person.y + ')'">
+            <circle cx="0" cy="-6" r="2.4" fill="currentColor" />
+            <path d="M -2.6 0 L 0 -3.6 L 2.6 0 Z" fill="currentColor" />
+          </g>
+        }
+
+        <!-- crates of parts in the stores -->
+        @for (crate of floor.crates; track crate.x + '-' + crate.y) {
+          <rect [attr.x]="crate.x" [attr.y]="crate.y" width="8" height="8" rx="0.8"
+                fill="currentColor" opacity="0.55" />
+        }
+      }
+
+      <!-- an obstruction you could in principle remove, drawn as a tunnel through the level -->
+      @if (!floor.owned && floor.isTunnel) {
+        <ellipse [attr.cx]="(buildingLeft + buildingRight) / 2" [attr.cy]="floor.y + floor.height - 15"
+                 [attr.rx]="buildingWidth / 2 - 8" ry="10"
+                 fill="currentColor" opacity="0.28" stroke="currentColor" stroke-width="1" />
+        <ellipse [attr.cx]="(buildingLeft + buildingRight) / 2" [attr.cy]="floor.y + floor.height - 15"
+                 [attr.rx]="buildingWidth / 2 - 18" ry="5.5"
+                 fill="currentColor" opacity="0.5" />
+      }
+
+      <!-- bedrock is not an obstruction you clear, it is where the building stops -->
+      @if (floor.isBedrock) {
+        <rect [attr.x]="buildingLeft" [attr.y]="floor.y" [attr.width]="buildingWidth"
+              [attr.height]="floor.height" fill="currentColor" opacity="0.13" />
+      }
+
+      <!-- level tag in the left margin -->
+      <text x="20" [attr.y]="floor.midY + 3" text-anchor="middle"
+            font-size="9" font-family="ui-monospace, monospace"
+            fill="currentColor" [attr.opacity]="floor.owned ? 0.75 : 0.4">{{ floor.levelLabel }}</text>
+
+      <!-- floor name -->
+      <text [attr.x]="interiorLeft + 4" [attr.y]="floor.y + (floor.isStreet ? 20 : 15)"
+            font-size="10" font-weight="600"
+            fill="currentColor" [attr.opacity]="floor.owned ? 0.95 : 0.45">{{ floor.name }}</text>
+
+      @if (floor.staffable && floor.sinkLabel) {
+        <text [attr.x]="interiorRight - 4" [attr.y]="floor.y + (floor.isStreet ? 20 : 15)"
+              text-anchor="end" font-size="7.5" fill="currentColor" opacity="0.6">{{ floor.sinkLabel }}</text>
+      }
+
+      <!-- staffing controls -->
+      @if (floor.staffable) {
+        <g [class.cursor-pointer]="floor.canRemove" (click)="floor.canRemove && remove(floor.id)">
+          <circle [attr.cx]="interiorLeft + 10" [attr.cy]="floor.y + floor.height - 11" r="7"
+                  fill="currentColor" [attr.opacity]="floor.canRemove ? 0.16 : 0.05"
+                  stroke="currentColor" stroke-width="0.8" [attr.stroke-opacity]="floor.canRemove ? 0.7 : 0.2" />
+          <line [attr.x1]="interiorLeft + 6.5" [attr.y1]="floor.y + floor.height - 11"
+                [attr.x2]="interiorLeft + 13.5" [attr.y2]="floor.y + floor.height - 11"
+                stroke="currentColor" stroke-width="1.4" [attr.opacity]="floor.canRemove ? 0.9 : 0.25" />
+        </g>
+
+        <g [class.cursor-pointer]="floor.canAdd" (click)="floor.canAdd && add(floor.id)">
+          <circle [attr.cx]="interiorRight - 10" [attr.cy]="floor.y + floor.height - 11" r="7"
+                  fill="currentColor" [attr.opacity]="floor.canAdd ? 0.16 : 0.05"
+                  stroke="currentColor" stroke-width="0.8" [attr.stroke-opacity]="floor.canAdd ? 0.7 : 0.2" />
+          <line [attr.x1]="interiorRight - 13.5" [attr.y1]="floor.y + floor.height - 11"
+                [attr.x2]="interiorRight - 6.5" [attr.y2]="floor.y + floor.height - 11"
+                stroke="currentColor" stroke-width="1.4" [attr.opacity]="floor.canAdd ? 0.9 : 0.25" />
+          <line [attr.x1]="interiorRight - 10" [attr.y1]="floor.y + floor.height - 14.5"
+                [attr.x2]="interiorRight - 10" [attr.y2]="floor.y + floor.height - 7.5"
+                stroke="currentColor" stroke-width="1.4" [attr.opacity]="floor.canAdd ? 0.9 : 0.25" />
+        </g>
+
+        <text [attr.x]="(interiorLeft + interiorRight) / 2" [attr.y]="floor.y + floor.height - 7.5"
+              text-anchor="middle" font-size="8.5" font-family="ui-monospace, monospace"
+              fill="currentColor" opacity="0.65">{{ floor.staff }}/{{ floor.capacity }}</text>
+      }
+
+      <!-- unbuilt: either a price you can pay, or the reason you cannot -->
+      @if (!floor.owned) {
+        @if (floor.affordable) {
+          <g class="cursor-pointer" (click)="buy(floor.definition)">
+            <rect [attr.x]="interiorLeft" [attr.y]="floor.midY - 9"
+                  [attr.width]="interiorRight - interiorLeft" height="18" rx="3"
+                  fill="currentColor" opacity="0.14" stroke="currentColor" stroke-width="1.2" />
+            <text [attr.x]="(interiorLeft + interiorRight) / 2" [attr.y]="floor.midY + 4"
+                  text-anchor="middle" font-size="9" font-weight="600" fill="currentColor">
+              Build — {{ money(floor.cost) }}
+            </text>
+          </g>
+        } @else if (!floor.isBedrock) {
+          <text [attr.x]="(interiorLeft + interiorRight) / 2"
+                [attr.y]="floor.isTunnel ? floor.y + 30 : floor.midY + 3"
+                text-anchor="middle" font-size="7.5" fill="currentColor" opacity="0.8">{{ floor.blockedBy }}</text>
+        }
+      }
+    </g>
+  }
+
+  <!-- roof line -->
+  <line [attr.x1]="buildingLeft - 6" [attr.y1]="layout().skyHeight"
+        [attr.x2]="buildingRight + 6" [attr.y2]="layout().skyHeight"
+        stroke="currentColor" stroke-width="2" />
+  <text [attr.x]="(buildingLeft + buildingRight) / 2" [attr.y]="layout().skyHeight - 9"
+        text-anchor="middle" font-size="8" letter-spacing="2"
+        fill="currentColor" opacity="0.45">OBSOLESCENCE, INC.</text>
+</svg>

@@ -605,3 +605,36 @@ correctly — it is the long goal, not the next purchase.
 **Consequence:** standing changes what is *offered*, cash changes what is *affordable*, and the UI
 distinguishes them: a floor moves from "needs standing 12" to "needs 38,000 in cash" as you earn
 reputation. That is the persistence model from D-020 made visible with no ledger and no cohorts.
+
+---
+
+## D-026 — The tower is drawn as an SVG cutaway, and that is not the renderer decision
+
+**Date:** 2026-07-27
+**Status:** Settled
+
+The building is a vertical cutaway in inline SVG: sky above, hatched earth below, a heavy pavement
+line at street level, the double-height showroom as the hinge, personnel and freight cores running
+the full height, a loading ramp down to B1, staff as small figures, parts as crates in the stores,
+and the subway drawn as a tunnel bored through B3.
+
+**Rationale:** it needs no dependency (I-013), inherits the site theme through `currentColor` so
+light and dark both work with no extra code, stays crisp at any size, and is exactly R8's "stylized
+modular 2D" at its cheapest honest level.
+
+**This is explicitly not Gate C.** The renderer question — Pixi, Phaser, a canvas at all — remains
+completely open, and nothing here commits to an answer. If the skeleton ever wants a sprite, it
+stops and Gate C starts.
+
+**Consequence:** `presentation/tower-layout.ts` holds the geometry as pure arithmetic, so the layout
+is testable headlessly and the drawing stays declarative. R3 survives this pivot better than any
+other report and its section is what got built.
+
+**Two things drawing it exposed that prose had not:**
+
+1. **Bedrock was being drawn as a tunnel**, which implied it could be cleared and bought. It is
+   where the building stops. It is now solid, quiet, and carries no price.
+2. **The showroom accepts staff and gives them nothing to do.** The tower makes that visible in a
+   way three sliders never did — figures stand in the window while the label reads "no job yet" and
+   the count says "3 on floors with no job". That is the most prominent floor in the building doing
+   nothing, and now it is impossible to miss.

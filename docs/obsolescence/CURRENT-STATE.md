@@ -1,7 +1,7 @@
 # Obsolescence, Inc. — Current State
 
 **Last updated:** 2026-07-26
-**Phase:** Gate A passed. **The tower demo is playable** — quarters on a building that grows.
+**Phase:** Gate A passed. **The tower is drawn and playable** — a cutaway you staff and expand.
 
 This file is rewritten at the end of every session. It describes the present, not the history.
 
@@ -9,10 +9,16 @@ This file is rewritten at the end of every session. It describes the present, no
 
 ## Where the project actually is
 
-**There is a playable tower at `/experimental/obsolescence`.** You place staff on floors, run a
-quarter against the clock, build a product from whatever you produced, then spend the cash and
-standing it earned on new floors. Offices above, manufacturing below, showroom at street level, and
-a subway tunnel under B3 you cannot afford for a long time.
+**There is a playable tower at `/experimental/obsolescence`, drawn as an SVG cutaway.** Sky above,
+hatched earth below, pavement at street level, the double-height showroom as the hinge, personnel
+and freight cores running the height, a ramp down to B1, staff as figures on floors, parts as crates
+in the stores, and the subway bored through B3.
+
+You place staff on floors, run a quarter against the clock, build a product from whatever you
+produced, then spend the cash and standing it earned on new floors.
+
+The SVG is **not** the Gate C renderer decision (D-026) — no dependency, theme-aware through
+`currentColor`, and it commits to nothing.
 
 Staff assignment is spatial (D-024): you put five people in the lab, and only if you built a lab.
 
