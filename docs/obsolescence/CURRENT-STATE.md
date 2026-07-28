@@ -1,11 +1,46 @@
 # Obsolescence, Inc. — Current State
 
-**Last updated:** 2026-07-26
-**Phase:** Gate A passed. **The tower is drawn and playable** — a cutaway you staff and expand.
+**Last updated:** 2026-07-28
+**Phase:** Foundation Milestone 1 complete. **The facility is playable** — rooms, qualified staff,
+autonomous jobs, needs, and diagnostics — alongside the earlier quarter race.
 
 This file is rewritten at the end of every session. It describes the present, not the history.
 
 ---
+
+## Read this first: the direction changed again on 2026-07-28
+
+R10 landed and materially changed the target. The game is now a **pausable real-time vertical
+facilities, staffing and production-management simulation**: you zone rooms into finite floor space,
+buy and position functional objects, hire staff with strict professions, ranks and specializations,
+and they claim and perform valid jobs autonomously while needs, walking, queues and layout push back.
+
+**The governing rule, verbatim from the directive:** *a scientist must not become a lawyer merely
+because Legal has an empty desk. Qualifications are categorical. Staff quality and specializations
+may improve valid work; they may not substitute for the wrong profession.*
+
+Priority order on any conflict: deterministic correctness → explainability → layout and
+qualifications → the existing product payoff → save safety → visual sophistication.
+
+Everything below about the quarter race and the ladder **still stands and still runs** — it is the
+"Campaign" tab. The facility is the "Facility" tab. They are bridged, not merged: see D-030.
+
+Start at [FOUNDATION-M1-RESULTS.md](FOUNDATION-M1-RESULTS.md), then [R10-ADOPTION.md](R10-ADOPTION.md).
+
+## What the facility is, as built
+
+Three professions (scientist, production operator, QA technician), four room types (research lab,
+production workshop, restroom, break room), ten stations, three needs (bladder, hunger, energy),
+24 cells per floor with both circulation cores reserved.
+
+Ten deterministic fixtures F01–F10 run headless via `devtools/scenario-runner.ts` and report R10's
+metrics. **All ten pass structurally.** No-thrash is 0% against a 5% ceiling. Nothing is tuned yet —
+the directive forbids tuning until every scenario passes structurally, and productive time currently
+runs high (83–90% vs a 50–65% band) precisely because elevators and materials are deferred.
+
+The interface answers all nine required diagnostic questions, each as a named function in
+`presentation/facility-view-model.ts` so coverage is checkable. Scenario loading is a drawer on the
+normal route with no query flags.
 
 ## Where the project actually is
 
@@ -59,17 +94,25 @@ Q1 is unfailable by design — one part, one grade, sixty seconds, everyone buil
 
 ## What Daniel needs to do
 
-Play the ladder from Q1 and see whether the ramp lands. The remaining honest fun signal is
-behavioural: opening it again, unprompted, days later.
+Open the **Facility** tab, load a fixture from the Scenarios drawer, hit Run, and click a worker.
+The question is whether watching people fail to do things — and being told exactly why — is
+interesting. F07 and F08 are the sharpest cases: F07 is a workshop full of scientists who will
+never touch the bench, F08 is one optics specialist that two rooms both want.
+
+The ladder in the Campaign tab is unchanged and still wants its play-through.
 
 ## Verification status
 
 | Command | Result |
 |---|---|
-| `npm run oi:arch` | passes across 21 files (sim 12, content 2, presentation 2, devtools 1, tests 4) |
+| `npm run oi:arch` | passes across 47 files (sim 26, content 6, presentation 6, devtools 2, tests 7) |
 | `npm run oi:arch:test` | 31/31 |
-| `npm run oi:sim` | purity gate clean, 49/49 |
-| `npm run verify` | lint and build clean, 9 static routes prerendered |
+| `npm run oi:sim` | purity gate clean, **105/105** |
+| `npx eslint src/app/games/obsolescence` | clean |
+| Angular AOT build | clean |
+
+**`tsc --noEmit` does not check Angular templates.** A template calling a nonexistent method
+type-checked clean and only failed at `ng serve`. For presentation code the AOT build is the gate.
 
 Lazy chunk 6.0 kB compressed against R8's 12 MiB budget.
 

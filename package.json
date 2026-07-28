@@ -20,6 +20,8 @@
     "oi:clean": "node -e \"require('fs').rmSync('dist/oi-sim',{recursive:true,force:true})\"",
     "oi:sim": "npm run oi:pure && npm run oi:clean && tsc -p tsconfig.sim-test.json && node --test \"dist/oi-sim/**/*.test.js\"",
     "oi:test": "npm run oi:arch && npm run oi:arch:test && npm run oi:sim",
+    "oi:scenarios": "npm run oi:clean && tsc -p tsconfig.sim-test.json && node -e \"const{runAllScenarios,formatMetrics}=require('./dist/oi-sim/devtools/scenario-runner.js');for(const m of runAllScenarios())console.log(formatMetrics(m))\"",
+    "oi:scenarios:json": "npm run oi:clean && tsc -p tsconfig.sim-test.json && node -e \"const{runAllScenarios,metricsAsJson}=require('./dist/oi-sim/devtools/scenario-runner.js');console.log(metricsAsJson(runAllScenarios()))\"",
     "push": "ng build --base-href /",
     "deploy:pages": "npm run push && angular-cli-ghpages --dir=dist/dnowinski/browser --cname=dnowinski.com",
     "serve:ssr:dnowinski": "node dist/dnowinski/server/server.mjs",

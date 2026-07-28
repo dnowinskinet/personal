@@ -76,12 +76,29 @@ Site-wide, all work must pass:
 npm run verify
 ```
 
-Obsolescence-specific commands do not exist yet. When they do, they will be named `oi:*` and
-documented here and in [ARCHITECTURE.md](ARCHITECTURE.md).
+Obsolescence-specific commands:
+
+```bash
+npm run oi:test            # boundaries + boundary-checker regressions + purity gate + sim tests
+npm run oi:pure            # purity gate alone: no DOM, no Node, no renderer inside sim/
+npm run oi:scenarios       # run the ten facility fixtures headless, one line each
+npm run oi:scenarios:json  # the same, machine-readable, for sweeps and regression diffs
+```
+
+**`tsc --noEmit` does not type-check Angular templates.** A template calling a method that does not
+exist passes `tsc` and only fails at `ng serve` / `npm run verify`. For any change touching
+`presentation/`, the AOT build is the gate — not the type-check.
+
+**Do not tune balance until every scenario passes structurally.** This is R10's rule and it has
+already earned its keep: a metric that looks wrong is usually a structural defect wearing a number.
+Three of the six defects found in Foundation Milestone 1 first presented as a suspicious statistic.
 
 ## Research base
 
-Nine research reports (R1–R9) are mirrored read-only into [research/](research/). They are finished
+Ten research reports (R1–R10) are mirrored read-only into [research/](research/). **R10 is the
+current direction** — it materially changed the target on 2026-07-28 to a facilities, staffing and
+production-management simulation. Read [R10-ADOPTION.md](R10-ADOPTION.md) for what was and was not
+adopted, and why. R1–R9 remain useful but predate the change. They are finished
 artifacts and should not be edited. R9 is self-declared **partial** — it was produced without R1–R8
 attached. Its gate ladder is still the backbone of the plan, but treat its cross-report claims as
 unverified until the synthesis pass reconciles them.

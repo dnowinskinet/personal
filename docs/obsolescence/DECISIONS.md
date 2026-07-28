@@ -638,3 +638,97 @@ other report and its section is what got built.
    way three sliders never did — figures stand in the window while the label reads "no job yet" and
    the count says "3 on floors with no job". That is the most prominent floor in the building doing
    nothing, and now it is impossible to miss.
+
+---
+
+## D-027 — Qualification is a hard gate, checked before scoring
+
+**Date:** 2026-07-28
+**Status:** Settled
+
+`checkEligibility()` runs before any job is scored. An ineligible worker never enters the candidate
+set, so no weight in the score table can outweigh a missing qualification.
+
+**Rationale:** R10 requires preconditions to filter rather than be outweighed, and the directive's
+governing rule is categorical — "staff quality and specializations may improve valid work; they may
+not substitute for the wrong profession." Implementing this as a large negative weight would have
+been simpler and would have been wrong: any sufficiently starved job queue eventually outbids a
+penalty. A filter cannot be outbid.
+
+**Consequence:** every eligibility failure must carry an exact, player-visible reason, because a
+hard gate that does not explain itself is indistinguishable from a bug. F07 is the demonstration:
+1200 ticks, zero output, `no-qualified-staff` every tick, naming the profession required.
+
+---
+
+## D-028 — Need decay is jittered per worker, from the seed
+
+**Date:** 2026-07-28
+**Status:** Settled
+
+Each worker's need decay is multiplied by a factor derived from `(seed, hash(staffId))`, stable for
+the life of the run.
+
+**Rationale:** without it the facility made no random draws at all, so the seed was inert — but the
+real problem was that identical workers decayed in perfect lockstep and hit the threshold on the
+same tick forever. That manufactures the synchronized-queue artifact the genre is known for and
+turns amenity sizing into a cliff rather than a curve.
+
+Derived rather than drawn per tick so a worker's metabolism does not flicker, and so the value
+survives save/load without being stored. Replays stay byte-identical (I-004, I-006).
+
+**Found by a test, not by the implementation.** The determinism test asserted that a different seed
+produces a different run; it did not.
+
+---
+
+## D-029 — Room fit-out scales output quality within a narrow band
+
+**Date:** 2026-07-28
+**Status:** Settled
+
+`roomQualityFactor()` maps room quality onto a 0.75×–1.25× multiplier on the quality of completed
+work, with diminishing returns per category and a hard cap.
+
+**Rationale:** the milestone requires room composition to affect productivity, and it did not —
+room quality was computed and used only for amenity choice. The band is deliberately narrow because
+if fit-out dominates, the qualification and staffing decisions the game is actually about stop
+mattering. The cap is R10's explicit anti-spam requirement: past it, more equipment buys nothing,
+so a cheap stack of identical objects is not a strategy.
+
+**Consequence:** part tier thresholds must be calibrated against the *reachable* quality range.
+They were first set against an assumed one, which silently made every part tier 1 and killed the
+tier system without failing anything.
+
+---
+
+## D-030 — The facility bridges to the product payoff through opaque output tags
+
+**Date:** 2026-07-28
+**Status:** Settled
+
+Stations carry an `outputTag: string | null`. `sim/facility` knows nothing about chassis, boards or
+tiers; `sim/quarter` knows nothing about rooms or staff; only `sim/bridge/product-adapter.ts` knows
+both.
+
+**Rationale:** the directive asks for "the smallest clean adapter", and the reason to keep it small
+is that the assemble-from-what-you-actually-made payoff is the part of the prototype worth
+preserving. One-way translation keeps either side replaceable.
+
+**Consequence:** output the product loop cannot use is counted as `unused` rather than dropped, so a
+workshop full of stations the payoff has no use for is visible instead of mysterious.
+
+---
+
+## D-031 — Display names travel on content, so `sim/` can write readable blockers
+
+**Date:** 2026-07-28
+**Status:** Settled
+
+`FacilityContent` carries `professionNames: ReadonlyMap<string, string>`.
+
+**Rationale:** the blocker built inside the tick read "needs a operator" while the same fact
+rendered correctly in the inspector, which had the catalogue in hand. `sim/` may not import
+`content/` (I-001), so the names have to arrive as data. A rule that is right but reads like a bug
+is not an explanation, and explainability is second only to determinism in this milestone's
+priority order.
