@@ -105,6 +105,14 @@ export interface RoomValidity {
 export interface FacilityContent {
   readonly roomTypes: readonly RoomTypeDefinition[];
   readonly objects: readonly ObjectDefinition[];
+  /**
+   * Profession id to display name.
+   *
+   * Carried on content rather than looked up, because a blocker that reads "needs a operator" is a
+   * worse explanation than one that reads "needs a Production Operator", and `sim/` may not import
+   * `content/` to find out.
+   */
+  readonly professionNames: ReadonlyMap<string, string>;
 }
 
 export function roomType(content: FacilityContent, typeId: string): RoomTypeDefinition | undefined {

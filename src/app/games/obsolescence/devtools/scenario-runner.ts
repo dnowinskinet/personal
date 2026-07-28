@@ -37,6 +37,12 @@ export interface ScenarioMetrics {
   /** Ticks staff spent queueing for an amenity, as a share of all needs time. */
   readonly amenityQueueShare: number;
   readonly averageAmenityQueueLength: number;
+  /** Mean ticks between joining an amenity queue and being served. */
+  readonly averageAmenityWait: number;
+  /** Mean ticks of a completed walk, whether to a station or an amenity. */
+  readonly averageTripLength: number;
+  /** Share of all staff-ticks spent held at a station that was not free. */
+  readonly stationWaitShare: number;
   /** Share of claimed jobs abandoned before reaching the first station. R10's no-thrash gate. */
   readonly abandonBeforeStation: number;
   readonly roomUtilization: number;
@@ -69,6 +75,12 @@ export function runScenario(scenario: Scenario, options: RunOptions = {}): Scena
   let queueSamples = 0;
   let claims = 0;
   let abandons = 0;
+  let trips = 0;
+  let tripTicks = 0;
+  let waits = 0;
+  let waitTicks = 0;
+  const queueEntered = new Map<string, number>();
+  const tripStarted = new Map<string, number>();
   const claimedButNotArrived = new Map<string, string>();
 
   for (let step = 0; step < scenario.ticks; step += 1) {
@@ -89,6 +101,30 @@ export function runScenario(scenario: Scenario, options: RunOptions = {}): Scena
       }
       if (worker.state === 'queue_for_amenity') {
         queueTicks += 1;
+        if (!queueEntered.has(worker.id)) {
+          queueEntered.set(worker.id, step);
+        }
+      } else {
+        const joined = queueEntered.get(worker.id);
+        if (joined !== undefined) {
+          waits += 1;
+          waitTicks += step - joined;
+          queueEntered.delete(worker.id);
+        }
+      }
+
+      const walking = worker.state === 'travel_to_job' || worker.state === 'travel_to_amenity';
+      if (walking) {
+        if (!tripStarted.has(worker.id)) {
+          tripStarted.set(worker.id, step);
+        }
+      } else {
+        const departed = tripStarted.get(worker.id);
+        if (departed !== undefined) {
+          trips += 1;
+          tripTicks += step - departed;
+          tripStarted.delete(worker.id);
+        }
       }
 
       // A claim that never reached its station counts as a thrash, unless a need or a topology
@@ -165,6 +201,9 @@ export function runScenario(scenario: Scenario, options: RunOptions = {}): Scena
       state.accounting.needs === 0 ? 0 : Math.round((queueTicks / state.accounting.needs) * 1000) / 1000,
     averageAmenityQueueLength:
       queueSamples === 0 ? 0 : Math.round((queueLengthSum / queueSamples) * 100) / 100,
+    averageAmenityWait: waits === 0 ? 0 : Math.round((waitTicks / waits) * 100) / 100,
+    averageTripLength: trips === 0 ? 0 : Math.round((tripTicks / trips) * 100) / 100,
+    stationWaitShare: Math.round(shares.waiting * 1000) / 1000,
     abandonBeforeStation: claims === 0 ? 0 : Math.round((abandons / claims) * 1000) / 1000,
     roomUtilization: Math.round(roomUtilization * 1000) / 1000,
     specialistUtilization: Math.round(specialistUtilization * 1000) / 1000,

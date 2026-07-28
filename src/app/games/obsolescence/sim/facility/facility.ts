@@ -232,7 +232,7 @@ function stepStaff(
   let nextJobs = jobs;
   let nextQueues = queues;
   let nextOutput = output;
-  let blockerValue: Blocker | null = null;
+  const blockerValue: Blocker | null = null;
   let scores: readonly ScoredJob[] = [];
 
   // --- 1. urgent needs pre-empt everything except an already-running recovery ---------------
@@ -560,7 +560,7 @@ function stepStaff(
     if (target === null) {
       continue;
     }
-    const eligibility = checkEligibility(current, target.object, target.room.id);
+    const eligibility = checkEligibility(current, target.object, target.room.id, content.professionNames);
     if (!eligibility.eligible) {
       if (sawIneligible === null) {
         sawIneligible = blocker(

@@ -272,4 +272,5 @@ export const ROOM_TYPES: readonly RoomTypeDefinition[] = [
 export const FACILITY_CONTENT: FacilityContent = {
   roomTypes: ROOM_TYPES,
   objects: OBJECTS,
+  professionNames: PROFESSION_NAMES,
 };

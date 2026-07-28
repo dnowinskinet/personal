@@ -10,8 +10,48 @@
               (click)="restartCampaign()">Restart</button>
     </div>
     <p class="text-xs opacity-70">{{ config().teaches }}</p>
+
+    <nav class="mt-1 flex gap-1" aria-label="View">
+      <button type="button" class="rounded border px-3 py-1 text-xs"
+              [class.border-current]="mode() !== 'facility'"
+              [class.border-current/30]="mode() === 'facility'"
+              [class.bg-current/10]="mode() !== 'facility'"
+              (click)="showCampaign()">Campaign</button>
+      <button type="button" class="rounded border px-3 py-1 text-xs"
+              [class.border-current]="mode() === 'facility'"
+              [class.border-current/30]="mode() !== 'facility'"
+              [class.bg-current/10]="mode() === 'facility'"
+              (click)="showFacility()">Facility</button>
+    </nav>
   </header>
 
+  @if (mode() === 'facility') {
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="rounded border border-current px-3 py-1 text-sm" (click)="toggleRun()">
+          {{ running() ? 'Pause' : 'Run' }}
+        </button>
+        @for (value of speeds; track value) {
+          <button type="button" class="rounded border px-2 py-1 text-xs"
+                  [class.border-current]="speed() === value"
+                  [class.border-current/30]="speed() !== value"
+                  (click)="setSpeed(value)">{{ value }}x</button>
+        }
+        <span class="text-xs opacity-70">
+          Zone rooms into the floors, then run the clock and watch who does what, and why not.
+        </span>
+      </div>
+
+      <facility-view [state]="facility()"
+                     (build)="onBuildRoom($event)"
+                     (demolish)="onDemolishRoom($event)"
+                     (moveRoom)="onMoveRoom($event)"
+                     (loadScenario)="onLoadScenario($event)"
+                     (undo)="onUndoFacility()" />
+    </div>
+  }
+
+  @if (mode() !== 'facility') {
   <div class="grid gap-4 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
 
     <!-- THE TOWER -------------------------------------------------------- -->
@@ -207,4 +247,6 @@
       }
     </div>
   </div>
+  }
+
 </section>

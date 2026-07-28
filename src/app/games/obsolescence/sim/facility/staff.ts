@@ -137,6 +137,8 @@ export function checkEligibility(
   professionNames: ReadonlyMap<string, string> = new Map()
 ): Eligibility {
   const label = (id: string): string => professionNames.get(id) ?? id;
+  // "a operator" reads as a bug even when the rule behind it is right.
+  const article = (word: string): string => (/^[aeiou]/i.test(word) ? 'an' : 'a');
 
   if (object.operatorProfessions.length === 0) {
     return {
@@ -151,7 +153,7 @@ export function checkEligibility(
     return {
       eligible: false,
       failure: 'wrong-profession',
-      reason: `${staff.name} is a ${label(staff.profession)}. ${object.name} needs a ${allowed}.`,
+      reason: `${staff.name} is ${article(label(staff.profession))} ${label(staff.profession)}. ${object.name} needs ${article(allowed)} ${allowed}.`,
     };
   }
 

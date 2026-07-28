@@ -20,10 +20,18 @@ import {
 } from '@angular/core';
 
 import { CAMPAIGN_START, FLOORS } from '../content/floors';
+import { FACILITY_CONFIG } from '../content/facility/balance';
+import { FACILITY_CONTENT } from '../content/facility/catalogue';
+import { SCENARIOS, scenarioById } from '../content/facility/scenarios';
 import { LADDER } from '../content/quarters';
 import {
   advanceBy,
+  applyConstruction,
   assemblyOptions,
+  buildTopology,
+  createFacility,
+  tickFacility,
+  DEFAULT_TRAVEL_COSTS,
   bookQuarter,
   buyFloor,
   deriveAllocation,
@@ -37,11 +45,14 @@ import {
   startCampaign,
   startQuarter,
   totalStaffPlaced,
+  type FacilityState,
   type FloorDefinition,
   type ProductionFocus,
+  type Room,
   type QuarterOutcome,
   type QuarterState,
 } from '../sim/index';
+import { FacilityViewComponent, type RoomDraft } from './facility-view';
 import { TowerViewComponent } from './tower-view';
 import {
   inEndgame,
@@ -55,12 +66,12 @@ import {
 /** Real milliseconds between simulation steps. Matches the 10 Hz authoritative tick (I-005). */
 const STEP_MS = 100;
 
-type Mode = 'tower' | 'quarter';
+type Mode = 'tower' | 'quarter' | 'facility';
 
 @Component({
   selector: 'obsolescence-game',
   standalone: true,
-  imports: [CommonModule, TowerViewComponent],
+  imports: [CommonModule, FacilityViewComponent, TowerViewComponent],
   templateUrl: './obsolescence-game.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -127,6 +138,78 @@ export class ObsolescenceGameComponent implements OnDestroy {
     ...this.config().partKinds,
   ]);
 
+  // --- facility -----------------------------------------------------------
+
+  /**
+   * The facility runs on the same 10 Hz tick as the quarter, driven by the same play/pause.
+   *
+   * It starts on the baseline fixture rather than an empty building, because an empty facility has
+   * nothing to explain and the whole point of this view is the explanations.
+   */
+  readonly facility = signal<FacilityState>(facilityFrom(SCENARIOS[0].id));
+
+  /** Room layouts before each edit, so construction mistakes are recoverable. */
+  private readonly facilityHistory = signal<readonly (readonly Room[])[]>([]);
+
+  onBuildRoom(draft: RoomDraft): void {
+    const room: Room = {
+      id: `${draft.typeId}-${this.facility().rooms.length + 1}`,
+      typeId: draft.typeId,
+      level: draft.level,
+      span: { from: draft.from, to: draft.to },
+      objects: draft.objects,
+    };
+    this.editFacility((rooms) => [...rooms, room]);
+  }
+
+  onDemolishRoom(id: string): void {
+    this.editFacility((rooms) => rooms.filter((room) => room.id !== id));
+  }
+
+  onMoveRoom(event: { id: string; from: number; to: number; level: number }): void {
+    this.editFacility((rooms) =>
+      rooms.map((room) =>
+        room.id === event.id ? { ...room, span: { from: event.from, to: event.to } } : room
+      )
+    );
+  }
+
+  showFacility(): void {
+    this.pause();
+    this.mode.set('facility');
+  }
+
+  showCampaign(): void {
+    this.pause();
+    this.mode.set(this.state().phase === 'running' && this.running() ? 'quarter' : 'tower');
+  }
+
+  onLoadScenario(id: string): void {
+    this.pause();
+    this.facilityHistory.set([]);
+    this.facility.set(facilityFrom(id));
+  }
+
+  onUndoFacility(): void {
+    const history = this.facilityHistory();
+    const previous = history[history.length - 1];
+    if (previous === undefined) {
+      return;
+    }
+    this.facilityHistory.set(history.slice(0, -1));
+    this.facility.update((state) => applyConstruction(state, previous));
+  }
+
+  /**
+   * Applies a construction edit through `applyConstruction`, which is what invalidates topology and
+   * releases reservations. The view never writes rooms directly.
+   */
+  private editFacility(change: (rooms: readonly Room[]) => readonly Room[]): void {
+    const state = this.facility();
+    this.facilityHistory.update((history) => [...history.slice(-19), state.rooms]);
+    this.facility.set(applyConstruction(state, change(state.rooms)));
+  }
+
   ngOnDestroy(): void {
     this.stopTimer();
   }
@@ -186,7 +269,7 @@ export class ObsolescenceGameComponent implements OnDestroy {
       this.pause();
       return;
     }
-    if (this.atDeadline()) {
+    if (this.mode() !== 'facility' && this.atDeadline()) {
       return;
     }
     this.running.set(true);
@@ -238,6 +321,14 @@ export class ObsolescenceGameComponent implements OnDestroy {
   }
 
   private step(): void {
+    if (this.mode() === 'facility') {
+      let next = this.facility();
+      for (let i = 0; i < this.speed(); i += 1) {
+        next = tickFacility(next, FACILITY_CONTENT, FACILITY_CONFIG);
+      }
+      this.facility.set(next);
+      return;
+    }
     const next = advanceBy(this.state(), this.config(), this.speed());
     this.state.set(next);
     if (next.phase !== 'running') {
@@ -277,4 +368,15 @@ export class ObsolescenceGameComponent implements OnDestroy {
   money(value: number): string {
     return value.toLocaleString();
   }
+}
+
+/** Builds a facility from a named fixture. Falls back to the baseline if the id is unknown. */
+function facilityFrom(id: string): FacilityState {
+  const scenario = scenarioById(id) ?? SCENARIOS[0];
+  return createFacility(
+    scenario.rooms,
+    scenario.staff,
+    buildTopology(scenario.levels, DEFAULT_TRAVEL_COSTS),
+    scenario.seed
+  );
 }
