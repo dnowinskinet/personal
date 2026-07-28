@@ -36,6 +36,13 @@ export interface ObjectDefinition {
   readonly requiredSpecialization: string | null;
   /** What kind of work this station publishes. */
   readonly jobKind: string | null;
+  /**
+   * What completed work from this station is called downstream.
+   *
+   * Deliberately an opaque string: `sim/facility` must not know what a chassis is. The product
+   * adapter maps tags onto the quarter's part kinds, so a new station is a content change.
+   */
+  readonly outputTag: string | null;
   /** How many workers can use it at once. Exclusive stations use 1. */
   readonly slots: number;
   /** For amenities: which need it restores, and how much per tick of use. */
@@ -238,6 +245,22 @@ export function roomQuality(room: Room, content: FacilityContent): number {
   }
   // Mild diversity bonus, so a varied room beats a stacked one at equal cost.
   return Math.round(total + (byCategory.size > 1 ? byCategory.size * 2 : 0));
+}
+
+/**
+ * Room quality as a multiplier on the work done in it.
+ *
+ * A bare room that only just satisfies its requirements sits near 1.0; a well-equipped one tops out
+ * around 1.25. Deliberately a narrow band: R10 warns that if fit-out dominates, the qualification
+ * and staffing decisions the game is actually about stop mattering.
+ */
+export const ROOM_QUALITY_REFERENCE = 8;
+export const ROOM_QUALITY_MAX_BONUS = 0.25;
+
+export function roomQualityFactor(room: Room, content: FacilityContent): number {
+  const quality = roomQuality(room, content);
+  const above = (quality - ROOM_QUALITY_REFERENCE) / ROOM_QUALITY_REFERENCE;
+  return 1 + Math.max(-ROOM_QUALITY_MAX_BONUS, Math.min(ROOM_QUALITY_MAX_BONUS, above * 0.5));
 }
 
 /** Stations in a room, as (objectId, index) pairs so repeated objects stay individually addressable. */

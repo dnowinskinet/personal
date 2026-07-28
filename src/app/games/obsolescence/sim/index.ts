@@ -36,3 +36,4 @@ export { deserialize, run, serialize, verifyReplay, type RunOptions } from './ke
 export * from './quarter';
 export * from './building';
 export * from './facility';
+export * from './bridge/product-adapter';

@@ -243,17 +243,18 @@ export const SCENARIOS: readonly Scenario[] = [
     levels: LEVELS,
     rooms: [
       LAB('lab-a', 3, 8, ['lab-bench', 'lab-bench']),
-      SHOP('shop-a', 3, 10, ['assembly-bench', 'assembly-bench', 'qa-station']),
+      SHOP('shop-a', 3, 12, ['assembly-bench', 'board-line', 'cell-line', 'qa-station']),
       WC('wc-a', 1, 10, 11),
       BREAK('br-a', 1, 13, 17),
-      WC('wc-b', -1, 12, 13),
-      BREAK('br-b', -1, 15, 19),
+      WC('wc-b', -1, 14, 15),
+      BREAK('br-b', -1, 17, 21),
     ],
     staff: [
       person('scientist', 'regular', { id: 's001', level: 1, x: 4 }),
       person('operator', 'regular', { id: 's002', level: -1, x: 4 }),
-      person('operator', 'junior', { id: 's003', level: -1, x: 5 }),
+      person('operator', 'senior', { id: 's003', specializations: ['precision-assembly'], level: -1, x: 5 }),
       person('qa_technician', 'regular', { id: 's004', level: -1, x: 6 }),
+      person('operator', 'junior', { id: 's005', level: -1, x: 7 }),
     ],
   },
 ];

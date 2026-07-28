@@ -49,6 +49,7 @@ import {
   objectDefinition,
   roomAmenities,
   roomQuality,
+  roomQualityFactor,
   roomStations,
   stationAccessCell,
   validateRoom,
@@ -87,7 +88,7 @@ export interface FacilityConfig {
 export interface FacilityOutput {
   readonly researchPoints: number;
   /** Completed parts, tagged by the job kind that made them and the quality achieved. */
-  readonly parts: readonly { kind: string; quality: number; tick: number }[];
+  readonly parts: readonly { kind: string; tag: string | null; quality: number; tick: number }[];
 }
 
 /** Time accounting, per R10's required metrics. */
@@ -506,13 +507,18 @@ function stepStaff(
     const progress = current.progressTicks + speed;
 
     if (progress >= held.workTicks) {
-      const quality = workQuality(current, config.rankMultiplier);
+      const station = stationObject(state, content, held.stationId);
+      const producedTag = station?.object.outputTag ?? null;
+      // Room fit-out modulates the result, so layout is a productivity decision and not just decor.
+      const quality =
+        workQuality(current, config.rankMultiplier) *
+        (station === null ? 1 : roomQualityFactor(station.room, content));
       nextOutput =
         held.kind === 'research'
           ? { ...nextOutput, researchPoints: nextOutput.researchPoints + quality }
           : {
               ...nextOutput,
-              parts: [...nextOutput.parts, { kind: held.kind, quality, tick }],
+              parts: [...nextOutput.parts, { kind: held.kind, tag: producedTag, quality, tick }],
             };
       nextJobs = removeJob(nextJobs, held.id);
       const recent = [held.roomId, ...current.recentRoomIds].slice(0, config.recentRoomMemory);
