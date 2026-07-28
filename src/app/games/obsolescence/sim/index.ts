@@ -35,3 +35,4 @@ export { advanceTick, applyCommand, reset } from './reduce';
 export { deserialize, run, serialize, verifyReplay, type RunOptions } from './kernel';
 export * from './quarter';
 export * from './building';
+export * from './facility';

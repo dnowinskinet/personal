@@ -16,3 +16,6 @@ export {
   Q5_THE_REAL_THING,
 } from './quarters';
 export { CAMPAIGN_START, FLOORS } from './floors';
+export { FACILITY_CONFIG, HEALTHY_BANDS, JOB_WEIGHTS, DEFERRED_PRIORS, NO_THRASH_THRESHOLD } from './facility/balance';
+export { FACILITY_CONTENT, OBJECTS, PROFESSIONS, PROFESSION_NAMES, ROOM_TYPES } from './facility/catalogue';
+export { SCENARIOS, scenarioById, type Scenario } from './facility/scenarios';
