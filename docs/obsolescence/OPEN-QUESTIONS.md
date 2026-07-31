@@ -25,6 +25,23 @@ the repo. Daniel is retrieving them.
 When they arrive, they belong in `research/mockups/` with a note per file recording viewport size,
 device target, and intended interaction — R9 asks for exactly that metadata.
 
+**Partially superseded 2026-07-30:** the visual-canon directive fixed the structural composition
+(stack, ramp, dock, bays — see [VISUAL-CANON-NOTES.md](VISUAL-CANON-NOTES.md) and D-032), and the
+facility scene implements it. The concept images shown alongside that directive were never
+committed; if they are to be canon *artifacts* rather than inspiration, they still belong in
+`research/mockups/` with the metadata above.
+
+### Q-008 — Should the floor's bay grain be coarser than one simulation cell?
+
+**Blocks:** nothing yet; revisit after Daniel plays the canonical tower.
+
+The canon sketches "an invisible finite number of segments like 7 or 10" per floor. The simulation
+zonable strip is 20 cells, and the tower presents those cells as the bays, because fixture rooms
+begin and end on arbitrary cells — a coarser visual chunk would lie about where walls can go.
+Re-chunking means changing simulation geometry (`FLOOR_WIDTH`, room min/max widths, travel costs,
+every fixture span), so it is a balance decision to make from play, not a renderer setting. If 20
+feels too granular in the hand, decide the target count first and re-derive the fixtures once.
+
 ---
 
 ## To be resolved by work, not by decision

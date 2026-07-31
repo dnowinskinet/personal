@@ -30,3 +30,17 @@
     margin-block: var(--grift-nav-clearance) 1rem;
   }
 }
+
+/* Obsolescence, Inc. draws a fixed-width building cutaway; give it the wide shell so the
+ * tower, not the margins, dominates the viewport. Same pattern as the GriftOS shell above. */
+.site-main--obsolescence {
+  max-width: none;
+  width: min(1500px, calc(100vw - 48px));
+  padding-inline: 0;
+}
+
+@media (max-width: 48rem) {
+  .site-main--obsolescence {
+    width: calc(100vw - 24px);
+  }
+}

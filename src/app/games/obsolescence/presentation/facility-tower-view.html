@@ -1,0 +1,497 @@
+<svg class="oit-scene"
+     [attr.viewBox]="viewBox()"
+     preserveAspectRatio="xMidYMin meet"
+     role="img"
+     aria-label="The facility, drawn as a building cutaway. Offices above, showroom at street level, loading dock and basements below."
+     (mouseleave)="onCellLeave()">
+
+  <defs>
+    <linearGradient id="oit-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a1424"/>
+      <stop offset="0.7" stop-color="#14233c"/>
+      <stop offset="1" stop-color="#1d2f4c"/>
+    </linearGradient>
+    <radialGradient id="oit-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd98a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffd98a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="oit-citywin" width="14" height="18" patternUnits="userSpaceOnUse">
+      <rect x="3" y="4" width="4" height="5" fill="#f5c86e" opacity="0.32"/>
+      <rect x="9" y="11" width="3" height="4" fill="#f5c86e" opacity="0.18"/>
+    </pattern>
+    <pattern id="oit-earthtex" width="26" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0 14 l8 -3 l9 4 l9 -2" stroke="#33271c" stroke-width="1.4" fill="none" opacity="0.5"/>
+      <circle cx="20" cy="5" r="1.6" fill="#3a2d20" opacity="0.6"/>
+    </pattern>
+    <pattern id="oit-slats" width="8" height="7" patternUnits="userSpaceOnUse">
+      <rect width="8" height="7" fill="#4d565e"/>
+      <line x1="0" y1="6.5" x2="8" y2="6.5" stroke="#333b42" stroke-width="1.4"/>
+    </pattern>
+    <pattern id="oit-nobuild" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="#8a93a3" stroke-width="1.6" opacity="0.5"/>
+    </pattern>
+    <pattern id="oit-chevron" width="16" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0 8 L8 0 L16 8" stroke="#d9a72c" stroke-width="2.6" fill="none"/>
+    </pattern>
+  </defs>
+
+  <!-- ======================= backdrop ======================= -->
+
+  <rect x="0" y="0" [attr.width]="layout().width" [attr.height]="layout().groundY" fill="url(#oit-sky)"/>
+
+  <g fill="#cfe0ff" opacity="0.7">
+    <circle cx="120" cy="38" r="1.3"/><circle cx="310" cy="66" r="1"/>
+    <circle cx="472" cy="30" r="1.2"/><circle cx="640" cy="52" r="1"/>
+    <circle cx="808" cy="26" r="1.3"/><circle cx="954" cy="58" r="1"/>
+    <circle cx="1100" cy="34" r="1.2"/><circle cx="1188" cy="72" r="1"/>
+    <circle cx="220" cy="90" r="1"/><circle cx="1020" cy="96" r="1.1"/>
+  </g>
+  <circle fill="#e8ecf4" opacity="0.9" cx="1082" cy="56" r="15"/>
+  <circle fill="#0e1a2e" opacity="0.85" cx="1076" cy="51" r="13"/>
+
+  @for (block of city(); track block.x) {
+    <g>
+      <rect fill="#16243b" [attr.x]="block.x" [attr.y]="layout().groundY - block.height"
+            [attr.width]="block.width" [attr.height]="block.height"/>
+      <rect [attr.x]="block.x" [attr.y]="layout().groundY - block.height"
+            [attr.width]="block.width" [attr.height]="block.height" fill="url(#oit-citywin)"/>
+    </g>
+  }
+
+  <!-- ======================= earth ======================= -->
+
+  <rect fill="#26190f" x="0" [attr.y]="layout().groundY"
+        [attr.width]="layout().width" [attr.height]="layout().height - layout().groundY"/>
+  <rect x="0" [attr.y]="layout().groundY" [attr.width]="layout().width"
+        [attr.height]="layout().height - layout().groundY" fill="url(#oit-earthtex)"/>
+  <rect fill="#170f09" x="0" [attr.y]="layout().deepestY + 18"
+        [attr.width]="layout().width" [attr.height]="layout().height - layout().deepestY - 18"/>
+
+  <!-- ======================= ramp cut and apron ======================= -->
+
+  <polygon fill="#131c2b"
+           [attr.points]="rampTopX + ',' + layout().groundY + ' ' + layout().apron.left + ',' + layout().apron.y + ' ' + buildingLeft + ',' + layout().apron.y + ' ' + buildingLeft + ',' + layout().groundY"/>
+  <line stroke="#3f4855" stroke-width="7"
+        [attr.x1]="rampTopX" [attr.y1]="layout().groundY"
+        [attr.x2]="layout().apron.left" [attr.y2]="layout().apron.y"/>
+  <line stroke="#454d5c" stroke-width="7"
+        [attr.x1]="layout().apron.left" [attr.y1]="layout().apron.y"
+        [attr.x2]="buildingLeft" [attr.y2]="layout().apron.y"/>
+  <!-- retaining wall where the ramp leaves the street -->
+  <rect fill="#3f464d" [attr.x]="rampTopX - 6" [attr.y]="layout().groundY - 4"
+        width="6" height="10"/>
+
+  <!-- the truck, backed against the loading-dock wall -->
+  <g [attr.transform]="'translate(' + layout().apron.left + ',' + layout().apron.y + ')'">
+    <rect fill="#2c3a50" stroke="#1d2836" stroke-width="1.5" x="34" y="-52" width="118" height="46" rx="2"/>
+    <rect fill="#35455e" stroke="#1d2836" stroke-width="1.5" x="8" y="-30" width="30" height="24" rx="3"/>
+    <rect fill="#b7d3de" x="12" y="-27" width="10" height="9" rx="1.5"/>
+    <g fill="#14181e" stroke="#3c4450" stroke-width="2">
+      <circle cx="24" cy="-6" r="7"/>
+      <circle cx="52" cy="-6" r="7"/>
+      <circle cx="132" cy="-6" r="7"/>
+    </g>
+    <text class="oit-truck-text" x="93" y="-27" text-anchor="middle">OBSOLESCENCE, INC.</text>
+    <rect fill="#4a5c7a" x="34" y="-16" width="118" height="2.4"/>
+  </g>
+
+  <!-- ======================= the building ======================= -->
+
+  <!-- shell: brick above grade, concrete below -->
+  <rect fill="#4c3a33" [attr.x]="buildingLeft" [attr.y]="skyH"
+        width="10" [attr.height]="layout().groundY - skyH"/>
+  <rect fill="#4c3a33" [attr.x]="buildingRight - 10" [attr.y]="skyH"
+        width="10" [attr.height]="layout().groundY - skyH"/>
+  <rect fill="#4f555b" [attr.x]="buildingLeft" [attr.y]="layout().groundY"
+        width="10" [attr.height]="layout().deepestY - layout().groundY"/>
+  <rect fill="#4f555b" [attr.x]="buildingRight - 10" [attr.y]="layout().groundY"
+        width="10" [attr.height]="layout().deepestY - layout().groundY"/>
+
+  <!-- parapet and roof furniture -->
+  <rect fill="#372c26" [attr.x]="buildingLeft" [attr.y]="skyH"
+        [attr.width]="buildingRight - buildingLeft" [attr.height]="roofT"/>
+  <g fill="#3f464d">
+    <rect [attr.x]="buildingLeft + 96" [attr.y]="skyH - 26" width="4" height="26"/>
+    <rect [attr.x]="buildingLeft + 128" [attr.y]="skyH - 26" width="4" height="26"/>
+    <rect fill="#55402f" [attr.x]="buildingLeft + 86" [attr.y]="skyH - 52" width="56" height="30" rx="4"/>
+    <polygon fill="#55402f" [attr.points]="(buildingLeft + 86) + ',' + (skyH - 52) + ' ' + (buildingLeft + 114) + ',' + (skyH - 64) + ' ' + (buildingLeft + 142) + ',' + (skyH - 52)"/>
+    <rect [attr.x]="buildingRight - 150" [attr.y]="skyH - 14" width="26" height="14" rx="2"/>
+    <rect [attr.x]="buildingRight - 110" [attr.y]="skyH - 10" width="18" height="10" rx="2"/>
+    <line stroke="#5b646e" stroke-width="2" [attr.x1]="buildingRight - 46" [attr.y1]="skyH" [attr.x2]="buildingRight - 46" [attr.y2]="skyH - 40"/>
+    <circle fill="#e2483d" [attr.cx]="buildingRight - 46" [attr.cy]="skyH - 42" r="2"/>
+  </g>
+
+  <!-- stories -->
+  @for (story of stories(); track trackStory($index, story)) {
+    <g>
+      <!-- slab above the interior -->
+      <rect class="oit-slab" [attr.x]="buildingLeft" [attr.y]="story.slabY"
+            [attr.width]="buildingRight - buildingLeft" [attr.height]="slabT"/>
+      <line class="oit-slab-edge" [attr.x1]="buildingLeft" [attr.y1]="story.slabY"
+            [attr.x2]="buildingRight" [attr.y2]="story.slabY"/>
+
+      <!-- interior -->
+      <rect [attr.class]="'oit-interior oit-interior--' + story.kind"
+            [attr.x]="interiorLeft" [attr.y]="story.y"
+            [attr.width]="interiorRight - interiorLeft" [attr.height]="story.h"/>
+
+      <!-- showroom set dressing -->
+      @if (story.isShowroom) {
+        <rect fill="#cfe2ea" opacity="0.34" [attr.x]="freightCore.left + freightCore.width" [attr.y]="story.y + 30"
+              [attr.width]="stairCore.left - freightCore.left - freightCore.width" [attr.height]="story.h - 30"/>
+        @for (mx of story.mullions; track mx) {
+          <line stroke="#7e6f57" stroke-width="2.4" opacity="0.8" [attr.x1]="mx" [attr.y1]="story.y + 30" [attr.x2]="mx" [attr.y2]="story.floorY"/>
+        }
+        <rect fill="#241c15" [attr.x]="freightCore.left + freightCore.width" [attr.y]="story.y + 4"
+              [attr.width]="stairCore.left - freightCore.left - freightCore.width" [attr.height]="22" rx="2"/>
+        <text class="oit-sign" [attr.x]="(interiorLeft + interiorRight) / 2" [attr.y]="story.y + 19" text-anchor="middle">OBSOLESCENCE, INC.</text>
+        @if (entranceX() !== null) {
+          <g [attr.transform]="'translate(' + entranceX() + ',' + story.floorY + ')'">
+            <rect x="-22" y="-46" width="44" height="46" rx="1.5" fill="#3d2f26"/>
+            <rect x="-19" y="-43" width="18" height="43" fill="#b7d3de" opacity="0.9"/>
+            <rect x="1" y="-43" width="18" height="43" fill="#b7d3de" opacity="0.9"/>
+            <circle cx="-5" cy="-22" r="1.4" fill="#3d2f26"/>
+            <circle cx="5" cy="-22" r="1.4" fill="#3d2f26"/>
+          </g>
+        }
+        @for (plinth of plinths(); track plinth.key) {
+          <g [attr.transform]="'translate(' + plinth.x + ',' + story.floorY + ')'">
+            <rect x="-13" y="-22" width="26" height="22" rx="1.5" fill="#cbbb98"/>
+            <rect x="-8" y="-32" width="16" height="10" rx="1.5" fill="#6f7f8a"/>
+            <circle cx="0" cy="-40" r="6" fill="#ffd98a" opacity="0.28"/>
+          </g>
+        }
+      }
+
+      <!-- dock set dressing -->
+      @if (story.isDock) {
+        <rect fill="url(#oit-chevron)" opacity="0.75" [attr.x]="interiorLeft" [attr.y]="story.floorY - 7"
+              [attr.width]="52" height="7"/>
+        <rect [attr.x]="buildingLeft - 2" [attr.y]="story.floorY - 58"
+              width="14" height="58" fill="url(#oit-slats)"/>
+        <rect fill="#3f464d" [attr.x]="buildingLeft - 3" [attr.y]="story.floorY - 60"
+              width="16" height="4"/>
+      }
+
+      <!-- utility pipes along basement ceilings -->
+      @if (story.pipes) {
+        <line stroke="#575e66" stroke-width="3.4" [attr.x1]="freightCore.left + freightCore.width + 6" [attr.y1]="story.y + 7"
+              [attr.x2]="stairCore.left - 6" [attr.y2]="story.y + 7"/>
+        @for (px of story.pipeJoints; track px) {
+          <circle fill="#6f7f8a" stroke="#40474e" stroke-width="1.2" [attr.cx]="px" [attr.cy]="story.y + 7" r="2.6"/>
+        }
+      }
+
+      <!-- ceiling lights -->
+      @for (lx of story.lights; track lx) {
+        <g>
+          <circle [attr.cx]="lx" [attr.cy]="story.y + 26" r="24" fill="url(#oit-glow)"/>
+          <rect fill="#ffe4a5" [attr.x]="lx - 7" [attr.y]="story.y + 2" width="14" height="4" rx="1"/>
+        </g>
+      }
+
+      <!-- freight core (left edge) -->
+      <g>
+        <rect class="oit-freight" [attr.x]="freightCore.left" [attr.y]="story.y"
+              [attr.width]="freightCore.width" [attr.height]="story.h"/>
+        @if (story.isDock) {
+          <rect class="oit-freight-open" [attr.x]="freightCore.left + 6" [attr.y]="story.y + 12"
+                [attr.width]="freightCore.width - 12" [attr.height]="story.h - 12"/>
+        } @else {
+          <line class="oit-freight-brace" [attr.x1]="freightCore.left + 5" [attr.y1]="story.y + 6"
+                [attr.x2]="freightCore.left + freightCore.width - 5" [attr.y2]="story.floorY - 6"/>
+          <line class="oit-freight-brace" [attr.x1]="freightCore.left + freightCore.width - 5" [attr.y1]="story.y + 6"
+                [attr.x2]="freightCore.left + 5" [attr.y2]="story.floorY - 6"/>
+        }
+        <line class="oit-core-divider" [attr.x1]="freightCore.left + freightCore.width" [attr.y1]="story.y"
+              [attr.x2]="freightCore.left + freightCore.width" [attr.y2]="story.floorY"/>
+      </g>
+
+      <!-- stair core (right edge) -->
+      <g>
+        <rect class="oit-staircore" [attr.x]="stairCore.left" [attr.y]="story.y"
+              [attr.width]="stairCore.width" [attr.height]="story.h"/>
+        <line class="oit-core-divider" [attr.x1]="stairCore.left" [attr.y1]="story.y"
+              [attr.x2]="stairCore.left" [attr.y2]="story.floorY"/>
+        <line class="oit-stair-stringer" [attr.x1]="story.stair.x1" [attr.y1]="story.stair.y1"
+              [attr.x2]="story.stair.x2" [attr.y2]="story.stair.y2"/>
+        @for (step of story.stair.steps; track step.x) {
+          <rect class="oit-stair-step" [attr.x]="step.x - 4" [attr.y]="step.y - 2" width="8" height="2.6" rx="0.8"/>
+        }
+      </g>
+
+      <!-- level label chip -->
+      <g class="oit-chip">
+        <rect x="8" [attr.y]="story.y + 8" width="128" height="20" rx="3"/>
+        <text x="16" [attr.y]="story.y + 22">{{ story.label.toUpperCase() }}</text>
+      </g>
+    </g>
+  }
+
+  <!-- foundation under the deepest story -->
+  <rect class="oit-slab" [attr.x]="buildingLeft" [attr.y]="layout().deepestY - slabT"
+        [attr.width]="buildingRight - buildingLeft" [attr.height]="slabT"/>
+
+  <!-- ======================= rooms ======================= -->
+
+  @for (room of rooms(); track trackRoom($index, room)) {
+    <g [attr.class]="'oit-room ' + room.typeClass"
+       [class.oit-room--invalid]="!room.valid"
+       [class.oit-room--selected]="room.selected">
+      <title>{{ room.title }}</title>
+      <rect class="oit-room-fill" [attr.x]="room.x" [attr.y]="room.y"
+            [attr.width]="room.w" [attr.height]="room.h"/>
+      <!-- partition walls -->
+      <rect class="oit-room-wall" [attr.x]="room.x" [attr.y]="room.y" width="4" [attr.height]="room.h"/>
+      <rect class="oit-room-wall" [attr.x]="room.x + room.w - 4" [attr.y]="room.y" width="4" [attr.height]="room.h"/>
+      <!-- door: generated from the span, on the corridor side of the room -->
+      <g class="oit-door" [attr.transform]="'translate(' + room.doorX + ',' + room.floorY + ')'">
+        <rect x="0" y="-38" width="26" height="38" rx="1.5" class="oit-door-frame"/>
+        <rect x="2.5" y="-35.5" width="21" height="35.5" class="oit-door-leaf"/>
+        <circle cx="19" cy="-18" r="1.5" class="oit-door-knob"/>
+      </g>
+      <!-- equipment -->
+      @for (item of room.equipment; track trackEquipment($index, item)) {
+        <g class="oit-eq" [attr.transform]="'translate(' + item.x + ',' + room.floorY + ')'"
+           [class.oit-eq--active]="item.occupied">
+          <title>{{ item.title }}</title>
+          @switch (item.objectId) {
+            @case ('lab-bench') {
+              <rect class="oit-eq-frame" x="6" y="-24" width="4" height="24"/>
+              <rect class="oit-eq-frame" [attr.x]="item.w - 10" y="-24" width="4" height="24"/>
+              <rect class="oit-eq-top" x="3" y="-28" [attr.width]="item.w - 6" height="4.5" rx="1"/>
+              <path class="oit-eq-flask" d="M14 -28 h12 l-3.5 -9 v-4 h-5 v4 z"/>
+              <rect class="oit-eq-vial" x="40" y="-40" width="4" height="12" rx="1.5"/>
+              <rect class="oit-eq-vial" x="47" y="-37" width="4" height="9" rx="1.5"/>
+              <rect class="oit-eq-shelfline" x="8" y="-14" [attr.width]="item.w - 16" height="2"/>
+            }
+            @case ('optics-rig') {
+              <rect class="oit-eq-frame" x="8" y="-22" width="5" height="22"/>
+              <rect class="oit-eq-body" x="4" y="-30" [attr.width]="item.w - 40" height="9" rx="2"/>
+              <line class="oit-eq-tube" [attr.x1]="item.w - 40" [attr.y1]="-34" [attr.x2]="item.w - 12" [attr.y2]="-48"/>
+              <circle class="oit-eq-lens" [attr.cx]="item.w - 10" cy="-49" r="4.5"/>
+              <rect class="oit-eq-frame" [attr.x]="item.w - 32" y="-26" width="4" height="26"/>
+            }
+            @case ('assembly-bench') {
+              <rect class="oit-eq-frame" x="6" y="-22" width="4" height="22"/>
+              <rect class="oit-eq-frame" [attr.x]="item.w - 10" y="-22" width="4" height="22"/>
+              <rect class="oit-eq-top" x="3" y="-26" [attr.width]="item.w - 6" height="4.5" rx="1"/>
+              <rect class="oit-eq-vice" x="12" y="-33" width="10" height="7" rx="1"/>
+              <circle class="oit-eq-gear" [attr.cx]="item.w - 20" cy="-31" r="5"/>
+              <circle class="oit-eq-gearhub" [attr.cx]="item.w - 20" cy="-31" r="1.6"/>
+            }
+            @case ('board-line') {
+              <rect class="oit-eq-frame" x="6" y="-16" width="4" height="16"/>
+              <rect class="oit-eq-frame" [attr.x]="item.w - 10" y="-16" width="4" height="16"/>
+              <rect class="oit-eq-belt" x="3" y="-20" [attr.width]="item.w - 6" height="4" rx="2"/>
+              <circle class="oit-eq-roller" cx="12" cy="-15" r="2.2"/>
+              <circle class="oit-eq-roller" [attr.cx]="item.w / 2" cy="-15" r="2.2"/>
+              <circle class="oit-eq-roller" [attr.cx]="item.w - 12" cy="-15" r="2.2"/>
+              <rect class="oit-eq-board" x="16" y="-25" width="12" height="4" rx="0.8"/>
+              <rect class="oit-eq-board" [attr.x]="item.w - 32" y="-25" width="12" height="4" rx="0.8"/>
+            }
+            @case ('cell-line') {
+              <rect class="oit-eq-cabinet" x="5" y="-38" [attr.width]="item.w - 10" height="38" rx="2"/>
+              <rect class="oit-eq-window" x="12" y="-32" [attr.width]="item.w - 34" height="12" rx="1.5"/>
+              <circle class="oit-eq-lamp oit-eq-lamp--ok" [attr.cx]="item.w - 16" cy="-30" r="2"/>
+              <circle class="oit-eq-lamp" [attr.cx]="item.w - 16" cy="-23" r="2"/>
+              <rect class="oit-eq-slot" x="12" y="-14" [attr.width]="item.w - 24" height="3"/>
+            }
+            @case ('qa-station') {
+              <rect class="oit-eq-frame" x="6" y="-22" width="4" height="22"/>
+              <rect class="oit-eq-top" x="3" y="-26" [attr.width]="item.w * 0.62" height="4.5" rx="1"/>
+              <rect class="oit-eq-clip" [attr.x]="item.w * 0.68" y="-44" width="14" height="18" rx="1.5"/>
+              <line class="oit-eq-clipline" [attr.x1]="item.w * 0.68 + 3" y1="-39" [attr.x2]="item.w * 0.68 + 11" y2="-39"/>
+              <line class="oit-eq-clipline" [attr.x1]="item.w * 0.68 + 3" y1="-34" [attr.x2]="item.w * 0.68 + 11" y2="-34"/>
+              <path class="oit-eq-check" [attr.d]="'M' + (item.w * 0.68 + 3) + ' -30 l3 3 l5 -6'"/>
+            }
+            @case ('stall') {
+              <rect class="oit-eq-stall" x="3" y="-32" [attr.width]="item.w - 6" height="32" rx="1.5"/>
+              <rect class="oit-eq-stalldoor" x="6" y="-28" [attr.width]="item.w - 12" height="28" rx="1"/>
+              <circle class="oit-eq-knob" [attr.cx]="item.w - 10" cy="-14" r="1.3"/>
+              <line class="oit-eq-stallgap" x1="3" y1="-32" [attr.x2]="item.w - 3" y2="-32"/>
+            }
+            @case ('canteen-counter') {
+              <rect class="oit-eq-counter" x="3" y="-20" [attr.width]="item.w - 6" height="20" rx="1.5"/>
+              <rect class="oit-eq-top" x="1" y="-23" [attr.width]="item.w - 2" height="3.5" rx="1"/>
+              <rect class="oit-eq-machine" x="8" y="-36" width="13" height="13" rx="1.5"/>
+              <rect class="oit-eq-cup" [attr.x]="item.w - 24" y="-28" width="5" height="5" rx="1"/>
+              <rect class="oit-eq-cup" [attr.x]="item.w - 16" y="-28" width="5" height="5" rx="1"/>
+            }
+            @case ('rest-couch') {
+              <rect class="oit-eq-couch" x="3" y="-14" [attr.width]="item.w - 6" height="12" rx="3"/>
+              <rect class="oit-eq-couchback" x="3" y="-26" width="7" height="14" rx="2.5"/>
+              <rect class="oit-eq-cushion" x="12" y="-17" [attr.width]="(item.w - 20) / 2" height="4" rx="2"/>
+              <rect class="oit-eq-cushion" [attr.x]="12 + (item.w - 20) / 2 + 2" y="-17" [attr.width]="(item.w - 22) / 2" height="4" rx="2"/>
+            }
+            @case ('plant') {
+              <path class="oit-eq-pot" [attr.d]="'M' + (item.w / 2 - 7) + ' -12 h14 l-2.5 12 h-9 z'"/>
+              <circle class="oit-eq-leaf" [attr.cx]="item.w / 2 - 4" cy="-18" r="5"/>
+              <circle class="oit-eq-leaf" [attr.cx]="item.w / 2 + 4" cy="-19" r="5.5"/>
+              <circle class="oit-eq-leaf" [attr.cx]="item.w / 2" cy="-25" r="5"/>
+            }
+            @default {
+              <rect class="oit-eq-crate" x="5" y="-22" [attr.width]="item.w - 10" height="22" rx="1.5"/>
+              <line class="oit-eq-crateline" x1="5" y1="-11" [attr.x2]="item.w - 5" y2="-11"/>
+            }
+          }
+        </g>
+      }
+      <!-- label -->
+      <g class="oit-roomlabel">
+        <rect [attr.x]="room.x + 6" [attr.y]="room.y + 5" [attr.width]="room.w - 12" height="14" rx="2"/>
+        <text [attr.x]="room.x + room.w / 2" [attr.y]="room.y + 15.5" text-anchor="middle">{{ room.label }}</text>
+      </g>
+      @if (!room.valid) {
+        <rect class="oit-room-invalid-outline" [attr.x]="room.x + 1" [attr.y]="room.y + 1"
+              [attr.width]="room.w - 2" [attr.height]="room.h - 2"/>
+        <g class="oit-warnchip" [attr.transform]="'translate(' + (room.x + room.w / 2) + ',' + (room.y + 34) + ')'">
+          <circle r="8"/>
+          <text y="3.6" text-anchor="middle">!</text>
+        </g>
+      }
+      @if (room.selected) {
+        <rect class="oit-room-selected-outline" [attr.x]="room.x + 1" [attr.y]="room.y + 1"
+              [attr.width]="room.w - 2" [attr.height]="room.h - 2"/>
+      }
+      <!-- hit target -->
+      <rect class="oit-hit" [class.oit-hit--off]="buildMode()"
+            [attr.x]="room.x" [attr.y]="room.y" [attr.width]="room.w" [attr.height]="room.h"
+            role="button" tabindex="0"
+            [attr.aria-label]="room.title"
+            (click)="roomPick.emit(room.id)"
+            (keyup.enter)="roomPick.emit(room.id)"/>
+    </g>
+  }
+
+  <!-- ======================= build mode ======================= -->
+
+  @if (buildMode()) {
+    @for (story of stories(); track trackStory($index, story)) {
+      <g class="oit-buildlayer">
+        <!-- zonable strip and bay guides -->
+        <rect class="oit-zonable" [attr.x]="stairCore.left - 20 * cellW" [attr.y]="story.y"
+              [attr.width]="20 * cellW" [attr.height]="story.h"/>
+        @for (gx of guideXs; track gx) {
+          <line class="oit-guide" [attr.x1]="gx" [attr.y1]="story.y + 2" [attr.x2]="gx" [attr.y2]="story.floorY - 1"/>
+        }
+        <!-- structural cores cannot be zoned -->
+        <rect [attr.x]="freightCore.left" [attr.y]="story.y" [attr.width]="freightCore.width"
+              [attr.height]="story.h" fill="url(#oit-nobuild)"/>
+        <rect [attr.x]="stairCore.left" [attr.y]="story.y" [attr.width]="stairCore.width"
+              [attr.height]="story.h" fill="url(#oit-nobuild)"/>
+      </g>
+    }
+
+    <!-- the room being drawn -->
+    @if (draft(); as d) {
+      <g class="oit-draft"
+         [class.oit-draft--valid]="d.valid === true"
+         [class.oit-draft--invalid]="d.valid === false">
+        <rect class="oit-draft-fill" [attr.x]="d.x" [attr.y]="d.y" [attr.width]="d.w" [attr.height]="d.h"/>
+        <rect class="oit-draft-wall" [attr.x]="d.x" [attr.y]="d.y" width="4" [attr.height]="d.h"/>
+        <rect class="oit-draft-wall" [attr.x]="d.x + d.w - 4" [attr.y]="d.y" width="4" [attr.height]="d.h"/>
+        <rect class="oit-draft-door" [attr.x]="d.doorX" [attr.y]="d.floorY - 4" width="26" height="4"/>
+        <g class="oit-draft-label">
+          <rect [attr.x]="d.x + d.w / 2 - 76" [attr.y]="d.y - 9" width="152" height="18" rx="3"/>
+          <text [attr.x]="d.x + d.w / 2" [attr.y]="d.y + 4" text-anchor="middle">{{ d.label }}</text>
+        </g>
+      </g>
+    }
+
+    <!-- cell hit targets, one per bay -->
+    @for (story of stories(); track trackStory($index, story)) {
+      <g>
+        @for (hit of story.cells; track trackCell($index, hit)) {
+          <rect class="oit-cellhit" [attr.x]="hit.x" [attr.y]="story.y" [attr.width]="cellW" [attr.height]="story.h"
+                role="button" tabindex="0"
+                [attr.aria-label]="'Bay on ' + story.label"
+                (click)="onCellClick(story.level, hit.cell)"
+                (keyup.enter)="onCellClick(story.level, hit.cell)"
+                (mouseenter)="onCellEnter(story.level, hit.cell)"/>
+        }
+      </g>
+    }
+  }
+
+  <!-- ======================= staff ======================= -->
+
+  @for (worker of staff(); track trackStaff($index, worker)) {
+    <g class="oit-staffwrap" [attr.transform]="'translate(' + worker.x + ',' + worker.y + ')'">
+      <g [attr.class]="'oit-staff ' + worker.professionClass"
+         [class.oit-staff--selected]="worker.selected"
+         [class.oit-pose-walk]="worker.pose === 'walk'"
+         [class.oit-pose-work]="worker.pose === 'work'"
+         [class.oit-pose-queue]="worker.pose === 'queue'">
+        <title>{{ worker.title }}</title>
+        <ellipse class="oit-shadow" cx="0" cy="0" rx="7" ry="2"/>
+        @if (worker.selected) {
+          <ellipse class="oit-selring" cx="0" cy="0" rx="11" ry="3.6"/>
+        }
+        @if (worker.pose === 'sit') {
+          <rect class="oit-leg" x="2.5" y="-7" width="3" height="7" rx="1.4"/>
+          <rect class="oit-lap" x="-4.5" y="-8.5" width="9.5" height="3.4" rx="1.7"/>
+          <rect class="oit-torso" x="-4.5" y="-17" width="9" height="9.5" rx="2.5"/>
+          <circle class="oit-head" cx="0" cy="-21" r="4.4"/>
+          <path class="oit-hair" d="M-4.2 -22.4 a4.4 4.4 0 0 1 8.4 0 l0 -1.4 a4.4 4.4 0 0 0 -8.4 0 z"/>
+        } @else {
+          <rect class="oit-leg oit-leg--a" x="-3.4" y="-8" width="3" height="8" rx="1.4"/>
+          <rect class="oit-leg oit-leg--b" x="0.6" y="-8" width="3" height="8" rx="1.4"/>
+          <rect class="oit-torso" x="-4.5" y="-18.5" width="9" height="11" rx="2.5"/>
+          <rect class="oit-arm oit-arm--a" x="-6.4" y="-17.5" width="2.4" height="8" rx="1.2"/>
+          <rect class="oit-arm oit-arm--b" x="4" y="-17.5" width="2.4" height="8" rx="1.2"/>
+          <circle class="oit-head" cx="0" cy="-22.5" r="4.4"/>
+          <path class="oit-hair" d="M-4.2 -23.9 a4.4 4.4 0 0 1 8.4 0 l0 -1.4 a4.4 4.4 0 0 0 -8.4 0 z"/>
+        }
+        @if (worker.blocked) {
+          <g class="oit-badge oit-badge--blocked" transform="translate(7,-29)">
+            <circle r="5"/>
+            <text y="2.6" text-anchor="middle">!</text>
+          </g>
+        } @else if (worker.need !== null) {
+          <g class="oit-badge oit-badge--need" transform="translate(7,-29)">
+            <circle r="5"/>
+            @switch (worker.need) {
+              @case ('bladder') { <path class="oit-need-glyph" d="M0 -2.6 C 1.9 -0.4 2.6 0.7 2.6 1.7 A 2.6 2.6 0 0 1 -2.6 1.7 C -2.6 0.7 -1.9 -0.4 0 -2.6 z"/> }
+              @case ('hunger') { <path class="oit-need-fork" d="M-2.4 -2.4 v3.2 a2.4 2.4 0 0 0 4.8 0 v-3.2 M0 -2.4 v2.2"/> }
+              @case ('energy') { <text class="oit-need-z" y="2.4" text-anchor="middle">z</text> }
+            }
+          </g>
+        }
+        @if (worker.selected) {
+          <g class="oit-nametag">
+            <rect x="-34" y="-44" width="68" height="13" rx="2.5"/>
+            <text y="-34.5" text-anchor="middle">{{ worker.name }}</text>
+          </g>
+        }
+      </g>
+      <circle class="oit-staffhit" cx="0" cy="-12" r="13"
+              role="button" tabindex="0"
+              [attr.aria-label]="worker.title"
+              (click)="staffPick.emit(worker.id)"
+              (keyup.enter)="staffPick.emit(worker.id)"/>
+    </g>
+  }
+
+  <!-- ======================= street ======================= -->
+
+  <rect fill="#343b47" x="0" [attr.y]="layout().groundY - 6" [attr.width]="rampTopX - 6" height="10"/>
+  <rect fill="#343b47" [attr.x]="buildingRight" [attr.y]="layout().groundY - 6"
+        [attr.width]="layout().width - buildingRight" height="10"/>
+  <line stroke="#4d5666" stroke-width="2" x1="0" [attr.y1]="layout().groundY - 6" [attr.x2]="rampTopX - 6" [attr.y2]="layout().groundY - 6"/>
+  <line stroke="#4d5666" stroke-width="2" [attr.x1]="buildingRight" [attr.y1]="layout().groundY - 6"
+        [attr.x2]="layout().width" [attr.y2]="layout().groundY - 6"/>
+
+  <g fill="#2f3640" [attr.transform]="'translate(' + (buildingRight + 40) + ',' + (layout().groundY - 6) + ')'">
+    <rect x="-1.6" y="-46" width="3.2" height="46"/>
+    <rect x="-1.6" y="-46" width="14" height="2.6"/>
+    <circle fill="#ffd98a" cx="12" cy="-42" r="3.4"/>
+    <circle cx="12" cy="-42" r="17" fill="url(#oit-glow)"/>
+  </g>
+  <g fill="#2f3640" [attr.transform]="'translate(10,' + (layout().groundY - 6) + ')'">
+    <rect x="-1.6" y="-46" width="3.2" height="46"/>
+    <rect x="-12.4" y="-46" width="14" height="2.6"/>
+    <circle fill="#ffd98a" cx="-10" cy="-42" r="3.4"/>
+    <circle cx="-10" cy="-42" r="17" fill="url(#oit-glow)"/>
+  </g>
+</svg>

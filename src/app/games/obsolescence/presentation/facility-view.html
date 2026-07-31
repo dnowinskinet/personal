@@ -1,6 +1,6 @@
-<div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+<div class="flex flex-col gap-3 xl:flex-row xl:items-start">
 
-  <!-- ============================ floor plan ============================ -->
+  <!-- ============================ the building ============================ -->
   <div class="min-w-0 flex-1">
     <div class="mb-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs opacity-70">
       <span>Tick {{ state().tick }}</span>
@@ -10,154 +10,127 @@
       <span>Walking {{ percent(shares().walking) }}</span>
       <span>Needs {{ percent(shares().needs) }}</span>
       <span>Idle {{ percent(shares().idle) }}</span>
+      <button type="button"
+              class="ml-auto rounded border px-3 py-1 text-xs font-semibold"
+              [class.border-current]="buildMode()"
+              [class.bg-current/10]="buildMode()"
+              [class.border-current/40]="!buildMode()"
+              (click)="toggleBuildMode()">
+        {{ buildMode() ? 'Done building' : 'Build rooms' }}
+      </button>
     </div>
 
-    <div class="overflow-x-auto">
-      <div class="min-w-[42rem] space-y-1">
-        @for (floor of floors(); track trackByFloor($index, floor)) {
-          <div class="flex items-stretch gap-2">
-            <div class="w-20 shrink-0 self-center text-right text-xs font-medium opacity-70">
-              {{ floor.label }}
-              <div class="text-[10px] font-normal opacity-60">{{ floor.freeCells }} free</div>
-            </div>
-
-            <!-- one row of 24 cells -->
-            <div class="relative flex-1">
-              <div class="grid gap-px" [style.grid-template-columns]="'repeat(' + grid.width + ', minmax(0, 1fr))'">
-                @for (cell of cells(); track trackByCell($index, cell)) {
-                  <button type="button"
-                          class="h-12 border border-current/15 transition-colors"
-                          [class.cursor-default]="isCore(cell)"
-                          [class.bg-current/10]="isCore(cell)"
-                          [class.opacity-40]="isCore(cell)"
-                          [class.hover:bg-current/10]="!isCore(cell)"
-                          [class.ring-2]="inDraft(floor.level, cell)"
-                          [class.ring-current]="inDraft(floor.level, cell)"
-                          [attr.aria-label]="isCore(cell) ? 'Circulation core' : 'Cell ' + cell + ' on ' + floor.label"
-                          [disabled]="isCore(cell)"
-                          (click)="cellClicked(floor.level, cell)"></button>
-                }
-              </div>
-
-              <!-- rooms drawn over the grid -->
-              @for (room of floor.rooms; track trackByRoom($index, room)) {
-                <button type="button"
-                        class="absolute top-0 h-12 overflow-hidden rounded-sm border px-1 text-left text-[10px] leading-tight transition-shadow"
-                        [class.border-current]="room.valid"
-                        [class.bg-current/10]="room.valid && !room.isSupport"
-                        [class.bg-current/5]="room.isSupport"
-                        [class.border-dashed]="!room.valid"
-                        [class.opacity-60]="!room.valid"
-                        [class.ring-2]="selectedRoomId() === room.id"
-                        [class.ring-current]="selectedRoomId() === room.id"
-                        [style.left.%]="(room.from / grid.width) * 100"
-                        [style.width.%]="(room.width / grid.width) * 100"
-                        [attr.title]="room.typeName + ' — ' + (room.valid ? 'operational' : room.problems.join(' '))"
-                        (click)="selectRoom(room.id)">
-                  <span class="block truncate font-medium">{{ room.typeName }}</span>
-                  <span class="block truncate opacity-70">
-                    @if (!room.valid) { ⚠ } {{ room.stations.length }} obj · q{{ room.quality }}
-                  </span>
-                </button>
-              }
-
-              <!-- staff pins -->
-              @for (pin of floor.staff; track pin.id) {
-                <button type="button"
-                        class="absolute top-8 z-10 h-5 w-5 -translate-x-1/2 rounded-full border text-[9px] font-bold leading-none transition-transform hover:scale-125"
-                        [class.bg-current]="!pin.blocked"
-                        [class.text-white]="!pin.blocked"
-                        [class.dark:text-black]="!pin.blocked"
-                        [class.border-current]="true"
-                        [class.ring-2]="selectedStaffId() === pin.id"
-                        [style.left.%]="((pin.x + 0.5) / grid.width) * 100"
-                        [attr.title]="pin.name + ' — ' + pin.state"
-                        (click)="selectStaff(pin.id)">{{ pin.initials }}</button>
-              }
-            </div>
-          </div>
-        }
+    <div class="overflow-x-auto rounded-lg">
+      <div class="min-w-[680px]">
+        <oi-facility-tower
+          [state]="state()"
+          [buildMode]="buildMode()"
+          [draftLevel]="draftFrom() !== null ? draftLevel() : null"
+          [draftFrom]="draftFrom()"
+          [draftTo]="draftTo()"
+          [hoverCell]="hoverCellOnDraftLevel()"
+          [hoverValid]="previewValid()"
+          [draftTypeLabel]="draftTypeName()"
+          [selectedStaffId]="selectedStaffId()"
+          [selectedRoomId]="selectedRoomId()"
+          (cellPick)="onCellPick($event)"
+          (cellHover)="onCellHover($event)"
+          (roomPick)="selectRoom($event)"
+          (staffPick)="selectStaff($event)" />
       </div>
     </div>
 
-    <!-- legend -->
     <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] opacity-60">
-      <span>Cells 0–1 and 22–23 are circulation cores and cannot be zoned.</span>
+      <span>Freight core on the left, stairs on the right — structural, and cannot be zoned over.</span>
+      <span>The truck ramp is outside the building; it ends at the Loading Dock apron.</span>
       <span>⚠ marks a room that publishes no work.</span>
     </div>
   </div>
 
   <!-- ============================ side panels ============================ -->
-  <div class="w-full space-y-3 lg:w-96 lg:shrink-0">
+  <div class="w-full space-y-3 xl:w-96 xl:shrink-0">
 
     <!-- ---------------------- room construction ---------------------- -->
     <section class="rounded border border-current/20 p-3">
-      <h3 class="mb-2 text-sm font-semibold">Build a room</h3>
-
-      <label class="block text-xs opacity-70" for="oi-room-type">Room type</label>
-      <select id="oi-room-type" class="mb-2 w-full rounded border border-current/30 bg-transparent p-1 text-sm"
-              [value]="draftTypeId()" (change)="setDraftType($any($event.target).value)">
-        @for (type of roomTypes; track type.id) {
-          <option [value]="type.id">{{ type.name }} ({{ type.placement }}, {{ type.minWidth }}–{{ type.maxWidth }} cells)</option>
+      <div class="mb-2 flex items-center justify-between">
+        <h3 class="text-sm font-semibold">Build a room</h3>
+        @if (!buildMode()) {
+          <button type="button" class="rounded border border-current px-2 py-0.5 text-xs font-semibold"
+                  (click)="toggleBuildMode()">Enter build mode</button>
         }
-      </select>
+      </div>
 
-      <p class="mb-2 text-xs opacity-70">
-        @if (draftFrom() === null) {
-          Click a cell to start the room.
-        } @else if (draftTo() === null) {
-          Started at cell {{ draftFrom() }} on {{ levelName(draftLevel()) }}. Click the far end.
-        } @else {
-          Cells {{ draftFrom() }}–{{ draftTo() }} on {{ levelName(draftLevel()) }}.
-        }
-      </p>
+      @if (!buildMode()) {
+        <p class="text-xs opacity-70">
+          Each floor is a strip of bays. In build mode you drag across contiguous bays to zone a
+          room, then place its equipment.
+        </p>
+      } @else {
+        <label class="block text-xs opacity-70" for="oi-room-type">Room type</label>
+        <select id="oi-room-type" class="mb-2 w-full rounded border border-current/30 bg-transparent p-1 text-sm"
+                [value]="draftTypeId()" (change)="setDraftType($any($event.target).value)">
+          @for (type of roomTypes; track type.id) {
+            <option [value]="type.id">{{ type.name }} ({{ type.placement }}, {{ type.minWidth }}–{{ type.maxWidth }} bays)</option>
+          }
+        </select>
 
-      <div class="mb-2">
-        <div class="mb-1 text-xs opacity-70">Equipment</div>
-        <div class="flex flex-wrap gap-1">
-          @for (object of draftableObjects(); track object.id) {
-            <button type="button"
-                    class="rounded border border-current/30 px-2 py-0.5 text-[11px] hover:bg-current/10"
-                    (click)="addDraftObject(object.id)">
-              + {{ object.name }}
-            </button>
+        <p class="mb-2 text-xs opacity-70">{{ draftStatus() }}</p>
+
+        <div class="mb-2">
+          <div class="mb-1 text-xs opacity-70">Equipment</div>
+          <div class="flex flex-wrap gap-1">
+            @for (object of draftableObjects(); track object.id) {
+              <button type="button"
+                      class="rounded border border-current/30 px-2 py-0.5 text-[11px] hover:bg-current/10"
+                      (click)="addDraftObject(object.id)">
+                + {{ object.name }}
+              </button>
+            }
+          </div>
+          @if (draftObjectNames().length > 0) {
+            <div class="mt-1 flex flex-wrap gap-1">
+              @for (placed of draftObjectNames(); track placed.key) {
+                <button type="button"
+                        class="rounded border border-current/40 bg-current/10 px-2 py-0.5 text-[11px]"
+                        [attr.aria-label]="'Remove ' + placed.name"
+                        (click)="toggleDraftObject(placed.index)">
+                  {{ placed.name }} ×
+                </button>
+              }
+            </div>
           }
         </div>
-        @if (draftObjects().length > 0) {
-          <div class="mt-1 text-[11px] opacity-80">
-            Placed: {{ draftObjects().join(', ') }}
-          </div>
+
+        @if (!draftValid()) {
+          <ul class="mb-2 space-y-0.5 text-[11px] opacity-80">
+            @for (problem of draftProblems(); track problem) {
+              <li>· {{ problem }}</li>
+            }
+          </ul>
         }
-      </div>
 
-      @if (!draftValid()) {
-        <ul class="mb-2 space-y-0.5 text-[11px] opacity-80">
-          @for (problem of draftProblems(); track problem) {
-            <li>· {{ problem }}</li>
-          }
-        </ul>
+        <div class="flex gap-2">
+          <button type="button"
+                  class="rounded border border-current px-3 py-1 text-sm disabled:opacity-40"
+                  [disabled]="!draftValid()"
+                  (click)="commitDraft()">Build</button>
+          <button type="button" class="rounded border border-current/30 px-3 py-1 text-sm"
+                  (click)="clearDraft()">Clear</button>
+          <button type="button" class="rounded border border-current/30 px-3 py-1 text-sm"
+                  (click)="undo.emit()">Undo</button>
+        </div>
       }
-
-      <div class="flex gap-2">
-        <button type="button"
-                class="rounded border border-current px-3 py-1 text-sm disabled:opacity-40"
-                [disabled]="!draftValid()"
-                (click)="commitDraft()">Build</button>
-        <button type="button" class="rounded border border-current/30 px-3 py-1 text-sm"
-                (click)="clearDraft()">Clear</button>
-        <button type="button" class="rounded border border-current/30 px-3 py-1 text-sm"
-                (click)="undo.emit()">Undo</button>
-      </div>
     </section>
 
     <!-- ---------------------- selected room ---------------------- -->
     @if (selectedRoom(); as room) {
       <section class="rounded border border-current/20 p-3">
-        <h3 class="mb-1 text-sm font-semibold">{{ room.id }}</h3>
+        <h3 class="mb-1 text-sm font-semibold">{{ selectedRoomTypeName() }} <span class="font-normal opacity-60">({{ room.id }}, {{ levelName(room.level) }})</span></h3>
         <div class="space-y-1 text-xs">
           <div class="flex gap-2">
-            <button type="button" class="rounded border border-current/30 px-2 py-0.5" (click)="nudgeSelected(-1)">← Move</button>
-            <button type="button" class="rounded border border-current/30 px-2 py-0.5" (click)="nudgeSelected(1)">Move →</button>
+            <!-- The scene mirrors sim cells (freight core left), so visual left is sim +1. -->
+            <button type="button" class="rounded border border-current/30 px-2 py-0.5" (click)="nudgeSelected(1)">← Move</button>
+            <button type="button" class="rounded border border-current/30 px-2 py-0.5" (click)="nudgeSelected(-1)">Move →</button>
             <button type="button" class="rounded border border-current/30 px-2 py-0.5" (click)="demolishSelected()">Demolish</button>
           </div>
           @for (problem of whyInvalid(); track problem) {
@@ -173,7 +146,7 @@
         @if (selectedStaff(); as worker) { {{ worker.name }} } @else { Inspector }
       </h3>
       @if (selectedStaff() === null) {
-        <p class="text-xs opacity-70">Select an employee on the floor plan.</p>
+        <p class="text-xs opacity-70">Select an employee in the building.</p>
       } @else {
         <dl class="space-y-2 text-xs">
           @for (entry of answers(); track entry.question) {

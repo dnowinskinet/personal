@@ -1,10 +1,11 @@
 /**
- * The facility floor plan.
+ * The facility view: the canonical tower scene, plus the panels around it.
  *
- * A cutaway of the building drawn from simulation state, plus the inspector that answers the nine
- * questions the milestone requires, plus a development overlay and scenario drawer.
+ * The building is the primary surface — rooms, staff, needs and blockers are read off the cutaway
+ * itself. The inspector still answers the nine required questions, the development overlay and
+ * scenario drawer remain, and build mode overlays bay guides on the tower for zoning rooms.
  *
- * Read-only with respect to the simulation (I-011): every mutation goes through a command on the
+ * Read-only with respect to the simulation (I-002): every mutation goes through a command on the
  * facility state, never through the view touching state directly.
  */
 
@@ -17,12 +18,13 @@ import { SCENARIOS } from '../content/facility/scenarios';
 import {
   blockerLine,
   timeShares,
+  validateRoom,
   type FacilityState,
   type Room,
   type Staff,
 } from '../sim/index';
+import { FacilityTowerViewComponent } from './facility-tower-view';
 import {
-  GRID,
   floorRows,
   interruptingNeed,
   levelLabel,
@@ -37,7 +39,6 @@ import {
   whyNotWorking,
   whyRoomInvalid,
   type FloorRow,
-  type RoomBox,
 } from './facility-view-model';
 
 /** A room the player is drawing but has not committed. */
@@ -52,7 +53,7 @@ export interface RoomDraft {
 @Component({
   selector: 'facility-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FacilityTowerViewComponent],
   templateUrl: './facility-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -68,7 +69,6 @@ export class FacilityViewComponent {
   readonly content = FACILITY_CONTENT;
   readonly roomTypes = ROOM_TYPES;
   readonly scenarios = SCENARIOS;
-  readonly grid = GRID;
   readonly professionNames = PROFESSION_NAMES;
 
   readonly selectedStaffId = signal<string | null>(null);
@@ -76,12 +76,18 @@ export class FacilityViewComponent {
   readonly showOverlay = signal(false);
   readonly showDrawer = signal(false);
 
+  /** Build mode shows the bay guides on the tower and arms the cell targets. */
+  readonly buildMode = signal(false);
+
   /** Room construction: the type being placed, and the span being drawn. */
   readonly draftTypeId = signal<string>(ROOM_TYPES[0].id);
   readonly draftLevel = signal<number>(1);
   readonly draftFrom = signal<number | null>(null);
   readonly draftTo = signal<number | null>(null);
   readonly draftObjects = signal<readonly string[]>([]);
+
+  /** Bay currently under the pointer, for the live span preview. */
+  readonly hover = signal<{ level: number; cell: number } | null>(null);
 
   readonly floors = computed<readonly FloorRow[]>(() => floorRows(this.state(), this.content));
   readonly shares = computed(() => timeShares(this.state()));
@@ -93,6 +99,44 @@ export class FacilityViewComponent {
   readonly selectedRoom = computed<Room | null>(
     () => this.state().rooms.find((room) => room.id === this.selectedRoomId()) ?? null
   );
+
+  readonly draftTypeName = computed(
+    () => ROOM_TYPES.find((entry) => entry.id === this.draftTypeId())?.name ?? 'Room'
+  );
+
+  /** Hovered bay on the floor being drafted, for extending the preview. */
+  readonly hoverCellOnDraftLevel = computed<number | null>(() => {
+    const hover = this.hover();
+    if (hover === null) {
+      return null;
+    }
+    if (this.draftFrom() !== null && hover.level !== this.draftLevel()) {
+      return null;
+    }
+    return hover.cell;
+  });
+
+  /**
+   * Structural validity of the span being previewed — everything except equipment requirements,
+   * which cannot be satisfied while still dragging out walls. Colors the preview on the tower.
+   */
+  readonly previewValid = computed<boolean | null>(() => {
+    const from = this.draftFrom();
+    if (from === null) {
+      return null;
+    }
+    const to = this.draftTo() ?? this.hoverCellOnDraftLevel() ?? from;
+    const draft: Room = {
+      id: '__draft__',
+      typeId: this.draftTypeId(),
+      level: this.draftLevel(),
+      span: { from: Math.min(from, to), to: Math.max(from, to) },
+      objects: this.draftObjects(),
+    };
+    const state = this.state();
+    const validity = validateRoom(draft, this.content, state.rooms, state.topology.levels);
+    return !validity.reasons.some((reason) => reason !== 'missing-required-object');
+  });
 
   /** Objects that may go in the room type currently being drafted. */
   readonly draftableObjects = computed(() => {
@@ -107,12 +151,21 @@ export class FacilityViewComponent {
     return OBJECTS.filter((object) => allowed.has(object.category));
   });
 
+  /** Names of the objects placed in the draft, in placement order. */
+  readonly draftObjectNames = computed(() =>
+    this.draftObjects().map((objectId, index) => ({
+      key: `${objectId}-${index}`,
+      index,
+      name: OBJECTS.find((object) => object.id === objectId)?.name ?? objectId,
+    }))
+  );
+
   /** Whether the current draft would be a legal room, and why not if it would not. */
   readonly draftProblems = computed<readonly string[]>(() => {
     const from = this.draftFrom();
     const to = this.draftTo();
     if (from === null || to === null) {
-      return ['Click two cells on a floor to set the room extent.'];
+      return ['Pick two bays on a floor to set the room extent.'];
     }
     const draft: Room = {
       id: '__draft__',
@@ -126,6 +179,19 @@ export class FacilityViewComponent {
   });
 
   readonly draftValid = computed(() => this.draftProblems().length === 0);
+
+  readonly draftStatus = computed<string>(() => {
+    const from = this.draftFrom();
+    const to = this.draftTo();
+    if (from === null) {
+      return 'Click a bay on any floor to start the room.';
+    }
+    if (to === null) {
+      return `Started on ${levelLabel(this.draftLevel())}. Click the far end of the room.`;
+    }
+    const width = Math.abs(to - from) + 1;
+    return `${width} ${width === 1 ? 'bay' : 'bays'} on ${levelLabel(this.draftLevel())}.`;
+  });
 
   // --- the nine questions ------------------------------------------------------------------
 
@@ -189,7 +255,30 @@ export class FacilityViewComponent {
     return worker === null ? [] : scoreRows(worker, this.state());
   });
 
+  /** Problems with the currently selected room, for the room panel. */
+  readonly whyInvalid = computed<readonly string[]>(() => {
+    const room = this.selectedRoom();
+    return room === null ? [] : whyRoomInvalid(room, this.state(), this.content);
+  });
+
+  readonly selectedRoomTypeName = computed<string>(() => {
+    const room = this.selectedRoom();
+    if (room === null) {
+      return '';
+    }
+    return ROOM_TYPES.find((entry) => entry.id === room.typeId)?.name ?? room.typeId;
+  });
+
   // --- interaction --------------------------------------------------------------------------
+
+  toggleBuildMode(): void {
+    const next = !this.buildMode();
+    this.buildMode.set(next);
+    if (!next) {
+      this.clearDraft();
+      this.hover.set(null);
+    }
+  }
 
   selectStaff(id: string): void {
     this.selectedStaffId.set(this.selectedStaffId() === id ? null : id);
@@ -199,24 +288,23 @@ export class FacilityViewComponent {
     this.selectedRoomId.set(this.selectedRoomId() === id ? null : id);
   }
 
-  cellClicked(level: number, cell: number): void {
-    this.draftLevel.set(level);
+  onCellPick(event: { level: number; cell: number }): void {
     const from = this.draftFrom();
-    if (from === null || this.draftTo() !== null) {
-      this.draftFrom.set(cell);
+    if (from === null || this.draftTo() !== null || this.draftLevel() !== event.level) {
+      this.draftLevel.set(event.level);
+      this.draftFrom.set(event.cell);
       this.draftTo.set(null);
       return;
     }
-    this.draftTo.set(cell);
+    this.draftTo.set(event.cell);
   }
 
-  toggleDraftObject(objectId: string): void {
-    const current = this.draftObjects();
-    this.draftObjects.set(
-      current.includes(objectId)
-        ? current.filter((entry) => entry !== objectId)
-        : [...current, objectId]
-    );
+  onCellHover(event: { level: number; cell: number } | null): void {
+    this.hover.set(event);
+  }
+
+  toggleDraftObject(index: number): void {
+    this.draftObjects.set(this.draftObjects().filter((_, position) => position !== index));
   }
 
   addDraftObject(objectId: string): void {
@@ -258,12 +346,6 @@ export class FacilityViewComponent {
     }
   }
 
-  /** Problems with the currently selected room, for the room panel. */
-  readonly whyInvalid = computed<readonly string[]>(() => {
-    const room = this.selectedRoom();
-    return room === null ? [] : whyRoomInvalid(room, this.state(), this.content);
-  });
-
   /** Nudge the selected room along its floor — the cheapest way to exercise topology invalidation. */
   nudgeSelected(by: number): void {
     const room = this.selectedRoom();
@@ -278,29 +360,6 @@ export class FacilityViewComponent {
     });
   }
 
-  cells(): readonly number[] {
-    return Array.from({ length: GRID.width }, (_, index) => index);
-  }
-
-  isCore(cell: number): boolean {
-    return (
-      (cell >= GRID.personnelCore.from && cell <= GRID.personnelCore.to) ||
-      (cell >= GRID.freightCore.from && cell <= GRID.freightCore.to)
-    );
-  }
-
-  inDraft(level: number, cell: number): boolean {
-    const from = this.draftFrom();
-    const to = this.draftTo();
-    if (from === null || this.draftLevel() !== level) {
-      return false;
-    }
-    if (to === null) {
-      return cell === from;
-    }
-    return cell >= Math.min(from, to) && cell <= Math.max(from, to);
-  }
-
   percent(value: number): string {
     return `${Math.round(value * 100)}%`;
   }
@@ -308,8 +367,4 @@ export class FacilityViewComponent {
   levelName(level: number): string {
     return levelLabel(level);
   }
-
-  trackByRoom = (_: number, room: RoomBox): string => room.id;
-  trackByFloor = (_: number, floor: FloorRow): number => floor.level;
-  trackByCell = (_: number, cell: number): number => cell;
 }

@@ -83,7 +83,8 @@ export class ObsolescenceGameComponent implements OnDestroy {
   private timer: ReturnType<typeof setInterval> | null = null;
 
   readonly campaign = signal(startCampaign(FLOORS, CAMPAIGN_START));
-  readonly mode = signal<Mode>('tower');
+  /** The facility is the primary game surface; the campaign race remains its own tab. */
+  readonly mode = signal<Mode>('facility');
   readonly speed = signal(1);
   readonly running = signal(false);
   readonly outcome = signal<QuarterOutcome | null>(null);

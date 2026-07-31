@@ -1,0 +1,153 @@
+/* The facility tower scene.
+ *
+ * The scene commits to its own night palette — a game canvas, identical in both site themes.
+ * Static scenery (sky, city, truck, roof furniture, street) is colored inline in the template;
+ * this sheet carries only what is repeated or state-driven, because the compiled component
+ * stylesheet must stay inside the site's 6 kB budget. Encapsulation is off (see the component),
+ * so the element selector scopes the palette and every class carries the oit- prefix.
+ */
+
+oi-facility-tower {
+  display: block;
+}
+
+.oit-scene {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  background: #0a1424;
+}
+
+.oit-scene text { font-family: inherit; user-select: none; }
+
+.oit-truck-text { fill: #9fb2cc; font-size: 8px; letter-spacing: 0.14em; font-weight: 600; }
+.oit-sign { fill: #e8d9ad; font-size: 13px; font-weight: 700; letter-spacing: 0.32em; }
+
+/* stories */
+.oit-slab { fill: #2e2621; }
+.oit-slab-edge { stroke: #574a40; stroke-width: 1.6; }
+.oit-interior--office { fill: #efe2c4; }
+.oit-interior--showroom { fill: #f6ead0; }
+.oit-interior--dock { fill: #8f959a; }
+.oit-interior--basement { fill: #6d7378; }
+
+/* cores */
+.oit-freight { fill: #363d46; }
+.oit-freight-open { fill: #20262e; }
+.oit-freight-brace { stroke: #545e6a; stroke-width: 3; }
+.oit-core-divider { stroke: #23282e; stroke-width: 2.4; }
+.oit-staircore { fill: rgba(28, 32, 38, 0.16); }
+.oit-stair-stringer { stroke: #6b5b3f; stroke-width: 3.4; }
+.oit-stair-step { fill: #8a7a58; }
+
+/* chips and tags */
+.oit-chip rect, .oit-nametag rect, .oit-draft-label rect { fill: rgba(14, 22, 38, 0.9); stroke: #33415c; stroke-width: 1.1; }
+.oit-chip text { fill: #d6e0f0; font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; }
+.oit-nametag text, .oit-draft-label text { fill: #e6edf8; font-size: 8.5px; font-weight: 600; }
+
+/* rooms */
+.oit-room-fill { fill: #dcd7c9; opacity: 0.96; }
+.oit-room--research-laboratory .oit-room-fill { fill: #dde8ec; }
+.oit-room--production-workshop .oit-room-fill { fill: #c9cfc6; }
+.oit-room--restroom .oit-room-fill { fill: #d4e2e4; }
+.oit-room--break-room .oit-room-fill { fill: #e6d9bd; }
+.oit-room-wall { fill: #55483d; }
+.oit-door-frame, .oit-door-knob { fill: #4a3c31; }
+.oit-door-leaf { fill: #8b6a48; }
+.oit-roomlabel rect { fill: rgba(34, 26, 20, 0.78); }
+.oit-roomlabel text { fill: #ead9b8; font-size: 8.5px; font-weight: 600; letter-spacing: 0.1em; }
+.oit-room--invalid .oit-room-fill { opacity: 0.5; }
+.oit-room-invalid-outline { fill: none; stroke: #d97706; stroke-width: 2.4; stroke-dasharray: 7 5; }
+.oit-warnchip circle { fill: #d97706; }
+.oit-warnchip text, .oit-badge--blocked text { fill: #fff; font-weight: 800; }
+.oit-warnchip text { font-size: 11px; }
+.oit-badge--blocked text { font-size: 8px; }
+.oit-room-selected-outline { fill: none; stroke: #4f9cf0; stroke-width: 2.6; }
+
+/* hit targets */
+.oit-hit, .oit-staffhit, .oit-cellhit { fill: transparent; outline: none; cursor: pointer; }
+.oit-cellhit { cursor: crosshair; }
+.oit-cellhit:hover { fill: rgba(127, 209, 168, 0.14); }
+.oit-hit:focus-visible, .oit-staffhit:focus-visible, .oit-cellhit:focus-visible { stroke: #4f9cf0; stroke-width: 2; }
+.oit-hit--off { pointer-events: none; }
+
+/* equipment — a shared kit palette: dark wood, mid wood, steel, dark steel, light steel, glass */
+.oit-eq-frame { fill: #5d4f41; }
+.oit-eq-top, .oit-eq-shelfline, .oit-eq-counter, .oit-eq-crate, .oit-eq-pot { fill: #7a6a55; }
+.oit-eq-vice, .oit-eq-gearhub, .oit-eq-roller, .oit-eq-machine { fill: #566068; }
+.oit-eq-belt, .oit-eq-slot { fill: #3f464d; }
+.oit-eq-body, .oit-eq-lamp { fill: #6f7f8a; }
+.oit-eq-vial, .oit-eq-lens, .oit-eq-window, .oit-eq-stalldoor { fill: #b7d3de; }
+.oit-eq-flask { fill: #8fb8c9; }
+.oit-eq-lens { stroke: #45535e; stroke-width: 1.6; }
+.oit-eq-tube { stroke: #4b5a66; stroke-width: 5; stroke-linecap: round; }
+.oit-eq-gear, .oit-eq-check { fill: none; stroke: #566068; stroke-width: 3; }
+.oit-eq-check { stroke: #4f7a52; stroke-width: 1.8; }
+.oit-eq-board, .oit-eq-leaf { fill: #557a4e; }
+.oit-eq-cabinet { fill: #5a656e; stroke: #39424a; stroke-width: 1.4; }
+.oit-eq-lamp--ok { fill: #79c98c; }
+.oit-eq-clip { fill: #d8cba9; }
+.oit-eq-clip, .oit-eq-clipline, .oit-eq-crate, .oit-eq-crateline { stroke: #5d4f41; stroke-width: 1.3; }
+.oit-eq-stall { fill: #7fa3ab; }
+.oit-eq-stallgap { stroke: #5d7d84; stroke-width: 1.6; }
+.oit-eq-knob { fill: #3e565c; }
+.oit-eq-cup { fill: #d9cdb2; }
+.oit-eq-couch { fill: #7d5b4b; }
+.oit-eq-couchback { fill: #6d4e40; }
+.oit-eq-cushion { fill: #93705d; }
+.oit-eq--active .oit-eq-top, .oit-eq--active .oit-eq-belt, .oit-eq--active .oit-eq-cabinet { filter: brightness(1.12); }
+
+/* build mode */
+.oit-zonable { fill: rgba(127, 209, 168, 0.07); }
+.oit-guide { stroke: rgba(127, 209, 168, 0.5); stroke-width: 1; stroke-dasharray: 3 5; }
+.oit-draft-fill { fill: rgba(79, 156, 240, 0.22); }
+.oit-draft-wall { fill: rgba(79, 156, 240, 0.75); }
+.oit-draft-door { fill: #d8e6f8; }
+.oit-draft--valid .oit-draft-fill { fill: rgba(127, 209, 168, 0.26); }
+.oit-draft--valid .oit-draft-wall { fill: #7fd1a8; }
+.oit-draft--invalid .oit-draft-fill { fill: rgba(226, 72, 61, 0.22); }
+.oit-draft--invalid .oit-draft-wall { fill: #e2483d; }
+
+/* staff */
+.oit-staffwrap { transition: transform 220ms linear; }
+.oit-shadow { fill: rgba(10, 8, 6, 0.35); }
+.oit-selring { fill: none; stroke: #4f9cf0; stroke-width: 1.8; stroke-dasharray: 5 4; }
+.oit-head { fill: #e3b48d; }
+.oit-hair { fill: #3a2c22; }
+.oit-leg, .oit-lap { fill: #33393f; }
+.oit-arm { fill: #6a6f75; }
+.oit-torso { fill: #7d838a; }
+.oit-staff--scientist .oit-torso { fill: #e9e9e4; }
+.oit-staff--scientist .oit-arm { fill: #d9d9d2; }
+.oit-staff--operator .oit-torso { fill: #4a7db2; }
+.oit-staff--operator .oit-arm { fill: #406d9c; }
+.oit-staff--qa_technician .oit-torso { fill: #57996b; }
+.oit-staff--qa_technician .oit-arm { fill: #4b8a5e; }
+
+.oit-leg, .oit-arm { transform-box: fill-box; transform-origin: center top; }
+.oit-pose-walk .oit-leg--a { transform: rotate(20deg); }
+.oit-pose-walk .oit-leg--b { transform: rotate(-16deg); }
+.oit-pose-walk .oit-arm--a { transform: rotate(-14deg); }
+.oit-pose-walk .oit-arm--b { transform: rotate(14deg); }
+.oit-pose-walk { animation: oit-bob 0.5s ease-in-out infinite alternate; }
+.oit-pose-work .oit-arm--a, .oit-pose-work .oit-arm--b { transform: rotate(-52deg); }
+.oit-pose-queue .oit-arm--a { transform: rotate(6deg); }
+.oit-pose-queue .oit-arm--b { transform: rotate(-6deg); }
+
+@keyframes oit-bob {
+  from { translate: 0 0; }
+  to { translate: 0 -1.6px; }
+}
+
+/* badges */
+.oit-badge--blocked circle { fill: #e2483d; stroke: #fff; stroke-width: 1; }
+.oit-badge--need circle { fill: #2c3a50; stroke: #9fb2cc; stroke-width: 1; }
+.oit-need-glyph { fill: #9fd0e8; }
+.oit-need-fork { fill: none; stroke: #9fd0e8; stroke-width: 1.2; }
+.oit-need-z { fill: #ffd98a; font-size: 8px; font-weight: 700; font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) {
+  .oit-staffwrap { transition: none; }
+  .oit-pose-walk { animation: none; }
+}

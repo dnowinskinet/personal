@@ -732,3 +732,46 @@ rendered correctly in the inspector, which had the catalogue in hand. `sim/` may
 `content/` (I-001), so the names have to arrive as data. A rule that is right but reads like a bug
 is not an explanation, and explainability is second only to determinism in this milestone's
 priority order.
+
+---
+
+## D-032 — The facility draws as the canonical tower: aligned stack, exterior ramp, mirrored projection, committed night palette
+
+**Date:** 2026-07-30
+**Status:** Settled
+**Supersedes:** the presentation half of the M1 facility view (the diagnostic grid); D-026 stands
+for the Campaign tab and for the fact that none of this is the Gate C renderer decision.
+
+The visual-canon directive fixed the building's geometry and the facility scene now implements it
+(`presentation/facility-tower-layout.ts`, `facility-tower-view.*`; recorded in
+[VISUAL-CANON-NOTES.md](VISUAL-CANON-NOTES.md)):
+
+1. **Canonical stack and naming.** Level *n* > 0 is `Office Level n`, 0 is the `Showroom` at grade,
+   −1 is the `Loading Dock` — the first below-ground story, never called B1 — and −n is `B(n−1)`.
+   One aligned rectangular footprint; the vehicle ramp is exterior, ending at a flat apron where
+   the truck backs against the dock wall. Stairs exist from the start (the personnel core);
+   elevators remain a future upgrade; the freight core is a braced reserved shaft.
+2. **The projection mirrors simulation x.** Freight core (sim cells 22–23) draws left beside the
+   apron; stairs (cells 0–1) draw right. The mirror lives only in the layout module; simulation
+   coordinates stay the single truth, and player-facing arrows follow visual direction.
+3. **Bays are cells, presented as bays.** The zonable strip's twenty cells are the finite
+   segmentation; build mode shows the guides, ordinary play hides them. Re-chunking to coarser
+   bays is a simulation-geometry question (Q-008), not a renderer one.
+4. **The scene commits to its own palette.** A game canvas identical in both site themes, breaking
+   with `currentColor` for this component only — the panels around it stay theme-aware. Static
+   scenery is colored by SVG attribute in the template; the component stylesheet carries only
+   repeated or state-driven rules and sits at 5.4 kB against the site's 6 kB budget (with
+   `ViewEncapsulation.None`, since every class is `oit-`-prefixed).
+5. **Figures stand where their work is.** Working staff render at their reserved station and
+   amenity users at their amenity, though the simulation parks both on the room's access cell —
+   drawing that literally would stack every figure on one spot. Cosmetic; the inspector reports
+   sim truth. Movement interpolates via CSS transform transitions (I-005 untouched).
+
+**Rationale:** M1's grid was a diagnostic harness that answered questions but did not look like a
+game. The directive supplied the missing composition canon; the simulation already carried every
+fact the scene needs. Nothing in the simulation, content, fixtures or metrics changed — the only
+non-presentation edits were two additive presentation-model fields.
+
+**Consequence:** the Facility tab is the default view, the site shell widens for the route (the
+GriftOS pattern), and the diagnostic inspector, dev overlay and scenario drawer survive unchanged
+beside the tower.

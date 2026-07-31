@@ -38,6 +38,8 @@ import {
 
 export interface StationCell {
   readonly stationId: string;
+  /** Which catalogue object this is — the tower picks its equipment drawing by this id. */
+  readonly objectId: string;
   readonly name: string;
   readonly from: number;
   readonly width: number;
@@ -106,7 +108,7 @@ export function floorRows(state: FacilityState, content: FacilityContent): reado
     const used = rooms.reduce((total, room) => total + room.width, 0);
     return {
       level,
-      label: level > 0 ? `Level ${level}` : level === 0 ? 'Ground' : `Basement ${Math.abs(level)}`,
+      label: levelLabel(level),
       rooms,
       staff: state.staff
         .filter((worker) => worker.location.level === level)
@@ -181,6 +183,7 @@ export function roomBox(room: Room, state: FacilityState, content: FacilityConte
     const job = state.jobs.find((entry) => entry.stationId === stationId);
     cells.push({
       stationId,
+      objectId: object.id,
       name: object.name,
       from: cursor,
       width: object.width,
@@ -201,6 +204,7 @@ export function roomBox(room: Room, state: FacilityState, content: FacilityConte
     const queue = state.queues[amenityId] ?? [];
     cells.push({
       stationId: amenityId,
+      objectId: object.id,
       name: object.name,
       from: cursor,
       width: object.width,
@@ -373,8 +377,18 @@ export function resumptionStatus(worker: Staff, state: FacilityState): string {
     : `The held job (${token.jobId}) no longer exists — ${progress} ticks of progress will be lost.`;
 }
 
+/**
+ * Canonical level names (VISUAL-CANON-NOTES.md). The Loading Dock is the first below-ground story
+ * and is not B1 — B-numbering starts one story further down.
+ */
 export function levelLabel(level: number): string {
-  return level > 0 ? `Level ${level}` : level === 0 ? 'Ground' : `Basement ${Math.abs(level)}`;
+  if (level > 0) {
+    return `Office Level ${level}`;
+  }
+  if (level === 0) {
+    return 'Showroom';
+  }
+  return level === -1 ? 'Loading Dock' : `B${-level - 1}`;
 }
 
 // ---------------------------------------------------------------------------
