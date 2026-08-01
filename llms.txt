@@ -8,7 +8,6 @@ Daniel Nowinski is a data and AI professional based in Dupont Circle, Washington
 - [About and professional history](https://dnowinski.com/about)
 - [Résumé](https://dnowinski.com/DNowinski-Resume.pdf)
 - [Experimental projects](https://dnowinski.com/experimental)
-- [AI Settlement experiment](https://dnowinski.com/experimental/settlement)
 - [Sudoku](https://dnowinski.com/experimental/sudoku)
 - [GriftOS](https://dnowinski.com/experimental/grift-os)
 - [Privacy Policy](https://dnowinski.com/privacy)
