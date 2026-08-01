@@ -312,8 +312,10 @@ gray-box falsifier of decisions, never a visual slice.
 **Aggregate rather than simulate individually.** [R1,R2,R3,R4,R5,R6,R8 — seven reports] Cohorts not
 per-unit devices, batches not per-item routing, crowds aggregated beyond near-camera detail.
 
-**PixiJS 8.x + Angular shell is the starting stack; Phaser 4 is the single named fallback**, decided
-by running a gauntlet on a real loadout, never on paper. [R8,R9]
+**Phaser 4 + Angular shell is the starting stack; PixiJS 8.x is the single named fallback**, decided
+by running a gauntlet on a real loadout, never on paper. [R8,R9 — **ordering reversed by D-033**,
+2026-07-31; R8 and R9 named Pixi first, and later research argued the gate needs a game framework
+rather than a renderer. The method survives; the stack swapped.]
 
 **Renderer-agnostic work comes first.** Lazy route, sim-core with fixed tick and command log,
 save/load and migration harness, developer lab and device matrix — none of which touch the renderer.

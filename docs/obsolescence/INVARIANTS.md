@@ -76,14 +76,19 @@ own is an assertion, not an enforcement mechanism.
 
 Rendering is a projection. All state change flows through simulation commands.
 
-- **Why:** the moment the renderer can write, determinism and replay die, and the Pixi-versus-Phaser
-  decision stops being reversible.
+- **Why:** the moment the renderer can write, determinism and replay die, and the renderer choice
+  (Phaser 4 provisional, Pixi 8 fallback — D-033) stops being reversible.
 - **Enforcement:** `ENFORCED` (by proxy) — `oi:arch` forbids `render/` from importing any
   state-mutating export, covering named imports, namespace imports (`sim.applyCommand(…)`),
   destructured dynamic imports, and paths that walk out of the feature root and back in. It also
   forbids `content/` from re-exporting those symbols, which would otherwise launder them into an
   allowed layer. See the limits section — this proves the renderer cannot *reach* mutation, not that
   it never mutates.
+- **The enforcement is only as complete as its list.** `STATE_MUTATING_EXPORTS` in the checker is
+  enumerated by hand, and the facility subsystem shipped without joining it — for four commits this
+  invariant read `ENFORCED` while `tickFacility` and `applyConstruction` were reachable from
+  `render/`. Fixed 2026-07-31 and now covered by seven regression cases. **D-034** makes updating
+  that set part of shipping any new state-advancing export.
 
 ### I-003 — Presentation and content may depend on the simulation; never the reverse
 

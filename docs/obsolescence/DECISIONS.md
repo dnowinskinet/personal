@@ -775,3 +775,76 @@ non-presentation edits were two additive presentation-model fields.
 **Consequence:** the Facility tab is the default view, the site shell widens for the route (the
 GriftOS pattern), and the diagnostic inspector, dev overlay and scenario drawer survive unchanged
 beside the tower.
+
+---
+
+## D-033 — Phaser 4 becomes the provisional renderer and Pixi the named fallback; nothing is installed yet
+
+**Date:** 2026-07-31
+**Status:** Settled — approved by Daniel
+**Supersedes:** the renderer-*choice* portion of C-41 as recorded in D-015 finding 1, and the
+renderer half of the dependency table in D-012.
+**Does not supersede:** D-004. Gate B has still never been briefed, and renderer work still may not
+start.
+
+External research revisited the Gate C renderer question and recommended **Phaser 4.2.1** over
+PixiJS 8. The argument is that Phaser ships the parts this game will otherwise hand-roll — scenes,
+an asset loader with bundles, cameras, input, an animation system, audio structure — while staying
+browser-native, TypeScript-friendly and dependency-free. Pixi is the better *renderer*; Phaser is
+the better *game framework*, and what Gate C actually has to prove is a facility that boots, loads,
+animates, and takes input, not a triangle throughput number.
+
+**What changes:**
+
+1. **Phaser 4 is the provisional choice; PixiJS 8.x is the named fallback with switch triggers.**
+   This is the reverse of R8's ordering as inherited into [ARCHITECTURE.md](ARCHITECTURE.md). It is
+   an ordering change, not a new commitment — first-milestone acceptance criterion 7 ("no decision
+   prevents Pixi or Phaser from becoming the renderer") is still satisfied and still binding.
+2. **C-41's Gate C shape survives; only its stack changes.** Gate C remains a **single-stack run
+   judged against absolute bars**, not a bake-off. C-41 was right that a two-renderer comparison is
+   waste; it named Pixi because that was R8's provisional pick, and that premise is what moved.
+3. **`phaser` at exactly `4.2.1` is pre-approved, conditional on Gate C actually opening.** It is
+   added to the approved-dependency table as *conditional*, not installed. D-012's rule that
+   renderers "must not be installed before Gate C actually starts" is unchanged and still governs.
+4. **Nothing else is pre-approved.** Not Phaser Editor, not Phaser Game Agent, not an ECS, not Grid
+   Engine, not physics middleware, not a spine/atlas toolchain. Each needs its own approval.
+
+**Rationale for recording this now, with no code:** the contradiction was already load-bearing.
+D-015, ARCHITECTURE.md, OPEN-QUESTIONS.md Q-006 and `render/README.md` all asserted a Pixi-only
+Gate C, so any future session reading the boot sequence would have inherited a decision that the
+current evidence no longer supports, and would either have followed it or spent its budget
+re-litigating it. Writing the reconciliation down is cheap; discovering the conflict mid-implementation
+is not. The dependency is deliberately left uninstalled so that this costs nothing if the plan
+changes again.
+
+**Consequence:** [gates/C-renderer-foundation.brief.md](gates/C-renderer-foundation.brief.md) is
+written and is the gate's fixed brief. It does not start. The immediate next step is unchanged —
+Daniel plays the fixtures, then Gate B gets briefed — and Gate C opens only after Gates A and B
+pass, per D-004.
+
+---
+
+## D-034 — The I-002 export list is part of the API, and ships with the API
+
+**Date:** 2026-07-31
+**Status:** Settled
+
+`STATE_MUTATING_EXPORTS` in `scripts/check-obsolescence-boundaries.mjs` is the entirety of I-002's
+enforcement. The facility subsystem shipped `createFacility`, `tickFacility` and `applyConstruction`
+without adding them, and the omission survived four commits. Throughout that window
+[INVARIANTS.md](INVARIANTS.md) advertised I-002 as `ENFORCED` while the simulation's primary
+mutators were freely reachable from `render/`.
+
+**The rule:** any new simulation export that advances, creates, or replaces state is added to that
+set **in the same change that introduces it**, with a regression case in
+`scripts/check-obsolescence-boundaries.test.mjs`.
+
+**Rationale:** an enforcement list that falls behind the code is worse than a documented gap,
+because a gap is priced correctly and a stale list is not. The checker's own test suite is what
+makes the mechanism real — the three names are now covered for named, namespace, dynamic, walk-out
+and `content/`-laundering forms, and those cases were confirmed to fail against the previous list
+before being accepted.
+
+**Consequence:** 31 checker regression tests become 38. This was fixed before any renderer code
+exists, which is the only cheap moment to do it — `render/` is still empty, so there was nothing to
+migrate off a mutator it should never have been able to reach.

@@ -12,8 +12,9 @@ Constraints that are settled live in [INVARIANTS.md](INVARIANTS.md).
 R8 is the architecture report and its core conclusions are well-argued and specific:
 
 - Angular shell with a **lazy-loaded game route**; Angular owns all text-heavy and accessible UI.
-- **PixiJS 8.x** as the provisional renderer; **Phaser 4** as the defined fallback with named
-  switch triggers.
+- **Phaser 4** as the provisional renderer; **PixiJS 8.x** as the defined fallback with named
+  switch triggers. **Reversed from R8's ordering by D-033** — R8 named Pixi provisional and Phaser
+  the fallback. Everything else in this bullet's neighbourhood is R8 as written.
 - **Pure TypeScript deterministic simulation core** — no Angular imports, no renderer imports.
 - **10 Hz authoritative tick** with renderer-side interpolation.
 - Worker-capable sim host abstraction: `DedicatedWorkerSimHost` for production,
@@ -52,7 +53,7 @@ D-011.
 
 ```
 src/app/games/obsolescence/
-  sim/           pure TS, deterministic, zero Angular/Pixi/DOM imports
+  sim/           pure TS, deterministic, zero Angular/renderer/DOM imports
   content/       validated data registries (products, components, incidents, segments)
   persistence/   IndexedDB via idb, versioned migrations
   presentation/  Angular-facing view models
@@ -96,7 +97,12 @@ Only these three, per D-012. Everything else needs fresh approval.
 | `fake-indexeddb` | IndexedDB in Node tests | dev only |
 | `@playwright/test` | Desktop and phone test matrix | dev only |
 
-`pixi.js` and `phaser` are **not** approved. Do not install them before Gate C starts.
+`pixi.js` and `phaser` are **not installed**. Do not install either before Gate C starts.
+
+`phaser@4.2.1` is **conditionally pre-approved** by D-033 — the version is settled so the gate does
+not reopen the question, but the install waits for Gate C to actually open, which per D-004 requires
+Gates A and B to pass first. Gate B has not been briefed. `pixi.js` remains the named fallback and
+is not pre-approved at any version; it needs a fresh approval if the switch triggers fire.
 
 ---
 

@@ -54,8 +54,12 @@ D-003 replaced the tester-panel pass conditions and the Phase 2 synthesis produc
 rule (scenario denominators, pre-registered). But the *ladder* — A through I — has not been
 re-derived. Two findings change its shape already:
 
-- **C-41 changes what Gate C is.** A single-stack Pixi run judged against absolute bars, not a
-  Pixi-versus-Phaser bake-off. That removes the reason to install `phaser` at all.
+- **C-41 changes what Gate C is.** A single-stack run judged against absolute bars, not a
+  Pixi-versus-Phaser bake-off. **D-033 kept that shape and swapped the stack**: the single stack is
+  Phaser 4, with Pixi as the named fallback. C-41's reasoning survives intact — a two-renderer
+  comparison is still waste — but its conclusion that `phaser` need never be installed is reversed.
+  Gate C is now briefed ([gates/C-renderer-foundation.brief.md](gates/C-renderer-foundation.brief.md))
+  and has not started.
 - **C-15 is now the binding constraint.** Four reports hand down mandatory fixture lists totalling up
   to 35 scenarios against R9's budget of 5. Once every gate is scenario-denominated, that conflict
   gates the whole validation ladder.

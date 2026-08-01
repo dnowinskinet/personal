@@ -57,6 +57,8 @@ dependency.
 
 - Angular shell + **lazy-loaded game route**; Angular owns all text-heavy/accessible UI.
 - **PixiJS 8.x** as provisional renderer; **Phaser 4** as the defined fallback with named triggers.
+  *(Accurate as a report of R8. The ordering was reversed on 2026-07-31 by D-033 — Phaser 4 is now
+  provisional, Pixi the fallback. See CURRENT-STATE.md; this document is historical.)*
 - **Pure TypeScript deterministic simulation core** — no Angular imports, no renderer imports.
 - **10 Hz authoritative tick** with renderer-side interpolation.
 - Worker-capable sim host abstraction (`DedicatedWorkerSimHost` + `InlineSimHost` for

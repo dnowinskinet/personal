@@ -243,7 +243,7 @@ Resolved and folded into [CANON.md](CANON.md) unless marked otherwise.
 | C-38 | Three incompatible canonical fixtures | R5's §22 fixture is canonical; rename R9's LARK onto it; keep R2's Relay generations as the history behind it. |
 | C-39 | Vertical slice contents — five incompatible manifests | Publish one merged manifest before Gate H is commissioned. |
 | C-40 | Reference viewport | 1024×640 is the design floor and Gate C hard pass; larger viewports reveal more altitude at the same scale. |
-| C-41 | Renderer gauntlet method | Single-stack Pixi judged against absolute bars, not an A/B bake-off. **This changes what Gate C is.** |
+| C-41 | Renderer gauntlet method | Single-stack, judged against absolute bars, not an A/B bake-off. **This changes what Gate C is.** *(Stack updated by D-033: the single stack is Phaser 4, not Pixi. The single-stack method is unchanged.)* |
 | C-42 | Save versioning granularity | Compose: R8's storage and two-version header plus R6's per-obligation rule-version pointer. |
 | C-43 | Level-of-detail and simulation | State the rule nobody wrote: camera state and device load may change only what is **drawn**, never what is **simulated**. |
 | C-44 | Supported floor count | R8's ladder (32 target / 40 warning / 48 review) is capability; R3's 16 is the design target. |

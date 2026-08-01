@@ -3,7 +3,16 @@
 One brief and one result per gate. The **active gate brief is step 3 of the boot sequence** — it is
 the only gate document a session reads by default.
 
-Nothing here yet. Gate A has not been briefed.
+| Gate | Brief | Result | Status |
+|---|---|---|---|
+| A | [A-quarter-race.brief.md](A-quarter-race.brief.md) | [A-quarter-race.result.md](A-quarter-race.result.md) | Machine conditions **pass**; pre-registered scenarios not authored; **both human gates not run** — Daniel's |
+| B | — | — | **Not briefed.** Nothing exists for this gate |
+| C | [C-renderer-foundation.brief.md](C-renderer-foundation.brief.md) | — | Briefed, **not started**; blocked on A and B by D-004 |
+
+`A-lineup-prototype.SUPERSEDED.md` is the original Gate A, replaced when R10 changed the target.
+
+**No gate has fully passed.** Gate A's two human questions are the ones that can still kill it, and
+they are the ones that need Daniel rather than an agent.
 
 ## Naming
 
@@ -40,7 +49,7 @@ change everything downstream.
 |---|---|---|
 | A | Lineup decision prototype | Is composing a lineup under deadline actually fun? |
 | B | One-quarter gray box | Does the full quarter loop sustain 25–35 minutes without chore-feel? |
-| C | Renderer gauntlet | Pixi or Phaser, measured on a real scenario against R8's budgets |
+| C | Renderer foundation | Can Phaser 4 draw the canonical tower from sim data, at budget, on a phone? |
 | D | Showroom launch prototype | Can representative customers make cohort outcomes legible? |
 | E | Cross-generation battery benchmark | Does the causal chain stay traceable across quarters? |
 | F | Chapter prototype | Is the Liability quarter interesting management or backlog duty? |

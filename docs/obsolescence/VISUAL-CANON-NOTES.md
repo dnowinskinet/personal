@@ -139,8 +139,9 @@ load the fixture from the Scenarios drawer, Run/Pause, click a worker.
 - **Keyboard access** works (every hit target is focusable with Enter), but there is no visible
   focus order aid, and phone tap targets for staff are ~15 px at 390 px width.
 - **Performance headroom untested beyond fixture scale.** The scene is ~440 SVG elements with 3–5
-  staff; nothing here measures 150 staff. No PixiJS trigger has been reached; do not migrate on
-  speculation (D-004, D-026 still govern).
+  staff; nothing here measures 150 staff. No renderer-migration trigger has been reached; do not
+  migrate on speculation (D-004, D-026 still govern). The provisional target is now Phaser 4 rather
+  than PixiJS (D-033), but nothing is installed and Gate C has not opened.
 
 ## Does the presentation now match the canon?
 
