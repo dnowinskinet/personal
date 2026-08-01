@@ -62,7 +62,16 @@ const LAYER_NAMES = Object.keys(LAYERS);
  */
 const SIM_ALLOWED_BARE_IMPORTS = new Set();
 
-/** Exports that advance, create, or replace state. The renderer may not reach any of them (I-002). */
+/**
+ * Exports that advance, create, or replace state. The renderer may not reach any of them (I-002).
+ *
+ * This list is the whole of I-002's enforcement, so **every new state-advancing or state-creating
+ * simulation export must be added here in the same change that introduces it.** The facility
+ * subsystem shipped without that step and the omission went unnoticed for four commits: the
+ * checker reported I-002 as `ENFORCED` while `tickFacility` and `applyConstruction` — by then the
+ * simulation's primary mutators — were reachable from `render/`. A list that silently falls behind
+ * the code claims enforcement it is not performing, which is worse than a gap that is known.
+ */
 const STATE_MUTATING_EXPORTS = new Set([
   'applyCommand',
   'advanceTick',
@@ -71,6 +80,11 @@ const STATE_MUTATING_EXPORTS = new Set([
   'deserialize',
   'createInitialState',
   'verifyReplay',
+  // Facility subsystem. Not re-exported from `sim/index`, but the check resolves any specifier
+  // landing in `sim/`, so importing them from `sim/facility/facility` is caught the same way.
+  'createFacility',
+  'tickFacility',
+  'applyConstruction',
 ]);
 
 /** Nondeterminism sources forbidden in `sim/` (I-006), as object/member pairs. */

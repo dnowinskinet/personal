@@ -246,6 +246,87 @@ describe('I-002 — renderer read-only covers indirect forms', () => {
   });
 });
 
+/**
+ * The facility subsystem's mutators were absent from the checker's list for four commits while
+ * I-002 was still advertised as `ENFORCED`. These cases exist so that regression cannot recur
+ * silently, and so that the deeper specifier (`sim/facility/facility`, which `sim/index` does not
+ * re-export) is proven to resolve to the `sim` layer like any other.
+ */
+describe('I-002 — renderer read-only covers the facility mutators', () => {
+  it('rejects a named import of tickFacility from its own module', async () => {
+    await expectViolation(
+      'render-tick-facility',
+      {
+        'render/probe.ts':
+          `import { tickFacility } from '../sim/facility/facility';\nexport const a = tickFacility;\n`,
+      },
+      /render\/ imports "tickFacility" from sim/
+    );
+  });
+
+  it('rejects a named import of applyConstruction', async () => {
+    await expectViolation(
+      'render-apply-construction',
+      {
+        'render/probe.ts':
+          `import { applyConstruction } from '../sim/facility/facility';\nexport const a = applyConstruction;\n`,
+      },
+      /render\/ imports "applyConstruction" from sim/
+    );
+  });
+
+  it('rejects a named import of createFacility', async () => {
+    await expectViolation(
+      'render-create-facility',
+      {
+        'render/probe.ts':
+          `import { createFacility } from '../sim/facility/facility';\nexport const a = createFacility;\n`,
+      },
+      /render\/ imports "createFacility" from sim/
+    );
+  });
+
+  it('rejects a namespace import used to advance the facility', async () => {
+    await expectViolation(
+      'render-facility-namespace',
+      {
+        'render/probe.ts':
+          `import * as facility from '../sim/facility/facility';\n` +
+          `export const go = (s) => facility.tickFacility(s);\n`,
+      },
+      /calls facility\.tickFacility from a namespace import/
+    );
+  });
+
+  it('rejects the walk-out escape used to reach a facility mutator', async () => {
+    await expectViolation(
+      'render-facility-escape',
+      {
+        'render/probe.ts':
+          `import { applyConstruction } from '../../obsolescence/sim/facility/facility';\n` +
+          `export const a = applyConstruction;\n`,
+      },
+      /render\/ imports "applyConstruction" from sim/
+    );
+  });
+
+  it('rejects laundering a facility mutator through content/', async () => {
+    await expectViolation(
+      'content-facility-laundering',
+      { 'content/bridge.ts': `export { tickFacility } from '../sim/facility/facility';\n` },
+      /content\/ re-exports "tickFacility" from sim/
+    );
+  });
+
+  it('allows the renderer to read facility state', async () => {
+    await expectClean('render-facility-read', {
+      'render/probe.ts':
+        `import { timeShares, type FacilityState } from '../sim/facility/facility';\n` +
+        `export const read = (s: FacilityState) => timeShares(s);\n`,
+    });
+  });
+});
+
 describe('I-006 — determinism sources including aliased forms', () => {
   it('rejects direct nondeterminism', async () => {
     await expectViolation(
